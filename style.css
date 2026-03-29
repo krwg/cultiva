@@ -1,0 +1,274 @@
+:root {
+    --bg-color: #f5f5f7; 
+    --card-bg: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --accent-blue: #0071e3;
+    --accent-blue-hover: #0077ed;
+    --danger-red: #ff3b30;
+    --success-green: #34c759;
+    --border-color: #d2d2d7;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --radius-lg: 16px;
+    --radius-sm: 10px;
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased; 
+}
+
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
+header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-weight: 400;
+}
+
+
+main {
+    width: 100%;
+    max-width: 500px;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+
+.add-habit-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.add-habit-section h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: var(--font-main);
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+input::placeholder {
+    color: #b0b0b5;
+}
+
+input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2); /* Синее свечение как в iOS */
+}
+
+
+button {
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-main);
+    transition: all 0.2s ease;
+}
+
+
+button[type="submit"] {
+    background: var(--accent-blue);
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background: var(--accent-blue-hover);
+}
+
+button[type="submit"]:active {
+    transform: scale(0.98); /* Эффект нажатия */
+}
+
+
+.habit-card {
+    background: #fafafa;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.habit-card:hover {
+    background: #f0f0f5;
+    box-shadow: var(--shadow-sm);
+}
+
+.habit-card h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.habit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+
+.check-btn {
+    background: #e8f5e9;
+    color: var(--success-green);
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.check-btn:hover {
+    background: var(--success-green);
+    color: white;
+}
+
+.delete-btn {
+    background: #ffe5e5;
+    color: var(--danger-red);
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.delete-btn:hover {
+    background: var(--danger-red);
+    color: white;
+}
+
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+
+@media (max-width: 480px) {
+    body {
+        padding: 20px 16px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .form-group {
+        flex-direction: column;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+    }
+
+    main {
+        padding: 20px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #000000;
+        --card-bg: #1c1c1e;
+        --text-primary: #ffffff;
+        --text-secondary: #98989d;
+        --border-color: #38383a;
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .habit-card {
+        background: #2c2c2e;
+    }
+
+    .habit-card:hover {
+        background: #3a3a3c;
+    }
+
+    input {
+        background: #2c2c2e;
+        border-color: #38383a;
+        color: white;
+    }
+
+    .check-btn {
+        background: #1e3a2f;
+    }
+
+    .delete-btn {
+        background: #3a1e1e;
+    }
+} 

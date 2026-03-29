@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cultiva - Track your habits and grow yourself">
+    <title>Cultiva</title> 
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Cultiva</h1> 
+        <p>Cultivate yourself every day</p> 
+    </header>
+
+    <main>
+        <section class="add-habit-section">
+            <h2>Plant a new habit</h2> 
+    
+            <form id="habit-form">
+                <label for="habit-input">Habit Name:</label>
+                <div class="form-group">
+                    <input 
+                        type="text" 
+                        id="habit-input" 
+                        placeholder="e.g., Read 10 minutes" 
+                        required
+                        autocomplete="off"
+                    >
+                    <button type="submit">Plant</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="garden-grid" id="garden-container" aria-live="polite">
+            
+            <article class="habit-card">
+                <h3>Drink Water</h3>
+                <div class="habit-actions">
+                    <button type="button" class="check-btn" aria-label="Mark as done">✓</button>
+                    <button type="button" class="delete-btn" aria-label="Delete habit">✕</button>
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
