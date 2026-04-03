@@ -104,6 +104,7 @@ body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background 0.3s var(--ease-apple), color 0.3s var(--ease-apple);
 }
 
 /* === TYPOGRAPHY === */
@@ -126,6 +127,7 @@ a:hover { color: var(--accent-blue-hover); }
     z-index: 100;
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
+    transition: opacity 0.3s var(--ease-apple), transform 0.3s var(--ease-apple);
 }
 .header-content {
     max-width: 1200px;
@@ -254,6 +256,7 @@ a:hover { color: var(--accent-blue-hover); }
     margin: 0 auto;
     padding: 32px 24px;
     min-height: calc(100vh - 200px);
+    transition: padding 0.3s var(--ease-apple);
 }
 
 .garden-section, .trophy-section { margin-bottom: 48px; }
@@ -354,6 +357,7 @@ a:hover { color: var(--accent-blue-hover); }
     background: var(--bg-tertiary);
     color: var(--text-tertiary);
     margin-top: 6px;
+    transition: opacity 0.3s var(--ease-apple);
 }
 
 .progress-bar {
@@ -393,7 +397,6 @@ a:hover { color: var(--accent-blue-hover); }
     flex: none;
 }
 .btn-card-danger:hover { background: var(--accent-red); color: white; }
-
 #trophy-container .habit-card {
     border: 2px solid #ffd700;
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, var(--bg-primary) 100%);
@@ -496,6 +499,8 @@ input[type="text"], input[type="number"], input[type="date"], input[type="email"
     color: var(--text-primary);
     transition: all var(--duration-fast) var(--ease-apple);
     outline: none;
+    -webkit-appearance: none;
+    appearance: none;
 }
 input:focus, .select-input:focus {
     border-color: var(--accent-blue);
@@ -701,7 +706,7 @@ textarea::placeholder { color: var(--text-tertiary); }
     background: var(--bg-primary);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-full);
-    padding: 12px 24px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -711,8 +716,23 @@ textarea::placeholder { color: var(--text-tertiary); }
     transition: all var(--duration-normal) var(--ease-apple);
 }
 .dynamic-notification.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
-.dynamic-notification-icon { font-size: 20px; }
+.dynamic-notification-icon { font-size: 20px; flex-shrink: 0; }
+.dynamic-notification-content { display: flex; flex-direction: column; gap: 2px; }
 .dynamic-notification-text { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.dynamic-notification-sub { font-size: 12px; color: var(--text-tertiary); }
+.dynamic-notification-btn {
+    padding: 6px 12px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: background 0.15s;
+}
+.dynamic-notification-btn:hover { background: var(--accent-blue-hover); }
 
 /* === LOADING === */
 .loading-screen {
@@ -805,6 +825,19 @@ textarea::placeholder { color: var(--text-tertiary); }
 }
 .empty-state p { margin: 8px 0 16px; }
 
+/* === FOCUS MODE (НОВОЕ) === */
+body.focus-mode .app-header,
+body.focus-mode .user-menu,
+body.focus-mode .section-header h2,
+body.focus-mode .trophy-section,
+body.focus-mode .category-badge,
+body.focus-mode .footer { display: none !important; }
+
+body.focus-mode .app-main { padding: 24px 16px; max-width: 900px; margin: 0 auto; }
+body.focus-mode .garden-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+body.focus-mode .habit-card::before { height: 0; }
+body.focus-mode .plant-visual { font-size: 36px; }
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
     .app-header { padding: 16px; }
@@ -828,4 +861,61 @@ textarea::placeholder { color: var(--text-tertiary); }
     .modal-body { padding: 16px; }
     .form-group label { font-size: 11px; }
     .btn-card { padding: 8px 10px; font-size: 12px; }
+    .select-small { width: 100%; min-width: unset; }
+}
+
+/* === FOOTER === */
+.app-footer {
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-light);
+    padding: 32px 24px;
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.footer-brand h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 24px;
+}
+
+.footer-links a {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-apple);
+}
+.footer-links a:hover {
+    color: var(--text-primary);
+}
+
+.footer-version {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+    .footer-content { gap: 12px; padding: 24px 16px; }
+    .footer-links { gap: 10px 16px; }
+    .footer-version { font-size: 10px; }
 }

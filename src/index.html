@@ -9,9 +9,6 @@
 </head>
 <body>
 
-<!-- Animka -->
-
-
     <div class="loading-screen" id="loading-screen">
         <div class="loading-cloud">
             <div class="cloud-body"></div>
@@ -25,27 +22,26 @@
             <div class="header-brand">
                 <h1><a href="/" class="logo-link" style="color: inherit; text-decoration: none;">Cultiva</a></h1>
             </div>
-            
             <div class="header-actions">
-                <a href="changelog.html" class="header-link">What's New</a>
+                <a href="changelog.html" class="header-link" data-i18n="whatsNew">What's New</a>
                 <button class="add-btn" id="open-add-modal" aria-label="Add new habit">+</button>
                 
                 <div class="user-menu" id="user-menu">
                     <button class="user-btn" id="user-menu-btn" aria-label="User menu" aria-expanded="false">
-                        <span class="user-name-text">Guest</span>
+                        <span class="user-name-text" data-i18n="guest">Guest</span>
                         <div class="user-avatar">👤</div>
                     </button>
                     <div class="user-dropdown" id="user-dropdown">
                         <div class="dropdown-section">
                             <div class="user-info">
-                                <span class="user-name">Guest User</span>
-                                <span class="user-email">Local Storage</span>
+                                <span class="user-name" data-i18n="guestUser">Guest User</span>
+                                <span class="user-email" data-i18n="localStorage">Local Storage</span>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
                         <button class="dropdown-item" id="open-settings">
                             <span class="dropdown-icon">⚙️</span>
-                            <span>Settings</span>
+                            <span data-i18n="settings">Settings</span>
                         </button>
                     </div>
                 </div>
@@ -56,7 +52,7 @@
     <main class="app-main">
         <section class="garden-section">
             <div class="section-header">
-                <h2>Active Garden</h2>
+                <h2 data-i18n="activeGarden">Active Garden</h2>
                 <span class="habit-count" id="habit-count">0/9</span>
             </div>
             <section class="garden-grid" id="garden-container"></section>
@@ -64,10 +60,10 @@
 
         <section class="trophy-section hidden" id="trophy-section">
             <div class="section-header">
-                <h2>Trophy Garden</h2>
+                <h2 data-i18n="trophyGarden">Trophy Garden</h2>
                 <span class="trophy-count" id="trophy-count">0</span>
             </div>
-            <p class="section-desc">Trees that reached 365+ days</p>
+            <p class="section-desc" data-i18n="trophyDesc">Trees that reached 365+ days</p>
             <section class="garden-grid" id="trophy-container"></section>
         </section>
     </main>
@@ -76,49 +72,49 @@
         <div class="modal-overlay"></div>
         <div class="modal-sheet">
             <div class="modal-header">
-                <h2>Plant New Habit</h2>
+                <h2 data-i18n="addHabit">Plant New Habit</h2>
                 <button class="modal-close" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="habit-form">
                     <div class="form-group">
-                        <label for="habit-name">Name</label>
+                        <label for="habit-name" data-i18n="habitName">Name</label>
                         <input type="text" id="habit-name" placeholder="e.g., Read 20 pages" required maxlength="50">
                     </div>
                     <div class="form-group">
-                        <label for="habit-desc">Description (optional)</label>
+                        <label for="habit-desc" data-i18n="description">Description (optional)</label>
                         <textarea id="habit-desc" placeholder="e.g., Read before bed" maxlength="150" rows="2"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Tracking</label>
+                        <label data-i18n="tracking">Tracking</label>
                         <div class="radio-group">
                             <label class="radio-card">
                                 <input type="radio" name="track-type" value="binary" checked>
                                 <div class="radio-content">
                                     <span class="radio-icon">✓</span>
-                                    <span class="radio-text">Yes / No</span>
+                                    <span class="radio-text" data-i18n="yesNo">Yes / No</span>
                                 </div>
                             </label>
                             <label class="radio-card">
                                 <input type="radio" name="track-type" value="quantity">
                                 <div class="radio-content">
                                     <span class="radio-icon">▤</span>
-                                    <span class="radio-text">Quantity</span>
+                                    <span class="radio-text" data-i18n="quantity">Quantity</span>
                                 </div>
                             </label>
                         </div>
                     </div>
                     <div id="target-container" class="target-container">
                         <div class="form-group">
-                            <label for="habit-target">Goal</label>
+                            <label for="habit-target" data-i18n="goal">Goal</label>
                             <input type="number" id="habit-target" value="20" min="1">
                         </div>
                         <div class="form-group">
-                            <label for="habit-unit">Unit</label>
+                            <label for="habit-unit" data-i18n="unit">Unit</label>
                             <input type="text" id="habit-unit" placeholder="pages" value="pages">
                         </div>
                     </div>
-                    <button type="submit" class="btn-primary" style="margin-top: 12px;">Plant Seed</button>
+                    <button type="submit" class="btn-primary" style="margin-top: 12px;" data-i18n="plantSeed">Plant Seed</button>
                 </form>
             </div>
         </div>
@@ -134,9 +130,9 @@
             <div class="modal-body">
                 <div class="stats-grid" id="stats-content"></div>
                 <div class="calendar-section">
-                    <h3>Activity</h3>
+                    <h3 data-i18n="activity">Activity</h3>
                     <div class="calendar-legend">
-                        <span>Less</span>
+                        <span data-i18n="less">Less</span>
                         <div class="legend-squares">
                             <div class="legend-square" data-level="0"></div>
                             <div class="legend-square" data-level="1"></div>
@@ -144,12 +140,12 @@
                             <div class="legend-square" data-level="3"></div>
                             <div class="legend-square" data-level="4"></div>
                         </div>
-                        <span>More</span>
+                        <span data-i18n="more">More</span>
                     </div>
                     <div class="contribution-calendar" id="contribution-calendar"></div>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-secondary" id="close-stats">Done</button>
+                    <button class="btn-secondary" id="close-stats" data-i18n="done">Done</button>
                 </div>
             </div>
         </div>
@@ -159,16 +155,26 @@
         <div class="modal-overlay"></div>
         <div class="modal-sheet">
             <div class="modal-header">
-                <h2>Settings</h2>
+                <h2 data-i18n="settings">Settings</h2>
                 <button class="modal-close" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="settings-group">
-                    <h3 class="settings-group-title">Appearance</h3>
+                    <h3 class="settings-group-title" data-i18n="appearance">Appearance & Language</h3>
                     <div class="setting-item">
                         <div class="setting-info">
-                            <span class="setting-label">Theme</span>
-                            <span class="setting-desc">Choose your preferred look</span>
+                            <span class="setting-label" data-i18n="language">Language</span>
+                            <span class="setting-desc" data-i18n="languageDesc">Interface language</span>
+                        </div>
+                        <select id="lang-select" class="select-input select-small">
+                            <option value="en">English</option>
+                            <option value="ru">Русский</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label" data-i18n="theme">Theme</span>
+                            <span class="setting-desc" data-i18n="themeDesc">Choose your preferred look</span>
                         </div>
                         <select id="theme-select" class="select-input select-small">
                             <option value="auto">Auto</option>
@@ -178,45 +184,81 @@
                     </div>
                     <div class="setting-item">
                         <div class="setting-info">
-                            <span class="setting-label">Show Trophy Garden</span>
-                            <span class="setting-desc">Display completed trees (365+ days)</span>
+                            <span class="setting-label" data-i18n="showTrophy">Show Trophy Garden</span>
+                            <span class="setting-desc" data-i18n="showTrophyDesc">Display completed trees (365+ days)</span>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="toggle-trophies">
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label" data-i18n="focusMode">Focus Mode</span>
+                            <span class="setting-desc" data-i18n="focusModeDesc">Minimal UI for distraction-free tracking</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-focus">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="settings-group">
-                    <h3 class="settings-group-title">Data</h3>
+                    <h3 class="settings-group-title" data-i18n="data">Data</h3>
                     <div class="setting-item">
                         <div class="setting-info">
-                            <span class="setting-label">Export</span>
-                            <span class="setting-desc">Download backup as JSON</span>
+                            <span class="setting-label" data-i18n="export">Export</span>
+                            <span class="setting-desc" data-i18n="exportDesc">Download backup as JSON</span>
                         </div>
-                        <button class="btn-small" id="settings-export">Export</button>
+                        <button class="btn-small" id="settings-export" data-i18n="exportBtn">Export</button>
                     </div>
                     <div class="setting-item">
                         <div class="setting-info">
-                            <span class="setting-label">Import</span>
-                            <span class="setting-desc">Restore from file</span>
+                            <span class="setting-label" data-i18n="import">Import</span>
+                            <span class="setting-desc" data-i18n="importDesc">Restore from file</span>
                         </div>
-                        <button class="btn-small" id="settings-import">Import</button>
+                        <button class="btn-small" id="settings-import" data-i18n="importBtn">Import</button>
                     </div>
                     <div class="setting-item">
                         <div class="setting-info">
-                            <span class="setting-label">Reset</span>
-                            <span class="setting-desc" style="color:var(--accent-red)">Delete all data</span>
+                            <span class="setting-label" data-i18n="reset">Reset</span>
+                            <span class="setting-desc" style="color:var(--accent-red)" data-i18n="resetDesc">Delete all data</span>
                         </div>
-                        <button class="btn-small btn-danger" id="settings-reset">Reset</button>
+                        <button class="btn-small btn-danger" id="settings-reset" data-i18n="resetBtn">Reset</button>
                     </div>
                 </div>
                 
-                <button class="btn-primary" id="close-settings" style="margin-top: 24px;">Done</button>
+                <button class="btn-primary" id="close-settings" style="margin-top: 24px;" data-i18n="done">Done</button>
             </div>
         </div>
     </div>
+
+
+    <footer class="app-footer">
+        <div class="footer-content">
+           <!-- class="footer-brand">
+              <h3>Cultiva</h3>
+            </div> -->
+            <nav class="footer-links">
+                <a href="/">Home</a>
+                <a href="/pages/landing.html">About</a>
+                <a href="/pages/changelog.html">What's New</a>
+                <a href="/pages/login.html">Sign In</a>
+                <a href="/pages/register.html">Sign Up</a>
+                <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener">GitHub</a>
+                <a href="/pages/docs.html">Documentation</a>
+                <a href="/pages/privacy.html">Privacy Policy</a>
+            </nav>
+            <div class="footer-version">
+                [0.1.0] Maple 2026
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
 
     <script type="module" src="/main.js"></script>
 </body>
