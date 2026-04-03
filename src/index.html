@@ -7,10 +7,58 @@
   <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-  <main style="padding: 40px; text-align: center;">
-    <h1>Cultiva</h1>
-    <p>Project rebuilt. Step 01 complete.</p>
+
+  <header style="background: var(--surface); border-bottom: 1px solid rgba(0,0,0,0.08); padding: 16px 24px; position: sticky; top: 0; z-index: 10;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <h1 style="font-size: 20px; font-weight: 700;">Cultiva</h1>
+      <button class="add-btn" id="open-add-modal" aria-label="Add habit">+</button>
+    </div>
+  </header>
+
+  <main style="max-width: 1200px; margin: 0 auto; padding: 32px 24px;">
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; font-weight: 600;">Active Garden</h2>
+        <span id="habit-count" style="font-size: 13px; color: var(--text-secondary); background: var(--bg); padding: 4px 10px; border-radius: 999px;">0/9</span>
+      </div>
+      <div id="garden-container" class="garden-grid"></div>
+    </section>
   </main>
-<script type="module" src="/main.js"></script>
+
+  <div class="modal" id="add-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h2>Plant New Habit</h2>
+        <button class="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="habit-form">
+          <div class="form-group">
+            <label for="habit-name">Name</label>
+            <input type="text" id="habit-name" placeholder="e.g., Drink water" required maxlength="50">
+          </div>
+          <div class="form-group">
+            <label for="habit-desc">Description (optional)</label>
+            <textarea id="habit-desc" placeholder="e.g., 8 glasses per day" maxlength="150" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="habit-category">Category</label>
+            <select id="habit-category">
+              <option value="health">Health</option>
+              <option value="learning">Learning</option>
+              <option value="work">Work</option>
+              <option value="mindfulness">Mindfulness</option>
+              <option value="creative">Creative</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-card primary" style="width: 100%; padding: 12px;">Plant Seed</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
 </body>
 </html>
