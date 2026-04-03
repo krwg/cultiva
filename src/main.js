@@ -1,0 +1,1 @@
+console.log('✅ Cultiva v2 loaded');
