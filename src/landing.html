@@ -74,22 +74,29 @@
         }
         
         .btn-control {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-full);
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-light);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            transition: all var(--duration-fast) var(--ease-apple);
-        }
-        .btn-control:hover {
-            background: var(--bg-quaternary);
-            transform: scale(1.05);
-        }
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-secondary);
+    transition: all var(--duration-fast) var(--ease-apple);
+    
+    /* Делаем эмодзи серыми/монохромными */
+    filter: grayscale(100%) brightness(0.65);
+    -webkit-filter: grayscale(100%) brightness(0.65);
+}
+
+.btn-control:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    filter: grayscale(100%) brightness(0.85);
+}
         
         .lang-dropdown {
             position: relative;
