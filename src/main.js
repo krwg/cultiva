@@ -1,1 +1,3 @@
-console.log('✅ Cultiva v2 loaded');
+import './styles/main.css';
+
+console.log('✅ Cultiva loaded');
