@@ -49,6 +49,24 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
 
 applyTheme();
 
+/* === NOTIFICATIONS === */
+
+function showNotification(icon, text) {
+    const existing = document.querySelector('.dynamic-notification');
+    if (existing) existing.remove();
+    
+    const notification = document.createElement('div');
+    notification.className = 'dynamic-notification';
+    notification.innerHTML = `<span class="dynamic-notification-icon">${icon}</span><span class="dynamic-notification-text">${text}</span>`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.classList.add('visible'), 100);
+    setTimeout(() => {
+        notification.classList.remove('visible');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
 /* === RENDER === */
 
 function createHabitCard(habit, isTrophy = false) {
@@ -101,7 +119,12 @@ function renderGarden() {
     
     if (trophyEl) {
         trophyEl.innerHTML = '';
-        trophies.forEach(h => trophyEl.appendChild(createHabitCard(h, true)));
+        if (trophies.length > 0) {
+            trophies.forEach(h => trophyEl.appendChild(createHabitCard(h, true)));
+            document.getElementById('trophy-section')?.classList.remove('hidden');
+        } else {
+            document.getElementById('trophy-section')?.classList.add('hidden');
+        }
     }
     
     if (countEl) countEl.textContent = `${active.length}/9`;
@@ -149,6 +172,7 @@ function exportData() {
     a.download = `cultiva-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    showNotification('📤', 'Exported!');
 }
 
 function importData(file) {
@@ -206,6 +230,7 @@ function initEvents() {
             if (targetFields) targetFields.classList.remove('visible');
             closeModal(addModal);
             renderGarden();
+            showNotification('🌱', 'Habit planted!');
         } catch (err) { alert(err.message); }
     });
     
@@ -227,9 +252,10 @@ function initEvents() {
             renderGarden();
             card.querySelector('.plant-visual')?.classList.add('growing');
             setTimeout(() => card.querySelector('.plant-visual')?.classList.remove('growing'), 250);
+            showNotification('💧', 'Progress saved!');
         } else if (e.target.closest('.btn-card-danger')) {
             e.stopPropagation();
-            if (confirm('Remove?')) { habits.remove(id); renderGarden(); }
+            if (confirm('Remove?')) { habits.remove(id); renderGarden(); showNotification('🗑️', 'Removed'); }
         } else {
             openStats(id);
         }
@@ -247,7 +273,7 @@ function initEvents() {
         input.onchange = async (e) => {
             const file = e.target.files?.[0];
             if (file) {
-                try { await importData(file); renderGarden(); alert('Imported'); }
+                try { await importData(file); renderGarden(); showNotification('📥', 'Imported!'); }
                 catch (err) { alert('Error: ' + err.message); }
             }
         };
@@ -256,7 +282,7 @@ function initEvents() {
     
     document.getElementById('settings-reset')?.addEventListener('click', () => {
         if (confirm('Delete all habits?') && confirm('Sure?')) {
-            storage.saveHabits([]); renderGarden();
+            storage.saveHabits([]); renderGarden(); showNotification('🗑️', 'Reset!');
         }
     });
 }
@@ -266,11 +292,7 @@ function initEvents() {
 function init() {
     renderGarden();
     initEvents();
-    
-    // ✅ FIX: Скрыть лоадер после инициализации
-    setTimeout(() => {
-        loadingScreen?.classList.add('hidden');
-    }, 800);
+    setTimeout(() => { loadingScreen?.classList.add('hidden'); }, 800);
 }
 
 init();
