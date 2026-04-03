@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cultiva — Grow your habits, grow yourself">
+    <title>Cultiva — Habit Tracker</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <style>
+
+        .landing-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        body.theme-dark .landing-header {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .header-link {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--duration-fast) var(--ease-apple);
+        }
+        .header-link:hover {
+            color: var(--text-primary);
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* Unified button style */
+        .btn-header {
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-apple);
+            border: 1px solid var(--border-light);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-header:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-medium);
+        }
+        .btn-header-primary {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+        .btn-header-primary:hover {
+            background: var(--accent-blue-hover);
+            border-color: var(--accent-blue-hover);
+        }
+        
+        .btn-control {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all var(--duration-fast) var(--ease-apple);
+        }
+        .btn-control:hover {
+            background: var(--bg-quaternary);
+            transform: scale(1.05);
+        }
+        
+        .lang-dropdown {
+            position: relative;
+        }
+        
+        .lang-dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            min-width: 140px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        
+        .lang-dropdown.active .lang-dropdown-content {
+            display: block;
+            animation: dropdown-fade 0.2s var(--ease-apple);
+        }
+        
+        @keyframes dropdown-fade {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .lang-option {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background var(--duration-fast) var(--ease-apple);
+        }
+        .lang-option:hover {
+            background: var(--bg-tertiary);
+        }
+        .lang-option.active {
+            background: var(--bg-secondary);
+            font-weight: 600;
+        }
+        
+        .landing-hero {
+            text-align: center;
+            padding: 140px 20px 100px;
+            background: var(--bg-secondary);
+        }
+        
+        .landing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        
+        .landing-title {
+            font-size: clamp(40px, 8vw, 80px);
+            font-weight: 800;
+            margin-bottom: 24px;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink), var(--accent-blue));
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 8s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .landing-subtitle {
+            font-size: clamp(18px, 3vw, 24px);
+            max-width: 720px;
+            margin: 0 auto 48px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .landing-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 80px;
+        }
+        
+        .btn-cta {
+            padding: 18px 36px;
+            border-radius: var(--radius-full);
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-apple);
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-cta-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+        .btn-cta-primary:hover {
+            background: var(--accent-blue-hover);
+            transform: scale(1.03);
+        }
+        
+        .btn-cta-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+        }
+        .btn-cta-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+        
+        .feature-section {
+            padding: 120px 20px;
+            background: var(--bg-primary);
+        }
+        .feature-section:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+        
+        .feature-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+        .feature-section:nth-child(even) .feature-container {
+            direction: rtl;
+        }
+        .feature-section:nth-child(even) .feature-container > * {
+            direction: ltr;
+        }
+        
+        .feature-visual {
+            position: relative;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-light);
+        }
+        
+        .feature-visual img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .feature-content h2 {
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        
+        .feature-content p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-list li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .stats-section {
+            padding: 100px 20px;
+            background: var(--bg-primary);
+            text-align: center;
+        }
+        
+        .stats-grid {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .stat-item {
+            padding: 32px;
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        .cta-section {
+            padding: 140px 20px;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            text-align: center;
+        }
+        
+        .cta-container h2 {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+        
+        .cta-container p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .screenshot-section {
+            padding: 100px 20px;
+            background: var(--bg-primary);
+        }
+        
+        .carousel-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carousel-track {
+            display: flex;
+            transition: transform 0.6s var(--ease-apple);
+        }
+        
+        .carousel-slide {
+            min-width: 100%;
+            padding: 20px;
+        }
+        
+        .carousel-slide img {
+            width: 100%;
+            max-width: 900px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin: 0 auto;
+            display: block;
+            border: 1px solid var(--border-light);
+        }
+        
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border-light);
+            border: none;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-apple);
+        }
+        .carousel-dot.active {
+            background: var(--accent-blue);
+            width: 30px;
+            border-radius: 5px;
+        }
+        
+        @media (max-width: 968px) {
+            .feature-container {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+            .feature-section:nth-child(even) .feature-container {
+                direction: ltr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .header-nav { display: none; }
+        }
+        
+        @media (max-width: 768px) {
+            .landing-hero { padding: 100px 16px 60px; }
+            .landing-cta { flex-direction: column; align-items: center; }
+            .btn-cta { width: 100%; max-width: 320px; justify-content: center; }
+            .feature-section { padding: 80px 20px; }
+            .btn-control { width: 32px; height: 32px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>  
+
+    <header class="landing-header">
+        <div class="header-content" style="max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="header-brand">
+                <h1 style="font-size: 22px; font-weight: 700; letter-spacing: -0.5px;"><a href="/" style="color: inherit; text-decoration: none;">Cultiva</a></h1>
+            </div>
+            
+            <nav class="header-nav">
+                <a href="#growth" class="header-link" data-i18n="navGrowth">Growth</a>
+                <a href="#trophies" class="header-link" data-i18n="navTrophies">Trophies</a>
+                <a href="#focus" class="header-link" data-i18n="navFocus">Focus</a>
+                <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener" class="header-link">GitHub</a>
+            </nav>
+            
+            <div class="header-controls">
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <button class="btn-control" id="lang-btn" aria-label="Select language">
+                        🌐
+                    </button>
+                    <div class="lang-dropdown-content">
+                        <button class="lang-option active" data-lang="en">English</button>
+                        <button class="lang-option" data-lang="ru">Русский</button>
+                    </div>
+                </div>
+                
+
+                <button class="btn-control" id="theme-toggle" aria-label="Toggle theme">
+                    ☀️
+                </button>
+                
+                <a href="/pages/login.html" class="btn-header" data-i18n="signIn">Sign In</a>
+                <a href="/" class="btn-header btn-header-primary" data-i18n="openApp">Open App</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <section class="landing-hero">
+            </div>
+            <h1 class="landing-title" data-i18n="landingTitle">Grow your habits.<br>Grow yourself.</h1>
+            <p class="landing-subtitle" data-i18n="landingDesc">Transform your daily routines into a living garden. Watch as your consistency nurtures seeds into mighty trees, creating a forest of lasting change.</p>
+            <div class="landing-cta">
+                <a href="/pages/register.html" class="btn-cta btn-cta-primary">
+                    <span data-i18n="getStarted">Get Started — Free</span>
+                    <span>→</span>
+                </a>
+                <a href="#features" class="btn-cta btn-cta-secondary" data-i18n="learnMore">Learn More</a>
+            </div>
+        </section>
+
+
+        <section id="growth" class="feature-section">
+            <div class="feature-container">
+                <div class="feature-visual">
+                    <img src="https://via.placeholder.com/600x400/f5f5f7/1d1d1f?text=Garden+Growth+Visualization" alt="Garden Growth">
+                </div>
+                <div class="feature-content">
+                    <h2 data-i18n="growthTitle">Watch Your Habits Bloom</h2>
+                    <p data-i18n="growthDesc">Every habit starts as a tiny seed. With consistent care and daily attention, it grows through five distinct stages of development — from fragile sprout to mighty legacy tree.</p>
+                    <ul class="feature-list">
+                        <li data-i18n="growth1">🌱 Seed (0-7 days) — Plant the seed of change</li>
+                        <li data-i18n="growth2">🌿 Sprout (8-30 days) — First signs of growth</li>
+                        <li data-i118n="growth3">🪴 Plant (31-90 days) — Establishing roots</li>
+                        <li data-i18n="growth4">🌳 Tree (91-364 days) — Strong and resilient</li>
+                        <li data-i18n="growth5">🏆 Legacy (365+ days) — Eternal monument to your discipline</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="trophies" class="feature-section">
+            <div class="feature-container">
+                <div class="feature-content">
+                    <h2 data-i18n="trophiesTitle">Your Trophy Garden</h2>
+                    <p data-i18n="trophiesDesc">When a habit reaches 365 days, it transforms into a permanent Legacy tree. Give it a name. Watch it stand tall in your Trophy Garden — a living testament to your commitment.</p>
+                    <ul class="feature-list">
+                        <li data-i18n="trophies1">Golden border marks your achievements</li>
+                        <li data-i18n="trophies2">Name your legendary habits</li>
+                        <li data-i18n="trophies3">Separate gallery for completed trees</li>
+                        <li data-i18n="trophies4">Permanent reminder of your transformation</li>
+                    </ul>
+                </div>
+                <div class="feature-visual">
+                    <img src="https://via.placeholder.com/600x400/f5f5f7/1d1d1f?text=Trophy+Garden+View" alt="Trophy Garden">
+                </div>
+            </div>
+        </section>
+
+        <section id="focus" class="feature-section">
+            <div class="feature-container">
+                <div class="feature-visual">
+                    <img src="https://via.placeholder.com/600x400/f5f5f7/1d1d1f?text=Focus+Mode+Interface" alt="Focus Mode">
+                </div>
+                <div class="feature-content">
+                    <h2 data-i18n="focusTitle">Focus Mode</h2>
+                    <p data-i18n="focusDesc">Distractions kill habits. Focus Mode strips away everything non-essential, leaving only your garden and your goals. Pure. Simple. Powerful.</p>
+                    <ul class="feature-list">
+                        <li data-i18n="focus1">Minimalist interface — no distractions</li>
+                        <li data-i18n="focus2">Press Esc to exit when done</li>
+                        <li data-i18n="focus3">Perfect for daily check-ins</li>
+                        <li data-i18n="focus4">Works beautifully on mobile</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label" data-i18n="statStages">Growth Stages</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">365</span>
+                    <span class="stat-label" data-i18n="statDays">Days to Legacy</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">∞</span>
+                    <span class="stat-label" data-i18n="statHabits">Possible Habits</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="screenshots" class="screenshot-section">
+            <div style="text-align: center; margin-bottom: 48px;">
+                <h2 style="font-size: 36px; font-weight: 700; margin-bottom: 12px;" data-i18n="screenshotsTitle">See It In Action</h2>
+                <p style="font-size: 18px; color: var(--text-secondary);" data-i18n="screenshotsDesc">Beautiful design meets powerful functionality</p>
+            </div>
+            <div class="carousel-container">
+                <div class="carousel-track" id="carousel-track">
+                    <div class="carousel-slide">
+                        <img src="https://via.placeholder.com/900x500/f5f5f7/1d1d1f?text=Active+Garden+View" alt="Garden View">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://via.placeholder.com/900x500/f5f5f7/1d1d1f?text=Statistics+%26+Calendar" alt="Statistics">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://via.placeholder.com/900x500/f5f5f7/1d1d1f?text=Trophy+Garden" alt="Trophy Garden">
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="carousel-dot active" aria-label="Slide 1" data-slide="0"></button>
+                    <button class="carousel-dot" aria-label="Slide 2" data-slide="1"></button>
+                    <button class="carousel-dot" aria-label="Slide 3" data-slide="2"></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="cta-container">
+                <h2 data-i18n="ctaTitle">Start Growing Today</h2>
+                <p data-i18n="ctaDesc">No credit card required. No account needed. Just pure habit tracking magic.</p>
+                <a href="/" class="btn-cta btn-cta-primary" style="font-size: 18px; padding: 20px 40px;">
+                    <span data-i18n="openAppNow">Open Cultiva →</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-content">
+            <nav class="footer-links">
+                <a href="/">Home</a>
+                <a href="/landing.html">About</a>
+                <a href="/pages/changelog.html">What's New</a>
+                <a href="/pages/login.html">Sign In</a>
+                <a href="/pages/register.html">Sign Up</a>
+                <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener">GitHub</a>
+            </nav>
+             <div class="footer-brand">
+                <span class="footer-version">[0.1.0] Maple 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const TRANSLATIONS = {
+            en: {
+                navGrowth: 'Growth',
+                navTrophies: 'Trophies',
+                navFocus: 'Focus',
+                signIn: 'Sign In',
+                openApp: 'Open App',
+                badgeText: 'Version 0.1.0 "Maple" is live',
+                landingTitle: 'Grow your habits.\nGrow yourself.',
+                landingDesc: 'Transform your daily routines into a living garden. Watch as your consistency nurtures seeds into mighty trees, creating a forest of lasting change.',
+                getStarted: 'Get Started — Free',
+                learnMore: 'Learn More',
+                growthTitle: 'Watch Your Habits Bloom',
+                growthDesc: 'Every habit starts as a tiny seed. With consistent care and daily attention, it grows through five distinct stages of development — from fragile sprout to mighty legacy tree.',
+                growth1: '🌱 Seed (0-7 days) — Plant the seed of change',
+                growth2: '🌿 Sprout (8-30 days) — First signs of growth',
+                growth3: '🪴 Plant (31-90 days) — Establishing roots',
+                growth4: '🌳 Tree (91-364 days) — Strong and resilient',
+                growth5: '🏆 Legacy (365+ days) — Eternal monument to your discipline',
+                trophiesTitle: 'Your Trophy Garden',
+                trophiesDesc: 'When a habit reaches 365 days, it transforms into a permanent Legacy tree. Give it a name. Watch it stand tall in your Trophy Garden — a living testament to your commitment.',
+                trophies1: 'Golden border marks your achievements',
+                trophies2: 'Name your legendary habits',
+                trophies3: 'Separate gallery for completed trees',
+                trophies4: 'Permanent reminder of your transformation',
+                focusTitle: 'Focus Mode',
+                focusDesc: 'Distractions kill habits. Focus Mode strips away everything non-essential, leaving only your garden and your goals. Pure. Simple. Powerful.',
+                focus1: 'Minimalist interface — no distractions',
+                focus2: 'Press Esc to exit when done',
+                focus3: 'Perfect for daily check-ins',
+                focus4: 'Works beautifully on mobile',
+                statStages: 'Growth Stages',
+                statDays: 'Days to Legacy',
+                statHabits: 'Possible Habits',
+                screenshotsTitle: 'See It In Action',
+                screenshotsDesc: 'Beautiful design meets powerful functionality',
+                ctaTitle: 'Start Growing Today',
+                ctaDesc: 'No credit card required. No account needed. Just pure habit tracking magic.',
+                openAppNow: 'Open Cultiva →'
+            },
+            ru: {
+                navGrowth: 'Рост',
+                navTrophies: 'Трофеи',
+                navFocus: 'Фокус',
+                signIn: 'Войти',
+                openApp: 'Открыть',
+                badgeText: 'Версия 0.1.0 "Maple" доступна',
+                landingTitle: 'Развивай привычки.\nРазвивай себя.',
+                landingDesc: 'Превратите свои ежедневные ритуалы в живой сад. Наблюдайте, как ваша последовательность взращивает семена в могучие деревья, создавая лес устойчивых изменений.',
+                getStarted: 'Начать — Бесплатно',
+                learnMore: 'Узнать больше',
+                growthTitle: 'Наблюдайте за ростом',
+                growthDesc: 'Каждая привычка начинается как крошечное семя. При постоянном уходе и ежедневном внимании она проходит пять различных стадий развития — от хрупкого ростка до могучего дерева наследия.',
+                growth1: '🌱 Семя (0-7 дней) — Посадите семя перемен',
+                growth2: '🌿 Росток (8-30 дней) — Первые признаки роста',
+                growth3: '🪴 Растение (31-90 дней) — Формирование корней',
+                growth4: '🌳 Дерево (91-364 дня) — Сильное и устойчивое',
+                growth5: '🏆 Наследие (365+ дней) — Вечный памятник вашей дисциплине',
+                trophiesTitle: 'Ваш сад трофеев',
+                trophiesDesc: 'Когда привычка достигает 365 дней, она превращается в постоянное дерево наследия. Дайте ему имя. Наблюдайте, как оно возвышается в вашем саду трофеев — живое свидетельство вашей приверженности.',
+                trophies1: 'Золотая рамка отмечает достижения',
+                trophies2: 'Давайте имена легендарным привычкам',
+                trophies3: 'Отдельная галерея завершённых деревьев',
+                trophies4: 'Постоянное напоминание о вашей трансформации',
+                focusTitle: 'Режим фокуса',
+                focusDesc: 'Отвлечения убивают привычки. Режим фокуса убирает всё несущественное, оставляя только ваш сад и ваши цели. Чисто. Просто. Мощно.',
+                focus1: 'Минималистичный интерфейс — без отвлечений',
+                focus2: 'Нажмите Esc для выхода',
+                focus3: 'Идеально для ежедневных проверок',
+                focus4: 'Прекрасно работает на мобильных',
+                statStages: 'Стадий роста',
+                statDays: 'Дней до наследия',
+                statHabits: 'Возможно привычек',
+                screenshotsTitle: 'Посмотрите в действии',
+                screenshotsDesc: 'Красивый дизайн встречается с мощной функциональностью',
+                ctaTitle: 'Начните расти сегодня',
+                ctaDesc: 'Не требуется кредитная карта. Не нужен аккаунт. Просто чистая магия отслеживания привычек.',
+                openAppNow: 'Открыть Cultiva →'
+            }
+        };
+
+        const themeToggle = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('cultiva-theme') || 'auto';
+        let currentTheme = savedTheme;
+        
+        function applyTheme(theme) {
+            document.body.classList.remove('theme-light', 'theme-dark');
+            if (theme === 'light') {
+                document.body.classList.add('theme-light');
+                themeToggle.textContent = '☀️';
+            } else if (theme === 'dark') {
+                document.body.classList.add('theme-dark');
+                themeToggle.textContent = '🌙';
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                themeToggle.textContent = prefersDark ? '🌙' : '☀️';
+            }
+            localStorage.setItem('cultiva-theme', theme);
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : currentTheme === 'dark' ? 'auto' : 'light';
+            applyTheme(currentTheme);
+        });
+        
+        applyTheme(currentTheme);
+
+        const langDropdown = document.getElementById('lang-dropdown');
+        const langBtn = document.getElementById('lang-btn');
+        const langOptions = document.querySelectorAll('.lang-option');
+        let currentLang = localStorage.getItem('cultiva-lang') || 'en';
+        
+        function applyLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('cultiva-lang', lang);
+            
+            const t = TRANSLATIONS[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (t[key]) {
+                    if (key === 'landingTitle') {
+                        el.innerHTML = t[key].replace(/\n/g, '<br>');
+                    } else {
+                        el.textContent = t[key];
+                    }
+                }
+            });
+            
+            langOptions.forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.lang === lang);
+            });
+        }
+        
+        langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', () => {
+            langDropdown.classList.remove('active');
+        });
+        
+        langOptions.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                applyLanguage(opt.dataset.lang);
+            });
+        });
+        
+        applyLanguage(currentLang);
+
+        const track = document.getElementById('carousel-track');
+        const dots = document.querySelectorAll('.carousel-dot');
+        let currentSlide = 0;
+
+        function goToSlide(index) {
+            track.style.transform = `translateX(-${index * 100}%)`;
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+            currentSlide = index;
+        }
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                goToSlide(parseInt(dot.dataset.slide));
+            });
+        });
+
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % dots.length;
+            goToSlide(currentSlide);
+        }, 5000);
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+</html>
