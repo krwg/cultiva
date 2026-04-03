@@ -7,54 +7,76 @@
   <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-cloud"><div class="cloud-body"></div><div class="cloud-data"></div></div>
+    <p class="loading-text">Syncing your garden...</p>
+  </div>
 
-  <header style="background: var(--surface); border-bottom: 1px solid rgba(0,0,0,0.08); padding: 16px 24px; position: sticky; top: 0; z-index: 10;">
-    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-      <h1 style="font-size: 20px; font-weight: 700;">Cultiva</h1>
-      <button class="add-btn" id="open-add-modal" aria-label="Add habit">+</button>
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-brand"><h1>Cultiva</h1></div>
+      <div class="header-actions">
+        <button id="theme-toggle" aria-label="Toggle theme">☀️</button>
+        <button class="settings-btn" id="open-settings" aria-label="Settings">⚙️</button>
+        <button class="add-btn" id="open-add-modal" aria-label="Add habit">+</button>
+      </div>
     </div>
   </header>
 
-  <main style="max-width: 1200px; margin: 0 auto; padding: 32px 24px;">
-    <section>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="font-size: 18px; font-weight: 600;">Active Garden</h2>
-        <span id="habit-count" style="font-size: 13px; color: var(--text-secondary); background: var(--bg); padding: 4px 10px; border-radius: 999px;">0/9</span>
-      </div>
-      <div id="garden-container" class="garden-grid"></div>
+  <main class="app-main">
+    <section class="garden-section">
+      <div class="section-header"><h2>Active Garden</h2><span class="habit-count" id="habit-count">0/9</span></div>
+      <section class="garden-grid" id="garden-container"></section>
+    </section>
+    <section class="trophy-section" id="trophy-section">
+      <div class="section-header"><h2>Trophy Garden</h2><span class="trophy-count" id="trophy-count">0</span></div>
+      <p class="section-desc">Trees that reached 365+ days</p>
+      <section class="garden-grid" id="trophy-container"></section>
     </section>
   </main>
 
+  <!-- ADD MODAL -->
   <div class="modal" id="add-modal">
     <div class="modal-overlay"></div>
     <div class="modal-sheet">
-      <div class="modal-header">
-        <h2>Plant New Habit</h2>
-        <button class="modal-close" aria-label="Close">&times;</button>
-      </div>
+      <div class="modal-header"><h2>Plant New Habit</h2><button class="modal-close">&times;</button></div>
       <div class="modal-body">
         <form id="habit-form">
-          <div class="form-group">
-            <label for="habit-name">Name</label>
-            <input type="text" id="habit-name" placeholder="e.g., Drink water" required maxlength="50">
-          </div>
-          <div class="form-group">
-            <label for="habit-desc">Description (optional)</label>
-            <textarea id="habit-desc" placeholder="e.g., 8 glasses per day" maxlength="150" rows="2"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="habit-category">Category</label>
-            <select id="habit-category">
-              <option value="health">Health</option>
-              <option value="learning">Learning</option>
-              <option value="work">Work</option>
-              <option value="mindfulness">Mindfulness</option>
-              <option value="creative">Creative</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <button type="submit" class="btn-card primary" style="width: 100%; padding: 12px;">Plant Seed</button>
+          <div class="form-group"><label for="h-name">Name</label><input type="text" id="h-name" placeholder="e.g., Read 20 pages" required maxlength="50"></div>
+          <div class="form-group"><label for="h-cat">Category</label><select id="h-cat" class="select-input"><option value="health">Health</option><option value="learning">Learning</option><option value="work">Work</option><option value="mindfulness">Mindfulness</option><option value="creative">Creative</option><option value="other">Other</option></select></div>
+          <div class="form-group"><label>Tracking</label><div class="radio-group"><label class="radio-card"><input type="radio" name="track" value="binary" checked><div class="radio-content"><span class="radio-icon">✓</span><span class="radio-text">Yes / No</span></div></label><label class="radio-card"><input type="radio" name="track" value="quantity"><div class="radio-content"><span class="radio-icon">▤</span><span class="radio-text">Quantity</span></div></label></div></div>
+          <div id="target-fields" class="target-container"><div class="form-group"><label>Goal</label><input type="number" id="h-target" value="20" min="1"></div><div class="form-group"><label>Unit</label><input type="text" id="h-unit" placeholder="pages" value="pages"></div></div>
+          <button type="submit" class="btn-primary">Plant Seed</button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS MODAL -->
+  <div class="modal" id="stats-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-sheet modal-sheet-large">
+      <div class="modal-header"><h2 id="stats-title">Stats</h2><button class="modal-close">&times;</button></div>
+      <div class="modal-body">
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="calendar-section"><h3>Activity</h3><div class="calendar-legend"><span>Less</span><div class="legend-squares"><span class="legend-square" data-level="0"></span><span class="legend-square" data-level="1"></span><span class="legend-square" data-level="2"></span><span class="legend-square" data-level="3"></span><span class="legend-square" data-level="4"></span></div><span>More</span></div><div class="contribution-calendar" id="contribution-calendar"></div></div>
+        <div class="modal-actions"><button class="btn-secondary" id="close-stats">Done</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal" id="settings-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-sheet">
+      <div class="modal-header"><h2>Settings</h2><button class="modal-close">&times;</button></div>
+      <div class="modal-body">
+        <div class="settings-group"><h3 class="settings-group-title">Data</h3>
+          <div class="setting-item"><div class="setting-info"><span class="setting-label">Export</span><span class="setting-desc">Download backup</span></div><button class="btn-small" id="settings-export">Export</button></div>
+          <div class="setting-item"><div class="setting-info"><span class="setting-label">Import</span><span class="setting-desc">Restore from file</span></div><button class="btn-small" id="settings-import">Import</button></div>
+          <div class="setting-item"><div class="setting-info"><span class="setting-label">Reset</span><span class="setting-desc" style="color:var(--accent-red)">Delete all</span></div><button class="btn-small btn-danger" id="settings-reset">Reset</button></div>
+        </div>
+        <div style="margin-top:24px;text-align:right"><button class="btn-primary" id="close-settings" style="width:auto;padding:10px 20px">Done</button></div>
       </div>
     </div>
   </div>

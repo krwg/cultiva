@@ -1,175 +1,276 @@
 import './styles/main.css';
-import { LEGACY_THRESHOLD } from './core/config.js';
+import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS } from './core/config.js';
 import { storage } from './modules/storage.js';
 import { habits } from './modules/habits.js';
 
-console.log('✅ Cultiva loaded');
-
-// === DOM Elements === //
-const gardenContainer = document.getElementById('garden-container');
-const habitCountEl = document.getElementById('habit-count');
+const gardenEl = document.getElementById('garden-container');
+const trophyEl = document.getElementById('trophy-container');
+const countEl = document.getElementById('habit-count');
+const trophyCountEl = document.getElementById('trophy-count');
 const addModal = document.getElementById('add-modal');
-const openModalBtn = document.getElementById('open-add-modal');
-const closeModalBtn = addModal?.querySelector('.modal-close');
-const modalOverlay = addModal?.querySelector('.modal-overlay');
+const statsModal = document.getElementById('stats-modal');
+const settingsModal = document.getElementById('settings-modal');
+const themeToggle = document.getElementById('theme-toggle');
 const habitForm = document.getElementById('habit-form');
+const trackSelect = document.getElementById('h-track');
+const targetFields = document.getElementById('target-fields');
+const loadingScreen = document.getElementById('loading-screen');
 
-// === Render Functions === //
-function createHabitCard(habit) {
-  const stage = habits.getStage(habit.progress);
-  const isCompleted = habit.lastCompleted === new Date().toISOString().split('T')[0];
-  
-  const card = document.createElement('article');
-  card.className = 'habit-card';
-  card.dataset.id = habit.id;
-  
-  card.innerHTML = `
-    <div class="card-header">
-      <div class="plant-visual">${stage.emoji}</div>
-      <div class="card-info">
-        <div class="card-title">${habit.name}</div>
-        <div class="card-subtitle">${stage.name} • ${habit.progress} days</div>
-      </div>
-    </div>
-    <div class="card-actions">
-      <button class="btn-card primary${isCompleted ? ' completed' : ''}">
-        ${isCompleted ? '✓ Done' : 'Complete'}
-      </button>
-      <button class="btn-card danger" title="Delete">✕</button>
-    </div>
-  `;
-  
-  return card;
+let currentStatsId = null;
+
+/* === THEME === */
+
+const themes = ['auto', 'light', 'dark'];
+let themeIdx = themes.indexOf(localStorage.getItem('cultiva-theme') || 'auto');
+if (themeIdx === -1) themeIdx = 0;
+
+const getThemeIcon = (t) => t === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? '🌙' : '☀️') : (t === 'light' ? '☀️' : '🌙');
+
+const applyTheme = () => {
+    const t = themes[themeIdx];
+    localStorage.setItem('cultiva-theme', t);
+    document.body.classList.remove('theme-light', 'theme-dark');
+    if (t === 'light') document.body.classList.add('theme-light');
+    else if (t === 'dark') document.body.classList.add('theme-dark');
+    if (themeToggle) {
+        themeToggle.textContent = getThemeIcon(t);
+        themeToggle.title = `Theme: ${t}`;
+    }
+};
+
+themeToggle?.addEventListener('click', () => {
+    themeIdx = (themeIdx + 1) % themes.length;
+    applyTheme();
+});
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (themes[themeIdx] === 'auto') applyTheme();
+});
+
+applyTheme();
+
+/* === RENDER === */
+
+function createHabitCard(habit, isTrophy = false) {
+    const stage = isTrophy ? GROWTH_STAGES.LEGACY : habits.getStage(habit.progress);
+    const today = new Date().toISOString().split('T')[0];
+    const isCompleted = habit.trackType === 'binary' ? habit.lastCompleted === today : (habit.dailyProgress?.[today] || 0) >= habit.target;
+    
+    let progressBar = '';
+    if (habit.trackType === 'quantity') {
+        const cur = habit.dailyProgress?.[today] || 0;
+        const pct = Math.min(100, (cur / habit.target) * 100);
+        progressBar = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+    }
+    
+    const cats = { health: '🏃 Health', learning: '📚 Learning', work: '💼 Work', mindfulness: '🧘 Mindfulness', creative: '🎨 Creative', other: '⭐ Other' };
+    
+    const card = document.createElement('article');
+    card.className = 'habit-card';
+    card.dataset.id = habit.id;
+    card.dataset.category = habit.category || 'other';
+    card.innerHTML = `
+        <div class="card-header">
+            <div class="plant-visual">${stage.emoji}</div>
+            <div class="card-info">
+                <div class="card-title">${habit.treeName || habit.name}</div>
+                ${habit.description ? `<div class="card-description">${habit.description}</div>` : ''}
+                <div class="card-subtitle">${stage.name} • ${habit.progress}d</div>
+                <span class="category-badge">${cats[habit.category] || '⭐ Other'}</span>
+            </div>
+        </div>
+        ${progressBar}
+        <div class="card-actions">
+            <button class="btn-card btn-card-primary${isCompleted ? ' completed' : ''}">${isCompleted ? '✓ Done' : (habit.trackType === 'quantity' ? 'Log' : 'Complete')}</button>
+            <button class="btn-card btn-card-danger">✕</button>
+        </div>
+    `;
+    return card;
 }
 
 function renderGarden() {
-  const allHabits = habits.getAll();
-  const activeHabits = allHabits.filter(h => h.progress < LEGACY_THRESHOLD);
-  
-  gardenContainer.innerHTML = '';
-  
-  if (activeHabits.length === 0) {
-    gardenContainer.innerHTML = `
-      <div class="empty-state">
-        <p style="font-size: 40px;">🌱</p>
-        <p>Your garden is empty</p>
-        <button class="btn-card primary" id="add-first-habit" style="width: auto; padding: 10px 20px;">
-          Plant your first habit
-        </button>
-      </div>
+    const all = habits.getAll();
+    const active = all.filter(h => h.progress < LEGACY_THRESHOLD);
+    const trophies = all.filter(h => h.progress >= LEGACY_THRESHOLD);
+    
+    if (gardenEl) {
+        gardenEl.innerHTML = active.length ? '' : `<div class="empty-state"><p style="font-size:40px">🌱</p><p>Your garden is empty</p><button class="btn-primary" id="add-first" style="width:auto;padding:10px 20px;margin-top:16px">Plant first habit</button></div>`;
+        active.forEach(h => gardenEl.appendChild(createHabitCard(h)));
+        document.getElementById('add-first')?.addEventListener('click', () => openModal(addModal));
+    }
+    
+    if (trophyEl) {
+        trophyEl.innerHTML = '';
+        trophies.forEach(h => trophyEl.appendChild(createHabitCard(h, true)));
+    }
+    
+    if (countEl) countEl.textContent = `${active.length}/9`;
+    if (trophyCountEl) trophyCountEl.textContent = trophies.length;
+}
+
+/* === MODALS === */
+
+function openModal(m) { if (m) { m.classList.add('active'); document.body.style.overflow = 'hidden'; } }
+function closeModal(m) { if (m) { m.classList.remove('active'); document.body.style.overflow = ''; } }
+
+function openStats(id) {
+    currentStatsId = id;
+    const s = habits.getStats(id);
+    if (!s) return;
+    document.getElementById('stats-title').textContent = s.name;
+    document.getElementById('stats-grid').innerHTML = `
+        <div class="stat-card"><div class="stat-label">Current Streak</div><div class="stat-value">${s.currentStreak}</div><div class="stat-subvalue">days</div></div>
+        <div class="stat-card"><div class="stat-label">Best Streak</div><div class="stat-value">${s.bestStreak}</div><div class="stat-subvalue">days</div></div>
+        <div class="stat-card"><div class="stat-label">Completion</div><div class="stat-value">${s.completionRate}%</div><div class="stat-subvalue">${s.totalDays} of ${Math.max(1, Math.floor((Date.now() - new Date(habits.getAll().find(x=>x.id===id)?.startDate || Date.now()))/(1000*60*60*24)))} days</div></div>
+        <div class="stat-card"><div class="stat-label">Stage</div><div class="stat-value">${s.stage.name}</div><div class="stat-subvalue">${habits.getAll().find(x=>x.id===id)?.progress} ${s.trackType==='quantity'?'completions':'days'}</div></div>
     `;
-    document.getElementById('add-first-habit')?.addEventListener('click', () => {
-      openModal(addModal);
+    const cal = document.getElementById('contribution-calendar');
+    if (cal) {
+        cal.innerHTML = '';
+        habits.getCalendarData(id).forEach(d => {
+            const el = document.createElement('div');
+            el.className = `calendar-day`;
+            el.style.background = `var(--calendar-${d.level})`;
+            el.title = d.date;
+            cal.appendChild(el);
+        });
+    }
+    openModal(statsModal);
+}
+
+/* === EXPORT/IMPORT === */
+
+function exportData() {
+    const data = { habits: habits.getAll(), exportedAt: new Date().toISOString(), version: '0.1.0' };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cultiva-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importData(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.habits && Array.isArray(data.habits)) {
+                    storage.saveHabits(data.habits);
+                    resolve(true);
+                } else reject(new Error('Invalid format'));
+            } catch (err) { reject(err); }
+        };
+        reader.readAsText(file);
     });
-  } else {
-    activeHabits.forEach(habit => {
-      gardenContainer.appendChild(createHabitCard(habit));
-    });
-  }
-  
-  // Update counter //
-  if (habitCountEl) {
-    habitCountEl.textContent = `${activeHabits.length}/9`;
-  }
 }
 
-// === Modal Functions === //
-function openModal(modal) {
-  if (!modal) return;
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden'; // Prevent scroll
-}
+/* === EVENTS === */
 
-function closeModal(modal) {
-  if (!modal) return;
-  modal.classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-// === Event Listeners === //
 function initEvents() {
-  // Open modal //
-  openModalBtn?.addEventListener('click', () => openModal(addModal));
-  
-  // Close modal //
-  closeModalBtn?.addEventListener('click', () => closeModal(addModal));
-  modalOverlay?.addEventListener('click', () => closeModal(addModal));
-  
-  // Close on Escape //
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal(addModal);
-    }
-  });
-  
-  // Add habit form //
-  habitForm?.addEventListener('submit', (e) => {
-    e.preventDefault();
+    document.getElementById('open-add-modal')?.addEventListener('click', () => openModal(addModal));
+    document.getElementById('open-settings')?.addEventListener('click', () => openModal(settingsModal));
     
-    const name = document.getElementById('habit-name')?.value.trim();
-    if (!name) return;
+    document.querySelectorAll('.modal-close, .modal-overlay').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (e.target === btn || btn.classList.contains('modal-close')) {
+                closeModal(addModal); closeModal(statsModal); closeModal(settingsModal);
+            }
+        });
+    });
     
-    try {
-      habits.add({
-        name,
-        description: document.getElementById('habit-desc')?.value.trim(),
-        category: document.getElementById('habit-category')?.value,
-        trackType: 'binary'
-      });
-      
-      // Reset form //
-      habitForm.reset();
-      closeModal(addModal);
-      renderGarden();
-      
-      console.log('🌱 Habit added');
-    } catch (err) {
-      alert(err.message);
-    }
-  });
-  
-  // Garden click delegation //
-  gardenContainer?.addEventListener('click', (e) => {
-    const card = e.target.closest('.habit-card');
-    if (!card) return;
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { closeModal(addModal); closeModal(statsModal); closeModal(settingsModal); }
+    });
     
-    const id = card.dataset.id;
+    trackSelect?.addEventListener('change', (e) => {
+        if (targetFields) targetFields.classList.toggle('visible', e.target.value === 'quantity');
+    });
     
-    // Complete buton //
-    if (e.target.closest('.btn-card.primary')) {
-      e.stopPropagation();
-      habits.toggle(id);
-      renderGarden();
-      
-      // Animation
-      const visual = card.querySelector('.plant-visual');
-      visual?.classList.add('growing');
-      setTimeout(() => visual?.classList.remove('growing'), 250);
-      return;
-    }
+    habitForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('h-name')?.value.trim();
+        if (!name) return;
+        const track = document.getElementById('h-track')?.value || 'binary';
+        try {
+            habits.add({
+                name,
+                category: document.getElementById('h-cat')?.value || 'other',
+                trackType: track,
+                target: track === 'quantity' ? parseInt(document.getElementById('h-target')?.value) || 1 : 1,
+                unit: track === 'quantity' ? document.getElementById('h-unit')?.value.trim() || '' : ''
+            });
+            habitForm.reset();
+            if (targetFields) targetFields.classList.remove('visible');
+            closeModal(addModal);
+            renderGarden();
+        } catch (err) { alert(err.message); }
+    });
     
-    // Delete button //
-    if (e.target.closest('.btn-card.danger')) {
-      e.stopPropagation();
-      if (confirm('Remove this habit?')) {
-        habits.remove(id);
-        renderGarden();
-        console.log('Habit removed');
-      }
-      return;
-    }
-     
-    // Card click -> open stats (placeholder) //
-    console.log('Open stats for:', id);
-  });
+    const handleCard = (e) => {
+        const card = e.target.closest('.habit-card');
+        if (!card) return;
+        const id = card.dataset.id;
+        if (e.target.closest('.btn-card-primary')) {
+            e.stopPropagation();
+            const h = habits.getAll().find(x => x.id === id);
+            if (!h) return;
+            if (h.trackType === 'quantity') {
+                const today = new Date().toISOString().split('T')[0];
+                const cur = h.dailyProgress?.[today] || 0;
+                const amt = prompt(`Enter ${h.unit}:`, cur);
+                if (amt === null) return;
+                habits.toggle(id, parseFloat(amt) || 0);
+            } else habits.toggle(id);
+            renderGarden();
+            card.querySelector('.plant-visual')?.classList.add('growing');
+            setTimeout(() => card.querySelector('.plant-visual')?.classList.remove('growing'), 250);
+        } else if (e.target.closest('.btn-card-danger')) {
+            e.stopPropagation();
+            if (confirm('Remove?')) { habits.remove(id); renderGarden(); }
+        } else {
+            openStats(id);
+        }
+    };
+    gardenEl?.addEventListener('click', handleCard);
+    trophyEl?.addEventListener('click', handleCard);
+    
+    document.getElementById('close-stats')?.addEventListener('click', () => closeModal(statsModal));
+    
+    document.getElementById('settings-export')?.addEventListener('click', () => { exportData(); });
+    
+    document.getElementById('settings-import')?.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = '.json';
+        input.onchange = async (e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+                try { await importData(file); renderGarden(); alert('Imported'); }
+                catch (err) { alert('Error: ' + err.message); }
+            }
+        };
+        input.click();
+    });
+    
+    document.getElementById('settings-reset')?.addEventListener('click', () => {
+        if (confirm('Delete all habits?') && confirm('Sure?')) {
+            storage.saveHabits([]); renderGarden();
+        }
+    });
 }
 
-// === Init === //
+/* === INIT === */
+
 function init() {
-  renderGarden();
-  initEvents();
-  console.log('Garden rendered');
+    renderGarden();
+    initEvents();
+    
+    // ✅ FIX: Скрыть лоадер после инициализации
+    setTimeout(() => {
+        loadingScreen?.classList.add('hidden');
+    }, 800);
 }
 
-// Run //
 init();
