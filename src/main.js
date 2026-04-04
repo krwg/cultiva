@@ -674,13 +674,13 @@ function initEvents() {
         
         try {
             habits.add({
-                name,
-                description: document.getElementById('habit-desc')?.value.trim() || '',
-                category: 'health',
-                trackType,
-                target: trackType === 'quantity' ? parseInt(document.getElementById('habit-target')?.value) || 1 : 1,
-                unit: trackType === 'quantity' ? document.getElementById('habit-unit')?.value.trim() || '' : ''
-            });
+    name,
+    description: document.getElementById('habit-desc')?.value.trim() || '',
+    category: document.getElementById('habit-category')?.value || '', 
+    trackType,
+    target: trackType === 'quantity' ? parseInt(document.getElementById('habit-target')?.value) || 1 : 1,
+    unit: trackType === 'quantity' ? document.getElementById('habit-unit')?.value.trim() || '' : ''
+});
             
             habitForm.reset();
             if (targetContainer) targetContainer.classList.remove('visible');
