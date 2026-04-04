@@ -247,7 +247,6 @@
                 <button class="modal-close" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Live Preview -->
                 <div style="text-align: center; margin-bottom: 24px;">
                     <div class="avatar-preview-large" id="avatar-preview">
                         <span class="avatar-emoji-large" id="preview-emoji">🌱</span>
@@ -290,5 +289,49 @@
     </footer>
 
     <script type="module" src="/main.js"></script>
+
+        <!-- ONBOARDING OVERLAY -->
+    <div id="onboarding-overlay">
+        <div class="onboarding-content">
+            
+            <div class="onboarding-slide active">
+                <div class="onboarding-icon">🌱</div>
+                <h2 class="onboarding-title">Welcome to Cultiva</h2>
+                <p class="onboarding-text">
+                    Your personal garden for habit growth. Plant seeds, watch them bloom, and build a forest of lasting change.
+                </p>
+            </div>
+
+            <div class="onboarding-slide">
+                <div class="onboarding-icon">🌳</div>
+                <h2 class="onboarding-title">Watch it Grow</h2>
+                <p class="onboarding-text">
+                    Track binary or quantity goals. Reach 365 days to earn a Legacy Tree. Every day counts.
+                </p>
+            </div>
+
+            <div class="onboarding-slide">
+                <div class="onboarding-icon">🔒</div>
+                <h2 class="onboarding-title">Private & Focused</h2>
+                <p class="onboarding-text">
+                    Your data stays on your device. No tracking. Enable Focus Mode for distraction-free gardening.
+                </p>
+            </div>
+
+            <div class="onboarding-dots" style="margin-top: auto;">
+                <div class="onboarding-dot active"></div>
+                <div class="onboarding-dot"></div>
+                <div class="onboarding-dot"></div>
+            </div>
+
+            <div class="onboarding-footer">
+                <button class="btn-onboarding btn-skip" id="onboarding-skip">Skip</button>
+                <button class="btn-onboarding btn-next" id="onboarding-next">Next</button>
+                <button class="btn-onboarding btn-start" id="onboarding-start">Start Gardening 🚀</button>
+            </div>
+            
+        </div>
+    </div>
+
 </body>
 </html>

@@ -1,3 +1,4 @@
+import { onboarding } from './modules/onboarding.js';
 import './styles/main.css';
 import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS } from './core/config.js';
 import { storage } from './modules/storage.js';
@@ -802,7 +803,22 @@ function init() {
     } catch (err) {
         console.error('🚨 Init failed:', err);
     }
-    setTimeout(hideLoading, 800);
+    
+    setTimeout(() => {
+        hideLoading();
+        
+        // Безопасный запуск онбординга
+        if (onboarding && typeof onboarding.init === 'function') {
+            try {
+                onboarding.init();
+                console.log('🎬 Onboarding started');
+            } catch (err) {
+                console.warn('⚠️ Onboarding init failed:', err);
+            }
+        } else {
+            console.log('ℹ️ Onboarding module not ready (this is OK)');
+        }
+    }, 800);
 }
 
 init();

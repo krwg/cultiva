@@ -1230,3 +1230,182 @@ body.focus-mode .plant-visual { font-size: 36px; }
 .avatar-emoji {
     line-height: 1;
 }
+
+/* ============================================
+   ONBOARDING STYLES (Apple Glassmorphism)
+   ============================================ */
+#onboarding-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: saturate(180%) blur(30px);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-apple);
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    #onboarding-overlay {
+        background: rgba(0, 0, 0, 0.65);
+    }
+    .onboarding-content {
+        background: rgba(28, 28, 30, 0.75) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.6) !important;
+    }
+    .onboarding-title { color: #ffffff !important; }
+    .onboarding-text { color: rgba(255, 255, 255, 0.7) !important; }
+    .onboarding-dot { background: rgba(255, 255, 255, 0.2); }
+    .btn-skip { color: rgba(255, 255, 255, 0.5); }
+    .btn-skip:hover { color: #ffffff; }
+}
+
+body.theme-dark #onboarding-overlay {
+    background: rgba(0, 0, 0, 0.65);
+}
+body.theme-dark .onboarding-content {
+    background: rgba(28, 28, 30, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6) !important;
+}
+body.theme-dark .onboarding-title { color: #ffffff !important; }
+body.theme-dark .onboarding-text { color: rgba(255, 255, 255, 0.7) !important; }
+body.theme-dark .onboarding-dot { background: rgba(255, 255, 255, 0.2); }
+body.theme-dark .btn-skip { color: rgba(255, 255, 255, 0.5); }
+body.theme-dark .btn-skip:hover { color: #ffffff; }
+
+#onboarding-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.onboarding-content {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 28px;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.12);
+    width: 90%;
+    max-width: 440px;
+    padding: 48px 40px;
+    text-align: center;
+    position: relative;
+    transform: scale(0.96);
+    transition: transform 0.5s var(--ease-apple);
+}
+
+#onboarding-overlay.visible .onboarding-content {
+    transform: scale(1);
+}
+
+.onboarding-slide { 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+    animation: slideFadeIn 0.6s var(--ease-apple) forwards;
+    opacity: 0;
+}
+.onboarding-slide.active { display: flex; }
+
+@keyframes slideFadeIn { 
+    from { opacity: 0; transform: translateY(20px) scale(0.98); } 
+    to { opacity: 1; transform: translateY(0) scale(1); } 
+}
+
+.onboarding-icon { 
+    font-size: 64px; 
+    margin-bottom: 24px;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.1));
+}
+
+.onboarding-title { 
+    font-size: 26px; 
+    font-weight: 700; 
+    color: #1d1d1f; 
+    margin: 0 0 14px; 
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.onboarding-text { 
+    font-size: 16px; 
+    color: #6e6e73; 
+    line-height: 1.6; 
+    margin: 0 0 36px;
+    font-weight: 400;
+}
+
+.onboarding-dots { 
+    display: flex; 
+    justify-content: center; 
+    gap: 10px; 
+    margin-bottom: 36px; 
+}
+
+.onboarding-dot { 
+    width: 10px; 
+    height: 10px; 
+    border-radius: 5px; 
+    background: rgba(0, 0, 0, 0.15); 
+    transition: all 0.4s var(--ease-apple); 
+    cursor: pointer; 
+}
+
+.onboarding-dot.active { 
+    background: #0071e3; 
+    transform: scaleX(1.8);
+    border-radius: 5px;
+}
+
+.onboarding-footer { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-top: auto; 
+}
+
+.btn-onboarding { 
+    padding: 12px 24px; 
+    border-radius: 14px; 
+    font-size: 15px; 
+    font-weight: 600; 
+    border: none; 
+    cursor: pointer; 
+    transition: all 0.25s var(--ease-apple); 
+    font-family: var(--font-main);
+}
+
+.btn-skip { 
+    background: transparent; 
+    color: #8e8e93; 
+}
+.btn-skip:hover { 
+    color: #1d1d1f; 
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.btn-next, .btn-start { 
+    background: #0071e3; 
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+}
+.btn-next:hover, .btn-start:hover { 
+    background: #0077ed;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 113, 227, 0.35);
+}
+
+.btn-start { 
+    display: none; 
+    background: #34c759;
+    box-shadow: 0 4px 12px rgba(52, 199, 89, 0.25);
+}
+.btn-start:hover { 
+    background: #2db34f;
+    box-shadow: 0 6px 16px rgba(52, 199, 89, 0.35);
+}

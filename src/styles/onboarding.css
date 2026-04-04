@@ -1,0 +1,146 @@
+/* ============================================
+   ONBOARDING STYLES
+   ============================================ */
+
+#onboarding-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999; /* ← УВЕЛИЧЬ: было 9999, стало 99999 */
+    background: rgba(245, 245, 247, 0.95); /* ← Сделай фон плотнее */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-apple);
+    align-items: center;
+    justify-content: center;
+    
+    /* ← ДОБАВЬ ЭТО: */
+    pointer-events: none; /* По умолчанию не блокирует клики */
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    #onboarding-overlay { background: rgba(28, 28, 30, 0.85); }
+}
+body.theme-dark #onboarding-overlay { background: rgba(28, 28, 30, 0.85); }
+
+#onboarding-overlay.visible {
+    opacity: 1;
+    pointer-events: auto; /* ← Когда видим — блокирует и принимает клики */
+}
+.onboarding-content {
+    width: 100%;
+    z-index: 100000; 
+    max-width: 500px;
+    height: 600px;
+    background: var(--bg-primary);
+    border-radius: 24px;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-light);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Slides */
+.onboarding-slide {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    height: 100%;
+    text-align: center;
+    animation: slideFadeIn 0.5s var(--ease-apple) forwards;
+}
+
+.onboarding-slide.active {
+    display: flex;
+}
+
+@keyframes slideFadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.onboarding-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+}
+
+.onboarding-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.onboarding-text {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 32px;
+    max-width: 320px;
+}
+
+/* Dots */
+.onboarding-dots {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.onboarding-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bg-quaternary);
+    transition: all 0.3s var(--ease-apple);
+    cursor: pointer;
+}
+
+.onboarding-dot.active {
+    background: var(--accent-blue);
+    transform: scale(1.2);
+}
+
+/* Footer Controls */
+.onboarding-footer {
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-light);
+    background: var(--bg-primary);
+}
+
+.btn-onboarding {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s var(--ease-apple);
+}
+
+.btn-skip {
+    background: transparent;
+    color: var(--text-tertiary);
+}
+.btn-skip:hover { color: var(--text-secondary); }
+
+.btn-next {
+    background: var(--accent-blue);
+    color: white;
+}
+.btn-next:hover { background: var(--accent-blue-hover); }
+
+.btn-start {
+    background: var(--accent-green);
+    color: white;
+    display: none; /* Скрыта на старте */
+}
+.btn-start:hover { background: #2db34f; }
