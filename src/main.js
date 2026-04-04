@@ -821,12 +821,18 @@ function initEvents() {
         const id = card.dataset.id;
         
         if (e.target.closest('.btn-card-primary')) {
-            e.stopPropagation();
-            const h = habits.getAll().find(x => x.id === id);
-            if (!h) return;
+        e.stopPropagation();
+        const h = habits.getAll().find(x => x.id === id);
+        if (!h) return;
+            
+        const today = new Date().toISOString().split('T')[0];
+        const isCompleted = h.trackType === 'binary' 
+            ? h.lastCompleted === today 
+            : (h.dailyProgress?.[today] || 0) >= h.target;
+            
+            if (isCompleted) return; 
             
             if (h.trackType === 'quantity') {
-                const today = new Date().toISOString().split('T')[0];
                 const cur = h.dailyProgress?.[today] || 0;
                 const amt = prompt(`Enter ${h.unit}:`, cur);
                 if (amt === null) return;
@@ -839,7 +845,7 @@ function initEvents() {
             card.querySelector('.plant-visual')?.classList.add('growing');
             setTimeout(() => card.querySelector('.plant-visual')?.classList.remove('growing'), 250);
             showNotification('', TRANSLATIONS[settings.lang].progressSaved);
-            
+        
         } else if (e.target.closest('.btn-card-danger')) {
             e.stopPropagation();
             if (confirm('Remove habit?')) {

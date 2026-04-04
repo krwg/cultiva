@@ -81,18 +81,71 @@ export const habits = {
     return GROWTH_STAGES.SEED;
   },
 
+  /* ============================================
+     GET STATS (Fixed for Quantity Habits)
+     ============================================ */
   getStats(id) {
     const h = this.getAll().find(x => x.id === id);
     if (!h) return null;
-    const days = Math.max(1, Math.floor((Date.now() - new Date(h.startDate)) / (1000 * 60 * 60 * 24)));
-    const rate = Math.round((h.history.length / days) * 100);
+    
+    const today = new Date().toISOString().split('T')[0];
+    const progress = h.dailyProgress || {};
+    
+    const isCompletedOnDate = (dateStr) => {
+      if (h.trackType === 'binary') {
+        return h.lastCompleted === dateStr;
+      } else {
+        const val = progress[dateStr] || 0;
+        return val >= (h.target || 1);
+      }
+    };
+    
+    let currentStreak = 0;
+    let checkDate = new Date(today);
+    
+    while (true) {
+      const dateStr = checkDate.toISOString().split('T')[0];
+      
+      if (isCompletedOnDate(dateStr)) {
+        currentStreak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } 
+      else if (dateStr === today && new Date().getHours() < 20) {
+        break;
+      } 
+      else {
+        break;
+      }
+    }
+    
+    let bestStreak = 0;
+    let tempStreak = 0;
+    const startDate = new Date(h.startDate || today);
+    const endDate = new Date(today);
+    
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().split('T')[0];
+      
+      if (isCompletedOnDate(dateStr)) {
+        tempStreak++;
+        bestStreak = Math.max(bestStreak, tempStreak);
+      } else {
+        tempStreak = 0;
+      }
+    }
+    
+    const totalDays = Math.max(1, Math.floor((new Date(today) - new Date(h.startDate || today)) / (1000 * 60 * 60 * 24)));
+    const completedDays = Object.values(progress).filter(v => v >= (h.target || 1)).length + 
+                         (h.trackType === 'binary' && h.lastCompleted ? 1 : 0);
+    const completionRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
+    
     return {
       name: h.name,
       stage: this.getStage(h.progress),
-      currentStreak: h.streak,
-      bestStreak: this._calcBestStreak(h.history),
-      completionRate: rate,
-      totalDays: h.history.length,
+      currentStreak,
+      bestStreak,
+      completionRate,
+      totalDays: completedDays,
       trackType: h.trackType,
       target: h.target,
       unit: h.unit
