@@ -6,6 +6,7 @@
     <meta name="description" content="Cultiva - Grow your habits, grow yourself">
     <title>Home | Cultiva </title>
     <link rel="stylesheet" href="./styles/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
 </head>
 <body>
     <div class="loading-screen" id="loading-screen">
@@ -259,7 +260,7 @@
         </div>
     </div>
 
-    <div class="modal" id="avatar-modal">
+   <div class="modal" id="avatar-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width: 520px;">
             <div class="modal-header">
@@ -270,9 +271,19 @@
                 <div style="text-align: center; margin-bottom: 24px;">
                     <div class="avatar-preview-large" id="avatar-preview">
                         <span class="avatar-emoji-large" id="preview-emoji">🌱</span>
+                        <img id="preview-image" style="width:100%; height:100%; object-fit:cover; border-radius:50%; display:none;" />
                     </div>
                     <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 8px;">Preview</p>
                 </div>
+
+
+                <div style="display:flex; gap:12px; margin-bottom:24px; justify-content:center; flex-wrap:wrap;">
+    <label class="btn-upload" for="avatar-upload">
+        Upload Photo
+        <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
+    </label>
+    <button class="btn-upload btn-upload-danger" id="avatar-clear-photo" style="display:none;">Remove</button>
+</div>
 
                 <div class="avatar-section">
                     <h4 class="avatar-section-title">Background</h4>

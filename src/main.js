@@ -36,26 +36,75 @@ let settings = {
 };
 
 /* ============================================
-   AVATAR DATA
+   AVATAR DATA (Extended & Polished)
    ============================================ */
 const AVATAR_DATA = {
     backgrounds: [
+        // === BASICS ===
         { id: 'none', name: 'None', css: 'var(--bg-tertiary)' },
-        { id: 'blue', css: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-        { id: 'green', css: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' },
-        { id: 'orange', css: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-        { id: 'sunset', css: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-        { id: 'ocean', css: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-        { id: 'forest', css: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-        { id: 'berry', css: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
-        { id: 'midnight', css: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)' },
-        { id: 'gold', css: 'linear-gradient(135deg, #f5af19 0%, #f12711 100%)' },
-        { id: 'lavender', css: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
-        { id: 'slate', css: 'linear-gradient(135deg, #667db6 0%, #0082c8 50%, #667db6 100%)' }
+        { id: 'solid-black', css: '#000000' },
+        { id: 'solid-white', css: '#ffffff' },
+        { id: 'solid-grey', css: '#8e8e93' },
+        
+        // === WARM & SUNSET ===
+        { id: 'sunset-1', css: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)' },
+        { id: 'sunset-2', css: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' },
+        { id: 'sunset-3', css: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+        { id: 'sunset-4', css: 'linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)' },
+        { id: 'sunset-5', css: 'linear-gradient(135deg, #ff0844 0%, #ffb199 100%)' },
+        
+        // === COOL & OCEAN ===
+        { id: 'ocean-1', css: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
+        { id: 'ocean-2', css: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+        { id: 'ocean-3', css: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+        { id: 'ocean-4', css: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)' },
+        { id: 'ocean-5', css: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+
+        // === NATURE & GREEN ===
+        { id: 'nature-1', css: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
+        { id: 'nature-2', css: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' },
+        { id: 'nature-3', css: 'linear-gradient(135deg, #96fbc4 0%, #f9f586 100%)' },
+        { id: 'nature-4', css: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' },
+        { id: 'nature-5', css: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
+
+        // === DARK & NEON ===
+        { id: 'dark-1', css: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)' },
+        { id: 'dark-2', css: 'linear-gradient(135deg, #232526 0%, #414345 100%)' },
+        { id: 'dark-3', css: 'linear-gradient(135deg, #000000 0%, #434343 100%)' },
+        { id: 'neon-1', css: 'linear-gradient(135deg, #0ba360 0%, #3cba92 100%)' },
+        { id: 'neon-2', css: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)' },
+        
+        // === PASTEL & SOFT ===
+        { id: 'pastel-1', css: 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)' },
+        { id: 'pastel-2', css: 'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)' },
+        { id: 'pastel-3', css: 'linear-gradient(135deg, #c1dfc4 0%, #deecdd 100%)' },
+        { id: 'pastel-4', css: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' },
+        { id: 'pastel-5', css: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' },
+
+        // === GOLD & METALLIC ===
+        { id: 'gold-1', css: 'linear-gradient(135deg, #f5af19 0%, #f12711 100%)' },
+        { id: 'gold-2', css: 'linear-gradient(135deg, #e6b980 0%, #eacda3 100%)' },
+        { id: 'slate-1', css: 'linear-gradient(135deg, #667db6 0%, #0082c8 50%, #667db6 100%)' }
     ],
-    emojis: ['🌱', '🌿', '🪴', '💀', '🏆', '🥺', '🍀', '💅', '🍒,', '🫶', 
-             '⭐', '🌙', '️', '💧', '🦋', '🤍', '🎯', '💔', '💡', '📚', 
-             '💼', '❤️', '🎨', '😎', '💻', '🙃', '🔥', '😭', '✨', '🦊']
+    emojis: [
+        // 🌿 NATURE & GROWTH
+        '🌱', '🌿', '🍀', '', '', '', '🌴', '🌵', '🌾', '', '', '🍁', '🌸', '🌺', '🌻', '', '🌷', '🌼', '🍄', '', '', '🍉', '🍋', '🍌', '', '🍏', '🥥', '🍑', '', '',
+        
+        //  ANIMALS
+        '🦊', '🐶', '', '🐼', '🦁', '', '🐨', '🐯', '🐵', '', '🐝', '🦋', '🐢', '', '', '', '', '', '', '',
+        
+        //  OBJECTS & HOBBIES
+        '📚', '', '🎮', '💻', '⌨️', '📷', '', '🎸', '🏀', '', '🧘', '🧠', '💡', '⏰', '🔑', '🚀', '🛸', '🌍', '📱', '💍', '🎁', '', '', '', '', '', '', '', '', '',
+        
+        // ✨ ABSTRACT & SYMBOLS
+        '✨', '⭐', '🌟', '🌙', '☀️', '⚡', '🔥', '', '💫', '', '', '', '🥇', '🥈', '', '', '', '☮', '', '🕊',
+        
+        // 😎 FACES & MOODS
+        '😎', '🤠', '', '🧐', '🤩', '😴', '', '👽', '💀', '👻', '👹', '', '', '', '', '😈', '🤡', '🫠', '', '🫢',
+        
+        // ❤️ HEARTS & SIGNS
+        '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '🫶', ''
+    ]
 };
 
 let tempAvatar = { ...settings.avatar };
@@ -304,14 +353,37 @@ document.getElementById('open-settings')?.addEventListener('click', () => {
 });
 
 /* ============================================
-   AVATAR LOGIC
+   AVATAR LOGIC 
    ============================================ */
 function renderHeaderAvatar() {
     const headerAvatar = document.getElementById('header-avatar');
     const headerEmoji = document.getElementById('header-avatar-emoji');
+    const headerImage = document.createElement('img');
+    headerImage.style.cssText = 'width:100%; height:100%; object-fit:cover; border-radius:50%; display:none;';
     
     if (!headerAvatar) return;
 
+    // Clear previous image if exists
+    const existingImg = headerAvatar.querySelector('img');
+    if (existingImg) existingImg.remove();
+
+    // Check for custom photo
+    if (settings.avatar.photo) {
+        headerImage.src = settings.avatar.photo;
+        headerImage.style.display = 'block';
+        headerAvatar.appendChild(headerImage);
+        headerAvatar.classList.add('has-photo');
+        if (headerEmoji) headerEmoji.style.display = 'none';
+        headerAvatar.style.backgroundImage = 'none';
+        headerAvatar.style.backgroundColor = 'transparent';
+        return;
+    }
+
+    // No photo -> use gradient/emoji
+    headerAvatar.classList.remove('has-photo');
+    if (headerEmoji) headerEmoji.style.display = '';
+    if (headerImage) headerImage.style.display = 'none';
+    
     const bg = AVATAR_DATA.backgrounds.find(b => b.id === settings.avatar.background);
     if (bg && bg.id !== 'none') {
         headerAvatar.style.backgroundImage = bg.css;
@@ -321,17 +393,46 @@ function renderHeaderAvatar() {
         headerAvatar.style.backgroundColor = 'var(--bg-tertiary)';
     }
     
-    headerEmoji.textContent = settings.avatar.emoji;
+    if (headerEmoji) headerEmoji.textContent = settings.avatar.emoji;
 }
 
 function renderAvatarPicker() {
     const bgGrid = document.getElementById('avatar-bg-grid');
     const emojiGrid = document.getElementById('avatar-emoji-grid');
+    const preview = document.getElementById('avatar-preview');
+    const previewEmoji = document.getElementById('preview-emoji');
+    const previewImage = document.getElementById('preview-image');
+    const clearPhotoBtn = document.getElementById('avatar-clear-photo');
+    
     if (!bgGrid || !emojiGrid) return;
+
+    // Preview Logic
+    if (tempAvatar.photo) {
+        preview.classList.add('has-photo');
+        previewImage.src = tempAvatar.photo;
+        previewImage.style.display = 'block';
+        previewEmoji.style.display = 'none';
+        clearPhotoBtn.style.display = 'inline-block';
+    } else {
+        preview.classList.remove('has-photo');
+        previewImage.style.display = 'none';
+        previewEmoji.style.display = '';
+        clearPhotoBtn.style.display = 'none';
+        
+        const bg = AVATAR_DATA.backgrounds.find(b => b.id === tempAvatar.background);
+        if (bg && bg.id !== 'none') {
+            preview.style.backgroundImage = bg.css;
+            preview.style.backgroundColor = 'transparent';
+        } else {
+            preview.style.backgroundImage = 'none';
+            preview.style.backgroundColor = 'var(--bg-tertiary)';
+        }
+        previewEmoji.textContent = tempAvatar.emoji;
+    }
 
     // Render Backgrounds
     bgGrid.innerHTML = AVATAR_DATA.backgrounds.map(bg => `
-        <button class="avatar-option ${tempAvatar.background === bg.id ? 'selected' : ''} ${bg.id === 'none' ? 'bg-none' : ''}" 
+        <button class="avatar-option ${tempAvatar.background === bg.id && !tempAvatar.photo ? 'selected' : ''} ${bg.id === 'none' ? 'bg-none' : ''}" 
                 data-bg="${bg.id}" 
                 style="${bg.id !== 'none' ? `background: ${bg.css};` : ''}"
                 title="${bg.name || bg.id}">
@@ -340,30 +441,11 @@ function renderAvatarPicker() {
 
     // Render Emojis
     emojiGrid.innerHTML = AVATAR_DATA.emojis.map(emoji => `
-        <button class="avatar-option ${tempAvatar.emoji === emoji ? 'selected' : ''}" 
+        <button class="avatar-option ${tempAvatar.emoji === emoji && !tempAvatar.photo ? 'selected' : ''}" 
                 data-emoji="${emoji}">
             ${emoji}
         </button>
     `).join('');
-
-    updateAvatarPreview();
-}
-
-function updateAvatarPreview() {
-    const preview = document.getElementById('avatar-preview');
-    const previewEmoji = document.getElementById('preview-emoji');
-    
-    if (!preview) return;
-
-    const bg = AVATAR_DATA.backgrounds.find(b => b.id === tempAvatar.background);
-    if (bg && bg.id !== 'none') {
-        preview.style.backgroundImage = bg.css;
-        preview.style.backgroundColor = 'transparent';
-    } else {
-        preview.style.backgroundImage = 'none';
-        preview.style.backgroundColor = 'var(--bg-tertiary)';
-    }
-    previewEmoji.textContent = tempAvatar.emoji;
 }
 
 function initAvatarPicker() {
@@ -371,12 +453,14 @@ function initAvatarPicker() {
     const openBtn = document.getElementById('open-avatar-picker');
     const saveBtn = document.getElementById('avatar-save');
     const resetBtn = document.getElementById('avatar-reset');
+    const uploadInput = document.getElementById('avatar-upload');
+    const clearPhotoBtn = document.getElementById('avatar-clear-photo');
 
     if (!modal || !openBtn) return;
 
     // Open Modal
     openBtn.addEventListener('click', () => {
-        tempAvatar = { ...settings.avatar };
+        tempAvatar = { ...settings.avatar }; // Copy current state including photo
         renderAvatarPicker();
         openModal(modal);
         closeUserMenu();
@@ -389,17 +473,51 @@ function initAvatarPicker() {
 
         if (bgBtn) {
             tempAvatar.background = bgBtn.dataset.bg;
+            tempAvatar.photo = null; // Selecting bg clears photo
             renderAvatarPicker();
         }
         if (emojiBtn) {
             tempAvatar.emoji = emojiBtn.dataset.emoji;
+            tempAvatar.photo = null; // Selecting emoji clears photo
             renderAvatarPicker();
         }
     });
 
+    // Photo Upload
+    uploadInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Check size (max 2MB to avoid localStorage quota issues)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Image is too large. Please choose a file under 2MB.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            tempAvatar.photo = ev.target.result;
+            tempAvatar.background = 'none'; // Reset bg when photo is added
+            renderAvatarPicker();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Clear Photo
+    clearPhotoBtn?.addEventListener('click', () => {
+        tempAvatar.photo = null;
+        tempAvatar.background = 'green'; // Default back to green
+        uploadInput.value = ''; // Reset input
+        renderAvatarPicker();
+    });
+
     // Save
     saveBtn?.addEventListener('click', () => {
-        settings.avatar = { ...tempAvatar };
+        settings.avatar = { 
+            background: tempAvatar.background, 
+            emoji: tempAvatar.emoji,
+            photo: tempAvatar.photo || null 
+        };
         saveSettings();
         closeModal(modal);
         showNotification('', 'Avatar updated!');
@@ -407,7 +525,8 @@ function initAvatarPicker() {
 
     // Reset
     resetBtn?.addEventListener('click', () => {
-        tempAvatar = { background: 'green', emoji: '🌱' };
+        tempAvatar = { background: 'green', emoji: '🌱', photo: null };
+        uploadInput.value = '';
         renderAvatarPicker();
     });
 
