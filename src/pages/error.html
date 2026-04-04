@@ -6,6 +6,7 @@
     <title>Error — Cultiva</title>
     <link rel="stylesheet" href="../styles/main.css">
     <style>
+        /* === ERROR PAGE STYLES === */
         .error-page {
             min-height: 100vh;
             display: flex;
@@ -145,9 +146,11 @@
 
     <script>
         const ERRORS = {
+            333: { icon: '🎲', title: 'Lucky Number', desc: 'You rolled a 333! The garden is feeling extra lucky today. Try again, maybe you\'ll find a hidden seed.' },
             400: { icon: '🥀', title: 'Bad Request', desc: 'The request couldn\'t be understood. Please check your input and try again.' },
             403: { icon: '🔒', title: 'Access Denied', desc: 'You don\'t have permission to enter this part of the garden.' },
             404: { icon: '🌵', title: 'Page Not Found', desc: 'The path you followed led to an empty plot. It might have been moved or deleted.' },
+            418: { icon: '🫖', title: "I'm a Teapot", desc: 'Syntax Error: Missing Colon. The parser is crying. (Just kidding, but this error exists!)' },
             500: { icon: '⚡', title: 'Server Error', desc: 'Something unexpected happened in our greenhouse. We\'re fixing it right now.' },
             502: { icon: '🌧️', title: 'Bad Gateway', desc: 'Our servers are experiencing a temporary connection storm. Please wait a moment.' },
             503: { icon: '🚜', title: 'Under Maintenance', desc: 'We\'re currently tending to the garden. Check back shortly.' }
@@ -155,7 +158,11 @@
 
         const params = new URLSearchParams(window.location.search);
         const code = parseInt(params.get('code')) || 404;
-        const error = ERRORS[code] || ERRORS[404];
+        const error = ERRORS[code] || { 
+            icon: '🌿', 
+            title: `Error ${code}`, 
+            desc: 'An unexpected vine tangled the path. Our gardeners are working on it.' 
+        };
 
         document.getElementById('error-code').textContent = code;
         document.getElementById('error-icon').textContent = error.icon;

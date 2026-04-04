@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cultiva - Grow your habits, grow yourself">
-    <title>Cultiva</title>
+    <title>Home | Cultiva </title>
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-
     <div class="loading-screen" id="loading-screen">
         <div class="loading-cloud">
             <div class="cloud-body"></div>
@@ -20,27 +19,33 @@
     <header class="app-header">
         <div class="header-content">
             <div class="header-brand">
-                <h1><a href="/landing.html"    class="logo-link" style="color: inherit; text-decoration: none;">Cultiva</a></h1>
+                <h1><a href="landing.html" style="color: inherit; text-decoration: none;">Cultiva</a></h1>
             </div>
+            
             <div class="header-actions">
-                <a href="changelog.html" class="header-link" data-i18n="whatsNew">What's New</a>
+                <a href="/pages/changelog.html" class="header-link" data-i18n="whatsNew">What's New</a>
                 <button class="add-btn" id="open-add-modal" aria-label="Add new habit">+</button>
                 
                 <div class="user-menu" id="user-menu">
                     <button class="user-btn" id="user-menu-btn" aria-label="User menu" aria-expanded="false">
-                        <span class="user-name-text" data-i18n="guest">Guest</span>
-                        <div class="user-avatar">👤</div>
+                        <span class="user-name-text" id="user-name-display" data-i18n="guest">Guest</span>
+                        <div class="user-avatar" id="header-avatar">
+                            <span class="avatar-emoji" id="header-avatar-emoji">🌱</span>
+                        </div>
                     </button>
                     <div class="user-dropdown" id="user-dropdown">
                         <div class="dropdown-section">
                             <div class="user-info">
-                                <span class="user-name" data-i18n="guestUser">Guest User</span>
+                                <span class="user-name" id="dropdown-user-name">Guest User</span>
                                 <span class="user-email" data-i18n="localStorage">Local Storage</span>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" id="open-avatar-picker">
+                            <span data-i18n="changeAvatar">Change Avatar</span>
+                        </button>
+                        <div class="dropdown-divider"></div>
                         <button class="dropdown-item" id="open-settings">
-                            <span class="dropdown-icon">⚙️</span>
                             <span data-i18n="settings">Settings</span>
                         </button>
                     </div>
@@ -234,31 +239,55 @@
         </div>
     </div>
 
+    <div class="modal" id="avatar-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet" style="max-width: 520px;">
+            <div class="modal-header">
+                <h2>Customize Avatar</h2>
+                <button class="modal-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Live Preview -->
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div class="avatar-preview-large" id="avatar-preview">
+                        <span class="avatar-emoji-large" id="preview-emoji">🌱</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 8px;">Preview</p>
+                </div>
+
+                <div class="avatar-section">
+                    <h4 class="avatar-section-title">Background</h4>
+                    <div class="avatar-grid" id="avatar-bg-grid"></div>
+                </div>
+
+                <div class="avatar-section" style="margin-top: 24px;">
+                    <h4 class="avatar-section-title">Icon</h4>
+                    <div class="avatar-grid" id="avatar-emoji-grid"></div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button class="btn-secondary" id="avatar-reset">Reset</button>
+                    <button class="btn-primary" id="avatar-save">Save Avatar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="app-footer">
         <div class="footer-content">
-           <!-- class="footer-brand">
-              <h3>Cultiva</h3>
-            </div> -->
             <nav class="footer-links">
-                <a href="/">Home</a>
+                <a href="/src/index.html">Home</a>
                 <a href="/landing.html">About</a>
                 <a href="/pages/changelog.html">What's New</a>
                 <a href="/pages/login.html">Sign In</a>
                 <a href="/pages/register.html">Sign Up</a>
                 <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener">GitHub</a>
-                <a href="/pages/docs.html">Documentation</a>
-                <a href="/pages/privacy.html">Privacy Policy</a>
             </nav>
-            <div class="footer-version">
-                [0.1.0] Maple 2026
+            <div class="footer-brand">
+                <span class="footer-version">[0.1.0] Maple 2026</span>
             </div>
         </div>
     </footer>
-
-    <script type="module" src="/main.js"></script>
-</body>
-</html>
 
     <script type="module" src="/main.js"></script>
 </body>
