@@ -119,8 +119,14 @@ const TRANSLATIONS = {
         exported: 'Exported!',
         imported: 'Imported!',
         resetDone: 'Data cleared!',
-        changeAvatar: 'Change Avatar'
-    },
+        changeAvatar: 'Change Avatar', 
+        categories: {
+            health: 'Health', learning: 'Learning', work: 'Work', mindfulness: 'Mindfulness',
+            creative: 'Creative', fitness: 'Fitness', social: 'Social', finance: 'Finance',
+            hobby: 'Hobby', family: 'Family', career: 'Career', spiritual: 'Spiritual',
+            environment: 'Environment', other: 'Other'
+        }
+    },  // ← Запятая после закрытия en
     ru: {
         whatsNew: 'Что нового',
         guest: 'Гость',
@@ -148,7 +154,7 @@ const TRANSLATIONS = {
         showTrophyDesc: 'Отображать завершённые деревья (365+ дней)',
         focusMode: 'Режим фокуса',
         focusModeDesc: 'Минимальный интерфейс без отвлечений',
-        data: 'Данные', 
+        data: 'Данные',
         export: 'Экспорт',
         exportDesc: 'Скачать резервную копию',
         exportBtn: 'Экспорт',
@@ -176,7 +182,13 @@ const TRANSLATIONS = {
         exported: 'Экспортировано!',
         imported: 'Импортировано!',
         resetDone: 'Данные очищены!',
-        changeAvatar: 'Изменить аватар'
+        changeAvatar: 'Изменить аватар',
+        categories: {
+            health: 'Здоровье', learning: 'Обучение', work: 'Работа', mindfulness: 'Осознанность',
+            creative: 'Творчество', fitness: 'Спорт', social: 'Общение', finance: 'Финансы',
+            hobby: 'Хобби', family: 'Семья', career: 'Карьера', spiritual: 'Духовное',
+            environment: 'Экология', other: 'Другое'
+        }
     }
 };
 
@@ -458,12 +470,14 @@ function createHabitCard(habit, isTrophy = false) {
         progressBar = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
     }
     
-    const cats = { health: '🏃 Health', learning: '📚 Learning', work: '💼 Work', mindfulness: '🧘 Mindfulness', creative: '🎨 Creative', other: '⭐ Other' };
+    const categoryBadge = habit.category 
+        ? `<span class="category-badge">${habit.category.charAt(0).toUpperCase() + habit.category.slice(1)}</span>` 
+        : '';
     
     const card = document.createElement('article');
     card.className = 'habit-card';
     card.dataset.id = habit.id;
-    card.dataset.category = habit.category || 'other';
+    card.dataset.category = habit.category || 'none';
     
     card.innerHTML = `
         <div class="card-header">
@@ -472,7 +486,7 @@ function createHabitCard(habit, isTrophy = false) {
                 <div class="card-title">${habit.treeName || habit.name}</div>
                 ${habit.description ? `<div class="card-description">${habit.description}</div>` : ''}
                 <div class="card-subtitle">${stage.name} • ${habit.progress}d</div>
-                <span class="category-badge">${cats[habit.category] || '⭐ Other'}</span>
+                ${categoryBadge}
             </div>
         </div>
         ${progressBar}
@@ -486,7 +500,6 @@ function createHabitCard(habit, isTrophy = false) {
     
     return card;
 }
-
 function renderGarden() {
     const all = habits.getAll();
     const active = all.filter(h => h.progress < LEGACY_THRESHOLD);

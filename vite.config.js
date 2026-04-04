@@ -10,9 +10,13 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/index.html'),
-        landing: resolve(__dirname, 'src/landing.html') // ✅ добавлено
+        landing: resolve(__dirname, 'src/landing.html')
       }
     }
   },
-  server: { port: 3000, open: '/' }
+  server: { 
+    port: 3000, 
+    open: '/',
+    host: true  // ← Добавлено: делает сервер доступным в локальной сети
+  }
 });

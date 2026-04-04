@@ -1409,3 +1409,25 @@ body.theme-dark .btn-skip:hover { color: #ffffff; }
     background: #2db34f;
     box-shadow: 0 6px 16px rgba(52, 199, 89, 0.35);
 }
+
+.focus-mode .app-footer {
+    display: none !important;
+}
+
+#habit-category {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-apple);
+}
+#habit-category:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}

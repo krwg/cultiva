@@ -91,6 +91,26 @@
                         <textarea id="habit-desc" placeholder="e.g., Read before bed" maxlength="150" rows="2"></textarea>
                     </div>
                     <div class="form-group">
+                        <label for="habit-category" data-i18n="category">Category</label>
+                         <select id="habit-category" class="select-input">
+                         <option value="">None</option>
+                         <option value="health">Health</option>
+                         <option value="learning">Learning</option>
+                           <option value="work">Work</option>
+                          <option value="mindfulness">Mindfulness</option>
+                              <option value="creative">Creative</option>
+                             <option value="fitness">Fitness</option>
+                             <option value="social">Social</option>
+                              <option value="finance">Finance</option>
+                               <option value="hobby">Hobby</option>
+                               <option value="family">Family</option>
+                              <option value="career">Career</option>
+                              <option value="spiritual">Spiritual</option>
+                             <option value="environment">Environment</option>
+                               <option value="other">Other</option>
+                             </select>
+                    </div>
+                    <div class="form-group">
                         <label data-i18n="tracking">Tracking</label>
                         <div class="radio-group">
                             <label class="radio-card">
@@ -289,49 +309,5 @@
     </footer>
 
     <script type="module" src="/main.js"></script>
-
-        <!-- ONBOARDING OVERLAY -->
-    <div id="onboarding-overlay">
-        <div class="onboarding-content">
-            
-            <div class="onboarding-slide active">
-                <div class="onboarding-icon">🌱</div>
-                <h2 class="onboarding-title">Welcome to Cultiva</h2>
-                <p class="onboarding-text">
-                    Your personal garden for habit growth. Plant seeds, watch them bloom, and build a forest of lasting change.
-                </p>
-            </div>
-
-            <div class="onboarding-slide">
-                <div class="onboarding-icon">🌳</div>
-                <h2 class="onboarding-title">Watch it Grow</h2>
-                <p class="onboarding-text">
-                    Track binary or quantity goals. Reach 365 days to earn a Legacy Tree. Every day counts.
-                </p>
-            </div>
-
-            <div class="onboarding-slide">
-                <div class="onboarding-icon">🔒</div>
-                <h2 class="onboarding-title">Private & Focused</h2>
-                <p class="onboarding-text">
-                    Your data stays on your device. No tracking. Enable Focus Mode for distraction-free gardening.
-                </p>
-            </div>
-
-            <div class="onboarding-dots" style="margin-top: auto;">
-                <div class="onboarding-dot active"></div>
-                <div class="onboarding-dot"></div>
-                <div class="onboarding-dot"></div>
-            </div>
-
-            <div class="onboarding-footer">
-                <button class="btn-onboarding btn-skip" id="onboarding-skip">Skip</button>
-                <button class="btn-onboarding btn-next" id="onboarding-next">Next</button>
-                <button class="btn-onboarding btn-start" id="onboarding-start">Start Gardening 🚀</button>
-            </div>
-            
-        </div>
-    </div>
-
 </body>
 </html>
