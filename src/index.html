@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cultiva - Grow your habits, grow yourself">
-    <title>Home | Cultiva </title>
+    <title>Home | Cultiva</title>
     <link rel="stylesheet" href="./styles/main.css">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body>
     <div class="loading-screen" id="loading-screen">
@@ -22,7 +22,6 @@
             <div class="header-brand">
                 <h1><a href="landing.html" style="color: inherit; text-decoration: none;">Cultiva</a></h1>
             </div>
-            
             <div class="header-actions">
                 <a href="/pages/changelog.html" class="header-link" data-i18n="whatsNew">What's New</a>
                 <button class="add-btn" id="open-add-modal" aria-label="Add new habit">+</button>
@@ -34,21 +33,37 @@
                             <span class="avatar-emoji" id="header-avatar-emoji">🌱</span>
                         </div>
                     </button>
+                    
                     <div class="user-dropdown" id="user-dropdown">
-                        <div class="dropdown-section">
-                            <div class="user-info">
-                                <span class="user-name" id="dropdown-user-name">Guest User</span>
-                                <span class="user-email" data-i18n="localStorage">Local Storage</span>
+                        <div class="dropdown-section user-info-section">
+                            <div class="user-avatar-large" id="dropdown-avatar-large">
+                                <span class="avatar-emoji" id="dropdown-avatar-emoji">🌱</span>
+                                <img id="dropdown-avatar-img" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name" id="dropdown-user-name">Guest User</div>
+                                <div class="user-status" id="user-status-text">Local Storage</div>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" id="open-avatar-picker">
-                            <span data-i18n="changeAvatar">Change Avatar</span>
-                        </button>
+                        <div class="dropdown-section" id="auth-section">
+                            <button class="dropdown-item primary" id="auth-trigger">
+                                <span>Sign In</span>
+                            </button>
+                            <button class="dropdown-item danger" id="sign-out-btn" style="display:none;">
+                                <span>Sign Out</span>
+                            </button>
+                        </div>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" id="open-settings">
-                            <span data-i18n="settings">Settings</span>
-                        </button>
+                        <div class="dropdown-section">
+                            <button class="dropdown-item" id="open-avatar-picker">
+                                <span data-i18n="changeAvatar">Change Avatar</span>
+                            </button>
+                            <button class="dropdown-item" id="open-settings">
+                                <span data-i18n="settings">Settings</span>
+                            </button>
+                        </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,7 +78,6 @@
             </div>
             <section class="garden-grid" id="garden-container"></section>
         </section>
-
         <section class="trophy-section hidden" id="trophy-section">
             <div class="section-header">
                 <h2 data-i18n="trophyGarden">Trophy Garden</h2>
@@ -93,52 +107,31 @@
                     </div>
                     <div class="form-group">
                         <label for="habit-category" data-i18n="category">Category</label>
-                         <select id="habit-category" class="select-input">
-                         <option value="">None</option>
-                         <option value="health">Health</option>
-                         <option value="learning">Learning</option>
-                           <option value="work">Work</option>
-                          <option value="mindfulness">Mindfulness</option>
-                              <option value="creative">Creative</option>
-                             <option value="fitness">Fitness</option>
-                             <option value="social">Social</option>
-                              <option value="finance">Finance</option>
-                               <option value="hobby">Hobby</option>
-                               <option value="family">Family</option>
-                              <option value="career">Career</option>
-                              <option value="spiritual">Spiritual</option>
-                             <option value="environment">Environment</option>
-                               <option value="other">Other</option>
-                             </select>
+                        <select id="habit-category" class="select-input">
+                            <option value="">None</option>
+                            <option value="health">Health</option><option value="learning">Learning</option>
+                            <option value="work">Work</option><option value="mindfulness">Mindfulness</option>
+                            <option value="creative">Creative</option><option value="fitness">Fitness</option>
+                            <option value="social">Social</option><option value="finance">Finance</option>
+                            <option value="hobby">Hobby</option><option value="family">Family</option>
+                            <option value="career">Career</option><option value="spiritual">Spiritual</option>
+                            <option value="environment">Environment</option><option value="other">Other</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label data-i18n="tracking">Tracking</label>
                         <div class="radio-group">
-                            <label class="radio-card">
-                                <input type="radio" name="track-type" value="binary" checked>
-                                <div class="radio-content">
-                                    <span class="radio-icon">✓</span>
-                                    <span class="radio-text" data-i18n="yesNo">Yes / No</span>
-                                </div>
+                            <label class="radio-card"><input type="radio" name="track-type" value="binary" checked>
+                                <div class="radio-content"><span class="radio-icon">✓</span><span class="radio-text" data-i18n="yesNo">Yes / No</span></div>
                             </label>
-                            <label class="radio-card">
-                                <input type="radio" name="track-type" value="quantity">
-                                <div class="radio-content">
-                                    <span class="radio-icon">▤</span>
-                                    <span class="radio-text" data-i18n="quantity">Quantity</span>
-                                </div>
+                            <label class="radio-card"><input type="radio" name="track-type" value="quantity">
+                                <div class="radio-content"><span class="radio-icon">▤</span><span class="radio-text" data-i18n="quantity">Quantity</span></div>
                             </label>
                         </div>
                     </div>
                     <div id="target-container" class="target-container">
-                        <div class="form-group">
-                            <label for="habit-target" data-i18n="goal">Goal</label>
-                            <input type="number" id="habit-target" value="20" min="1">
-                        </div>
-                        <div class="form-group">
-                            <label for="habit-unit" data-i18n="unit">Unit</label>
-                            <input type="text" id="habit-unit" placeholder="pages" value="pages">
-                        </div>
+                        <div class="form-group"><label for="habit-target" data-i18n="goal">Goal</label><input type="number" id="habit-target" value="20" min="1"></div>
+                        <div class="form-group"><label for="habit-unit" data-i18n="unit">Unit</label><input type="text" id="habit-unit" placeholder="pages" value="pages"></div>
                     </div>
                     <button type="submit" class="btn-primary" style="margin-top: 12px;" data-i18n="plantSeed">Plant Seed</button>
                 </form>
@@ -149,30 +142,15 @@
     <div class="modal" id="stats-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet modal-sheet-large">
-            <div class="modal-header">
-                <h2 id="stats-title">Stats</h2>
-                <button class="modal-close" aria-label="Close">&times;</button>
-            </div>
+            <div class="modal-header"><h2 id="stats-title">Stats</h2><button class="modal-close" aria-label="Close">&times;</button></div>
             <div class="modal-body">
                 <div class="stats-grid" id="stats-content"></div>
                 <div class="calendar-section">
                     <h3 data-i18n="activity">Activity</h3>
-                    <div class="calendar-legend">
-                        <span data-i18n="less">Less</span>
-                        <div class="legend-squares">
-                            <div class="legend-square" data-level="0"></div>
-                            <div class="legend-square" data-level="1"></div>
-                            <div class="legend-square" data-level="2"></div>
-                            <div class="legend-square" data-level="3"></div>
-                            <div class="legend-square" data-level="4"></div>
-                        </div>
-                        <span data-i18n="more">More</span>
-                    </div>
+                    <div class="calendar-legend"><span data-i18n="less">Less</span><div class="legend-squares"><div class="legend-square" data-level="0"></div><div class="legend-square" data-level="1"></div><div class="legend-square" data-level="2"></div><div class="legend-square" data-level="3"></div><div class="legend-square" data-level="4"></div></div><span data-i18n="more">More</span></div>
                     <div class="contribution-calendar" id="contribution-calendar"></div>
                 </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="close-stats" data-i18n="done">Done</button>
-                </div>
+                <div class="modal-actions"><button class="btn-secondary" id="close-stats" data-i18n="done">Done</button></div>
             </div>
         </div>
     </div>
@@ -180,125 +158,66 @@
     <div class="modal" id="settings-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet">
-            <div class="modal-header">
-                <h2 data-i18n="settings">Settings</h2>
-                <button class="modal-close" aria-label="Close">&times;</button>
-            </div>
+            <div class="modal-header"><h2 data-i18n="settings">Settings</h2><button class="modal-close" aria-label="Close">&times;</button></div>
             <div class="modal-body">
                 <div class="settings-group">
                     <h3 class="settings-group-title" data-i18n="appearance">Appearance & Language</h3>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span class="setting-label" data-i18n="language">Language</span>
-                            <span class="setting-desc" data-i18n="languageDesc">Interface language</span>
-                        </div>
-                        <select id="lang-select" class="select-input select-small">
-                            <option value="en">English</option>
-                            <option value="ru">Русский</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span class="setting-label" data-i18n="theme">Theme</span>
-                            <span class="setting-desc" data-i18n="themeDesc">Choose your preferred look</span>
-                        </div>
-                        <select id="theme-select" class="select-input select-small">
-                            <option value="auto">Auto</option>
-                            <option value="light">Light</option>
-                            <option value="dark">Dark</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span class="setting-label" data-i18n="showTrophy">Show Trophy Garden</span>
-                            <span class="setting-desc" data-i18n="showTrophyDesc">Display completed trees (365+ days)</span>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="toggle-trophies">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span class="setting-label" data-i18n="focusMode">Focus Mode</span>
-                            <span class="setting-desc" data-i18n="focusModeDesc">Minimal UI for distraction-free tracking</span>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="toggle-focus">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
+                    <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="language">Language</span><span class="setting-desc" data-i18n="languageDesc">Interface language</span></div><select id="lang-select" class="select-input select-small"><option value="en">English</option><option value="ru">Русский</option></select></div>
+                    <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="theme">Theme</span><span class="setting-desc" data-i18n="themeDesc">Choose your preferred look</span></div><select id="theme-select" class="select-input select-small"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+                    <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="showTrophy">Show Trophy Garden</span><span class="setting-desc" data-i18n="showTrophyDesc">Display completed trees (365+ days)</span></div><label class="toggle-switch"><input type="checkbox" id="toggle-trophies"><span class="toggle-slider"></span></label></div>
+                    <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="focusMode">Focus Mode</span><span class="setting-desc" data-i18n="focusModeDesc">Minimal UI for distraction-free tracking</span></div><label class="toggle-switch"><input type="checkbox" id="toggle-focus"><span class="toggle-slider"></span></label></div>
                 </div>
-
                 <div class="settings-group">
                     <h3 class="settings-group-title" data-i18n="data">Data</h3>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span class="setting-label" data-i18n="export">Export</span>
-                            <span class="setting-desc" data-i18n="exportDesc">Download backup as JSON</span>
-                        </div>
-                        <button class="btn-small" id="settings-export" data-i18n="exportBtn">Export</button>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span class="setting-label" data-i18n="import">Import</span>
-                            <span class="setting-desc" data-i18n="importDesc">Restore from file</span>
-                        </div>
-                        <button class="btn-small" id="settings-import" data-i18n="importBtn">Import</button>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span class="setting-label" data-i18n="reset">Reset</span>
-                            <span class="setting-desc" style="color:var(--accent-red)" data-i18n="resetDesc">Delete all data</span>
-                        </div>
-                        <button class="btn-small btn-danger" id="settings-reset" data-i18n="resetBtn">Reset</button>
-                    </div>
+                    <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="export">Export</span><span class="setting-desc" data-i18n="exportDesc">Download backup as JSON</span></div><button class="btn-small" id="settings-export" data-i18n="exportBtn">Export</button></div>
+                    <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="import">Import</span><span class="setting-desc" data-i18n="importDesc">Restore from file</span></div><button class="btn-small" id="settings-import" data-i18n="importBtn">Import</button></div>
+                    <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="reset">Reset</span><span class="setting-desc" style="color:var(--accent-red)" data-i18n="resetDesc">Delete all data</span></div><button class="btn-small btn-danger" id="settings-reset" data-i18n="resetBtn">Reset</button></div>
                 </div>
-                
                 <button class="btn-primary" id="close-settings" style="margin-top: 24px;" data-i18n="done">Done</button>
             </div>
         </div>
     </div>
 
-   <div class="modal" id="avatar-modal">
+    <div class="modal" id="avatar-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width: 520px;">
-            <div class="modal-header">
-                <h2>Customize Avatar</h2>
-                <button class="modal-close" aria-label="Close">&times;</button>
-            </div>
+            <div class="modal-header"><h2>Customize Avatar</h2><button class="modal-close" aria-label="Close">&times;</button></div>
             <div class="modal-body">
                 <div style="text-align: center; margin-bottom: 24px;">
-                    <div class="avatar-preview-large" id="avatar-preview">
-                        <span class="avatar-emoji-large" id="preview-emoji">🌱</span>
-                        <img id="preview-image" style="width:100%; height:100%; object-fit:cover; border-radius:50%; display:none;" />
-                    </div>
+                    <div class="avatar-preview-large" id="avatar-preview"><span class="avatar-emoji-large" id="preview-emoji">🌱</span><img id="preview-image" style="width:100%; height:100%; object-fit:cover; border-radius:50%; display:none;" /></div>
                     <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 8px;">Preview</p>
                 </div>
-
-
                 <div style="display:flex; gap:12px; margin-bottom:24px; justify-content:center; flex-wrap:wrap;">
-    <label class="btn-upload" for="avatar-upload">
-        Upload Photo
-        <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
-    </label>
-    <button class="btn-upload btn-upload-danger" id="avatar-clear-photo" style="display:none;">Remove</button>
-</div>
-
-                <div class="avatar-section">
-                    <h4 class="avatar-section-title">Background</h4>
-                    <div class="avatar-grid" id="avatar-bg-grid"></div>
+                    <label class="btn-upload" for="avatar-upload">Upload Photo<input type="file" id="avatar-upload" accept="image/*" style="display:none;"></label>
+                    <button class="btn-upload btn-upload-danger" id="avatar-clear-photo" style="display:none;">Remove</button>
                 </div>
+                <div class="avatar-section"><h4 class="avatar-section-title">Background</h4><div class="avatar-grid" id="avatar-bg-grid"></div></div>
+                <div class="avatar-section" style="margin-top: 24px;"><h4 class="avatar-section-title">Icon</h4><div class="avatar-grid" id="avatar-emoji-grid"></div></div>
+                <div style="display: flex; gap: 12px; margin-top: 28px;"><button class="btn-secondary" id="avatar-reset">Reset</button><button class="btn-primary" id="avatar-save">Save Avatar</button></div>
+            </div>
+        </div>
+    </div>
 
-                <div class="avatar-section" style="margin-top: 24px;">
-                    <h4 class="avatar-section-title">Icon</h4>
-                    <div class="avatar-grid" id="avatar-emoji-grid"></div>
+    <div class="modal" id="auth-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet" style="max-width: 420px;">
+            <div class="modal-header"><h2 id="auth-modal-title">Sign In</h2><button class="modal-close" aria-label="Close">&times;</button></div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Sign In</button>
+                    <button class="auth-tab" data-tab="register">Sign Up</button>
                 </div>
-
-                <div style="display: flex; gap: 12px; margin-top: 28px;">
-                    <button class="btn-secondary" id="avatar-reset">Reset</button>
-                    <button class="btn-primary" id="avatar-save">Save Avatar</button>
-                </div>
+                <form id="login-form" class="auth-form active">
+                    <div class="form-group"><label for="login-email">Email</label><input type="email" id="login-email" required placeholder="you@example.com"></div>
+                    <div class="form-group"><label for="login-password">Password</label><input type="password" id="login-password" required placeholder="••••••••"></div>
+                    <button type="submit" class="btn-primary">Continue</button>
+                </form>
+                <form id="register-form" class="auth-form">
+                    <div class="form-group"><label for="reg-email">Email</label><input type="email" id="reg-email" required placeholder="you@example.com"></div>
+                    <div class="form-group"><label for="reg-password">Password</label><input type="password" id="reg-password" required placeholder="Min 6 characters" minlength="6"></div>
+                    <button type="submit" class="btn-primary">Create Account</button>
+                </form>
+                <p id="auth-error" class="auth-error" style="display:none; color: var(--accent-red); font-size: 13px; text-align: center; margin-top: 12px;"></p>
             </div>
         </div>
     </div>
@@ -306,16 +225,10 @@
     <footer class="app-footer">
         <div class="footer-content">
             <nav class="footer-links">
-                <a href="/src/index.html">Home</a>
-                <a href="/landing.html">About</a>
-                <a href="/pages/changelog.html">What's New</a>
-                <a href="/pages/login.html">Sign In</a>
-                <a href="/pages/register.html">Sign Up</a>
+                <a href="/landing.html">Home</a><a href="/landing.html">About</a><a href="/pages/changelog.html">What's New</a>
                 <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener">GitHub</a>
             </nav>
-            <div class="footer-brand">
-                <span class="footer-version">[0.1.0] Maple 2026</span>
-            </div>
+            <div class="footer-brand"><span class="footer-version">[0.1.5] Maple 2026</span></div>
         </div>
     </footer>
 
