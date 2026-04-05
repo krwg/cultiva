@@ -88,7 +88,7 @@ const AVATAR_DATA = {
     ],
     emojis: [
         // 🌿 NATURE & GROWTH
-        '🌱', '🌿', '🍀', '', '', '', '🌴', '🌵', '🌾', '', '', '🍁', '🌸', '🌺', '🌻', '', '🌷', '🌼', '🍄', '', '', '🍉', '🍋', '🍌', '', '🍏', '🥥', '🍑', '', '',
+        '🌱', '🌿', '🍀', '😊', '😋', '😶‍🌫️', '🌴', '🌵', '🌾', '', '', '🍁', '🌸', '🌺', '🌻', '', '🌷', '🌼', '🍄', '', '', '🍉', '🍋', '🍌', '', '🍏', '🥥', '🍑', '', '',
         
         //  ANIMALS
         '🦊', '🐶', '', '🐼', '🦁', '', '🐨', '🐯', '🐵', '', '🐝', '🦋', '🐢', '', '', '', '', '', '', '',
@@ -611,7 +611,7 @@ function createHabitCard(habit, isTrophy = false) {
         ${progressBar}
         <div class="card-actions">
             <button class="btn-card btn-card-primary${isCompleted ? ' completed' : ''}">
-                ${isCompleted ? '✓ Done' : (habit.trackType === 'quantity' ? 'Log' : 'Complete')}
+                ${isCompleted ? 'Done' : (habit.trackType === 'quantity' ? 'Log' : 'Complete')}
             </button>
             <button class="btn-card btn-card-danger">✕</button>
         </div>
@@ -937,9 +937,9 @@ function init() {
         renderGarden();
         initEvents();
         initAvatarPicker();
-        console.log('✅ Cultiva v2 initialized successfully');
+        console.log('Cultiva initialized successfully');
     } catch (err) {
-        console.error('🚨 Init failed:', err);
+        console.error('Init failed:', err);
     }
     
     setTimeout(() => {
@@ -949,12 +949,12 @@ function init() {
         if (onboarding && typeof onboarding.init === 'function') {
             try {
                 onboarding.init();
-                console.log('🎬 Onboarding started');
+                console.log('Onboarding started');
             } catch (err) {
-                console.warn('⚠️ Onboarding init failed:', err);
+                console.warn('Onboarding init failed:', err);
             }
         } else {
-            console.log('ℹ️ Onboarding module not ready (this is OK)');
+            console.log('Onboarding module not ready (this is OK)');
         }
     }, 800);
 }

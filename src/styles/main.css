@@ -40,12 +40,20 @@
     --font-mono: 'SF Mono', 'Monaco', 'Consolas', monospace;
     
     /* === CATEGORIES === */
-    --cat-health: #ff6b6b;
-    --cat-learning: #4ecdc4;
-    --cat-work: #45b7d1;
-    --cat-mindfulness: #96ceb4;
-    --cat-creative: #ffeaa7;
-    --cat-other: #dfe6e9;
+    --cat-health: #FF6B6B;      
+    --cat-learning: #4ECDC4;    
+    --cat-work: #45B7D1;        
+    --cat-mindfulness: #96CEB4; 
+    --cat-creative: #FFEAA7;    
+    --cat-fitness: #FF9F43;     
+    --cat-social: #A29BFE;      
+    --cat-finance: #F1C40F;     
+    --cat-hobby: #FD79A8;       
+    --cat-family: #E17055;      
+    --cat-career: #0984E3;      
+    --cat-spiritual: #6C5CE7;   
+    --cat-environment: #00CEC9; 
+    --cat-other: #B2BEC3;       
     
     /* === CALENDAR === */
     --calendar-0: #ebedf0;
@@ -304,12 +312,20 @@ a:hover { color: var(--accent-blue-hover); }
     height: 3px;
     background: var(--cat-other);
 }
+
 .habit-card[data-category="health"]::before { background: var(--cat-health); }
 .habit-card[data-category="learning"]::before { background: var(--cat-learning); }
 .habit-card[data-category="work"]::before { background: var(--cat-work); }
 .habit-card[data-category="mindfulness"]::before { background: var(--cat-mindfulness); }
 .habit-card[data-category="creative"]::before { background: var(--cat-creative); }
-.habit-card[data-category="other"]::before { background: var(--cat-other); }
+.habit-card[data-category="fitness"]::before { background: var(--cat-fitness); }
+.habit-card[data-category="social"]::before { background: var(--cat-social); }
+.habit-card[data-category="finance"]::before { background: var(--cat-finance); }
+.habit-card[data-category="hobby"]::before { background: var(--cat-hobby); }
+.habit-card[data-category="family"]::before { background: var(--cat-family); }
+.habit-card[data-category="career"]::before { background: var(--cat-career); }
+.habit-card[data-category="spiritual"]::before { background: var(--cat-spiritual); }
+.habit-card[data-category="environment"]::before { background: var(--cat-environment); }
 
 .habit-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--border-medium); }
 .habit-card:active { transform: translateY(-1px); }

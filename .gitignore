@@ -5,5 +5,5 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
-notes.txt
-bug.txt
+boards
+notes
