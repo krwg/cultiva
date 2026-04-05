@@ -15,11 +15,9 @@
     align-items: center;
     justify-content: center;
     
-    /* ← ДОБАВЬ ЭТО: */
-    pointer-events: none; /* По умолчанию не блокирует клики */
+    pointer-events: none;
 }
 
-/* Dark mode support */
 @media (prefers-color-scheme: dark) {
     #onboarding-overlay { background: rgba(28, 28, 30, 0.85); }
 }
@@ -27,7 +25,7 @@ body.theme-dark #onboarding-overlay { background: rgba(28, 28, 30, 0.85); }
 
 #onboarding-overlay.visible {
     opacity: 1;
-    pointer-events: auto; /* ← Когда видим — блокирует и принимает клики */
+    pointer-events: auto;
 }
 .onboarding-content {
     width: 100%;
@@ -44,7 +42,6 @@ body.theme-dark #onboarding-overlay { background: rgba(28, 28, 30, 0.85); }
     flex-direction: column;
 }
 
-/* Slides */
 .onboarding-slide {
     display: none;
     flex-direction: column;
@@ -106,7 +103,6 @@ body.theme-dark #onboarding-overlay { background: rgba(28, 28, 30, 0.85); }
     transform: scale(1.2);
 }
 
-/* Footer Controls */
 .onboarding-footer {
     padding: 20px 40px;
     display: flex;

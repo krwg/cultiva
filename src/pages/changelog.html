@@ -107,6 +107,17 @@
             margin: 0 auto;
         }
 
+        .feature-list a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: opacity var(--duration-fast) var(--ease-apple);
+        }
+
+        .feature-list a:hover {
+            opacity: 0.7;
+            text-decoration: underline;
+        }
+
         .version-card { 
             background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; 
             padding: 32px; margin-bottom: 32px; box-shadow: var(--shadow-sm); 
@@ -119,6 +130,10 @@
         .version-badge { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-live { background: rgba(52, 199, 89, 0.15); color: #34c759; }
         .badge-soon { background: rgba(0, 113, 227, 0.15); color: var(--accent-blue); }
+        .badge-prerelease { 
+                background: rgba(255, 149, 0, 0.15); 
+                color: var(--accent-orange); 
+        }
         .version-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
         .feature-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
         .feature-item { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--text-primary); line-height: 1.4; }
@@ -134,15 +149,16 @@
         }
     </style>
 </head>
-<div class="loading-screen" id="loading-screen">
+
+        <div class="loading-screen" id="loading-screen">
         <div class="loading-cloud">
             <div class="cloud-body"></div>
             <div class="cloud-data"></div>
         </div>
         <p class="loading-text">Syncing your garden...</p>
-    </div>
-<body class="changelog-page">
-    <header class="cl-header">
+        </div>
+        <body class="changelog-page">
+        <header class="cl-header">
         <div class="cl-container cl-nav">
             <a href="/" class="cl-back" data-i18n="backBtn">← Back to Garden</a>
             <span style="font-weight: 600; font-size: 15px; color: var(--text-primary);">Cultiva</span>
@@ -158,7 +174,7 @@
                 <button class="btn-control" id="theme-toggle" aria-label="Toggle theme">☀️</button>
             </div>
         </div>
-    </header>
+        </header>
 
     <main>
         <section class="cl-hero">
@@ -184,6 +200,30 @@
                 </ul>
             </article>
 
+
+
+            <article class="version-card upcoming-card">
+                <div class="version-header">
+                    <span class="version-tag">0.1.5 <span data-i18n="v015name">"Maple"</span></span>
+                    <span class="version-badge badge-prerelease" data-i18n="badgePre">Pre-Release</span>
+                </div>
+                <p class="version-desc" data-i18n="v015desc">Developer-focused update: documentation, GitHub Pages, and project infrastructure.</p>
+                <ul class="feature-list">
+                <li class="feature-item">
+                    <span><a href="https://github.com/krwg/cultiva/wiki" target="_blank" rel="noopener">GitHub Wiki</a> — User Guide & Architecture Docs</span>
+                </li>
+                <li class="feature-item">
+                    <span><a href="https://krwg.github.io/cultiva/" target="_blank" rel="noopener">Developer Promo Page</a> (GitHub Pages)</span>
+                </li>
+                <li class="feature-item">
+                    <span><a href="https://github.com/krwg/cultiva/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> & <a href="https://github.com/krwg/cultiva/wiki/Contributing" target="_blank" rel="noopener">Contributing Guidelines</a></span>
+                </li>
+                <li class="feature-item">
+                    <span><a href="https://github.com/krwg/cultiva/issues" target="_blank" rel="noopener">Issue Tracker</a> & <a href="https://github.com/krwg/cultiva/discussions" target="_blank" rel="noopener">Discussions</a></span>
+                </li>
+                </ul>
+            </article>
+
             <article class="version-card upcoming-card">
                 <div class="version-header">
                     <span class="version-tag">0.2.0 <span data-i18n="v02name">"Aspen"</span></span>
@@ -191,46 +231,43 @@
                 </div>
                 <p class="version-desc" data-i18n="v02desc">Taking Cultiva to the next level with secure accounts, cloud sync, and social features. Your garden, everywhere.</p>
                 <ul class="feature-list">
-                    <li class="feature-item"><span class="feature-icon">🌱</span> <span data-i18n="feat9">Secure Account System (Email/Password & OAuth)</span></li>
-                    <li class="feature-item"><span class="feature-icon">🌱</span> <span data-i18n="feat11">PWA Installation & Offline Support</span></li>
-                    <li class="feature-item"><span class="feature-icon">🌱</span> <span data-i18n="feat12">Smart Notifications & Streak Reminders</span></li>
+                    <li class="feature-item"><span data-i18n="feat9">Secure Account System (Email/Password & OAuth)</span></li>
+                    <li class="feature-item"> <span data-i18n="feat11">PWA Installation & Offline Support</span></li>
+                    <li class="feature-item"> <span data-i18n="feat12">Smart Notifications & Streak Reminders</span></li>
                 </ul>
-            </article>
-        </div>
-    </main>
+                    </article>
+                </div>
+            </main>
 
     <footer class="app-footer">
             <nav class="footer-links">
-                <a href="/src/index.html" data-i18n="footerHome">Home</a>
-                <a href="/pages/landing.html" data-i18n="footerAbout">About</a>
+                <a href="/index.html" data-i18n="footerHome">Home</a>
+                <a href="/landing.html" data-i18n="footerAbout">About</a>
                 <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
                 <div class="footer-content">
             <div class="footer-brand">
-                <span class="footer-version">[0.1.0] Maple 2026</span>
+                <span class="footer-version">[0.1.5] Maple 2026</span>
             </div>
     </footer>
 
     <script>
 
 
-       // === HIDE LOADING SCREEN ===
         document.addEventListener('DOMContentLoaded', () => {
             const loadingScreen = document.getElementById('loading-screen');
             if (loadingScreen) {
-                // Небольшая задержка для плавности
                 setTimeout(() => {
                     loadingScreen.classList.add('hidden');
                     setTimeout(() => {
                         loadingScreen.style.display = 'none';
-                    }, 600); // Время transition из CSS
+                    }, 600);
                 }, 400);
             }
         });
 
 
-        // === TRANSLATIONS ===
         const TRANSLATIONS = {
             en: {
                 backBtn: '← Back to Garden', versionBadge: 'Version 0.1.0 Maple', pageTitle: "What's New",
@@ -245,8 +282,14 @@
                 v02desc: 'Taking Cultiva to the next level. Your garden, everywhere.',
                 feat9: 'Secure Account System',
                 feat11: 'PWA Installation', feat12: 'Smart Notifications & Streak Reminders',
-                footerHome: 'Home', footerAbout: 'About'
-            },
+                footerHome: 'Home', footerAbout: 'About',
+                v015name: '"Maple"', badgePre: 'Pre-Release',
+                v015desc: 'Developer-focused update: documentation, GitHub Pages, and project infrastructure.',
+                featW1: 'GitHub Wiki: User Guide & Architecture Docs',
+                featW2: 'Developer Promo Page (GitHub Pages)',
+                featW3: 'MIT License & Contributing Guidelines',
+                featW4: 'Custom Sidebar & Footer for Wiki',
+                            },
             ru: {
                 backBtn: '← В сад', versionBadge: 'Версия 0.1.0 Maple', pageTitle: 'Что нового',
                 pageDesc: 'Развивай привычки, развивай себя. Узнай, что выросло в этом релизе и что цветет дальше.',
@@ -260,7 +303,13 @@
                 v02desc: 'Выводим Cultiva на новый уровень.',
                 feat9: 'Безопасная система аккаунтов', feat10: 'Облачная синхронизация',
                 feat11: 'PWA установка', feat12: 'Умные уведомления и напоминания',
-                footerHome: 'Главная', footerAbout: 'О проекте'
+                footerHome: 'Главная', footerAbout: 'О проекте',
+                v015name: '"Maple"', badgePre: 'Пре-релиз',
+                v015desc: 'Обновление для разработчиков: документация, GitHub Pages и инфраструктура проекта.',
+                featW1: 'GitHub Wiki: Руководство пользователя и архитектура',
+                featW2: 'Промо-страница для разработчиков (GitHub Pages)',
+                featW3: 'Лицензия MIT и гайд по контрибьюции',
+                featW4: 'Кастомный сайдбар и футер для Wiki',
             }
         };
 

@@ -1,6 +1,7 @@
 {
-  "name": "cultiva-v2",
-  "version": "0.1.0",
+  "name": "cultiva",
+  "version": "0.1.5",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {

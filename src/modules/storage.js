@@ -6,7 +6,7 @@ export const storage = {
       const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : null;
     } catch (e) {
-      console.error(`❌ Failed to parse ${key}:`, e);
+      console.error(`Failed to parse ${key}:`, e);
       return null;
     }
   },
@@ -16,7 +16,7 @@ export const storage = {
       localStorage.setItem(key, JSON.stringify(value));
       return true;
     } catch (e) {
-      console.error(`❌ Failed to save ${key}:`, e);
+      console.error(`Failed to save ${key}:`, e);
       return false;
     }
   },
