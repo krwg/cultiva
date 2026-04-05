@@ -12,8 +12,12 @@ export const habits = {
     if (active.length >= MAX_ACTIVE_HABITS) {
       throw new Error('Garden is full');
     }
+
+    const userId = storage.getCurrentUserId();
+
     const newHabit = {
       id: crypto.randomUUID?.() || Date.now().toString(),
+      userId: userId || null,
       name: data.name,
       description: data.description || '',
       category: data.category || 'other',
@@ -39,6 +43,7 @@ export const habits = {
     const habit = habits.find(h => h.id === id);
     if (!habit) return null;
     const today = new Date().toISOString().split('T')[0];
+
     if (habit.trackType === 'quantity') {
       const current = habit.dailyProgress[today] || 0;
       const newAmount = amount !== null ? amount : current;
@@ -81,16 +86,13 @@ export const habits = {
     return GROWTH_STAGES.SEED;
   },
 
-  /* ============================================
-     GET STATS (Fixed for Quantity Habits)
-     ============================================ */
   getStats(id) {
     const h = this.getAll().find(x => x.id === id);
     if (!h) return null;
-    
+
     const today = new Date().toISOString().split('T')[0];
     const progress = h.dailyProgress || {};
-    
+
     const isCompletedOnDate = (dateStr) => {
       if (h.trackType === 'binary') {
         return h.lastCompleted === dateStr;
@@ -99,33 +101,27 @@ export const habits = {
         return val >= (h.target || 1);
       }
     };
-    
+
     let currentStreak = 0;
     let checkDate = new Date(today);
-    
     while (true) {
       const dateStr = checkDate.toISOString().split('T')[0];
-      
       if (isCompletedOnDate(dateStr)) {
         currentStreak++;
         checkDate.setDate(checkDate.getDate() - 1);
-      } 
-      else if (dateStr === today && new Date().getHours() < 20) {
+      } else if (dateStr === today && new Date().getHours() < 20) {
         break;
-      } 
-      else {
+      } else {
         break;
       }
     }
-    
+
     let bestStreak = 0;
     let tempStreak = 0;
     const startDate = new Date(h.startDate || today);
     const endDate = new Date(today);
-    
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split('T')[0];
-      
       if (isCompletedOnDate(dateStr)) {
         tempStreak++;
         bestStreak = Math.max(bestStreak, tempStreak);
@@ -133,12 +129,12 @@ export const habits = {
         tempStreak = 0;
       }
     }
-    
+
     const totalDays = Math.max(1, Math.floor((new Date(today) - new Date(h.startDate || today)) / (1000 * 60 * 60 * 24)));
-    const completedDays = Object.values(progress).filter(v => v >= (h.target || 1)).length + 
+    const completedDays = Object.values(progress).filter(v => v >= (h.target || 1)).length +
                          (h.trackType === 'binary' && h.lastCompleted ? 1 : 0);
     const completionRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
-    
+
     return {
       name: h.name,
       stage: this.getStage(h.progress),
@@ -175,22 +171,5 @@ export const habits = {
       days.push({ date: ds, level });
     }
     return days;
-  },
-
-  _calcBestStreak(history) {
-    if (!history?.length) return 0;
-    const sorted = [...history].sort();
-    let best = 1;
-    let current = 1;
-    for (let i = 1; i < sorted.length; i++) {
-      const diff = (new Date(sorted[i]) - new Date(sorted[i - 1])) / (1000 * 60 * 60 * 24);
-      if (diff === 1) {
-        current++;
-        best = Math.max(best, current);
-      } else if (diff > 1) {
-        current = 1;
-      }
-    }
-    return best;
   }
 };

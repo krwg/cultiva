@@ -14,49 +14,23 @@
             -webkit-font-smoothing: antialiased;
             transition: background var(--duration-normal) var(--ease-apple);
         }
-        
         .cl-header { 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
+            position: sticky; top: 0; z-index: 100; 
             background: rgba(255, 255, 255, 0.8); 
             backdrop-filter: saturate(180%) blur(20px); 
             -webkit-backdrop-filter: saturate(180%) blur(20px); 
             border-bottom: 1px solid var(--border-light); 
             transition: background var(--duration-normal);
         }
-        
-        body.theme-dark .cl-header { 
-            background: rgba(0, 0, 0, 0.8); 
-        }
-        
-        .cl-container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 24px; 
-        }
-        
-        .cl-nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            height: 52px; 
-        }
-        
+        body.theme-dark .cl-header { background: rgba(0, 0, 0, 0.8); }
+        .cl-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .cl-nav { display: flex; align-items: center; justify-content: space-between; height: 52px; }
         .cl-back { 
-            text-decoration: none; 
-            color: var(--accent-blue); 
-            font-size: 14px; 
-            font-weight: 500; 
-            display: flex; 
-            align-items: center; 
-            gap: 4px; 
-            transition: opacity var(--duration-fast) var(--ease-apple);
+            text-decoration: none; color: var(--accent-blue); font-size: 14px; font-weight: 500; 
+            display: flex; align-items: center; gap: 4px; transition: opacity var(--duration-fast) var(--ease-apple);
         }
         .cl-back:hover { opacity: 0.7; }
-
         .header-controls { display: flex; align-items: center; gap: 12px; }
-        
         .btn-control {
             width: 36px; height: 36px; border-radius: 50%; background: transparent;
             border: none; cursor: pointer; display: flex; align-items: center;
@@ -65,7 +39,12 @@
             filter: grayscale(100%) brightness(0.65);
         }
         .btn-control:hover { background: var(--bg-tertiary); color: var(--text-primary); filter: grayscale(100%) brightness(0.85); }
-        
+        .btn-archive {
+            background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-light);
+            border-radius: 99px; padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-apple); display: flex; align-items: center; gap: 4px;
+        }
+        .btn-archive:hover { background: var(--border-light); color: var(--text-primary); }
         .lang-dropdown { position: relative; }
         .lang-dropdown-content {
             display: none; position: absolute; top: calc(100% + 8px); right: 0;
@@ -75,7 +54,6 @@
         }
         .lang-dropdown.active .lang-dropdown-content { display: block; }
         @keyframes dropdownFade { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-        
         .lang-option {
             display: block; width: 100%; padding: 10px 16px; background: none; border: none;
             text-align: left; font-size: 14px; color: var(--text-primary); cursor: pointer;
@@ -83,8 +61,6 @@
         }
         .lang-option:hover { background: var(--bg-tertiary); }
         .lang-option.active { background: var(--bg-secondary); font-weight: 600; }
-
-        /* Hero & Animated Gradient */
         .cl-hero { text-align: center; padding: 80px 20px 40px; }
         .cl-badge { 
             display: inline-flex; padding: 6px 14px; background: var(--bg-tertiary); 
@@ -99,14 +75,10 @@
         }
         @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         .cl-subtitle { font-size: 18px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.5; }
-
         .cl-timeline { padding: 40px 0 100px; }
-        
-        .cl-timeline-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
+        .cl-timeline-content { max-width: 800px; margin: 0 auto; }
+        .feature-list a { color: var(--accent-blue); text-decoration: none; transition: opacity var(--duration-fast) var(--ease-apple); }
+        .feature-list a:hover { opacity: 0.7; text-decoration: underline; }
         .version-card { 
             background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; 
             padding: 32px; margin-bottom: 32px; box-shadow: var(--shadow-sm); 
@@ -119,35 +91,90 @@
         .version-badge { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-live { background: rgba(52, 199, 89, 0.15); color: #34c759; }
         .badge-soon { background: rgba(0, 113, 227, 0.15); color: var(--accent-blue); }
+        .badge-archived { background: rgba(142, 142, 147, 0.15); color: #8e8e93; }
         .version-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
         .feature-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
         .feature-item { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--text-primary); line-height: 1.4; }
         .feature-icon { color: var(--accent-green); font-weight: 700; flex-shrink: 0; margin-top: 2px; font-size: 14px; }
         .upcoming-card { border-style: dashed; opacity: 0.85; background: var(--bg-secondary); }
+        .archive-section { display: none; margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--border-light); }
+        .archive-section.active { display: block; animation: fadeSlide 0.3s var(--ease-apple); }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        @media (max-width: 600px) { 
+        .app-footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-light);
+            padding: 32px 24px;
+            margin-top: auto;
+            transition: background var(--duration-normal) var(--ease-apple);
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            text-align: center;
+        }
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px 24px;
+        }
+        .footer-links a, .footer-link {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--duration-fast) var(--ease-apple);
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+        }
+        .footer-links a:hover, .footer-link:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+        .footer-brand { margin-top: 8px; }
+        .footer-version {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) { 
             .version-card { padding: 24px; } 
             .cl-hero { padding: 60px 20px 30px; } 
             .cl-title { font-size: 32px; }
             .header-controls { gap: 4px; }
             .btn-control { width: 28px; height: 28px; font-size: 14px; }
+            .app-footer { padding: 24px 16px; }
+            .footer-content { gap: 12px; }
+            .footer-links { gap: 10px 16px; }
+            .footer-version { font-size: 10px; }
+        }
+        @media (max-width: 480px) {
+            .footer-links { flex-direction: column; gap: 8px; }
         }
     </style>
 </head>
-<div class="loading-screen" id="loading-screen">
+<body class="changelog-page">
+    <div class="loading-screen" id="loading-screen">
         <div class="loading-cloud">
             <div class="cloud-body"></div>
             <div class="cloud-data"></div>
         </div>
         <p class="loading-text">Syncing your garden...</p>
     </div>
-<body class="changelog-page">
+
     <header class="cl-header">
         <div class="cl-container cl-nav">
             <a href="/" class="cl-back" data-i18n="backBtn">← Back to Garden</a>
             <span style="font-weight: 600; font-size: 15px; color: var(--text-primary);">Cultiva</span>
-            
             <div class="header-controls">
+                <button class="btn-archive" id="archive-toggle">Archive ▼</button>
                 <div class="lang-dropdown" id="lang-dropdown">
                     <button class="btn-control" id="lang-btn" aria-label="Select language">🌐</button>
                     <div class="lang-dropdown-content">
@@ -167,157 +194,193 @@
         </section>
 
         <div class="cl-container cl-timeline">
-            <article class="version-card">
-                <div class="version-header">
-                    <span class="version-tag">0.1.0 <span data-i18n="v01name">"Maple"</span></span>
-                    <span class="version-badge badge-live" data-i18n="badgeLive">Live</span>
-                </div>
-                <p class="version-desc" data-i18n="v01desc">The foundation is set. Plant your first seeds, watch them grow, and track your progress in a beautiful, distraction-free garden.</p>
-                <ul class="feature-list">
-                    <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat1">Gamified Growth System (5 stages from Seed to Legacy Tree)</span></li>
-                    <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2">Trophy Garden for habits reaching 365+ days</span></li>
-                    <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat3">Focus Mode for minimalist, distraction-free tracking</span></li>
-                    <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat4">Custom Avatars (12 gradients × 24 icons)</span></li>
-                    <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat5">Full EN/RU Localization & Dark/Light Themes</span></li>
-                    <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat6">GitHub-style Activity Calendar & Stats</span></li>
-                    <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat7">JSON Export/Import & Local Storage Backup</span></li>
-                </ul>
-            </article>
+            <div class="cl-timeline-content">
+                <article class="version-card">
+                    <div class="version-header">
+                        <span class="version-tag">0.2.0 <span data-i18n="v02name">"Aspen"</span></span>
+                        <span class="version-badge badge-live" data-i18n="badgeLive">Live</span>
+                    </div>
+                    <p class="version-desc" data-i18n="v02desc">The most significant update yet. Accounts, user-scoped data experience.</p>
+                    <ul class="feature-list">
+                        <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2_1">Secure Account System with salted SHA-256 password hashing</span></li>
+                        <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2_2">User profiles: name, email, avatar, date of birth</span></li>
+                        <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2_3">IndexedDB (IBD2) storage with user-scoped data isolation</span></li>
+                        <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2_4">Session recovery on page refresh (F5)</span></li>
+                        <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2_5">Avatar persistence: bound to user profile, not global settings</span></li>
+                        <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2_6">GrowthKit engine: streak tracking, gamified progress, trophy garden</span></li>
+                        <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2_12">Changelog archive toggle for legacy versions</span></li>
+                    </ul>
+                </article>
 
-            <article class="version-card upcoming-card">
-                <div class="version-header">
-                    <span class="version-tag">0.2.0 <span data-i18n="v02name">"Aspen"</span></span>
-                    <span class="version-badge badge-soon" data-i18n="badgeSoon">Coming Soon</span>
+                <div class="archive-section" id="archive-section">
+                    <h3 style="font-size: 16px; font-weight: 600; color: var(--text-secondary); margin-bottom: 20px;" data-i18n="archiveTitle">Previous Releases</h3>
+                    
+                    <article class="version-card upcoming-card">
+                        <div class="version-header">
+                            <span class="version-tag">0.1.5 <span data-i18n="v015name">"Maple"</span></span>
+                            <span class="version-badge badge-archived" data-i18n="badgeArchived">Archived</span>
+                        </div>
+                        <p class="version-desc" data-i18n="v015desc">Developer-focused update: documentation, GitHub Pages, and project infrastructure.</p>
+                        <ul class="feature-list">
+                            <li class="feature-item"><span><a href="https://github.com/krwg/cultiva/wiki" target="_blank" rel="noopener">GitHub Wiki</a> — User Guide & Architecture Docs</span></li>
+                            <li class="feature-item"><span><a href="https://krwg.github.io/cultiva/" target="_blank" rel="noopener">Developer Promo Page</a> (GitHub Pages)</span></li>
+                            <li class="feature-item"><span><a href="https://github.com/krwg/cultiva/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> & <a href="https://github.com/krwg/cultiva/wiki/Contributing" target="_blank" rel="noopener">Contributing Guidelines</a></span></li>
+                            <li class="feature-item"><span><a href="https://github.com/krwg/cultiva/issues" target="_blank" rel="noopener">Issue Tracker</a> & <a href="https://github.com/krwg/cultiva/discussions" target="_blank" rel="noopener">Discussions</a></span></li>
+                        </ul>
+                    </article>
+
+                    <article class="version-card upcoming-card">
+                        <div class="version-header">
+                            <span class="version-tag">0.1.0 <span data-i18n="v01name">"Maple"</span></span>
+                            <span class="version-badge badge-archived" data-i18n="badgeArchived">Archived</span>
+                        </div>
+                        <p class="version-desc" data-i18n="v01desc">The foundation is set. Plant your first seeds, watch them grow, and track your progress in a beautiful, distraction-free garden.</p>
+                        <ul class="feature-list">
+                            <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat1">Gamified Growth System (5 stages from Seed to Legacy Tree)</span></li>
+                            <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat2">Trophy Garden for habits reaching 365+ days</span></li>
+                            <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat3">Focus Mode for minimalist, distraction-free tracking</span></li>
+                            <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat4">Custom Avatars (12 gradients × 24 icons)</span></li>
+                            <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat5">Full EN/RU Localization & Dark/Light Themes</span></li>
+                            <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat6">GitHub-style Activity Calendar & Stats</span></li>
+                            <li class="feature-item"><span class="feature-icon">✓</span> <span data-i18n="feat7">JSON Export/Import & Local Storage Backup</span></li>
+                        </ul>
+                    </article>
                 </div>
-                <p class="version-desc" data-i18n="v02desc">Taking Cultiva to the next level with secure accounts, cloud sync, and social features. Your garden, everywhere.</p>
-                <ul class="feature-list">
-                    <li class="feature-item"><span class="feature-icon">🌱</span> <span data-i18n="feat9">Secure Account System (Email/Password & OAuth)</span></li>
-                    <li class="feature-item"><span class="feature-icon">🌱</span> <span data-i18n="feat11">PWA Installation & Offline Support</span></li>
-                    <li class="feature-item"><span class="feature-icon">🌱</span> <span data-i18n="feat12">Smart Notifications & Streak Reminders</span></li>
-                </ul>
-            </article>
+            </div>
         </div>
     </main>
 
     <footer class="app-footer">
+        <div class="footer-content">
             <nav class="footer-links">
                 <a href="/src/index.html" data-i18n="footerHome">Home</a>
-                <a href="/pages/landing.html" data-i18n="footerAbout">About</a>
+                <a href="/landing.html" data-i18n="footerAbout">About</a>
+                <a href="/pages/changelog.html" class="footer-link" data-i18n="footerChangelog">What's New</a>
                 <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener">GitHub</a>
             </nav>
-        </div>
-                <div class="footer-content">
+            
             <div class="footer-brand">
-                <span class="footer-version">[0.1.0] Maple 2026</span>
+                <span class="footer-version" id="footer-version">[0.2.0] Aspen 2026</span>
             </div>
+        </div>
     </footer>
 
     <script>
-
-
-       // === HIDE LOADING SCREEN ===
         document.addEventListener('DOMContentLoaded', () => {
             const loadingScreen = document.getElementById('loading-screen');
             if (loadingScreen) {
-                // Небольшая задержка для плавности
                 setTimeout(() => {
                     loadingScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                    }, 600); // Время transition из CSS
+                    setTimeout(() => { loadingScreen.style.display = 'none'; }, 600);
                 }, 400);
             }
-        });
 
+            const TRANSLATIONS = {
+                en: {
+                    backBtn: '← Back to Garden', archiveTitle: 'Previous Releases', pageTitle: "What's New",
+                    pageDesc: "Grow your habits, grow yourself. See what's planted in this release and what's blooming next.",
+                    v01name: 'Maple', badgeLive: 'Live', badgeArchived: 'Archived',
+                    v01desc: 'The foundation is set. Plant your first seeds, watch them grow, and track your progress in a beautiful, distraction-free garden.',
+                    feat1: 'Gamified Growth System (5 stages from Seed to Legacy Tree)', feat2: 'Trophy Garden for habits reaching 365+ days',
+                    feat3: 'Focus Mode for minimalist, distraction-free tracking', feat4: 'Custom Avatars (12 gradients × 24 icons)',
+                    feat5: 'Full EN/RU Localization & Dark/Light Themes', feat6: 'GitHub-style Activity Calendar & Stats',
+                    feat7: 'JSON Export/Import & Local Storage Backup',
+                    v02name: 'Aspen', v02desc: 'The most significant update yet. Accounts, user-scoped data experience.',
+                    feat2_1: 'Secure Account System with salted SHA-256 password hashing',
+                    feat2_2: 'User profiles: name, email, avatar, date of birth',
+                    feat2_3: 'IndexedDB (IBD2) storage with user-scoped data isolation',
+                    feat2_4: 'Session recovery on page refresh (F5)',
+                    feat2_5: 'Avatar persistence: bound to user profile, not global settings',
+                    feat2_6: 'GrowthKit engine: streak tracking, gamified progress, trophy garden',
+                    feat2_7: 'Apple-style UI: neutral guest mode, refined dropdowns, focus mode',
+                    feat2_8: 'Full EN/RU localization with dynamic language switching',
+                    feat2_9: 'Dark/Light themes with system preference detection',
+                    feat2_10: 'GitHub-style activity calendar & habit statistics',
+                    feat2_11: 'JSON export/import with local backup fallback',
+                    feat2_12: 'Changelog archive toggle for legacy versions',
+                    feat2_13: 'Branding system: CoreV2, GrowthKit, IBD2 nomenclature',
+                    v015name: '"Maple"', v015desc: 'Developer-focused update: documentation, GitHub Pages, and project infrastructure.',
+                    footerHome: 'Home', footerAbout: 'About', footerChangelog: "What's New"
+                },
+                ru: {
+                    backBtn: '← В сад', archiveTitle: 'Предыдущие версии', pageTitle: 'Что нового',
+                    pageDesc: 'Развивай привычки, развивай себя. Узнай, что выросло в этом релизе и что цветет дальше.',
+                    v01name: 'Maple', badgeLive: 'Релиз', badgeArchived: 'Архив',
+                    v01desc: 'Фундамент заложен. Посади свои первые семена, наблюдай за их ростом и отслеживай прогресс в красивом саду.',
+                    feat1: 'Система роста (5 стадий от Семени до Дерева Наследия)', feat2: 'Сад трофеев для привычек старше 365 дней',
+                    feat3: 'Режим фокуса для отслеживания без отвлечений', feat4: 'Кастомные аватары (12 градиентов × 24 иконки)',
+                    feat5: 'Полная локализация (EN/RU) и Темы (Светлая/Темная)', feat6: 'Календарь активности и статистика',
+                    feat7: 'Экспорт/Импорт JSON и локальное резервное копирование',
+                    v02name: 'Aspen', v02desc: 'Самое масштабное обновление. Аккаунты, изоляция данных.',
+                    feat2_1: 'Безопасная система аккаунтов с хешированием паролей SHA-256',
+                    feat2_2: 'Профили пользователей: имя, почта, аватар, дата рождения',
+                    feat2_3: 'Хранилище IndexedDB (IBD2) с изоляцией данных пользователей',
+                    feat2_4: 'Восстановление сессии при обновлении страницы (F5)',
+                    feat2_5: 'Сохранение аватара: привязка к профилю, а не к глобальным настройкам',
+                    feat2_6: 'Движок GrowthKit: отслеживание серий, геймификация, сад трофеев',
+                    feat2_7: 'Интерфейс в стиле Apple: нейтральный гостевой режим, улучшенные меню, режим фокуса',
+                    feat2_8: 'Полная локализация EN/RU с динамическим переключением языка',
+                    feat2_9: 'Тёмная/Светлая темы с автоопределением системных настроек',
+                    feat2_10: 'Календарь активности в стиле GitHub и статистика привычек',
+                    feat2_11: 'Экспорт/Импорт JSON с локальным резервным копированием',
+                    feat2_12: 'Переключатель архива для просмотра старых версий',
+                    feat2_13: 'Система брендинга: номенклатура CoreV2, GrowthKit, IBD2',
+                    v015name: '"Maple"', v015desc: 'Обновление для разработчиков: документация, GitHub Pages и инфраструктура проекта.',
+                    footerHome: 'Главная', footerAbout: 'О проекте', footerChangelog: 'Что нового'
+                }
+            };
 
-        // === TRANSLATIONS ===
-        const TRANSLATIONS = {
-            en: {
-                backBtn: '← Back to Garden', versionBadge: 'Version 0.1.0 Maple', pageTitle: "What's New",
-                pageDesc: "Grow your habits, grow yourself. See what's planted in this release and what's blooming next.",
-                v01name: 'Maple', badgeLive: 'Live',
-                v01desc: 'The foundation is set. Plant your first seeds, watch them grow, and track your progress in a beautiful, distraction-free garden.',
-                feat1: 'Gamified Growth System (5 stages from Seed to Legacy Tree)', feat2: 'Trophy Garden for habits reaching 365+ days',
-                feat3: 'Focus Mode for minimalist, distraction-free tracking', feat4: 'Custom Avatars (12 gradients × 24 icons)',
-                feat5: 'Full EN/RU Localization & Dark/Light Themes', feat6: 'GitHub-style Activity Calendar & Stats',
-                feat7: 'JSON Export/Import & Local Storage Backup',
-                v02name: 'Aspen', badgeSoon: 'Coming Soon',
-                v02desc: 'Taking Cultiva to the next level. Your garden, everywhere.',
-                feat9: 'Secure Account System',
-                feat11: 'PWA Installation', feat12: 'Smart Notifications & Streak Reminders',
-                footerHome: 'Home', footerAbout: 'About'
-            },
-            ru: {
-                backBtn: '← В сад', versionBadge: 'Версия 0.1.0 Maple', pageTitle: 'Что нового',
-                pageDesc: 'Развивай привычки, развивай себя. Узнай, что выросло в этом релизе и что цветет дальше.',
-                v01name: 'Maple', badgeLive: 'Релиз',
-                v01desc: 'Фундамент заложен. Посади свои первые семена, наблюдай за их ростом и отслеживай прогресс в красивом саду.',
-                feat1: 'Система роста (5 стадий от Семени до Дерева Наследия)', feat2: 'Сад трофеев для привычек старше 365 дней',
-                feat3: 'Режим фокуса для отслеживания без отвлечений', feat4: 'Кастомные аватары (12 градиентов × 24 иконки)',
-                feat5: 'Полная локализация (EN/RU) и Темы (Светлая/Темная)', feat6: 'Календарь активности и статистика',
-                feat7: 'Экспорт/Импорт JSON и локальное резервное копирование',
-                v02name: 'Aspen', badgeSoon: 'Скоро',
-                v02desc: 'Выводим Cultiva на новый уровень.',
-                feat9: 'Безопасная система аккаунтов', feat10: 'Облачная синхронизация',
-                feat11: 'PWA установка', feat12: 'Умные уведомления и напоминания',
-                footerHome: 'Главная', footerAbout: 'О проекте'
+            function applyLanguage(lang) {
+                const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.dataset.i18n;
+                    if (t[key]) el.textContent = t[key];
+                });
+                document.documentElement.lang = lang;
+                document.querySelectorAll('.lang-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.lang === lang);
+                });
             }
-        };
 
-        function applyLanguage(lang) {
-            const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.dataset.i18n;
-                if (t[key]) el.textContent = t[key];
-            });
-            document.documentElement.lang = lang;
-            document.querySelectorAll('.lang-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.lang === lang);
-            });
-        }
-
-        function applyTheme(theme) {
-            document.body.classList.remove('theme-light', 'theme-dark');
-            const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            if (isDark) {
-                document.body.classList.add('theme-dark');
-                document.getElementById('theme-toggle').textContent = '🌙';
-            } else {
-                document.body.classList.add('theme-light');
-                document.getElementById('theme-toggle').textContent = '☀️';
+            function applyTheme(theme) {
+                document.body.classList.remove('theme-light', 'theme-dark');
+                const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                document.body.classList.add(isDark ? 'theme-dark' : 'theme-light');
+                document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
+                localStorage.setItem('cultiva-theme', theme);
             }
-            localStorage.setItem('cultiva-theme', theme);
-        }
 
-        // === INIT ===
-        document.addEventListener('DOMContentLoaded', () => {
+            const archiveToggle = document.getElementById('archive-toggle');
+            const archiveSection = document.getElementById('archive-section');
+            if (archiveToggle && archiveSection) {
+                archiveToggle.addEventListener('click', () => {
+                    archiveSection.classList.toggle('active');
+                    archiveToggle.textContent = archiveSection.classList.contains('active') ? 'Archive ▲' : 'Archive ▼';
+                });
+            }
+
             const savedTheme = localStorage.getItem('cultiva-theme') || 'auto';
             const savedLang = localStorage.getItem('cultiva-lang') || 'en';
-            
             applyTheme(savedTheme);
             applyLanguage(savedLang);
 
-            const themeToggle = document.getElementById('theme-toggle');
-            themeToggle.addEventListener('click', () => {
+            document.getElementById('theme-toggle')?.addEventListener('click', () => {
                 const current = localStorage.getItem('cultiva-theme') || 'auto';
                 const next = current === 'light' ? 'dark' : current === 'dark' ? 'auto' : 'light';
                 applyTheme(next);
             });
 
             const langDropdown = document.getElementById('lang-dropdown');
-            const langBtn = document.getElementById('lang-btn');
-            langBtn.addEventListener('click', (e) => {
+            document.getElementById('lang-btn')?.addEventListener('click', (e) => {
                 e.stopPropagation();
-                langDropdown.classList.toggle('active');
+                langDropdown?.classList.toggle('active');
             });
-            document.addEventListener('click', () => langDropdown.classList.remove('active'));
-            
+            document.addEventListener('click', () => langDropdown?.classList.remove('active'));
             document.querySelectorAll('.lang-option').forEach(opt => {
                 opt.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const lang = opt.dataset.lang;
-                    localStorage.setItem('cultiva-lang', lang);
-                    applyLanguage(lang);
+                    localStorage.setItem('cultiva-lang', opt.dataset.lang);
+                    applyLanguage(opt.dataset.lang);
                 });
             });
 
@@ -330,6 +393,11 @@
                 });
             }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
             document.querySelectorAll('.version-card').forEach(card => observer.observe(card));
+
+            const versionEl = document.getElementById('footer-version');
+            if (versionEl && typeof BRANDING !== 'undefined') {
+                versionEl.textContent = `[${BRANDING.VERSION}] ${BRANDING.CODENAME} 2026`;
+            }
         });
     </script>
 </body>
