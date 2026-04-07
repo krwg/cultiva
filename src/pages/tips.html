@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cultiva — Habit Tips & Inspiration">
+    <title>Habit Tips | Cultiva</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+    <style>
+        :root {
+            --apple-black: #000000;
+            --apple-dark: #1d1d1f;
+            --apple-gray: #86868b;
+            --apple-light-gray: #f5f5f7;
+            --apple-white: #ffffff;
+            --apple-blue: #0071e3;
+            --apple-blue-hover: #0077ed;
+            --apple-radius: 18px;
+            --apple-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --apple-shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+            --apple-transition: all 0.3s cubic-bezier(0.25,0.1,0.25,1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: var(--apple-light-gray);
+            color: var(--apple-black);
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+        }
+        body.theme-dark {
+            background: var(--apple-black);
+            color: var(--apple-white);
+        }
+        body.theme-dark .landing-header { background: rgba(0,0,0,0.8); border-bottom-color: rgba(255,255,255,0.1); }
+        .landing-header {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s ease;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-brand h1 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+        .header-brand a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+        .header-link {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--apple-gray);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            letter-spacing: -0.01em;
+        }
+        .header-link:hover { color: var(--apple-black); }
+        body.theme-dark .header-link { color: #aeaeb2; }
+        body.theme-dark .header-link:hover { color: var(--apple-white); }
+        .header-controls { display: flex; align-items: center; gap: 8px; }
+        .btn-control {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--apple-gray);
+            transition: var(--apple-transition);
+            filter: grayscale(100%) brightness(0.7);
+        }
+        .btn-control:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--apple-black);
+            filter: grayscale(100%) brightness(1);
+        }
+        body.theme-dark .btn-control:hover { background: rgba(255,255,255,0.1); color: var(--apple-white); }
+        .lang-dropdown { position: relative; }
+        .lang-dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: var(--apple-white);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 14px;
+            box-shadow: var(--apple-shadow-lg);
+            min-width: 130px;
+            overflow: hidden;
+            z-index: 1000;
+            animation: dropdownFade 0.2s ease;
+        }
+        body.theme-dark .lang-dropdown-content {
+            background: var(--apple-dark);
+            border-color: rgba(255,255,255,0.1);
+        }
+        .lang-dropdown.active .lang-dropdown-content { display: block; }
+        @keyframes dropdownFade { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .lang-option {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--apple-black);
+            cursor: pointer;
+            transition: background 0.2s ease;
+            letter-spacing: -0.01em;
+        }
+        body.theme-dark .lang-option { color: var(--apple-white); }
+        .lang-option:hover { background: rgba(0,0,0,0.05); }
+        body.theme-dark .lang-option:hover { background: rgba(255,255,255,0.1); }
+        .lang-option.active { font-weight: 500; background: rgba(0,113,227,0.1); color: var(--apple-blue); }
+        .btn-header {
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: var(--apple-transition);
+            border: 1px solid transparent;
+            background: var(--apple-blue);
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: -0.01em;
+        }
+        .btn-header:hover { background: var(--apple-blue-hover); transform: scale(1.02); }
+        .tips-hero {
+            text-align: center;
+            padding: 96px 20px 48px;
+            background: var(--apple-light-gray);
+            transition: background 0.3s ease;
+        }
+        body.theme-dark .tips-hero { background: var(--apple-black); }
+        .tips-title {
+            font-size: clamp(36px, 6vw, 56px);
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            background: linear-gradient(90deg, var(--apple-blue), #5856d6, #bf5af2, var(--apple-blue));
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 8s ease infinite;
+        }
+        @keyframes gradientShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .tips-subtitle {
+            font-size: clamp(16px, 2.5vw, 19px);
+            max-width: 580px;
+            margin: 0 auto 40px;
+            color: var(--apple-gray);
+            line-height: 1.4;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+        body.theme-dark .tips-subtitle { color: #aeaeb2; }
+        .tips-carousel-section {
+            padding: 24px 20px 120px;
+            background: var(--apple-light-gray);
+            transition: background 0.3s ease;
+        }
+        body.theme-dark .tips-carousel-section { background: var(--apple-black); }
+        .carousel-container {
+            max-width: 980px;
+            margin: 0 auto;
+            position: relative;
+            overflow: visible;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.25,0.1,0.25,1);
+        }
+        .carousel-slide { min-width: 100%; padding: 0 8px; }
+        .tip-card {
+            background: var(--apple-white);
+            border-radius: var(--apple-radius);
+            padding: 44px 36px 40px;
+            text-align: center;
+            box-shadow: var(--apple-shadow);
+            min-height: 460px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: var(--apple-transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        body.theme-dark .tip-card {
+            background: var(--apple-dark);
+            border-color: rgba(255,255,255,0.08);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        }
+        .tip-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--apple-shadow-lg);
+        }
+        .tip-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--apple-blue), #5856d6);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+        .tip-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+        .tip-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--apple-black);
+            margin: 0 0 14px;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+        body.theme-dark .tip-title { color: var(--apple-white); }
+        .tip-desc {
+            font-size: 15px;
+            color: var(--apple-gray);
+            line-height: 1.5;
+            margin: 0 0 24px;
+            max-width: 440px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+        body.theme-dark .tip-desc { color: #aeaeb2; }
+        .tip-action {
+            font-size: 14px;
+            color: var(--apple-blue);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: -0.01em;
+            transition: opacity 0.2s ease;
+        }
+        .tip-action:hover { opacity: 0.8; }
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+        }
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            border: none;
+            cursor: pointer;
+            transition: var(--apple-transition);
+        }
+        body.theme-dark .carousel-dot { background: rgba(255,255,255,0.3); }
+        .carousel-dot.active {
+            background: var(--apple-blue);
+            width: 24px;
+            border-radius: 4px;
+        }
+        .app-footer {
+            background: var(--apple-black);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 36px 24px 48px;
+            margin-top: auto;
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            text-align: center;
+        }
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 14px 26px;
+        }
+        .footer-links a, .footer-link {
+            font-size: 12px;
+            color: #aeaeb2;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+        .footer-links a:hover, .footer-link:hover {
+            color: var(--apple-white);
+            background: rgba(255,255,255,0.1);
+        }
+        .footer-brand { margin-top: 4px; }
+        .footer-version {
+            font-size: 11px;
+            color: #6e6e73;
+            font-family: "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+            letter-spacing: 0.3px;
+            font-weight: 400;
+        }
+        @media (max-width: 968px) { .header-nav { display: none; } }
+        @media (max-width: 768px) {
+            .tips-hero { padding: 72px 16px 36px; }
+            .tips-title { font-size: 36px; }
+            .tip-card { padding: 36px 28px 32px; min-height: 420px; }
+            .tip-icon { font-size: 42px; }
+            .tip-title { font-size: 19px; }
+            .tip-desc { font-size: 14px; }
+            .btn-control { width: 30px; height: 30px; font-size: 14px; }
+            .app-footer { padding: 28px 16px 40px; }
+            .footer-links { gap: 12px 20px; }
+        }
+        @media (max-width: 480px) {
+            .footer-links { flex-direction: column; gap: 10px; }
+            .tip-card { padding: 32px 24px; }
+            .header-content { padding: 10px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="landing-header">
+        <div class="header-content">
+            <div class="header-brand">
+                <h1><a href="/">Cultiva</a></h1>
+            </div>
+            <nav class="header-nav">
+
+            </nav>
+            <div class="header-controls">
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <button class="btn-control" id="lang-btn" aria-label="Select language">🌐</button>
+                    <div class="lang-dropdown-content">
+                        <button class="lang-option active" data-lang="en">English</button>
+                        <button class="lang-option" data-lang="ru">Русский</button>
+                    </div>
+                </div>
+                <button class="btn-control" id="theme-toggle" aria-label="Toggle theme">☀️</button>
+                <a href="/" class="btn-header" data-i18n="openApp">Open App</a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section class="tips-hero">
+            <h1 class="tips-title" data-i18n="pageTitle">Habit Tips</h1>
+            <p class="tips-subtitle" data-i18n="pageDesc">10 science-backed strategies from coaches and psychologists to build lasting positive habits.</p>
+        </section>
+        <section class="tips-carousel-section">
+            <div class="carousel-container">
+                <div class="carousel-track" id="carousel-track">
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">01</span>
+                            <div class="tip-icon">🌅</div>
+                            <h3 class="tip-title" data-i18n="t1Title">Start in the Morning</h3>
+                            <p class="tip-desc" data-i18n="t1Desc">Morning routines set your day's rhythm. Research shows habits formed in the AM stick 50 days faster. Try: water, meditation, or making your bed.</p>
+                            <span class="tip-action" data-i18n="t1Action">→ Add one morning habit</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">02</span>
+                            <div class="tip-icon">🔮</div>
+                            <h3 class="tip-title" data-i18n="t2Title">Visualize Future You</h3>
+                            <p class="tip-desc" data-i18n="t2Desc">Psychologists confirm: imagining your future self strengthens willpower today. Ask: "Will Future Me thank me for this choice?"</p>
+                            <span class="tip-action" data-i18n="t2Action">→ Picture your goal daily</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">03</span>
+                            <div class="tip-icon">🪶</div>
+                            <h3 class="tip-title" data-i18n="t3Title">Take Tiny Steps</h3>
+                            <p class="tip-desc" data-i18n="t3Desc">Stanford's BJ Fogg: big results come from tiny, regular actions. One push-up daily beats 50 once. Your brain will crave more.</p>
+                            <span class="tip-action" data-i18n="t3Action">→ Shrink your habit to 2 minutes</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">04</span>
+                            <div class="tip-icon">🎯</div>
+                            <h3 class="tip-title" data-i18n="t4Title">Focus on Identity</h3>
+                            <p class="tip-desc" data-i18n="t4Desc">James Clear: "You don't rise to your goals, you fall to your systems." Think "I am a runner" not "I want to run 5K".</p>
+                            <span class="tip-action" data-i18n="t4Action">→ Choose identity-based action</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">05</span>
+                            <div class="tip-icon">⏳</div>
+                            <h3 class="tip-title" data-i18n="t5Title">Give Yourself Time</h3>
+                            <p class="tip-desc" data-i18n="t5Desc">Studies show habit formation takes 18-254 days (avg: 66). Your timeline is unique. Focus on joy in the process, not stressful deadlines.</p>
+                            <span class="tip-action" data-i18n="t5Action">→ Celebrate showing up</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">06</span>
+                            <div class="tip-icon">🛋️</div>
+                            <h3 class="tip-title" data-i18n="t6Title">Make It Convenient</h3>
+                            <p class="tip-desc" data-i18n="t6Desc">Remove friction: place water on your desk, prep workout clothes the night before. Psychologist Wendy Wood slept in running gear to make jogging effortless.</p>
+                            <span class="tip-action" data-i18n="t6Action">→ Eliminate one obstacle</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">07</span>
+                            <div class="tip-icon">📝</div>
+                            <h3 class="tip-title" data-i18n="t7Title">Remember Your Why</h3>
+                            <p class="tip-desc" data-i18n="t7Desc">Therapist Amy Morin: stress triggers old habits. Keep a visible list of your top 10 reasons for this habit. Review it when motivation dips.</p>
+                            <span class="tip-action" data-i18n="t7Action">→ Write your "Why" list</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">08</span>
+                            <div class="tip-icon">🔗</div>
+                            <h3 class="tip-title" data-i18n="t8Title">Anchor to a Trigger</h3>
+                            <p class="tip-desc" data-i18n="t8Desc">Link new habits to existing routines: "After I brush my teeth, I will meditate". Triggers automate behavior without willpower.</p>
+                            <span class="tip-action" data-i18n="t8Action">→ Pick your trigger today</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">09</span>
+                            <div class="tip-icon">🤝</div>
+                            <h3 class="tip-title" data-i18n="t9Title">Get Support</h3>
+                            <p class="tip-desc" data-i18n="t9Desc">Your environment shapes habits. Join a "success team" like coach Barbara Sher suggests. Share progress, celebrate wins together.</p>
+                            <span class="tip-action" data-i18n="t9Action">→ Invite a habit buddy</span>
+                        </article>
+                    </div>
+                    <div class="carousel-slide">
+                        <article class="tip-card">
+                            <span class="tip-number">10</span>
+                            <div class="tip-icon">🎁</div>
+                            <h3 class="tip-title" data-i18n="t10Title">Reward Yourself</h3>
+                            <p class="tip-desc" data-i18n="t10Desc">Stephen Covey: rewards reinforce new behavior. After completing your habit, pause and acknowledge: "I did it!" Your brain loves positive feedback.</p>
+                            <span class="tip-action" data-i18n="t10Action">→ Plan a small celebration</span>
+                        </article>
+                    </div>
+                </div>
+                <div class="carousel-nav" id="carousel-dots"></div>
+            </div>
+        </section>
+    </main>
+    <footer class="app-footer">
+        <div class="footer-content">
+            <nav class="footer-links">
+                <a href="/src/index.html" data-i18n="footerHome">Home</a>
+                <a href="/landing.html" data-i18n="footerAbout">About</a>
+                <a href="/pages/changelog.html" data-i18n="footerChangelog">What's New</a>
+                <a href="/pages/tips.html" class="footer-link" data-i18n="footerTips">Tips</a>
+                <a href="https://github.com/krwg/cultiva" target="_blank" rel="noopener">GitHub</a>
+            </nav>
+            <div class="footer-brand">
+                <span class="footer-version">[0.2.0] Aspen 2026</span>
+            </div>
+        </div>
+    </footer>
+    <script>
+        const TRANSLATIONS = {
+            en: {
+                navTips: 'Tips', navChangelog: 'Changelog', openApp: 'Open App',
+                pageTitle: 'Habit Tips', pageDesc: '10 science-backed strategies from coaches and psychologists to build lasting positive habits.',
+                t1Title: 'Start in the Morning', t1Desc: 'Morning routines set your day\'s rhythm. Research shows habits formed in the AM stick 50 days faster. Try: water, meditation, or making your bed.', t1Action: '→ Add one morning habit',
+                t2Title: 'Visualize Future You', t2Desc: 'Psychologists confirm: imagining your future self strengthens willpower today. Ask: "Will Future Me thank me for this choice?"', t2Action: '→ Picture your goal daily',
+                t3Title: 'Take Tiny Steps', t3Desc: 'Stanford\'s BJ Fogg: big results come from tiny, regular actions. One push-up daily beats 50 once. Your brain will crave more.', t3Action: '→ Shrink your habit to 2 minutes',
+                t4Title: 'Focus on Identity', t4Desc: 'James Clear: "You don\'t rise to your goals, you fall to your systems." Think "I am a runner" not "I want to run 5K".', t4Action: '→ Choose identity-based action',
+                t5Title: 'Give Yourself Time', t5Desc: 'Studies show habit formation takes 18-254 days (avg: 66). Your timeline is unique. Focus on joy in the process, not stressful deadlines.', t5Action: '→ Celebrate showing up',
+                t6Title: 'Make It Convenient', t6Desc: 'Remove friction: place water on your desk, prep workout clothes the night before. Psychologist Wendy Wood slept in running gear to make jogging effortless.', t6Action: '→ Eliminate one obstacle',
+                t7Title: 'Remember Your Why', t7Desc: 'Therapist Amy Morin: stress triggers old habits. Keep a visible list of your top 10 reasons for this habit. Review it when motivation dips.', t7Action: '→ Write your "Why" list',
+                t8Title: 'Anchor to a Trigger', t8Desc: 'Link new habits to existing routines: "After I brush my teeth, I will meditate". Triggers automate behavior without willpower.', t8Action: '→ Pick your trigger today',
+                t9Title: 'Get Support', t9Desc: 'Your environment shapes habits. Join a "success team" like coach Barbara Sher suggests. Share progress, celebrate wins together.', t9Action: '→ Invite a habit buddy',
+                t10Title: 'Reward Yourself', t10Desc: 'Stephen Covey: rewards reinforce new behavior. After completing your habit, pause and acknowledge: "I did it!" Your brain loves positive feedback.', t10Action: '→ Plan a small celebration',
+                footerHome: 'Home', footerAbout: 'About', footerChangelog: "What's New", footerShortcuts: 'Shortcuts', footerTips: 'Tips'
+            },
+            ru: {
+                navTips: 'Советы', navChangelog: 'Обновления', openApp: 'Открыть',
+                pageTitle: 'Советы по привычкам', pageDesc: '10 научно обоснованных стратегий от коучей и психологов для формирования устойчивых привычек.',
+                t1Title: 'Начинайте утром', t1Desc: 'Утренние ритуалы задают ритм дня. Исследования: привычки, сформированные утром, закрепляются на 50 дней быстрее. Попробуйте: вода, медитация, заправленная кровать.', t1Action: '→ Добавьте утреннюю привычку',
+                t2Title: 'Представьте будущее «Я»', t2Desc: 'Психологи подтверждают: визуализация будущего «Я» укрепляет силу воли сегодня. Спросите: «Поблагодарит ли меня будущее «Я» за этот выбор?»', t2Action: '→ Визуализируйте цель ежедневно',
+                t3Title: 'Делайте крошечные шаги', t3Desc: 'Би Джей Фогг (Стэнфорд): большие результаты — от маленьких, но регулярных действий. Одно отжимание в день лучше 50 раз в месяц. Мозг захочет больше.', t3Action: '→ Сократите привычку до 2 минут',
+                t4Title: 'Фокус на идентичности', t4Desc: 'Джеймс Клир: «Вы не поднимаетесь до целей, вы опускаетесь до систем». Думайте «Я бегун», а не «Хочу пробежать 5К».', t4Action: '→ Выберите действие на основе идентичности',
+                t5Title: 'Дайте себе время', t5Desc: 'Исследования: формирование привычки занимает 18-254 дня (в среднем 66). Ваш срок уникален. Фокусируйтесь на радости процесса, а не на дедлайнах.', t5Action: '→ Празднуйте участие',
+                t6Title: 'Сделайте это удобным', t6Desc: 'Уберите трение: поставьте воду на стол, приготовьте форму с вечера. Психолог Венди Вуд спала в спортивной форме, чтобы бег стал лёгким.', t6Action: '→ Устраните одно препятствие',
+                t7Title: 'Помните своё «Зачем»', t7Desc: 'Терапевт Эми Морин: стресс возвращает к старым привычкам. Держите на виду список из 10 причин для этой привычки. Перечитывайте, когда мотивация падает.', t7Action: '→ Напишите список «Зачем»',
+                t8Title: 'Привяжите к триггеру', t8Desc: 'Свяжите новую привычку с существующей: «После чистки зубов я помедитирую». Триггеры автоматизируют поведение без силы воли.', t8Action: '→ Выберите свой триггер',
+                t9Title: 'Заручитесь поддержкой', t9Desc: 'Окружение формирует привычки. Создайте «команду успеха», как советует коуч Барбара Шер. Делитесь прогрессом, празднуйте победы вместе.', t9Action: '→ Пригласите напарника',
+                t10Title: 'Награждайте себя', t10Desc: 'Стивен Кови: награды закрепляют новое поведение. После выполнения привычки сделайте паузу и признайте: «Я сделал это!» Мозг любит позитивную обратную связь.', t10Action: '→ Запланируйте маленькое празднование',
+                footerHome: 'Главная', footerAbout: 'О проекте', footerChangelog: 'Что нового', footerShortcuts: 'Клавиши', footerTips: 'Советы'
+            }
+        };
+        const themeToggle = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('cultiva-theme') || 'auto';
+        let currentTheme = savedTheme;
+        function applyTheme(theme) {
+            document.body.classList.remove('theme-light', 'theme-dark');
+            if (theme === 'light') { document.body.classList.add('theme-light'); themeToggle.textContent = '☀️'; }
+            else if (theme === 'dark') { document.body.classList.add('theme-dark'); themeToggle.textContent = '🌙'; }
+            else { const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; themeToggle.textContent = prefersDark ? '🌙' : '☀️'; }
+            localStorage.setItem('cultiva-theme', theme);
+        }
+        themeToggle.addEventListener('click', () => { currentTheme = currentTheme === 'light' ? 'dark' : currentTheme === 'dark' ? 'auto' : 'light'; applyTheme(currentTheme); });
+        applyTheme(currentTheme);
+        const langDropdown = document.getElementById('lang-dropdown');
+        const langBtn = document.getElementById('lang-btn');
+        const langOptions = document.querySelectorAll('.lang-option');
+        let currentLang = localStorage.getItem('cultiva-lang') || 'en';
+        function applyLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('cultiva-lang', lang);
+            const t = TRANSLATIONS[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.dataset.i18n; if (t[key]) el.textContent = t[key]; });
+            langOptions.forEach(opt => { opt.classList.toggle('active', opt.dataset.lang === lang); });
+        }
+        langBtn.addEventListener('click', (e) => { e.stopPropagation(); langDropdown.classList.toggle('active'); });
+        document.addEventListener('click', () => { langDropdown.classList.remove('active'); });
+        langOptions.forEach(opt => { opt.addEventListener('click', (e) => { e.stopPropagation(); applyLanguage(opt.dataset.lang); }); });
+        applyLanguage(currentLang);
+        const track = document.getElementById('carousel-track');
+        const dotsContainer = document.getElementById('carousel-dots');
+        const slides = document.querySelectorAll('.carousel-slide');
+        let currentSlide = 0;
+        slides.forEach((_, i) => { const dot = document.createElement('button'); dot.className = 'carousel-dot' + (i === 0 ? ' active' : ''); dot.setAttribute('aria-label', 'Slide ' + (i+1)); dot.dataset.slide = i; dotsContainer.appendChild(dot); });
+        const dots = document.querySelectorAll('.carousel-dot');
+        function goToSlide(index) { track.style.transform = `translateX(-${index * 100}%)`; dots.forEach((dot, i) => { dot.classList.toggle('active', i === index); }); currentSlide = index; }
+        dots.forEach(dot => { dot.addEventListener('click', () => { goToSlide(parseInt(dot.dataset.slide)); }); });
+        let autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; goToSlide(currentSlide); }, 6000);
+        track.addEventListener('touchstart', () => { clearInterval(autoSlide); });
+        track.addEventListener('touchend', () => { autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; goToSlide(currentSlide); }, 6000); });
+    </script>
+</body>
+</html>

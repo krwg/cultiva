@@ -640,6 +640,13 @@ function initEvents() {
         }
     });
     
+    document.addEventListener('keydown', (e) => {
+    if (e.key === '?' && !document.activeElement.matches('input, textarea')) {
+        e.preventDefault();
+        window.location.href = '/src/pages/keyboard.html';
+    }
+});
+
     document.querySelectorAll('input[name="track-type"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
             if (targetContainer) targetContainer.classList.toggle('visible', e.target.value === 'quantity');
