@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cultiva - Grow your habits, grow yourself">
+    <title>Home | Cultiva</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon.ico">
+</head>
+<body>
+    <!-- LOADING SCREEN -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-cloud">
+            <div class="cloud-body"></div>
+            <div class="cloud-data"></div>
+        </div>
+        <p class="loading-text">Syncing your garden...</p>
+    </div>
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-brand">
+                <h1><a href="./index.html">Cultiva</a></h1>
+            </div>
+            <div class="header-actions">
+                <a href="./pages/calendar/index.html" class="header-link" data-i18n="calendar" title="Calendar">Calendar</a>
+                <button class="add-btn" id="open-add-modal" aria-label="Add new habit">+</button>
+                
+                <div class="user-menu" id="user-menu">
+                    <button class="user-btn" id="user-menu-btn" aria-label="User menu" aria-expanded="false">
+                        <span class="user-name-text" id="user-name-display">Guest</span>
+                        <div class="user-avatar" id="header-avatar">
+                            <span class="avatar-emoji" id="header-avatar-emoji">🌱</span>
+                        </div>
+                    </button>
+                    
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="dropdown-section user-info-section">
+                            <div class="user-avatar-large" id="dropdown-avatar-large">
+                                <span class="avatar-emoji" id="dropdown-avatar-emoji">🌱</span>
+                                <img id="dropdown-avatar-img" style="display:none;">
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name" id="dropdown-user-name">Guest User</div>
+                                <div class="user-status" id="user-status-text">Local Storage</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <div class="dropdown-section" id="auth-section">
+                            <button class="dropdown-item primary" id="auth-trigger">
+                                <span>Sign In</span>
+                            </button>
+                            <button class="dropdown-item danger" id="sign-out-btn" style="display:none;">
+                                <span>Sign Out</span>
+                            </button>
+                        </div>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <div class="dropdown-section">
+                            <button class="dropdown-item" id="open-avatar-picker">
+                                <span data-i18n="changeAvatar">Change Avatar</span>
+                            </button>
+                            <button class="dropdown-item" id="open-settings">
+                                <span data-i18n="settings">Settings</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+        <section class="garden-section">
+            <div class="section-header">
+                <h2 data-i18n="activeGarden">Active Garden</h2>
+                <span class="habit-count" id="habit-count">0/9</span>
+            </div>
+            <div class="garden-grid" id="garden-container"></div>
+        </section>
+        
+        <section class="trophy-section hidden" id="trophy-section">
+            <div class="section-header">
+                <h2 data-i18n="trophyGarden">Trophy Garden</h2>
+                <span class="trophy-count" id="trophy-count">0</span>
+            </div>
+            <p class="section-desc" data-i18n="trophyDesc">Trees that reached 365+ days</p>
+            <div class="garden-grid" id="trophy-container"></div>
+        </section>
+    </main>
+
+    <!-- MODAL: ADD HABIT -->
+    <div class="modal" id="add-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet">
+            <div class="modal-header">
+                <h2 data-i18n="addHabit">Plant New Habit</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="habit-form">
+                    <div class="form-group">
+                        <label for="habit-name" data-i18n="habitName">Name</label>
+                        <input type="text" id="habit-name" placeholder="e.g., Read 20 pages" required maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="habit-desc" data-i18n="description">Description (optional)</label>
+                        <textarea id="habit-desc" placeholder="e.g., Read before bed" maxlength="150" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="habit-category" data-i18n="category">Category</label>
+                        <select id="habit-category" class="select-input">
+                            <option value="">None</option>
+                            <option value="health">Health</option>
+                            <option value="learning">Learning</option>
+                            <option value="work">Work</option>
+                            <option value="mindfulness">Mindfulness</option>
+                            <option value="creative">Creative</option>
+                            <option value="fitness">Fitness</option>
+                            <option value="social">Social</option>
+                            <option value="finance">Finance</option>
+                            <option value="hobby">Hobby</option>
+                            <option value="family">Family</option>
+                            <option value="career">Career</option>
+                            <option value="spiritual">Spiritual</option>
+                            <option value="environment">Environment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="tracking">Tracking</label>
+                        <div class="radio-group">
+                            <label class="radio-card">
+                                <input type="radio" name="track-type" value="binary" checked>
+                                <div class="radio-content">
+                                    <span class="radio-icon">✓</span>
+                                    <span class="radio-text" data-i18n="yesNo">Yes / No</span>
+                                </div>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="track-type" value="quantity">
+                                <div class="radio-content">
+                                    <span class="radio-icon">▤</span>
+                                    <span class="radio-text" data-i18n="quantity">Quantity</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="target-container" class="target-container">
+                        <div class="form-group">
+                            <label for="habit-target" data-i18n="goal">Goal</label>
+                            <input type="number" id="habit-target" value="20" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="habit-unit" data-i18n="unit">Unit</label>
+                            <input type="text" id="habit-unit" placeholder="pages" value="pages">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="margin-top:12px" data-i18n="plantSeed">Plant Seed</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: STATS -->
+    <div class="modal" id="stats-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet modal-sheet-large">
+            <div class="modal-header">
+                <h2 id="stats-title">Stats</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-grid" id="stats-content"></div>
+                <div class="calendar-section">
+                    <h3 data-i18n="activity">Activity</h3>
+                    <div class="calendar-legend">
+                        <span data-i18n="less">Less</span>
+                        <div class="legend-squares">
+                            <div class="legend-square" data-level="0"></div>
+                            <div class="legend-square" data-level="1"></div>
+                            <div class="legend-square" data-level="2"></div>
+                            <div class="legend-square" data-level="3"></div>
+                            <div class="legend-square" data-level="4"></div>
+                        </div>
+                        <span data-i18n="more">More</span>
+                    </div>
+                    <div class="contribution-calendar" id="contribution-calendar"></div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="close-stats" data-i18n="done">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SETTINGS -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet settings-sheet-ipados">
+            <div class="modal-header settings-header-ipados">
+                <h2 data-i18n="settings">Settings</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body settings-body-ipados">
+                
+                <!-- SIDEBAR -->
+                <div class="settings-sidebar" id="settings-sidebar">
+                    <div class="settings-sidebar-item active" data-section="profile">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="profile">Profile</span>
+                    </div>
+                    <div class="settings-sidebar-item" data-section="appearance">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="appearance">Appearance</span>
+                    </div>
+                    <div class="settings-sidebar-item" data-section="garden">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="gardenSettings">Garden</span>
+                    </div>
+                    <div class="settings-sidebar-item" data-section="calendar">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="calendarTime">Calendar</span>
+                    </div>
+                    <div class="settings-sidebar-item" data-section="discord">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="discord">Discord</span>
+                    </div>
+                    <div class="settings-sidebar-item" data-section="data">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="dataStorage">Data</span>
+                    </div>
+                    <div class="settings-sidebar-item settings-sidebar-disabled" data-section="notifications">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="notifications">Notifications</span>
+                    </div>
+                    <div class="settings-sidebar-item" data-section="updates">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="updates">Updates</span>
+                    </div>
+
+                    <div class="settings-sidebar-item" data-section="plugins">
+                        <div class="sidebar-icon-wrapper">
+                        <span class="sidebar-icon"></span>
+                        </div>
+                        <span class="sidebar-label" data-i18n="plugins">Plugins</span>
+                    </div>
+
+                    <div class="settings-sidebar-item" data-section="about">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="aboutHelp">About</span>
+                    </div>
+                </div>
+                
+                <!-- CONTENT -->
+                <div class="settings-content" id="settings-content">
+                    
+                    <!-- EMPTY STATE -->
+                    <div class="settings-empty-state" id="settings-empty">
+                        <div class="empty-state-icon">⚙️</div>
+                        <div class="empty-state-title" data-i18n="selectSetting">Select a setting</div>
+                        <div class="empty-state-desc" data-i18n="selectSettingDesc">Choose a category from the sidebar</div>
+                    </div>
+
+                    <!-- PROFILE SECTION -->
+                    <div class="settings-section-content" id="section-profile">
+                        <div class="profile-header">
+                            <div class="profile-avatar-large" id="settings-profile-avatar">
+                                <span class="profile-avatar-emoji" id="settings-avatar-emoji">🌱</span>
+                                <img id="settings-avatar-img" style="display:none;">
+                            </div>
+                            <div class="profile-info">
+                                <div class="profile-name" id="settings-profile-name">Guest User</div>
+                                <div class="profile-email" id="settings-profile-email">Local Storage</div>
+                            </div>
+                        </div>
+                        <div class="settings-divider"></div>
+                        <div class="setting-item" id="settings-open-avatar-picker">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="changeAvatar">Change Avatar</span>
+                                <span class="setting-desc" data-i18n="avatarDesc">Customize your profile picture</span>
+                            </div>
+                            <span class="section-chevron">›</span>
+                        </div>
+                        <div class="setting-item" id="settings-edit-profile" style="display:none;">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="editProfile">Edit Profile</span>
+                                <span class="setting-desc" data-i18n="editProfileDesc">Change your name, email, or password</span>
+                            </div>
+                            <span class="section-chevron">›</span>
+                        </div>
+                        <div class="setting-item setting-item-static">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="accountStatus">Account Status</span>
+                                <span class="setting-desc" id="profile-account-status">Local Storage Mode</span>
+                            </div>
+                            <span class="status-badge" id="profile-status-badge">Guest</span>
+                        </div>
+                        <div class="setting-item setting-item-static" id="profile-member-since" style="display:none;">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="memberSince">Member Since</span>
+                                <span class="setting-desc" id="profile-member-date">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APPEARANCE SECTION -->
+                    <div class="settings-section-content" id="section-appearance">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="language">Language</span>
+                                <span class="setting-desc" data-i18n="languageDesc">Interface language</span>
+                            </div>
+                            <select id="lang-select" class="select-input select-small">
+                                <option value="en">English</option>
+                                <option value="ru">Русский</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="theme">Theme</span>
+                                <span class="setting-desc" data-i18n="themeDesc">Choose your preferred look</span>
+                            </div>
+                           <select id="theme-select" class="select-input select-small">
+                                <option value="auto">Auto</option>
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="evergreen" data-i18n="themeEvergreen">Evergreen</option>
+                                <option value="blossom" data-i18n="themeBlossom">Blossom</option>
+                                <option value="ocean" data-i18n="themeOcean">Ocean</option>
+                                <option value="sunset" data-i18n="themeSunset">Sunset</option>
+                                <option value="pink" data-i18n="themePink">Pink</option>
+                                <option value="moon" data-i18n="themeMoon">Moon</option>
+                                <option value="frost" data-i18n="themeFrost">Frost</option>
+                                <option value="cedar" data-i18n="themeCedar">Cedar</option>
+                                <option value="dusk" data-i18n="themeDusk">Dusk</option>
+                                <option value="meadow" data-i18n="themeMeadow">Meadow</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="background">Background</span>
+                                <span class="setting-desc" data-i18n="backgroundDesc">Add atmosphere to your garden</span>
+                            </div>
+                            <select id="bg-select" class="select-input select-small">
+                                <option value="none" data-i18n="backgroundNone">None</option>
+                                <option value="aurora" data-i18n="backgroundAurora">Aurora Garden</option>
+                                <option value="rainfall" data-i18n="backgroundRainfall">Rainfall</option>
+                                <option value="starlight" data-i18n="backgroundStarlight">Starlight</option>
+                                <option value="snowfall" data-i18n="backgroundSnowfall">Snowfall</option>
+                                <option value="fireflies" data-i18n="backgroundFireflies">Fireflies</option>
+                            </select>
+                           
+                        </div>
+                    </div>
+
+                    <!-- GARDEN SECTION -->
+                    <div class="settings-section-content" id="section-garden">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="showTrophy">Show Trophy Garden</span>
+                                <span class="setting-desc" data-i18n="showTrophyDesc">Display completed trees (365+ days)</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-trophies">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="focusMode">Focus Mode</span>
+                                <span class="setting-desc" data-i18n="focusModeDesc">Minimal UI for distraction-free tracking</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-focus">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- CALENDAR SECTION -->
+                    <div class="settings-section-content" id="section-calendar">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="timezone">Timezone</span>
+                                <span class="setting-desc" data-i18n="timezoneDesc">Fix calendar & habit timestamps</span>
+                            </div>
+                            <select id="tz-select" class="select-input select-small">
+                                <option value="auto">Auto (System)</option>
+                                <option value="UTC">UTC / GMT</option>
+                                <option value="Europe/Moscow">Moscow (UTC+3)</option>
+                                <option value="Europe/London">London (UTC+0)</option>
+                                <option value="Europe/Berlin">Berlin (UTC+1/2)</option>
+                                <option value="America/New_York">New York (UTC-5/4)</option>
+                                <option value="America/Los_Angeles">Los Angeles (UTC-8/7)</option>
+                                <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                                <option value="Asia/Shanghai">Beijing (UTC+8)</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="holidayRegion">Holiday Region</span>
+                                <span class="setting-desc" data-i18n="holidayRegionDesc">Show public holidays for your country</span>
+                            </div>
+                            <select id="holiday-select" class="select-input select-small">
+                                <option value="us">🇺🇸 United States</option>
+                                <option value="ru">🇷🇺 Russia</option>
+                                <option value="de">🇩🇪 Germany</option>
+                                <option value="gb">🇬🇧 United Kingdom</option>
+                                <option value="fr">🇫🇷 France</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="timeFormat">Time Format</span>
+                                <span class="setting-desc" data-i18n="timeFormatDesc">12h or 24h clock</span>
+                            </div>
+                            <select id="time-format-select" class="select-input select-small">
+                                <option value="auto">Auto (System)</option>
+                                <option value="12h">12h (AM/PM)</option>
+                                <option value="24h">24h</option>
+                            </select>
+                        </div>
+                        <div class="settings-footer-inline">
+                            <span class="cultiva-date-label">Cultiva sees</span>
+                            <span id="cultiva-date-preview" class="cultiva-date-value">Loading...</span>
+                        </div>
+                    </div>
+
+                    <!-- DISCORD SECTION -->
+                    <div class="settings-section-content" id="section-discord">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="discordRichPresence">Discord Rich Presence</span>
+                                <span class="setting-desc" data-i18n="discordRichPresenceDesc">Show your garden activity on Discord</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-discord" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item setting-item-static">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="discordStatus">Status</span>
+                                <span class="setting-desc" id="discord-status-text" data-i18n="discordChecking">Checking...</span>
+                            </div>
+                            <span class="status-badge" id="discord-status-badge">●</span>
+                        </div>
+                        <div class="settings-divider"></div>
+                        <div class="setting-item setting-item-static">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="discordPreview">Preview</span>
+                                <span class="setting-desc" data-i18n="discordPreviewDesc">What others see on Discord</span>
+                            </div>
+                        </div>
+                        <div class="discord-preview">
+                            <div class="discord-preview-inner">
+                                <img src="./images/favicon.ico" class="discord-preview-icon" alt="Cultiva">
+                                <div class="discord-preview-fallback">🌱</div>
+                                <div class="discord-preview-content">
+                                    <div class="discord-preview-title">Cultiva</div>
+                                    <div class="discord-preview-details" id="discord-preview-details">In the garden</div>
+                                    <div class="discord-preview-state" id="discord-preview-state">Growing habits</div>
+                                    <div class="discord-preview-time" id="discord-preview-time">00:00 elapsed</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="discord-hint" data-i18n="discordMustBeRunning">Discord must be running on your computer</p>
+                    </div>
+
+                    <!-- DATA SECTION -->
+                    <div class="settings-section-content" id="section-data">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="export">Export</span>
+                                <span class="setting-desc" data-i18n="exportDesc">Download backup as JSON</span>
+                            </div>
+                            <button class="btn-small" id="settings-export" data-i18n="exportBtn">Export</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="import">Import</span>
+                                <span class="setting-desc" data-i18n="importDesc">Restore from file</span>
+                            </div>
+                            <button class="btn-small" id="settings-import" data-i18n="importBtn">Import</button>
+                        </div>
+                        <div class="setting-item setting-item-danger">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="reset">Reset</span>
+                                <span class="setting-desc" data-i18n="resetDesc">Delete all data</span>
+                            </div>
+                            <button class="btn-small btn-danger" id="settings-reset" data-i18n="resetBtn">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- UPDATES SECTION (MODERN) -->
+                    <div class="settings-section-content" id="section-updates">
+                        <div class="updates-container">
+                            <!-- Current Version Card -->
+                            <div class="version-card">
+                                <img src="./images/favicon.ico" class="version-icon-img" alt="Cultiva" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span class="version-icon-fallback">🌱</span>
+                                <div class="version-info">
+                                    <div class="version-label" data-i18n="currentVersion">Current Version</div>
+                                    <div class="version-number" id="current-version-display">0.3.2</div>
+                                    <div class="version-codename" id="current-codename-display">Sequoia</div>
+                                </div>
+                            </div>
+
+                            <div class="settings-divider"></div>
+
+                            <!-- Update Status -->
+                            <div class="update-status-card" id="update-status-card">
+                                <div class="status-icon" id="update-status-icon">✓</div>
+                                <div class="status-info">
+                                    <div class="status-title" id="update-status-title">Up to date</div>
+                                    <div class="status-message" id="update-status-message">You have the latest version</div>
+                                </div>
+                            </div>
+
+                            <!-- Download Progress -->
+                            <div class="update-progress" id="update-progress" style="display:none;">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" id="update-progress-bar"></div>
+                                </div>
+                                <div class="progress-text" id="update-progress-text">Downloading... 0%</div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="updates-actions">
+                                <button class="btn-primary" id="check-updates-btn">
+                                    <span class="btn-icon">🔄</span>
+                                    <span data-i18n="checkUpdates">Check for Updates</span>
+                                </button>
+                            </div>
+
+                            <div class="settings-divider"></div>
+
+                            <!-- Release Notes -->
+                            <div class="release-notes-section">
+                                <div class="release-notes-header">
+                                    <span data-i18n="latestRelease">Latest Release</span>
+                                    <a href="#" id="view-releases-link" class="release-link" data-i18n="viewOnGitHub">View on GitHub →</a>
+                                </div>
+                                <div class="release-info" id="release-info">
+                                    <div class="release-loading">Loading release info...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+<div class="settings-section-content" id="section-plugins">
+    <div class="plugins-container">
+
+        <div class="setting-item">
+            <div class="setting-info">
+                <span class="setting-label" data-i18n="enablePlugins">Enable Plugins</span>
+                <span class="setting-desc" data-i18n="enablePluginsDesc">Allow third-party extensions</span>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-plugins" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        
+        <div class="settings-divider"></div>
+        
+
+        <div class="plugins-section">
+            <h3 data-i18n="installedPlugins">Installed Plugins</h3>
+            <div class="plugins-list" id="installed-plugins-list">
+                <div class="plugins-empty" data-i18n="noPluginsInstalled">No plugins installed</div>
+            </div>
+        </div>
+        
+        <div class="settings-divider"></div>
+        
+
+        <div class="plugins-section">
+            <h3 data-i18n="browsePlugins">Browse Plugins</h3>
+            <div class="plugins-list" id="available-plugins-list">
+                <div class="plugins-loading" data-i18n="checkingPlugins">Checking for plugins...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                    <!-- ABOUT SECTION -->
+                    <div class="settings-section-content" id="section-about">
+                        <div class="about-app-icon">
+                            <img src="./images/favicon.ico" class="about-icon-img" alt="Cultiva" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span class="about-icon-fallback">🌱</span>
+                        </div>
+                        <div class="about-app-name">Cultiva</div>
+                        <div class="about-app-version" id="about-version-display">Version [0.3.2] Sequoia</div>
+                        <div class="settings-divider"></div>
+                        <a href="https://github.com/krwg/CultivaDesktop" target="_blank" class="setting-item setting-item-link">
+                            <div class="setting-info">
+                                <span class="setting-label">GitHub</span>
+                                <span class="setting-desc">krwg/CultivaDesktop</span>
+                            </div>
+                            <span class="section-chevron">›</span>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AVATAR -->
+    <div class="modal" id="avatar-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet" style="max-width:520px;">
+            <div class="modal-header">
+                <h2>Customize Avatar</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+    <div class="avatar-preview-container">
+        <div class="avatar-preview-large" id="avatar-preview">
+            <span class="avatar-emoji-large" id="preview-emoji">🌱</span>
+            <img id="preview-image" style="display:none;">
+        </div>
+        <p class="preview-label">Preview</p>
+    </div>
+    
+    <!-- Кнопки Upload и Remove -->
+    <div class="avatar-upload-actions">
+        <label class="btn-upload" for="avatar-upload">Upload Photo<input type="file" id="avatar-upload" accept="image/*" style="display:none;"></label>
+        <button class="btn-upload btn-upload-danger" id="avatar-clear-photo" style="display:none;">Remove</button>
+    </div>
+    
+    <div class="avatar-section">
+        <h4 class="avatar-section-title">Background</h4>
+        <div class="avatar-grid" id="avatar-bg-grid"></div>
+    </div>
+    <div class="avatar-section">
+        <h4 class="avatar-section-title">Icon</h4>
+        <div class="avatar-grid" id="avatar-emoji-grid"></div>
+    </div>
+    
+    <!-- Кнопки Reset и Save -->
+    <div class="avatar-modal-actions">
+        <button class="btn-secondary" id="avatar-reset">Reset</button>
+        <button class="btn-primary" id="avatar-save">Save Avatar</button>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <!-- MODAL: AUTH -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet" style="max-width:420px;">
+            <div class="modal-header">
+                <h2 id="auth-modal-title">Sign In</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Sign In</button>
+                    <button class="auth-tab" data-tab="register">Sign Up</button>
+                </div>
+                <form id="login-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary">Continue</button>
+                </form>
+                <form id="register-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="reg-name">Display Name</label>
+                        <input type="text" id="reg-name" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" required placeholder="Min 6 characters" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-dob">Date of Birth (Optional)</label>
+                        <input type="date" id="reg-dob">
+                    </div>
+                    <button type="submit" class="btn-primary">Create Account</button>
+                </form>
+                <p id="auth-error" class="auth-error" style="display:none;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDIT PROFILE -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet" style="max-width:460px;">
+            <div class="modal-header">
+                <h2 data-i18n="editProfile">Edit Profile</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="edit-display-name" data-i18n="displayName">Display Name</label>
+                        <input type="text" id="edit-display-name" class="event-input" placeholder="Your name" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email" data-i18n="email">Email</label>
+                        <input type="email" id="edit-email" class="event-input" placeholder="you@example.com" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-dob" data-i18n="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="edit-dob" class="event-input">
+                    </div>
+                    <div class="settings-divider"></div>
+                    <div class="form-group">
+                        <label for="edit-new-password" data-i18n="newPassword">New Password (optional)</label>
+                        <input type="password" id="edit-new-password" class="event-input" placeholder="••••••••" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-confirm-password" data-i18n="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="edit-confirm-password" class="event-input" placeholder="••••••••" autocomplete="new-password">
+                    </div>
+                    <p id="edit-profile-error" class="auth-error" style="display:none;"></p>
+                    <div class="event-actions">
+                        <button type="button" class="event-btn event-btn-secondary" id="edit-profile-cancel" data-i18n="cancel">Cancel</button>
+                        <button type="submit" class="event-btn event-btn-primary" data-i18n="saveChanges">Save Changes</button>
+                    </div>
+                </form>
+                <div class="settings-divider"></div>
+                <div class="danger-zone">
+                    <p class="danger-zone-title" data-i18n="dangerZone">Danger Zone</p>
+                    <button class="btn-danger-outline" id="sign-out-from-profile" data-i18n="signOut">Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <nav class="footer-links">
+                <a href="./index.html" data-i18n="footerHome">Home</a>
+                <a href="https://krwg.github.io/Cultiva/" data-i18n="dev">Dev</a>                
+                <a href="https://github.com/krwg/CultivaDesktop" target="_blank">GitHub</a>
+            </nav>
+            <div class="footer-brand"><span class="footer-version"></span></div>
+        </div>
+    </footer>
+
+        <!-- BACKGROUNDS -->
+        <div class="bg-aurora" id="bg-aurora" style="display:none;"></div>
+        <div class="bg-rainfall" id="bg-rainfall" style="display:none;"></div>
+        <div class="bg-starlight" id="bg-starlight" style="display:none;"></div>
+        <div class="bg-snowfall" id="bg-snowfall" style="display:none;"></div>
+        <div class="bg-fireflies" id="bg-fireflies" style="display:none;"></div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

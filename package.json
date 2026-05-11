@@ -1,0 +1,91 @@
+{
+  "name": "cultiva",
+  "version": "0.3.6",
+  "description": "Grow your habits. Grow yourself.",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "author": "krwg",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "prebuild": "node scripts/sync-version.mjs",
+    "preversion": "node scripts/sync-version.mjs",
+    "lint": "eslint src/ electron/",
+    "lint:fix": "eslint src/ electron/ --fix",
+    "electron:dev": "npm run build && cross-env NODE_ENV=development VITE_DEV_SERVER_URL=http://localhost:3000 electron .",
+    "electron:dev:watch": "concurrently \"vite\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development VITE_DEV_SERVER_URL=http://localhost:3000 electron .\"",
+    "electron:build": "npm run build && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.cultiva.app",
+    "productName": "Cultiva",
+    "publish": {
+      "provider": "github",
+      "owner": "krwg",
+      "repo": "CultivaDesktop",
+      "releaseType": "release"
+    },
+    "directories": {
+      "output": "release",
+      "buildResources": "public"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "dist/favicon.ico",
+        "to": "favicon.ico"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "dist/favicon.ico",
+      "artifactName": "Cultiva-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Cultiva",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "portable": {
+      "artifactName": "Cultiva-${version}-portable-${arch}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0",
+    "vite": "^5.4.21",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "discord-rpc": "^4.0.1",
+    "electron-updater": "^6.8.3",
+    "extract-zip": "^2.0.1"
+  }
+}
