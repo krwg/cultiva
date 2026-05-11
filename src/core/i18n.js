@@ -111,6 +111,9 @@ export const TRANSLATIONS = {
     pluginEnabled: 'Plugin enabled',
     pluginDisabled: 'Plugin disabled',
     pluginSettingsComingSoon: 'Plugin settings coming soon',
+    quantityLogPrompt: 'Total completed for today',
+    invalidQuantity: 'Enter a valid number (0 or greater)',
+    addHabitShortcutHint: 'Ctrl+N (⌘N on Mac)',
 
   },
   ru: {
@@ -224,5 +227,8 @@ export const TRANSLATIONS = {
     pluginEnabled: 'Плагин включён',
     pluginDisabled: 'Плагин выключен',
     pluginSettingsComingSoon: 'Настройки плагина скоро появятся',
+    quantityLogPrompt: 'Сумма за сегодня',
+    invalidQuantity: 'Введите корректное число (≥ 0)',
+    addHabitShortcutHint: 'Ctrl+N (⌘N на Mac)',
   }
 };

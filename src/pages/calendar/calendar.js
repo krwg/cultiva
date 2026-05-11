@@ -288,8 +288,8 @@ function getHabitsForDate(date) {
         if (completed) { log('Binary habit completed:', h.name, dateStr); }
         return completed;
       }
-      const progress = h.dailyProgress?.[dateStr] || 0;
-      const completed = progress >= (h.target || 1);
+      const progress = habits.quantityDayProgress(h, dateStr);
+      const completed = progress >= habits.quantityTarget(h);
       if (completed) { log('Quantity habit completed:', h.name, progress, '/', h.target); }
       return completed;
     }).map(h => {

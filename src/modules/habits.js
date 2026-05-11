@@ -11,6 +11,18 @@ export const habits = {
     return storage.getHabits();
   },
 
+  /** Coerce stored daily progress to a number (IDB/JSON may keep strings). */
+  quantityDayProgress(habit, dayKey) {
+    const raw = habit?.dailyProgress?.[dayKey];
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : 0;
+  },
+
+  quantityTarget(habit) {
+    const n = Number(habit?.target);
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  },
+
   add(data) {
     const allHabits = this.getAll();
     const active = allHabits.filter(h => h.progress < LEGACY_THRESHOLD);
@@ -57,13 +69,20 @@ export const habits = {
     const yesterdayStr = getDateInTZ(yesterday);
 
     if (habit.trackType === 'quantity') {
-      const current = habit.dailyProgress?.[today] || 0;
-      const newAmount = amount !== null ? amount : (current + 1);
+      const current = this.quantityDayProgress(habit, today);
+      const target = this.quantityTarget(habit);
+      let newAmount;
+      if (amount !== null && amount !== undefined) {
+        const n = Number(amount);
+        newAmount = Number.isFinite(n) ? n : current;
+      } else {
+        newAmount = current + 1;
+      }
       habit.dailyProgress = habit.dailyProgress || {};
       habit.dailyProgress[today] = newAmount;
       
-      const wasCompleted = current >= habit.target;
-      const isCompleted = newAmount >= habit.target;
+      const wasCompleted = current >= target;
+      const isCompleted = newAmount >= target;
       
       if (isCompleted && !wasCompleted) {
         habit.progress++;
@@ -213,7 +232,9 @@ export const habits = {
       
       if (historySet.has(ds)) {
         if (h.trackType === 'quantity') {
-          const pct = (h.dailyProgress?.[ds] || 0) / (h.target || 1);
+          const cur = this.quantityDayProgress(h, ds);
+          const tgt = this.quantityTarget(h);
+          const pct = cur / tgt;
           level = Math.min(4, Math.floor(pct * 4));
         } else {
           level = 4;

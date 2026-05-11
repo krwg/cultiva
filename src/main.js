@@ -325,6 +325,11 @@ function applyTranslations(lang) {
   }
 
   const today = getTodayStr();
+
+  const addOpenBtn = document.getElementById('open-add-modal');
+  if (addOpenBtn && t.addHabitShortcutHint) {
+    addOpenBtn.title = `${t.addHabit || ''} — ${t.addHabitShortcutHint}`;
+  }
     
   document.querySelectorAll('.habit-card .btn-card-primary').forEach(btn => {
     const card = btn.closest('.habit-card');
@@ -335,7 +340,7 @@ function applyTranslations(lang) {
         
     const isCompleted = habit.trackType === 'binary' 
       ? habit.lastCompleted === today 
-      : (habit.dailyProgress?.[today] || 0) >= habit.target;
+      : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
             
     if (isCompleted) {
       btn.textContent = t.done || 'Done';
@@ -1187,12 +1192,13 @@ function createHabitCard(habit, isTrophy = false) {
   const today = getTodayStr();
   const isCompleted = habit.trackType === 'binary' 
     ? habit.lastCompleted === today 
-    : (habit.dailyProgress?.[today] || 0) >= habit.target;
+    : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
     
   let progressBar = '';
   if (habit.trackType === 'quantity') {
-    const cur = habit.dailyProgress?.[today] || 0;
-    const pct = Math.min(100, (cur / habit.target) * 100);
+    const cur = habits.quantityDayProgress(habit, today);
+    const tgt = habits.quantityTarget(habit);
+    const pct = Math.min(100, (cur / tgt) * 100);
     progressBar = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
   }
     
@@ -1659,6 +1665,14 @@ function initEvents() {
       if (settings.focusMode) { toggleFocusMode(false); showNotification('Focus Mode Disabled'); }
       closeModal(addModal); closeModal(statsModal); closeModal(settingsModal); closeModal(authModal);
     }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'n' || e.key === 'N')) {
+      const ae = document.activeElement;
+      if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) {
+        return;
+      }
+      e.preventDefault();
+      openModal(addModal);
+    }
   });
     
   document.addEventListener('keydown', (e) => {
@@ -1708,15 +1722,22 @@ function initEvents() {
       const today = getTodayStr();
       const isCompleted = h.trackType === 'binary' 
         ? h.lastCompleted === today 
-        : (h.dailyProgress?.[today] || 0) >= h.target;
+        : habits.quantityDayProgress(h, today) >= habits.quantityTarget(h);
                 
       if (isCompleted) { return; }
             
       if (h.trackType === 'quantity') {
-        const cur = h.dailyProgress?.[today] || 0;
-        const amt = prompt(`Enter ${h.unit}:`, cur);
+        const cur = habits.quantityDayProgress(h, today);
+        const t = TRANSLATIONS[settings.lang];
+        const unitHint = h.unit ? ` (${h.unit})` : '';
+        const amt = prompt(`${t.quantityLogPrompt || 'Total for today'}${unitHint}:`, String(cur));
         if (amt === null) { return; }
-        habits.toggle(id, parseFloat(amt) || 0);
+        const parsed = Number(String(amt).trim().replace(',', '.'));
+        if (!Number.isFinite(parsed) || parsed < 0) {
+          showNotification(t.invalidQuantity || 'Enter a valid number (0 or greater)');
+          return;
+        }
+        habits.toggle(id, parsed);
       } else { habits.toggle(id); }
             
       renderGarden();
