@@ -624,109 +624,17 @@
 }
 
 /* ============================================ */
-/* BACKGROUND ANIMATIONS (SYNCED WITH MAIN)      */
+/* AMBIENT BACKGROUNDS (layers: ../../styles/main.css) */
 /* ============================================ */
 
-/* Aurora Garden */
-.bg-aurora {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -2;
-    background: linear-gradient(135deg, #0a1a2a 0%, #1a2a4a 50%, #0a1a2a 100%);
-    overflow: hidden;
-}
-
-.bg-aurora::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: 
-        radial-gradient(circle at 30% 40%, rgba(100, 255, 218, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 70% 60%, rgba(124, 77, 255, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 50% 30%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
-    animation: auroraMove 20s ease-in-out infinite;
-}
-
-@keyframes auroraMove {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
-    25% { transform: translate(-5%, -3%) scale(1.1); opacity: 1; }
-    50% { transform: translate(3%, -5%) scale(0.95); opacity: 0.7; }
-    75% { transform: translate(-2%, 2%) scale(1.05); opacity: 0.9; }
-}
-
-/* Rainfall */
-.bg-rainfall {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -2;
-    background: linear-gradient(180deg, #1a2a3a 0%, #0d1a2a 100%);
-    overflow: hidden;
-}
-
-.rain-drop {
-    position: absolute;
-    width: 2px;
-    height: 80px;
-    background: linear-gradient(180deg, transparent, rgba(100, 200, 255, 0.3), transparent);
-    animation: rainfallDrop 1.5s linear infinite;
-}
-
-@keyframes rainfallDrop {
-    0% { transform: translateY(-100px) translateX(0); opacity: 0; }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.6; }
-    100% { transform: translateY(100vh) translateX(-20px); opacity: 0; }
-}
-
-/* Starlight */
-.bg-starlight {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -2;
-    background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a15 100%);
-    overflow: hidden;
-}
-
-.star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    animation: starTwinkle 3s ease-in-out infinite;
-}
-
-@keyframes starTwinkle {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.5); }
-}
-
-body.with-bg-aurora .calendar-grid,
-body.with-bg-rainfall .calendar-grid,
-body.with-bg-starlight .calendar-grid,
-body.with-bg-aurora .event-panel,
-body.with-bg-rainfall .event-panel,
-body.with-bg-starlight .event-panel {
+body.with-ambient-bg .calendar-grid,
+body.with-ambient-bg .event-panel {
     background: var(--bg-primary);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
 
-body.with-bg-aurora .calendar-body,
-body.with-bg-rainfall .calendar-body,
-body.with-bg-starlight .calendar-body {
+body.with-ambient-bg .calendar-body {
     background: transparent;
 }
 

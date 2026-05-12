@@ -131,11 +131,30 @@ function detectPageFromUrl(url) {
 /* ============================================ */
 
 function setupAutoUpdater() {
+  if (!app.isPackaged) {
+    console.log('[Updater] Skipped (development / unpackaged)');
+    return;
+  }
+  if (process.env.DISABLE_AUTO_UPDATER === '1') {
+    console.log('[Updater] Skipped (DISABLE_AUTO_UPDATER=1)');
+    return;
+  }
+
   autoUpdater.logger = console;
-  
+
   if (autoUpdater.logger && autoUpdater.logger.transports && autoUpdater.logger.transports.file) {
     autoUpdater.logger.transports.file.level = 'info';
   }
+
+  /**
+   * Use GitHub "latest release" asset URL so we do not depend on per-version tags like …/download/0.3.5/latest.yml.
+   * Publish Windows builds with electron-builder (uploads latest.yml next to the installer on that release).
+   */
+  autoUpdater.setFeedURL({
+    provider: 'generic',
+    url: 'https://github.com/krwg/Cultiva/releases/latest/download/'
+  });
+  autoUpdater.allowPrerelease = true;
 
   autoUpdater.on('checking-for-update', () => {
     console.log('[Updater] Checking for updates...');
@@ -159,9 +178,15 @@ function setupAutoUpdater() {
   });
 
   autoUpdater.on('error', (err) => {
-    console.error('[Updater] Error:', err.message);
+    const msg = err && err.message ? err.message : String(err);
+    const isMissingFeed = /404/.test(msg) && (/latest\.yml|RELEASES|blockmap/i.test(msg) || /Not Found/i.test(msg));
+    if (isMissingFeed) {
+      console.warn('[Updater] No update metadata on GitHub latest release (publish a Windows build with electron-builder to attach latest.yml).');
+      return;
+    }
+    console.error('[Updater] Error:', msg);
     if (mainWindow && mainWindow.webContents) {
-      mainWindow.webContents.send('update-message', `Update error: ${err.message}`);
+      mainWindow.webContents.send('update-message', `Update error: ${msg}`);
     }
   });
 
@@ -191,7 +216,11 @@ function setupAutoUpdater() {
     });
   });
 
-  autoUpdater.checkForUpdatesAndNotify();
+  setTimeout(() => {
+    autoUpdater.checkForUpdatesAndNotify().catch((e) => {
+      console.warn('[Updater] checkForUpdatesAndNotify:', e && e.message ? e.message : e);
+    });
+  }, 4000);
 }
 
 /* ============================================ */
@@ -268,7 +297,7 @@ function createWindow() {
     "script-src 'self' 'unsafe-inline' file: blob:; " +
     "img-src 'self' data: blob: file: https:; " +
     "style-src 'self' 'unsafe-inline'; " +
-    "connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://github.com https://api.open-meteo.com https://geocoding-api.open-meteo.com; " +
+    "connect-src 'self' file: data: blob: https: https://raw.githubusercontent.com https://api.github.com https://github.com https://objects.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com; " +
     "font-src 'self' data:;";
 
   const cspDev =
@@ -276,7 +305,7 @@ function createWindow() {
     "img-src 'self' data: blob: file: https: http:; " +
     "style-src 'self' 'unsafe-inline'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' file: blob: http: https:; " +
-    "connect-src 'self' https: http: ws: wss: https://raw.githubusercontent.com https://api.github.com https://github.com https://api.open-meteo.com https://geocoding-api.open-meteo.com; " +
+    "connect-src 'self' https: http: ws: wss: https://raw.githubusercontent.com https://api.github.com https://github.com https://objects.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com; " +
     "font-src 'self' data:;";
 
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
@@ -361,12 +390,29 @@ function createWindow() {
 /* ============================================ */
 
 ipcMain.on('check-for-updates', () => {
+  if (!app.isPackaged) {
+    console.log('[Updater] Manual check ignored (unpackaged)');
+    return;
+  }
   console.log('[Updater] Manual check triggered');
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdatesAndNotify().catch((e) => {
+    console.warn('[Updater] Manual check failed:', e && e.message ? e.message : e);
+  });
 });
 
 ipcMain.on('restart-app', () => {
-  autoUpdater.quitAndInstall();
+  if (app.isPackaged) {
+    try {
+      autoUpdater.quitAndInstall();
+    } catch (e) {
+      console.warn('[Updater] quitAndInstall:', e);
+      app.relaunch();
+      app.exit(0);
+    }
+  } else {
+    app.relaunch();
+    app.exit(0);
+  }
 });
 
 ipcMain.handle('save-file', async (event, data, fileName) => {

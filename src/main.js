@@ -7,6 +7,13 @@ import { BRANDING } from './core/branding.js';
 import { habits } from './modules/habits.js';
 import { pluginManager } from './core/plugin-manager.js';
 import { getCultivaTimezone, getTodayInTZ, getDateInTZ } from './core/timezone.js';
+import { getThemeBodyClassList, resolveThemeBodyId } from './core/theme-config.js';
+import {
+  applyAmbientBackground,
+  saveCustomBackgroundFromFile,
+  clearCustomBackground,
+  readCustomBackgroundDataUrl
+} from './core/ambient-bg.js';
 
 /* ============================================ */
 /* STATE (declared before pre-init / theme)    */
@@ -42,11 +49,8 @@ if (_preInitSettings) {
 
 (function applyInitialTheme() {
   const t = settings.theme || 'auto';
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const resolved = t === 'auto' ? (isDark ? 'dark' : 'light') : t;
-  
-
-  document.body.className = `theme-${resolved}`; 
+  const resolved = resolveThemeBodyId(t);
+  document.body.className = `theme-${resolved}`;
 })();
 
 
@@ -254,17 +258,9 @@ function applySettings() {
   }
   applyTranslations(settings.lang);
   
-  document.body.classList.remove(
-    'theme-light', 'theme-dark', 'theme-pink', 'theme-moon',
-    'theme-evergreen', 'theme-blossom', 'theme-ocean', 'theme-sunset',
-    'theme-frost', 'theme-cedar', 'theme-dusk', 'theme-meadow'
-  );
+  document.body.classList.remove(...getThemeBodyClassList());
   
-  let appliedTheme = settings.theme;
-  if (appliedTheme === 'auto') {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    appliedTheme = prefersDark ? 'dark' : 'light';
-  }
+  const appliedTheme = resolveThemeBodyId(settings.theme);
   
   document.body.classList.add(`theme-${appliedTheme}`);
   
@@ -310,6 +306,13 @@ function applyTranslations(lang) {
       } else {
         el.textContent = t[key];
       }
+    }
+  });
+
+  document.querySelectorAll('optgroup[data-i18n-label]').forEach(og => {
+    const key = og.dataset.i18nLabel;
+    if (key && t[key]) {
+      og.label = t[key];
     }
   });
 
@@ -425,97 +428,88 @@ if (tzSelect) {
 /* ============================================ */
 
 const bgSelect = document.getElementById('bg-select');
-const bgContainers = {
-  aurora: document.getElementById('bg-aurora'),
-  rainfall: document.getElementById('bg-rainfall'),
-  starlight: document.getElementById('bg-starlight'),
-  snowfall: document.getElementById('bg-snowfall'),
-  fireflies: document.getElementById('bg-fireflies')
-};
+const customBgInput = document.getElementById('custom-bg-input');
+const customBgChoose = document.getElementById('custom-bg-choose');
+const customBgClear = document.getElementById('custom-bg-clear');
 
-const savedBg = localStorage.getItem('cultiva-background') || 'none';
+let lastBgSelectValue = 'none';
+let pendingCustomPicker = false;
+
+function commitBackground(bg) {
+  lastBgSelectValue = bg;
+  try {
+    localStorage.setItem('cultiva-background', bg);
+  } catch (e) {
+    console.warn('[Background] Could not persist selection', e);
+  }
+  applyBackground(bg);
+}
+
+function applyBackground(bg) {
+  let choice = bg;
+  if (choice === 'custom' && !readCustomBackgroundDataUrl()) {
+    choice = 'none';
+  }
+  applyAmbientBackground(document, document.body, choice);
+}
+
+let savedBg = localStorage.getItem('cultiva-background') || 'none';
+if (savedBg === 'custom' && !readCustomBackgroundDataUrl()) {
+  savedBg = 'none';
+  localStorage.setItem('cultiva-background', 'none');
+}
+lastBgSelectValue = savedBg;
 if (bgSelect) { bgSelect.value = savedBg; }
 applyBackground(savedBg);
 
 bgSelect?.addEventListener('change', (e) => {
   const bg = e.target.value;
-  localStorage.setItem('cultiva-background', bg);
-  applyBackground(bg);
+  if (bg === 'custom' && !readCustomBackgroundDataUrl()) {
+    pendingCustomPicker = true;
+    customBgInput?.click();
+    return;
+  }
+  commitBackground(bg);
 });
 
-function applyBackground(bg) {
-  Object.values(bgContainers).forEach(el => { if (el) { el.style.display = 'none'; } });
-  document.body.classList.remove(
-    'with-bg-aurora', 'with-bg-rainfall', 'with-bg-starlight',
-    'with-bg-snowfall', 'with-bg-fireflies'
-  );
-    
-  if (bg === 'none') { return; }
-    
-  const container = bgContainers[bg];
-  if (container) {
-    container.style.display = 'block';
-    document.body.classList.add(`with-bg-${bg}`);
-        
-    if (bg === 'rainfall') { generateRaindrops(container); }
-    if (bg === 'starlight') { generateStars(container); }
-    if (bg === 'snowfall') { generateSnowflakes(container); }
-    if (bg === 'fireflies') { generateFireflies(container); }
-  }
-}
+customBgChoose?.addEventListener('click', () => {
+  customBgInput?.click();
+});
 
-function generateRaindrops(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 50; i++) {
-    const drop = document.createElement('div');
-    drop.className = 'rain-drop';
-    drop.style.left = `${Math.random() * 100}%`;
-    drop.style.animationDelay = `${Math.random() * 2}s`;
-    drop.style.animationDuration = `${1 + Math.random() * 1}s`;
-    container.appendChild(drop);
+customBgInput?.addEventListener('change', async (e) => {
+  const file = e.target.files?.[0];
+  e.target.value = '';
+  if (!file) {
+    if (pendingCustomPicker) {
+      if (bgSelect) { bgSelect.value = lastBgSelectValue; }
+      pendingCustomPicker = false;
+    }
+    return;
   }
-}
+  try {
+    await saveCustomBackgroundFromFile(file);
+    pendingCustomPicker = false;
+    if (bgSelect) { bgSelect.value = 'custom'; }
+    commitBackground('custom');
+  } catch (err) {
+    const msg = err && err.message ? err.message : 'Could not use image';
+    showNotification('', msg);
+    if (pendingCustomPicker) {
+      if (bgSelect) { bgSelect.value = lastBgSelectValue; }
+      pendingCustomPicker = false;
+    }
+  }
+});
 
-function generateStars(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 100; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.top = `${Math.random() * 100}%`;
-    star.style.animationDelay = `${Math.random() * 3}s`;
-    star.style.animationDuration = `${2 + Math.random() * 4}s`;
-    container.appendChild(star);
+customBgClear?.addEventListener('click', () => {
+  clearCustomBackground();
+  if (bgSelect?.value === 'custom') {
+    if (bgSelect) { bgSelect.value = 'none'; }
+    commitBackground('none');
+    return;
   }
-}
-
-function generateSnowflakes(container) {
-  container.innerHTML = '';
-  const snowflakes = ['❄️', '❅', '❆', '✻', '✼', '❉'];
-  for (let i = 0; i < 40; i++) {
-    const flake = document.createElement('div');
-    flake.className = 'snowflake';
-    flake.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
-    flake.style.left = `${Math.random() * 100}%`;
-    flake.style.fontSize = `${0.8 + Math.random() * 1.5}em`;
-    flake.style.animationDelay = `${Math.random() * 5}s`;
-    flake.style.animationDuration = `${5 + Math.random() * 7}s`;
-    container.appendChild(flake);
-  }
-}
-
-function generateFireflies(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 25; i++) {
-    const fly = document.createElement('div');
-    fly.className = 'firefly';
-    fly.style.left = `${Math.random() * 100}%`;
-    fly.style.top = `${20 + Math.random() * 60}%`;
-    fly.style.animationDelay = `${Math.random() * 8}s`;
-    fly.style.animationDuration = `${6 + Math.random() * 10}s`;
-    container.appendChild(fly);
-  }
-}
+  applyBackground(bgSelect?.value || lastBgSelectValue);
+});
 
 /* ============================================ */
 /* SETTINGS NAVIGATION                          */
@@ -592,6 +586,9 @@ async function renderPluginsSection() {
   const pluginsToggle = document.getElementById('toggle-plugins');
   if (pluginsToggle) {
     pluginsToggle.checked = settings.pluginsEnabled;
+  }
+  if (pluginsToggle && !pluginsToggle.dataset.bound) {
+    pluginsToggle.dataset.bound = '1';
     pluginsToggle.addEventListener('change', (e) => {
       settings.pluginsEnabled = e.target.checked;
       saveSettings();
@@ -764,11 +761,13 @@ async function loadAvailablePlugins() {
       card.appendChild(actions);
       container.appendChild(card);
     }
-  } catch {
+  } catch (e) {
+    console.error('[Plugins UI] loadAvailablePlugins:', e);
     container.replaceChildren();
     const err = document.createElement('div');
     err.className = 'plugins-empty';
-    err.textContent = t.pluginInstallFailed;
+    const base = t.pluginsRegistryError || 'Could not load the plugin catalog.';
+    err.textContent = e && e.message ? `${base} (${e.message})` : base;
     container.appendChild(err);
   }
 }
@@ -1335,7 +1334,7 @@ function openStats(id) {
 
 function exportData() {
   const t = TRANSLATIONS[settings.lang];
-  const data = { habits: habits.getAll(), exportedAt: new Date().toISOString(), version: '0.3.5' };
+  const data = { habits: habits.getAll(), exportedAt: new Date().toISOString(), version: BRANDING.VERSION };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1378,7 +1377,7 @@ function updateUpdatesSection() {
   const codenameDisplay = document.getElementById('current-codename-display');
     
   if (versionDisplay) {
-    versionDisplay.textContent = BRANDING?.VERSION || '0.3.5';
+    versionDisplay.textContent = BRANDING?.VERSION || '0.0.0';
   }
   if (codenameDisplay) {
     codenameDisplay.textContent = BRANDING?.CODENAME || 'Sequoia';
