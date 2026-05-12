@@ -242,6 +242,10 @@
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
                         <span class="sidebar-label" data-i18n="appearance">Appearance</span>
                     </div>
+                    <div class="settings-sidebar-item" data-section="shortcuts">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
+                        <span class="sidebar-label" data-i18n="shortcuts">Keyboard</span>
+                    </div>
                     <div class="settings-sidebar-item" data-section="garden">
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon"></span></div>
                         <span class="sidebar-label" data-i18n="gardenSettings">Garden</span>
@@ -334,52 +338,146 @@
 
                     <!-- APPEARANCE SECTION -->
                     <div class="settings-section-content" id="section-appearance">
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label" data-i18n="language">Language</span>
-                                <span class="setting-desc" data-i18n="languageDesc">Interface language</span>
-                            </div>
-                            <select id="lang-select" class="select-input select-small">
-                                <option value="en">English</option>
-                                <option value="ru">Русский</option>
-                            </select>
+                        <div class="settings-section-hero">
+                            <div class="settings-section-hero-title" data-i18n="appearanceSectionTitle">Look &amp; atmosphere</div>
+                            <p class="settings-section-hero-desc" data-i18n="appearanceSectionDesc">Themes, language, and animated backgrounds apply to both the garden and the calendar.</p>
                         </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label" data-i18n="theme">Theme</span>
-                                <span class="setting-desc" data-i18n="themeDesc">Choose your preferred look</span>
+
+                        <div class="settings-group-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="language">Language</span>
+                                    <span class="setting-desc" data-i18n="languageDesc">Interface language</span>
+                                </div>
+                                <select id="lang-select" class="select-input select-small">
+                                    <option value="en">English</option>
+                                    <option value="ru">Русский</option>
+                                </select>
                             </div>
-                           <select id="theme-select" class="select-input select-small">
-                                <option value="auto">Auto</option>
-                                <option value="light">Light</option>
-                                <option value="dark">Dark</option>
-                                <option value="evergreen" data-i18n="themeEvergreen">Evergreen</option>
-                                <option value="blossom" data-i18n="themeBlossom">Blossom</option>
-                                <option value="ocean" data-i18n="themeOcean">Ocean</option>
-                                <option value="sunset" data-i18n="themeSunset">Sunset</option>
-                                <option value="pink" data-i18n="themePink">Pink</option>
-                                <option value="moon" data-i18n="themeMoon">Moon</option>
-                                <option value="frost" data-i18n="themeFrost">Frost</option>
-                                <option value="cedar" data-i18n="themeCedar">Cedar</option>
-                                <option value="dusk" data-i18n="themeDusk">Dusk</option>
-                                <option value="meadow" data-i18n="themeMeadow">Meadow</option>
-                            </select>
-                        </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label" data-i18n="background">Background</span>
-                                <span class="setting-desc" data-i18n="backgroundDesc">Add atmosphere to your garden</span>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="theme">Theme</span>
+                                    <span class="setting-desc" data-i18n="themeDescGrouped">Light and dark palettes are grouped so switching feels predictable.</span>
+                                </div>
+                                <select id="theme-select" class="select-input select-small">
+                                    <optgroup data-i18n-label="themeGroupSystem" label="System">
+                                        <option value="auto" data-i18n="themeAuto">Auto</option>
+                                    </optgroup>
+                                    <optgroup data-i18n-label="themeGroupLight" label="Light appearance">
+                                        <option value="light" data-i18n="themeLightBuiltin">Light</option>
+                                        <option value="blossom" data-i18n="themeBlossom">Blossom</option>
+                                        <option value="frost" data-i18n="themeFrost">Frost</option>
+                                        <option value="cedar" data-i18n="themeCedar">Cedar</option>
+                                        <option value="meadow" data-i18n="themeMeadow">Meadow</option>
+                                        <option value="orchard" data-i18n="themeOrchard">Orchard</option>
+                                        <option value="honeycrisp" data-i18n="themeHoneycrisp">Honeycrisp</option>
+                                    </optgroup>
+                                    <optgroup data-i18n-label="themeGroupDark" label="Dark appearance">
+                                        <option value="dark" data-i18n="themeDarkBuiltin">Dark</option>
+                                        <option value="evergreen" data-i18n="themeEvergreen">Evergreen</option>
+                                        <option value="ocean" data-i18n="themeOcean">Ocean</option>
+                                        <option value="sunset" data-i18n="themeSunset">Sunset</option>
+                                        <option value="pink" data-i18n="themePink">Pink</option>
+                                        <option value="moon" data-i18n="themeMoon">Moon</option>
+                                        <option value="dusk" data-i18n="themeDusk">Dusk</option>
+                                        <option value="inkwell" data-i18n="themeInkwell">Inkwell</option>
+                                        <option value="sequoia" data-i18n="themeSequoia">Sequoia</option>
+                                    </optgroup>
+                                </select>
                             </div>
-                            <select id="bg-select" class="select-input select-small">
-                                <option value="none" data-i18n="backgroundNone">None</option>
-                                <option value="aurora" data-i18n="backgroundAurora">Aurora Garden</option>
-                                <option value="rainfall" data-i18n="backgroundRainfall">Rainfall</option>
-                                <option value="starlight" data-i18n="backgroundStarlight">Starlight</option>
-                                <option value="snowfall" data-i18n="backgroundSnowfall">Snowfall</option>
-                                <option value="fireflies" data-i18n="backgroundFireflies">Fireflies</option>
-                            </select>
-                           
                         </div>
+
+                        <div class="settings-group-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="background">Background</span>
+                                    <span class="setting-desc" data-i18n="backgroundDescFull">Garden and calendar share the same ambient layer.</span>
+                                </div>
+                                <select id="bg-select" class="select-input select-small">
+                                    <option value="none" data-i18n="backgroundNone">None</option>
+                                    <option value="aurora" data-i18n="backgroundAurora">Aurora Garden</option>
+                                    <option value="rainfall" data-i18n="backgroundRainfall">Rainfall</option>
+                                    <option value="starlight" data-i18n="backgroundStarlight">Starlight</option>
+                                    <option value="snowfall" data-i18n="backgroundSnowfall">Snowfall</option>
+                                    <option value="fireflies" data-i18n="backgroundFireflies">Fireflies</option>
+                                    <option value="petal" data-i18n="backgroundPetal">Petal Drift</option>
+                                    <option value="mist" data-i18n="backgroundMist">Silicon Mist</option>
+                                    <option value="ember" data-i18n="backgroundEmber">Ember Glow</option>
+                                    <option value="breeze" data-i18n="backgroundBreeze">Breeze Glass</option>
+                                    <option value="custom" data-i18n="backgroundCustom">My Photo…</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="customBackground">Custom image</span>
+                                    <span class="setting-desc" data-i18n="customBackgroundDesc">JPEG or PNG, stored locally in this browser profile.</span>
+                                </div>
+                                <div class="settings-inline-actions">
+                                    <input type="file" id="custom-bg-input" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
+                                    <button type="button" class="btn-ghost-small" id="custom-bg-choose" data-i18n="customBackgroundChoose">Choose…</button>
+                                    <button type="button" class="btn-ghost-small" id="custom-bg-clear" data-i18n="customBackgroundClear">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHORTCUTS (reference only) -->
+                    <div class="settings-section-content" id="section-shortcuts">
+                        <div class="settings-section-hero">
+                            <div class="settings-section-hero-title" data-i18n="shortcutsSectionTitle">Keyboard shortcuts</div>
+                            <p class="settings-section-hero-desc" data-i18n="shortcutsSectionDesc">Planned shortcuts for a future release. Listed here as a reference — they are not active yet.</p>
+                        </div>
+                        <div class="settings-group-card">
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutNewHabit">New habit</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">N</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">N</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutOpenSettings">Open settings</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">,</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">,</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutFocusSearch">Focus search</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">F</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">F</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutCompleteHabit">Complete highlighted habit</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">Enter</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">↵</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutLogQuantity">Log quantity for habit</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">L</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">L</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutNextDay">Next day in calendar</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">→</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">→</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutPrevDay">Previous day in calendar</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">←</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">←</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutToday">Jump to today</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">T</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">T</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutNewEvent">New calendar event</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">Shift</kbd><kbd class="shortcut-kbd">N</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">⇧</kbd><kbd class="shortcut-kbd">N</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutCloseModal">Close modal / panel</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Esc</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutToggleFocus">Toggle focus mode</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">Shift</kbd><kbd class="shortcut-kbd">F</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">⇧</kbd><kbd class="shortcut-kbd">F</kbd></span>
+                            </div>
+                            <div class="shortcut-row">
+                                <span class="shortcut-label" data-i18n="shortcutReloadGarden">Reload garden view</span>
+                                <span class="shortcut-keys"><kbd class="shortcut-kbd">Ctrl</kbd><kbd class="shortcut-kbd">R</kbd><span> / </span><kbd class="shortcut-kbd">⌘</kbd><kbd class="shortcut-kbd">R</kbd></span>
+                            </div>
+                        </div>
+                        <p class="shortcuts-footnote" data-i18n="shortcutsFootnote">Final shortcuts may differ by platform. Cultiva will respect macOS Human Interface Guidelines where applicable.</p>
                     </div>
 
                     <!-- GARDEN SECTION -->
@@ -530,8 +628,8 @@
                                 <span class="version-icon-fallback">🌱</span>
                                 <div class="version-info">
                                     <div class="version-label" data-i18n="currentVersion">Current Version</div>
-                                    <div class="version-number" id="current-version-display">0.3.2</div>
-                                    <div class="version-codename" id="current-codename-display">Sequoia</div>
+                                    <div class="version-number" id="current-version-display">0.4.0</div>
+                                    <div class="version-codename" id="current-codename-display">Coconut</div>
                                 </div>
                             </div>
 
@@ -579,37 +677,46 @@
 
 
 <div class="settings-section-content" id="section-plugins">
-    <div class="plugins-container">
+    <div class="settings-section-hero">
+        <div class="settings-section-hero-title" data-i18n="pluginsSectionTitle">Extensions</div>
+        <p class="settings-section-hero-desc" data-i18n="pluginsSectionDesc">Install small tools that extend Cultiva. Plugins run in a sandbox and can add header actions or styles when enabled.</p>
+    </div>
 
-        <div class="setting-item">
-            <div class="setting-info">
-                <span class="setting-label" data-i18n="enablePlugins">Enable Plugins</span>
-                <span class="setting-desc" data-i18n="enablePluginsDesc">Allow third-party extensions</span>
+    <div class="plugins-hero-card">
+        <div class="plugins-hero-top">
+            <div>
+                <div class="plugins-hero-title" data-i18n="enablePlugins">Enable Plugins</div>
+                <p class="plugins-hero-desc" data-i18n="enablePluginsDesc">Allow third-party extensions</p>
             </div>
             <label class="toggle-switch">
                 <input type="checkbox" id="toggle-plugins" checked>
                 <span class="toggle-slider"></span>
             </label>
         </div>
-        
-        <div class="settings-divider"></div>
-        
+        <ul class="plugins-hero-bullets">
+            <li data-i18n="pluginsBulletSandbox">Sandboxed JavaScript — no raw Node access from a plugin.</li>
+            <li data-i18n="pluginsBulletToggle">Disable everything instantly with the switch above.</li>
+            <li data-i18n="pluginsBulletCatalog">Catalog refreshes when you open this section.</li>
+        </ul>
+    </div>
 
-        <div class="plugins-section">
-            <h3 data-i18n="installedPlugins">Installed Plugins</h3>
-            <div class="plugins-list" id="installed-plugins-list">
-                <div class="plugins-empty" data-i18n="noPluginsInstalled">No plugins installed</div>
-            </div>
+    <div class="plugins-subsection-head">
+        <h3 data-i18n="installedPlugins">Installed Plugins</h3>
+        <span class="plugins-subsection-hint" data-i18n="installedPluginsHint">On your device</span>
+    </div>
+    <div class="plugins-list-wrap">
+        <div class="plugins-list" id="installed-plugins-list">
+            <div class="plugins-empty" data-i18n="noPluginsInstalled">No plugins installed</div>
         </div>
-        
-        <div class="settings-divider"></div>
-        
+    </div>
 
-        <div class="plugins-section">
-            <h3 data-i18n="browsePlugins">Browse Plugins</h3>
-            <div class="plugins-list" id="available-plugins-list">
-                <div class="plugins-loading" data-i18n="checkingPlugins">Checking for plugins...</div>
-            </div>
+    <div class="plugins-subsection-head" style="margin-top: 20px;">
+        <h3 data-i18n="browsePlugins">Browse Plugins</h3>
+        <span class="plugins-subsection-hint" data-i18n="browsePluginsHint">From registry</span>
+    </div>
+    <div class="plugins-list-wrap">
+        <div class="plugins-list" id="available-plugins-list">
+            <div class="plugins-loading" data-i18n="checkingPlugins">Checking for plugins...</div>
         </div>
     </div>
 </div>
@@ -622,7 +729,7 @@
                             <span class="about-icon-fallback">🌱</span>
                         </div>
                         <div class="about-app-name">Cultiva</div>
-                        <div class="about-app-version" id="about-version-display">Version [0.3.2] Sequoia</div>
+                        <div class="about-app-version" id="about-version-display">Version [0.4.0] Coconut</div>
                         <div class="settings-divider"></div>
                         <a href="https://github.com/krwg/Cultiva" target="_blank" class="setting-item setting-item-link">
                             <div class="setting-info">
@@ -791,6 +898,11 @@
         <div class="bg-starlight" id="bg-starlight" style="display:none;"></div>
         <div class="bg-snowfall" id="bg-snowfall" style="display:none;"></div>
         <div class="bg-fireflies" id="bg-fireflies" style="display:none;"></div>
+        <div class="bg-petal" id="bg-petal" style="display:none;"></div>
+        <div class="bg-mist" id="bg-mist" style="display:none;"></div>
+        <div class="bg-ember" id="bg-ember" style="display:none;"></div>
+        <div class="bg-breeze" id="bg-breeze" style="display:none;"></div>
+        <div class="bg-custom" id="bg-custom" style="display:none;" aria-hidden="true"></div>
 
     <script type="module" src="main.js"></script>
 </body>

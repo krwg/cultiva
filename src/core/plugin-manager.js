@@ -5,6 +5,54 @@ import { PluginSandboxHost } from './plugin-sandbox-host.js';
 /** Public plugin store; install copies files into userData/cultiva-plugins via Electron (never from a local repo plugins/ path). */
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/CultivaPlugins/main/registry.json';
 
+function stripUtf8Bom(s) {
+  return String(s ?? '').replace(/^\uFEFF/, '');
+}
+
+/**
+ * Small HTTPS GET as UTF-8 text. In Electron the main process performs the request (avoids renderer CSP blocking `fetch` to GitHub in packaged builds).
+ * Falls back to `fetch` if IPC fails (e.g. old preload without pluginHttpGet).
+ * @param {string} url
+ * @returns {Promise<string>}
+ */
+async function fetchPluginHttpText(url) {
+  const w = typeof window !== 'undefined' ? window : null;
+  let text = '';
+  let ipcError = null;
+
+  if (w?.electron?.pluginHttpGet) {
+    try {
+      const r = await w.electron.pluginHttpGet(url);
+      if (r && r.ok && typeof r.body === 'string') {
+        text = stripUtf8Bom(r.body);
+      } else {
+        ipcError = new Error(r?.error || 'pluginHttpGet failed');
+      }
+    } catch (e) {
+      ipcError = e;
+    }
+  }
+
+  if (!text) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      text = stripUtf8Bom(await res.text());
+    } catch (e) {
+      throw ipcError || e;
+    }
+  }
+
+  return text.trimStart();
+}
+
+async function getInstalledPluginIdsNormalized() {
+  const raw = await storage.get('cultiva-installed-plugins');
+  return Array.isArray(raw) ? raw : [];
+}
+
 const plugins = new Map();
 /** @type {Record<string, string[]>} hookName -> pluginIds that subscribed (deduped) */
 const pluginHooks = {
@@ -110,7 +158,7 @@ export const pluginManager = {
 
     await storage.init();
 
-    const installed = (await storage.get('cultiva-installed-plugins')) || [];
+    const installed = await getInstalledPluginIdsNormalized();
     console.log('[PluginManager] Installed plugins:', installed);
 
     for (const pluginId of installed) {
@@ -162,6 +210,11 @@ export const pluginManager = {
     try {
       console.log('[PluginManager] Loading plugin from disk:', pluginId);
 
+      if (!window.electron?.readPluginFile) {
+        console.warn('[PluginManager] Plugin files API unavailable (not running in Electron?)');
+        return false;
+      }
+
       const manifestJson = await window.electron.readPluginFile(`${pluginId}/manifest.json`);
 
       if (!manifestJson) {
@@ -169,7 +222,7 @@ export const pluginManager = {
         return false;
       }
 
-      const manifest = JSON.parse(manifestJson);
+      const manifest = JSON.parse(stripUtf8Bom(manifestJson).trim());
       console.log('[PluginManager] Manifest loaded:', manifest.name, 'v' + manifest.version);
 
       if (manifest.minAppVersion) {
@@ -327,10 +380,15 @@ export const pluginManager = {
   async installPlugin(pluginId) {
     console.log('[PluginManager] Installing plugin:', pluginId);
 
-    const response = await fetch(REGISTRY_URL);
-    const registry = await response.json();
+    if (!window.electron?.installPlugin) {
+      throw new Error('Plugin install is only available in the desktop app');
+    }
 
-    const pluginInfo = registry.plugins.find((p) => p.id === pluginId);
+    const registryText = await fetchPluginHttpText(REGISTRY_URL);
+    const registry = JSON.parse(stripUtf8Bom(registryText).trim());
+    const pluginList = Array.isArray(registry.plugins) ? registry.plugins : [];
+
+    const pluginInfo = pluginList.find((p) => p.id === pluginId);
     if (!pluginInfo) {
       throw new Error('Plugin not found in registry');
     }
@@ -338,11 +396,8 @@ export const pluginManager = {
     const sh = pluginInfo.sha256 && typeof pluginInfo.sha256 === 'object' ? pluginInfo.sha256 : {};
     const base = String(pluginInfo.baseUrl).replace(/\/$/, '');
 
-    const manifestRes = await fetch(`${base}/manifest.json`);
-    if (!manifestRes.ok) {
-      throw new Error(`Could not fetch plugin manifest (HTTP ${manifestRes.status})`);
-    }
-    const manifest = await manifestRes.json();
+    const manifestText = await fetchPluginHttpText(`${base}/manifest.json`);
+    const manifest = JSON.parse(stripUtf8Bom(manifestText).trim());
     const entryFile = typeof manifest.entry === 'string' && manifest.entry.trim() ? manifest.entry.trim() : 'index.js';
 
     const files = [
@@ -363,7 +418,7 @@ export const pluginManager = {
     const success = await window.electron.installPlugin(pluginId, files);
 
     if (success) {
-      const installed = (await storage.get('cultiva-installed-plugins')) || [];
+      const installed = await getInstalledPluginIdsNormalized();
       if (!installed.includes(pluginId)) {
         installed.push(pluginId);
         await storage.set('cultiva-installed-plugins', installed);
@@ -400,7 +455,7 @@ export const pluginManager = {
 
     await window.electron.uninstallPlugin(pluginId);
 
-    const installed = (await storage.get('cultiva-installed-plugins')) || [];
+    const installed = await getInstalledPluginIdsNormalized();
     const index = installed.indexOf(pluginId);
     if (index > -1) {
       installed.splice(index, 1);
@@ -422,18 +477,19 @@ export const pluginManager = {
 
   async getAvailablePlugins() {
     try {
-      const response = await fetch(REGISTRY_URL);
-      const registry = await response.json();
+      const registryText = await fetchPluginHttpText(REGISTRY_URL);
+      const registry = JSON.parse(stripUtf8Bom(registryText).trim());
+      const list = Array.isArray(registry.plugins) ? registry.plugins : [];
 
-      const installed = (await storage.get('cultiva-installed-plugins')) || [];
+      const installed = await getInstalledPluginIdsNormalized();
 
-      return registry.plugins.map((p) => ({
+      return list.map((p) => ({
         ...p,
         installed: installed.includes(p.id)
       }));
     } catch (e) {
       console.error('[PluginManager] Failed to fetch registry:', e);
-      return [];
+      throw e;
     }
   },
 

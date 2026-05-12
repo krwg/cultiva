@@ -85,6 +85,76 @@ function assertSafeRelativeFileName(name) {
   }
 }
 
+/**
+ * HTTPS GET returning UTF-8 body (for registry / manifest in main process — avoids renderer CSP limits).
+ * @param {string} urlString
+ * @param {number} maxBytes
+ * @returns {Promise<string>}
+ */
+function httpsGetText(urlString, maxBytes = 8 * 1024 * 1024) {
+  return new Promise((resolve, reject) => {
+    const run = (currentUrl, redirectCount) => {
+      if (redirectCount > MAX_REDIRECTS) {
+        reject(new Error('Too many redirects'));
+        return;
+      }
+
+      assertAllowedDownloadUrl(currentUrl);
+
+      https.get(currentUrl, (response) => {
+        const status = response.statusCode || 0;
+        if (status === 301 || status === 302 || status === 303 || status === 307 || status === 308) {
+          response.resume();
+          const loc = response.headers.location;
+          if (!loc) {
+            reject(new Error('Redirect without Location header'));
+            return;
+          }
+          let nextUrl;
+          try {
+            nextUrl = new URL(loc, currentUrl).href;
+          } catch {
+            reject(new Error('Invalid redirect URL'));
+            return;
+          }
+          try {
+            assertAllowedDownloadUrl(nextUrl);
+          } catch (e) {
+            reject(e);
+            return;
+          }
+          run(nextUrl, redirectCount + 1);
+          return;
+        }
+
+        if (status !== 200) {
+          response.resume();
+          reject(new Error(`HTTP ${status}`));
+          return;
+        }
+
+        const chunks = [];
+        let total = 0;
+        response.on('data', (chunk) => {
+          total += chunk.length;
+          if (total > maxBytes) {
+            response.destroy();
+            reject(new Error('Response too large'));
+            return;
+          }
+          chunks.push(chunk);
+        });
+        response.on('end', () => {
+          resolve(Buffer.concat(chunks).toString('utf8'));
+        });
+        response.on('error', reject);
+      }).on('error', reject);
+    };
+
+    run(String(urlString || ''), 0);
+  });
+}
+
 function downloadFile(urlString, destPath) {
   assertAllowedDownloadUrl(urlString);
 
@@ -151,6 +221,16 @@ function downloadFile(urlString, destPath) {
 }
 
 function setupPluginIPC() {
+  ipcMain.handle('plugin:http-get', async (event, urlString) => {
+    try {
+      const body = await httpsGetText(String(urlString || ''));
+      return { ok: true, body };
+    } catch (e) {
+      console.error('[Plugin IPC] http-get failed:', urlString, e);
+      return { ok: false, error: e && e.message ? e.message : String(e) };
+    }
+  });
+
   ipcMain.handle('plugin:read-file', async (event, filePath) => {
     try {
       const fullPath = resolveUnderPluginRoot(filePath);

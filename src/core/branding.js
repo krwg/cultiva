@@ -4,11 +4,11 @@
 
 export const BRANDING = {
   APP_NAME: 'Cultiva',
-  CORE_ENGINE: 'CoreV2',         
+  CORE_ENGINE: 'CoreV3',         
   HABIT_ENGINE: 'GrowthKit2',      
   DATABASE: 'IDB2',               
-  VERSION: '0.4.0-beta.1',
-  CODENAME: 'Beta',
+  VERSION: '0.4.0',
+  CODENAME: 'Coconut',
   
   KEYS: {
     SESSION: 'cultiva_current_session',

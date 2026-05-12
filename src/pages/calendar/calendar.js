@@ -4,6 +4,8 @@ import { habits } from '../../modules/habits.js';
 import { BRANDING } from '../../core/branding.js';
 import { getHolidaysForRegion, getHolidayForDate } from '../../core/holidays.js';
 import { getCultivaTimezone } from '../../core/timezone.js';
+import { getThemeBodyClassList, resolveThemeBodyId, LS_CUSTOM_BG_DATA } from '../../core/theme-config.js';
+import { applyAmbientBackground, readCustomBackgroundDataUrl } from '../../core/ambient-bg.js';
 
 document.documentElement.dataset.page = 'calendar';
 
@@ -60,97 +62,19 @@ function loadHolidays() {
 
 function syncTheme() {
   const theme = localStorage.getItem('cultiva-theme') || 'auto';
-  document.body.classList.remove(
-    'theme-light', 'theme-dark', 'theme-pink', 'theme-moon',
-    'theme-evergreen', 'theme-blossom', 'theme-ocean', 'theme-sunset',
-    'theme-frost', 'theme-cedar', 'theme-dusk', 'theme-meadow'
-  );
-  
-  let appliedTheme = theme;
-  if (appliedTheme === 'auto') {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    appliedTheme = isDark ? 'dark' : 'light';
-  }
-  
+  document.body.classList.remove(...getThemeBodyClassList());
+  const appliedTheme = resolveThemeBodyId(theme);
   document.body.classList.add(`theme-${appliedTheme}`);
   log('Theme synced:', appliedTheme);
 }
 
 function syncBackground() {
-  const bg = localStorage.getItem('cultiva-background') || 'none';
-  ['aurora', 'rainfall', 'starlight', 'snowfall', 'fireflies'].forEach(id => {
-    const el = document.getElementById(`bg-${id}`);
-    if (el) { el.style.display = 'none'; }
-  });
-  document.body.classList.remove(
-    'with-bg-aurora', 'with-bg-rainfall', 'with-bg-starlight',
-    'with-bg-snowfall', 'with-bg-fireflies'
-  );
-  
-  if (bg === 'none') { return; }
-  const container = document.getElementById(`bg-${bg}`);
-  if (container) {
-    container.style.display = 'block';
-    document.body.classList.add(`with-bg-${bg}`);
-    if (bg === 'rainfall') { generateRaindrops(container); }
-    if (bg === 'starlight') { generateStars(container); }
-    if (bg === 'snowfall') { generateSnowflakes(container); }
-    if (bg === 'fireflies') { generateFireflies(container); }
+  let bg = localStorage.getItem('cultiva-background') || 'none';
+  if (bg === 'custom' && !readCustomBackgroundDataUrl()) {
+    bg = 'none';
   }
+  applyAmbientBackground(document, document.body, bg);
   log('Background synced:', bg);
-}
-
-function generateRaindrops(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 50; i++) {
-    const drop = document.createElement('div');
-    drop.className = 'rain-drop';
-    drop.style.left = `${Math.random() * 100}%`;
-    drop.style.animationDelay = `${Math.random() * 2}s`;
-    drop.style.animationDuration = `${1 + Math.random() * 1}s`;
-    container.appendChild(drop);
-  }
-}
-
-function generateStars(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 100; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.top = `${Math.random() * 100}%`;
-    star.style.animationDelay = `${Math.random() * 3}s`;
-    star.style.animationDuration = `${2 + Math.random() * 4}s`;
-    container.appendChild(star);
-  }
-}
-
-function generateSnowflakes(container) {
-  container.innerHTML = '';
-  const snowflakes = ['❄️', '❅', '❆', '✻', '✼', '❉'];
-  for (let i = 0; i < 40; i++) {
-    const flake = document.createElement('div');
-    flake.className = 'snowflake';
-    flake.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
-    flake.style.left = `${Math.random() * 100}%`;
-    flake.style.fontSize = `${0.8 + Math.random() * 1.5}em`;
-    flake.style.animationDelay = `${Math.random() * 5}s`;
-    flake.style.animationDuration = `${5 + Math.random() * 7}s`;
-    container.appendChild(flake);
-  }
-}
-
-function generateFireflies(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 25; i++) {
-    const fly = document.createElement('div');
-    fly.className = 'firefly';
-    fly.style.left = `${Math.random() * 100}%`;
-    fly.style.top = `${20 + Math.random() * 60}%`;
-    fly.style.animationDelay = `${Math.random() * 8}s`;
-    fly.style.animationDuration = `${6 + Math.random() * 10}s`;
-    container.appendChild(fly);
-  }
 }
 
 /* ============================================ */
@@ -818,14 +742,14 @@ function applyI18n() {
 
 let renderTimeout;
 window.addEventListener('storage', (e) => {
-  const relevantKeys = ['cultiva_calendar_events', 'cultiva-lang', 'cultiva-theme', 'cultiva-background', 'cultiva-timezone', 'cultiva-holiday-region'];
+  const relevantKeys = ['cultiva_calendar_events', 'cultiva-lang', 'cultiva-theme', 'cultiva-background', LS_CUSTOM_BG_DATA, 'cultiva-timezone', 'cultiva-holiday-region'];
   if (!relevantKeys.includes(e.key)) { return; }
   
   clearTimeout(renderTimeout);
   renderTimeout = setTimeout(() => {
     if (e.key === 'cultiva-lang') { applyI18n(); }
     if (e.key === 'cultiva-theme') { syncTheme(); }
-    if (e.key === 'cultiva-background') { syncBackground(); }
+    if (e.key === 'cultiva-background' || e.key === LS_CUSTOM_BG_DATA) { syncBackground(); }
     if (e.key === 'cultiva_calendar_events') { loadEvents(); }
     if (e.key === 'cultiva-timezone') { goToToday(); }
     if (e.key === 'cultiva-holiday-region') { loadHolidays(); }
