@@ -23,7 +23,7 @@ Cultiva is an **offline-first desktop habit tracker** built around a simple idea
 
 ## Download
 
-**[→ Latest release](https://github.com/krwg/Cultiva/releases/latest)**
+**[→ Latest release](https://github.com/krwg/Cultiva/releases/latest)** · **[Release notes (0.4.0)](docs/RELEASE_0.4.0.md)**
 
 | Format | Best for |
 |--------|----------|
@@ -76,6 +76,8 @@ Browse, install, and manage plugins under **Settings → Plugins**.
 | **Radio** | Ambient streams (e.g. lofi, jazz) |
 
 **Authors:** see [`docs/PLUGIN_AUTHOR_GUIDE.md`](docs/PLUGIN_AUTHOR_GUIDE.md) in this repo for the manifest, sandbox API, and a release checklist. The public registry and boilerplate live in [**CultivaPlugins**](https://github.com/krwg/CultivaPlugins).
+
+**Wiki (GitHub):** Markdown source for the project wiki lives in **`wiki/`** (gitignored by default). See [`docs/WIKI.md`](docs/WIKI.md) for how to publish those pages to GitHub Wiki.
 
 ---
 

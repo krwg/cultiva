@@ -1,132 +1,266 @@
-# Cultiva plugins guide
+# Cultiva Plugin Author Guide
 
-This document is for developers who publish plugins in **[CultivaPlugins](https://github.com/krwg/CultivaPlugins)**. The Cultiva app **downloads** manifests and files from GitHub (HTTPS) and installs them under the user profile (`userData/cultiva-plugins`). The `plugins/` folder in the **Cultiva** or **CultivaPlugins** repo is only for **development and publishing**; the running app does **not** read plugin code from your local project tree.
-
----
-
-## 1. Repository layout (store)
-
-Each plugin is a folder at the root of the CultivaPlugins repo, for example:
-
-```
-weather/
-  manifest.json
-  index.js
-  styles.css        # optional, listed in manifest.styles
-```
-
-The **registry** (`registry.json` at repo root) lists each plugin with `id`, `baseUrl` (raw GitHub URL to that folder), `version`, `minAppVersion`, etc. The app fetches `registry.json`, then installs by downloading `manifest.json`, the entry script, and any `manifest.styles` files from `baseUrl`.
+> **Audience:** developers publishing plugins in **[CultivaPlugins](https://github.com/krwg/CultivaPlugins)** and anyone extending the **desktop (Electron)** app.  
+> **Runtime model:** the Cultiva client **downloads** manifests and files over HTTPS and installs them under the user profile (`userData/cultiva-plugins`). The `plugins/` folder in the **Cultiva** or **CultivaPlugins** repo is for **development & publishing only** — the running app does **not** read your local repo path at runtime.
 
 ---
 
-## 2. `manifest.json`
+## Table of contents
+
+1. [Architecture at a glance](#1-architecture-at-a-glance)  
+2. [Store repository layout](#2-store-repository-layout)  
+3. [`manifest.json` reference](#3-manifestjson-reference)  
+4. [Entry script & sandbox lifecycle](#4-entry-script--sandbox-lifecycle)  
+5. [`context` API](#5-context-api)  
+6. [Main-window UI bridge (Cultiva ≥ 0.4.0)](#6-main-window-ui-bridge-cultiva--040)  
+7. [`hooks` API](#7-hooks-api)  
+8. [Security & constraints](#8-security--constraints)  
+9. [Versioning & publishing](#9-versioning--publishing)  
+10. [Checklist & troubleshooting](#10-checklist--troubleshooting)  
+
+---
+
+## 1. Architecture at a glance
+
+```mermaid
+flowchart LR
+  subgraph Store["CultivaPlugins (GitHub)"]
+    R[registry.json]
+    M[manifest.json + index.js + styles]
+  end
+  subgraph App["Cultiva Electron"]
+    PM[plugin-manager]
+    SH[PluginSandboxHost iframe]
+    MW[Main window DOM]
+  end
+  R -->|HTTPS| PM
+  PM -->|read / install| M
+  PM --> SH
+  SH <-->|postMessage| PM
+  PM -->|inject CSS / mount UI| MW
+```
+
+| Component | Role |
+|-----------|------|
+| **Registry** | JSON list of plugin ids, versions, `baseUrl` (raw GitHub URL to the plugin folder). |
+| **Manifest** | Declares id, entry file, optional `styles`, `minAppVersion`, marketing fields. |
+| **Sandbox iframe** | Opaque-origin iframe; plugin code is executed as the body of `new Function('context','hooks', source)`. |
+| **`plugin-manager` (renderer)** | Loads sandbox, wires RPC (`storage`, `ui.showNotification`), **main-window sheet/header/garden** bridge, injects CSS from `manifest.styles`. |
+
+---
+
+## 2. Store repository layout
+
+Each plugin is a **top-level folder** in the CultivaPlugins repo:
+
+```
+your-plugin-id/
+  manifest.json      # required
+  index.js           # required (or path in manifest.entry)
+  styles.css         # optional; list in manifest.styles
+```
+
+The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`manifest.json`**, the **entry** script, and every file listed in **`manifest.styles`**.
+
+---
+
+## 3. `manifest.json` reference
 
 | Field | Required | Description |
-|--------|----------|-------------|
-| `id` | yes | Lowercase id, letters/digits/`_`/`-` only (must match install folder name). |
-| `name`, `version`, `description`, `icon` | yes | Shown in Settings → Plugins. |
-| `entry` | yes | Filename of the main script (e.g. `index.js`). |
-| `styles` | no | Array of CSS paths relative to the plugin folder; the **app** injects them into the main window (you do not call `window.electron` from plugin code). |
-| `minAppVersion` | recommended | Minimum Cultiva version, e.g. `0.4.0`. |
+|-------|----------|-------------|
+| `id` | **yes** | Lowercase plugin folder name; letters, digits, `_`, `-` only. |
+| `name` | **yes** | Human-readable name (Settings → Plugins). |
+| `version` | **yes** | SemVer string; must match the version you advertise in `registry.json`. |
+| `description` | **yes** | Short summary for the store UI. |
+| `icon` | **yes** | Emoji or short string shown in the list (can be empty `""` if you prefer text-only). |
+| `entry` | **yes** | Entry script filename (default `index.js` if omitted in older docs). |
+| `styles` | no | Array of CSS paths **relative to the plugin folder**; injected into the **main** window `<head>`. |
+| `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Use **`0.4.0`** if you depend on [**main-window UI**](#6-main-window-ui-bridge-cultiva--040). |
 
-Example:
+**Minimal example**
 
 ```json
 {
-  "id": "weather",
-  "name": "Weather Widget",
-  "version": "1.6.1",
+  "id": "example",
+  "name": "Example",
+  "version": "1.0.0",
+  "description": "Demonstrates header + sheet.",
+  "icon": "✦",
   "entry": "index.js",
   "styles": ["styles.css"],
-  "minAppVersion": "0.4.0",
-  "icon": "🌤️",
-  "description": "Shows weather in the header."
+  "minAppVersion": "0.4.0"
 }
 ```
 
 ---
 
-## 3. Entry script (sandbox)
+## 4. Entry script & sandbox lifecycle
 
-Plugin code runs inside a **sandboxed iframe** (no `window.electron`, no access to the main DOM). The host loads your file as the **body** of a function:
+The host wraps your file like this:
 
 ```js
 (function (context, hooks) {
-  // YOUR FILE CONTENT HERE — must end by returning the plugin instance
+  /* YOUR PLUGIN SOURCE */
 })(context, hooks);
 ```
 
-So your `index.js` should look like a **class + return**:
+You **must** end the file by **returning an instance** (typically `return new MyPlugin(context, hooks);`).
+
+### Lifecycle methods
+
+| Method | When |
+|--------|------|
+| **`async onEnable()`** | After the instance is constructed; use for `registerHeaderItem`, loading settings, timers. |
+| **`onDisable()`** | Plugin unload / disable; clear intervals, release audio handles, etc. |
+
+### Instance methods & the host proxy
+
+The renderer builds an **`instanceProxy`** that forwards `INVOKE_INSTANCE` into the sandbox. Method names are collected from the **prototype chain** of your instance, so **ES `class` plugins** behave the same as plain objects.
+
+The header chip may call a **known modal method** on the proxy (e.g. `openWeatherModal`, `openSettingsModal`, `openRadioModal`, `openModal`) **or** fall back to the sandbox **`onClick`** handler from `registerHeaderItem`.
+
+---
+
+## 5. `context` API
+
+### `context.manifest`
+
+Parsed `manifest.json` object.
+
+### `context.storage`
+
+| Call | Semantics |
+|------|-----------|
+| `await context.storage.get(key)` | Per-plugin key/value (async). Keys are namespaced by the host. |
+| `await context.storage.set(key, value)` | Persist a JSON-serializable value. |
+
+### `context.ui` — always available
+
+| Method | Description |
+|--------|-------------|
+| **`registerHeaderItem({ label, icon, onClick? })`** | Registers a chip in the **main** window header. `onClick` runs **inside the sandbox** when the user activates the chip (unless a matching **instance method** handles the click first). |
+| **`registerGardenWidget({ position?, render, onTapMethod? })`** | Registers a garden widget. Inside **`render(relay)`**, set **`relay.innerHTML = '...'`** **or** call **`relay.appendChild(node)`** (the host serializes `outerHTML` to the main document). Optional **`onTapMethod`**: string name of an **instance method** invoked in the main window when the user clicks the injected block (e.g. `'openWeatherModal'`). |
+| **`updateGardenHtml(html)`** | After registration, pushes new inner HTML for the same garden wrapper. |
+| **`showNotification(icon, text)`** | Shows a toast in the main app (`icon` string first, then `text`). |
+
+---
+
+## 6. Main-window UI bridge (Cultiva ≥ 0.4.0)
+
+Plugin JavaScript **cannot** call `document.querySelector` on the Cultiva window — it only sees the **sandbox document**. Anything that must appear **on top of the real app** (modals, sheets, live header text) goes through the bridge below.
+
+### Sheet API
+
+| Method | Purpose |
+|--------|---------|
+| **`context.ui.openMainSheet(html)`** | Mounts a modal **sheet** in the main window (`position: fixed`, full-screen dim + your markup). |
+| **`context.ui.closeMainSheet()`** | Removes the sheet for your plugin. |
+
+**Markup contract:** use **`data-*`** attributes so the host can delegate events without executing arbitrary `<script>` tags from your HTML (inline scripts in injected HTML are not a supported pattern).
+
+### Header updates
+
+| Method | Purpose |
+|--------|---------|
+| **`context.ui.updateMainHeader({ label?, icon?, labelColor? })`** | Updates the header chip. Pass **`icon: ''`** for a text-only chip. Optional **`labelColor`** (CSS color) for dynamic styling (e.g. rainbow clock). |
+
+### Delegated actions (main window → sandbox)
+
+The host forwards user interaction as **`MODAL_ACTION`** with `(action, payload)` to **`onModalAction`** on your plugin instance if you implement it.
+
+**Clicks** — target element or ancestor with **`data-cultiva-act`**:
+
+| Attribute | Behaviour |
+|-----------|-----------|
+| `data-cultiva-act="close"` | Closes the sheet (also Escape on the sheet root). |
+| `data-cultiva-act="yourAction"` | Forwards **`yourAction`** with a merged **payload**: JSON from **`data-cultiva-payload`**, geographic fields **`data-lat` / `data-lon` / `data-city`**, **`data-tz`**, **`data-station`**, **`data-minutes`**, and optionally **`data-cultiva-collect="1"`** on a control (collects named fields inside the nearest **`.cultiva-sheet-card`**). |
+
+**`change` events** — element with **`data-cultiva-change-act="name"`** → `action === "name"`, payload includes **`value`** and relevant `dataset` fields.
+
+**`input` events** — element with **`data-cultiva-input-act="search"`** → `action === "input:search"`, payload `{ value }`.
+
+Implement:
 
 ```javascript
-class MyPlugin {
-  constructor(context, hooks) {
-    this.context = context;
-    this.hooks = hooks;
-  }
-
-  async onEnable() {
-    const saved = await this.context.storage.get('settings');
-    this.context.ui.registerHeaderItem({
-      label: 'Hello',
-      icon: '👋',
-      onClick: () => this.sayHi()
-    });
-  }
-
-  sayHi() {
-    this.context.ui.showNotification('👋', 'Hello from my plugin');
-  }
-
-  onDisable() {
-    // cleanup timers, etc.
-  }
+async onModalAction(action, payload) {
+  if (action === 'close') { /* host already closed; optional cleanup */ return; }
+  if (action === 'save' && payload) { /* apply payload */ }
 }
-
-return new MyPlugin(context, hooks);
 ```
 
-### `context`
+### Styling sheets
 
-- **`context.manifest`** — parsed `manifest.json`.
-- **`context.storage.get(key)` / `context.storage.set(key, value)`** — async key/value scoped per plugin (persisted by the app).
-- **`context.ui.registerHeaderItem({ label, icon, onClick? })`** — header chip; `onClick` runs in the sandbox when the user clicks.
-- **`context.ui.registerGardenWidget({ position, render })`** — `render` receives a relay object: set **`relay.innerHTML = '...'`** to push HTML into the main garden (sanitized path; no `appendChild` on real DOM).
-- **`context.ui.showNotification(icon, text)`** — toast in the main app (`icon` first, then `text`).
-
-### `hooks`
-
-- **`hooks.on('onAppStart', fn)`**, **`hooks.on('onHabitComplete', fn)`**, etc. — subscribe to documented hooks; the sandbox notifies the host.
-
-### Not allowed in the sandbox
-
-- `window.electron`, `require`, `fetch` to `file:` URLs, or direct DOM access to the main window. Use `context` / `hooks` only. **CSS** goes through `manifest.styles` (injected by Cultiva).
+Ship rules in **`manifest.styles`** for classes such as **`.cultiva-sheet-card`**, **`.cultiva-sheet-overlay`**, **`.cultiva-pill`**, etc., so your sheet matches Cultiva tokens (`var(--bg-primary)`, `var(--text-primary)`, …).
 
 ---
 
-## 4. Optional modal methods
+## 7. `hooks` API
 
-If you register a header item and expose methods on the instance (e.g. `openSettingsModal`), the host may wire the chip to that method when the name matches known patterns. Prefer **`onClick`** in `registerHeaderItem` for new plugins.
+Subscribe with **`hooks.on(hookName, callback)`**. Available hook names are defined by the host; common examples include:
 
----
+- `onAppStart`
+- `onHabitComplete`
+- `onSettingsChange`
 
-## 5. Versioning and store updates
-
-1. Bump `version` in `manifest.json`.
-2. Bump the same version in `registry.json` for that plugin’s entry.
-3. Commit and push to `main` on CultivaPlugins.
-
-Users install or update from **Settings → Plugins**; the app re-downloads files from `baseUrl` on install.
+The sandbox registers interest via postMessage; the host invokes **`INVOKE_HOOK`** when events fire.
 
 ---
 
-## 6. Quick checklist before PR
+## 8. Security & constraints
 
-- [ ] Valid JSON in `manifest.json`; `entry` file exists.
-- [ ] `return new YourPlugin(context, hooks);` at end of `index.js`.
-- [ ] No `window.electron` or main-window DOM assumptions.
-- [ ] Styles listed in `manifest.styles` if you ship CSS.
-- [ ] `minAppVersion` set to the lowest Cultiva build you tested.
-- [ ] `registry.json` updated with correct `baseUrl` and version.
+| Rule | Reason |
+|------|--------|
+| **No `window.electron`** in sandbox | Prevents privileged renderer access. |
+| **No main-window DOM from sandbox** | Prevents XSS / confused-deputy issues; use the bridge APIs. |
+| **No `fetch` to `file:`** | Blocked by sandbox policy. |
+| **CSS only via `manifest.styles`** | Keeps styling auditable and scoped to trusted file list. |
+| **Escape user-controlled strings** in HTML you inject | Treat sheet HTML like any templated UI — encode or sanitize text. |
 
-For questions, open an issue on [CultivaPlugins](https://github.com/krwg/CultivaPlugins).
+The host maintains a **CSP** and RPC **allowlist** (`storage.get` / `storage.set` / `ui.showNotification`). Do not rely on undocumented RPC channels.
+
+---
+
+## 9. Versioning & publishing
+
+1. Bump **`version`** in `manifest.json`.  
+2. Bump the same version for that plugin in **`registry.json`**.  
+3. Push to **`main`** on CultivaPlugins.  
+
+Users install or update from **Settings → Plugins**; the client re-downloads files from `baseUrl`.
+
+---
+
+## 10. Checklist & troubleshooting
+
+### Pre-flight checklist
+
+- [ ] Valid JSON in `manifest.json`; `entry` file exists and is UTF-8 (no BOM issues).  
+- [ ] Final line: `return new YourPlugin(context, hooks);`  
+- [ ] No `window.electron` or direct main-DOM access — use **`openMainSheet`**, **`updateMainHeader`**, garden relay.  
+- [ ] Styles listed in `manifest.styles` if you ship CSS.  
+- [ ] **`minAppVersion`** reflects the lowest Cultiva build you tested (**`0.4.0`** if you use the main-window bridge).  
+- [ ] `registry.json` **`baseUrl`** points at **raw** GitHub paths for your folder.  
+
+### Common issues
+
+| Symptom | Likely cause |
+|---------|----------------|
+| Header chip never updates | Use **`updateMainHeader`** instead of querying DOM from sandbox. |
+| Modal “does nothing” / invisible | You appended to **sandbox** `document.body` — use **`openMainSheet`**. |
+| Garden empty | Use **`relay.innerHTML`** or **`appendChild`** on the relay; ensure **`registerGardenWidget`** ran. |
+| `openWeatherModal` not called from garden | Pass **`onTapMethod: 'openWeatherModal'`** (or your method name) in **`registerGardenWidget`**. |
+| Portable / Windows icon errors (app repo) | Ensure `prebuild` runs **`sync-build-icon.mjs`** so **`build/icon.ico`** includes **256×256**. |
+
+---
+
+### Links
+
+| Resource | URL |
+|----------|-----|
+| Cultiva (desktop) | https://github.com/krwg/Cultiva |
+| CultivaPlugins (store) | https://github.com/krwg/CultivaPlugins |
+| Latest Cultiva release | https://github.com/krwg/Cultiva/releases/latest |
+
+---
+
+*This guide tracks the **0.4.0** plugin surface. When in doubt, inspect `src/core/plugin-sandbox-host.js` and `src/core/plugin-manager.js` in the Cultiva repo for the authoritative protocol.*

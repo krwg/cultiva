@@ -59,6 +59,7 @@ $RECYCLE.BIN/
 .cproject
 *.sublime-project
 *.sublime-workspace
+.cursor
 
 # === TYPESCRIPT ===
 *.tsbuildinfo
@@ -87,3 +88,9 @@ notes.txt
 CODE-STANDARDS.md
 plugins/
 plugins
+
+# === LOCAL WIKI (Markdown for GitHub Wiki — see docs/WIKI.md) ===
+wiki/
+
+PLUGIN_AUTHOR_GUIDE.md
+WIKI.md
