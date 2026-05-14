@@ -24,6 +24,8 @@ import {
   openQuantityLogModal,
   completeQuantityLogWithValue
 } from './app/modals.js';
+import { applyBranding, showNotification } from './app/ui-shell.js';
+import { applyTranslations } from './app/i18n-dom.js';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
@@ -60,18 +62,6 @@ configureModals({
   quantityLogDesc,
   quantityLogLabel
 });
-
-function applyBranding() {
-  document.title = `${BRANDING.APP_TITLE} | Home`;
-  document.querySelectorAll('.footer-version').forEach(el => {
-    el.textContent = BRANDING.FOOTER_TEXT;
-  });
-  
-  const aboutVersion = document.getElementById('about-version-display');
-  if (aboutVersion) {
-    aboutVersion.textContent = `Version [${BRANDING.VERSION}] ${BRANDING.CODENAME} Desktop`;
-  }
-}
 
 /* ============================================ */
 /* AVATAR DATA                                  */
@@ -278,85 +268,6 @@ function applySettings() {
   localStorage.setItem('cultiva-theme', settings.theme);
   localStorage.setItem('cultiva-lang', settings.lang);
   console.log('[Settings] Applied theme:', appliedTheme);
-}
-/* ============================================ */
-/* i18n                                         */
-/* ============================================ */
-
-function applyTranslations(lang) {
-  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
-    
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    if (t[key]) {
-      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-        el.placeholder = t[key];
-      } else {
-        el.textContent = t[key];
-      }
-    }
-  });
-
-  document.querySelectorAll('optgroup[data-i18n-label]').forEach(og => {
-    const key = og.dataset.i18nLabel;
-    if (key && t[key]) {
-      og.label = t[key];
-    }
-  });
-
-  if (themeSelect) {
-    Array.from(themeSelect.options).forEach(option => {
-      const key = option.dataset.i18n;
-      if (key && t[key]) {
-        option.textContent = t[key];
-      }
-    });
-  }
-
-  const bgSelect = document.getElementById('bg-select');
-  if (bgSelect) {
-    Array.from(bgSelect.options).forEach(option => {
-      const key = option.dataset.i18n;
-      if (key && t[key]) {
-        option.textContent = t[key];
-      }
-    });
-  }
-
-  const today = getTodayStr();
-
-  const addOpenBtn = document.getElementById('open-add-modal');
-  if (addOpenBtn && t.addHabitShortcutHint) {
-    addOpenBtn.title = `${t.addHabit || ''} — ${t.addHabitShortcutHint}`;
-  }
-    
-  document.querySelectorAll('.habit-card .btn-card-primary').forEach(btn => {
-    const card = btn.closest('.habit-card');
-    if (!card) { return; }
-    const id = card.dataset.id;
-    const habit = habits.getAll().find(h => h.id === id);
-    if (!habit) { return; }
-        
-    const isCompleted = habit.trackType === 'binary' 
-      ? habit.lastCompleted === today 
-      : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
-            
-    if (isCompleted) {
-      btn.textContent = t.done || 'Done';
-    } else {
-      btn.textContent = habit.trackType === 'quantity' ? (t.log || 'Log') : (t.complete || 'Complete');
-    }
-  });
-    
-  const doneBtn = document.getElementById('close-stats');
-  if (doneBtn) { doneBtn.textContent = t.done || 'Done'; }
-    
-  document.querySelectorAll('[data-i18n-category]').forEach(el => {
-    const cat = el.dataset.i18nCategory;
-    if (t.categories && t.categories[cat]) {
-      el.textContent = t.categories[cat];
-    }
-  });
 }
 
 /* ============================================ */
@@ -1214,41 +1125,6 @@ function initAvatarPicker() {
 
   modal.querySelector('.modal-close')?.addEventListener('click', () => closeModal(modal));
   modal.querySelector('.modal-overlay')?.addEventListener('click', () => closeModal(modal));
-}
-
-/* ============================================ */
-/* NOTIFICATIONS                                */
-/* ============================================ */
-
-function showNotification(icon, text, subText = '', actionText = '', actionCallback = null) {
-  if (arguments.length === 1) { text = icon; icon = ''; }
-    
-  const existing = document.querySelector('.dynamic-notification');
-  if (existing) { existing.remove(); }
-    
-  const notification = document.createElement('div');
-  notification.className = 'dynamic-notification';
-  const iconHtml = icon ? `<span class="dynamic-notification-icon">${icon}</span>` : '';
-    
-  notification.innerHTML = `
-        ${iconHtml}
-        <div class="dynamic-notification-content">
-            <span class="dynamic-notification-text">${text}</span>
-            ${subText ? `<span class="dynamic-notification-sub">${subText}</span>` : ''}
-        </div>
-        ${actionText && actionCallback ? `<button class="dynamic-notification-btn">${actionText}</button>` : ''}
-    `;
-    
-  document.body.appendChild(notification);
-  if (actionCallback && actionText) {
-    notification.querySelector('.dynamic-notification-btn').addEventListener('click', actionCallback);
-  }
-    
-  setTimeout(() => notification.classList.add('visible'), 100);
-  setTimeout(() => {
-    notification.classList.remove('visible');
-    setTimeout(() => notification.remove(), 300);
-  }, 4000);
 }
 
 /* ============================================ */
