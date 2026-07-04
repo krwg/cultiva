@@ -500,7 +500,7 @@ export class PluginSandboxHost {
         }
       });
     } catch {
-
+      void 0;
     }
     window.removeEventListener('message', this._onMessage);
     if (this.iframe) {

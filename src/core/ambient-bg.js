@@ -93,7 +93,9 @@ export function saveCustomBackgroundFromFile(file) {
 export function clearCustomBackground() {
   try {
     localStorage.removeItem(LS_CUSTOM_BG_DATA);
-  } catch {  }
+  } catch {
+    void 0;
+  }
 }
 
 function generateRaindrops(container) {
