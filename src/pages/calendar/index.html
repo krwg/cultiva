@@ -9,9 +9,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon.ico">
 </head>
 <body class="calendar-page">
-    <!-- ============================================ -->
-    <!-- HEADER                                       -->
-    <!-- ============================================ -->
+
     <header class="app-header calendar-header">
         <div class="header-content calendar-nav">
             <a href="../../index.html" class="calendar-back">← <span data-i18n="backBtn">Back</span></a>
@@ -24,9 +22,6 @@
         </div>
     </header>
 
-    <!-- ============================================ -->
-    <!-- MAIN                                         -->
-    <!-- ============================================ -->
     <main class="calendar-container calendar-body">
         <div class="calendar-grid">
             <div class="calendar-header-top">
@@ -37,10 +32,7 @@
                     <button class="view-btn" data-view="day" data-i18n="day">Day</button>
                 </div>
             </div>
-            
-            <!-- ============================================ -->
-            <!-- MONTH VIEW                                   -->
-            <!-- ============================================ -->
+
             <div id="month-view" class="month-view active">
                 <div class="calendar-table">
                     <div class="weekday" data-i18n="mon">Mon</div>
@@ -53,18 +45,12 @@
                 </div>
                 <div class="calendar-table" id="month-days"></div>
             </div>
-            
-            <!-- ============================================ -->
-            <!-- WEEK VIEW                                    -->
-            <!-- ============================================ -->
+
             <div id="week-view" class="week-view">
                 <div class="week-header" id="week-header"></div>
                 <div class="timeline-container" id="week-timeline"></div>
             </div>
-            
-            <!-- ============================================ -->
-            <!-- DAY VIEW                                     -->
-            <!-- ============================================ -->
+
             <div id="day-view" class="day-view">
               <div class="day-view-header">
     <div class="day-view-date" id="day-view-date">April 11, 2026</div>
@@ -76,9 +62,6 @@
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- EVENT PANEL                                  -->
-        <!-- ============================================ -->
         <div class="event-panel" id="event-panel">
             <div class="event-panel-header">
                 <span class="event-panel-title" id="event-panel-title" data-i18n="newEvent">New Event</span>
@@ -116,9 +99,6 @@
         </div>
     </main>
 
-    <!-- ============================================ -->
-    <!-- FOOTER                                       -->
-    <!-- ============================================ -->
     <footer class="app-footer">
         <div class="footer-content">
             <nav class="footer-links">
@@ -128,9 +108,6 @@
         </div>
     </footer>
 
-    <!-- ============================================ -->
-    <!-- HIDDEN ELEMENTS                              -->
-    <!-- ============================================ -->
     <div id="auth-modal" style="display:none;"></div>
     <div id="auth-error" style="display:none;"></div>
     <div id="auth-trigger" style="display:none;"></div>
@@ -147,7 +124,6 @@
 
     <script type="module" src="calendar.js"></script>
 
-    <!-- ANIMATED BACKGROUNDS -->
 <div class="bg-aurora" id="bg-aurora" style="display: none;"></div>
 <div class="bg-rainfall" id="bg-rainfall" style="display: none;"></div>
 <div class="bg-starlight" id="bg-starlight" style="display: none;"></div>

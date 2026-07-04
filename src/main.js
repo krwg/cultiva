@@ -1,4 +1,4 @@
-import { auth } from './modules/auth.js'; 
+import { auth } from './modules/auth.js';
 import { TRANSLATIONS } from './core/i18n.js';
 import './styles/main.css';
 import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS } from './core/config.js';
@@ -40,9 +40,6 @@ let currentT = TRANSLATIONS.en;
 let habitSearchQuery = '';
 let focusedHabitId = null;
 
-/* ============================================ */
-/* DOM ELEMENTS                                 */
-/* ============================================ */
 const gardenEl = document.getElementById('garden-container');
 const trophyEl = document.getElementById('trophy-container');
 const countEl = document.getElementById('habit-count');
@@ -86,9 +83,6 @@ configureSettingsController({
   renderGarden
 });
 
-/* ============================================ */
-/* AVATAR DATA                                  */
-/* ============================================ */
 const AVATAR_DATA = {
   backgrounds: [
     { id: 'none', name: 'None', css: 'var(--bg-tertiary)' },
@@ -136,25 +130,17 @@ const AVATAR_DATA = {
 
 let tempAvatar = { ...settings.avatar };
 
-/* ============================================ */
-/* SETTINGS EVENTS                              */
-/* ============================================ */
-
 langSelect?.addEventListener('change', (e) => { settings.lang = e.target.value; saveSettings(); });
 themeSelect?.addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); });
 trophyToggle?.addEventListener('change', (e) => { settings.showTrophies = e.target.checked; saveSettings(); });
 focusToggle?.addEventListener('change', (e) => { settings.focusMode = e.target.checked; saveSettings(); });
-
-/* ============================================ */
-/* TIMEZONE SETTING                             */
-/* ============================================ */
 
 const tzSelect = document.getElementById('tz-select');
 if (tzSelect) {
   tzSelect.value = localStorage.getItem('cultiva-timezone') || 'auto';
   tzSelect.addEventListener('change', (e) => {
     localStorage.setItem('cultiva-timezone', e.target.value);
-    if (typeof renderGarden === 'function') { renderGarden(); } 
+    if (typeof renderGarden === 'function') { renderGarden(); }
   });
 }
 
@@ -202,14 +188,14 @@ document.getElementById('toggle-native-notify-master')?.addEventListener('change
 function updateCultivaDatePreview() {
   const preview = document.getElementById('cultiva-date-preview');
   if (!preview) { return; }
-    
+
   const tz = getCultivaTimezone();
   const now = new Date();
   const formatted = new Intl.DateTimeFormat(navigator.language, {
     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
     hour: '2-digit', minute: '2-digit', timeZone: tz
   }).format(now);
-    
+
   preview.textContent = formatted + (tz ? ` (${tz})` : ' (System)');
 }
 
@@ -220,10 +206,6 @@ if (tzSelect) {
     if (typeof renderGarden === 'function') { renderGarden(); }
   });
 }
-
-/* ============================================ */
-/* BACKGROUND LOGIC                             */
-/* ============================================ */
 
 const bgSelect = document.getElementById('bg-select');
 const customBgInput = document.getElementById('custom-bg-input');
@@ -309,43 +291,39 @@ customBgClear?.addEventListener('click', () => {
   applyBackground(bgSelect?.value || lastBgSelectValue);
 });
 
-/* ============================================ */
-/* SETTINGS NAVIGATION                          */
-/* ============================================ */
-
 function initSettingsNavigation() {
   const sidebarItems = document.querySelectorAll('.settings-sidebar-item[data-section]');
   const emptyState = document.getElementById('settings-empty');
-    
+
   if (!sidebarItems.length) { return; }
-    
+
   sidebarItems.forEach(item => {
     item.addEventListener('click', () => {
       const section = item.dataset.section;
-            
+
       if (item.classList.contains('settings-sidebar-disabled')) {
         showNotification(currentT.comingSoon || 'Coming soon...');
         return;
       }
-            
+
       sidebarItems.forEach(i => i.classList.remove('active'));
       item.classList.add('active');
-            
+
       if (emptyState) { emptyState.style.display = 'none'; }
-            
+
       document.querySelectorAll('.settings-section-content').forEach(content => {
         content.classList.remove('active');
       });
-            
+
       const targetSection = document.getElementById(`section-${section}`);
       if (targetSection) { targetSection.classList.add('active'); }
-            
+
       if (section === 'profile') { updateProfileSection(); }
       if (section === 'plugins') { renderPluginsSection(); }
       if (section === 'notifications') { updateNotificationsDesktopBanner(); }
     });
   });
-    
+
   document.getElementById('settings-open-avatar-picker')?.addEventListener('click', () => {
     closeModal(settingsModal);
     setTimeout(() => openModal(document.getElementById('avatar-modal')), 300);
@@ -354,22 +332,22 @@ function initSettingsNavigation() {
   document.querySelector('[data-section="updates"]')?.addEventListener('click', () => {
     updateUpdatesSection();
   });
-    
+
   document.getElementById('close-settings')?.addEventListener('click', () => {
     setTimeout(() => {
       const firstItem = document.querySelector('.settings-sidebar-item[data-section="profile"]');
       if (firstItem) {
         sidebarItems.forEach(i => i.classList.remove('active'));
         firstItem.classList.add('active');
-                
+
         document.querySelectorAll('.settings-section-content').forEach(c => c.classList.remove('active'));
         document.getElementById('section-profile')?.classList.add('active');
-                
+
         if (emptyState) { emptyState.style.display = 'none'; }
       }
     }, 300);
   });
-    
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && settingsModal?.classList.contains('active')) {
       document.getElementById('close-settings')?.click();
@@ -377,19 +355,15 @@ function initSettingsNavigation() {
   });
 }
 
-/* ============================================ */
-/* PROFILE MANAGEMENT                           */
-/* ============================================ */
-
 function updateProfileSection() {
   const isLoggedIn = auth.isAuthenticated();
   const user = auth.getCurrentUser();
   const t = currentT;
-    
+
   const avatarEmoji = document.getElementById('settings-avatar-emoji');
   const avatarImg = document.getElementById('settings-avatar-img');
   const avatarContainer = document.getElementById('settings-profile-avatar');
-    
+
   if (avatarContainer) {
     if (settings.avatar?.photo) {
       if (avatarImg) { avatarImg.src = settings.avatar.photo; avatarImg.style.display = 'block'; }
@@ -398,15 +372,15 @@ function updateProfileSection() {
     } else {
       if (avatarImg) { avatarImg.style.display = 'none'; }
       if (avatarEmoji) { avatarEmoji.style.display = 'flex'; avatarEmoji.textContent = settings.avatar?.emoji || '🌱'; }
-            
+
       const bg = AVATAR_DATA.backgrounds.find(b => b.id === settings.avatar?.background);
       avatarContainer.style.background = (bg && bg.id !== 'none') ? bg.css : 'linear-gradient(135deg, var(--accent-purple), var(--accent-pink))';
     }
   }
-    
+
   const profileName = document.getElementById('settings-profile-name');
   const profileEmail = document.getElementById('settings-profile-email');
-    
+
   if (isLoggedIn && user) {
     if (profileName) { profileName.textContent = user.name || user.email?.split('@')[0] || 'User'; }
     if (profileEmail) { profileEmail.textContent = user.email || ''; }
@@ -414,10 +388,10 @@ function updateProfileSection() {
     if (profileName) { profileName.textContent = t.guestUser || 'Guest User'; }
     if (profileEmail) { profileEmail.textContent = t.localStorage || 'Local Storage'; }
   }
-    
+
   const accountStatus = document.getElementById('profile-account-status');
   const statusBadge = document.getElementById('profile-status-badge');
-    
+
   if (isLoggedIn) {
     if (accountStatus) { accountStatus.textContent = t.accountActive || 'Account Active'; }
     if (statusBadge) { statusBadge.textContent = t.active || 'Active'; statusBadge.classList.add('online'); }
@@ -425,13 +399,13 @@ function updateProfileSection() {
     if (accountStatus) { accountStatus.textContent = t.localStorageMode || 'Local Storage Mode'; }
     if (statusBadge) { statusBadge.textContent = t.guest || 'Guest'; statusBadge.classList.remove('online'); }
   }
-    
+
   const editProfileBtn = document.getElementById('settings-edit-profile');
   if (editProfileBtn) { editProfileBtn.style.display = isLoggedIn ? 'flex' : 'none'; }
-    
+
   const memberSinceRow = document.getElementById('profile-member-since');
   const memberDate = document.getElementById('profile-member-date');
-    
+
   if (isLoggedIn && user?.createdAt) {
     if (memberSinceRow) { memberSinceRow.style.display = 'flex'; }
     if (memberDate) {
@@ -451,65 +425,65 @@ function initProfileManagement() {
   document.getElementById('settings-edit-profile')?.addEventListener('click', () => {
     const user = auth.getCurrentUser();
     if (!user) { return; }
-        
+
     document.getElementById('edit-display-name').value = user.name || '';
     document.getElementById('edit-email').value = user.email || '';
     document.getElementById('edit-dob').value = user.dob || '';
     document.getElementById('edit-new-password').value = '';
     document.getElementById('edit-confirm-password').value = '';
     if (editProfileError) { editProfileError.style.display = 'none'; }
-        
+
     closeModal(settingsModal);
     setTimeout(() => openModal(editProfileModal), 300);
   });
-    
+
   document.getElementById('edit-profile-cancel')?.addEventListener('click', () => {
     closeModal(editProfileModal);
     setTimeout(() => openModal(settingsModal), 300);
   });
-    
+
   editProfileModal?.querySelector('.modal-close')?.addEventListener('click', () => {
     closeModal(editProfileModal);
     setTimeout(() => openModal(settingsModal), 300);
   });
-    
+
   editProfileModal?.querySelector('.modal-overlay')?.addEventListener('click', () => {
     closeModal(editProfileModal);
     setTimeout(() => openModal(settingsModal), 300);
   });
-    
+
   editProfileForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (editProfileError) { editProfileError.style.display = 'none'; }
-        
+
     const displayName = document.getElementById('edit-display-name').value.trim();
     const email = document.getElementById('edit-email').value.trim();
     const dob = document.getElementById('edit-dob').value;
     const newPassword = document.getElementById('edit-new-password').value;
     const confirmPassword = document.getElementById('edit-confirm-password').value;
-        
+
     if (!displayName) { editProfileError.textContent = currentT.nameRequired || 'Display name is required'; editProfileError.style.display = 'block'; return; }
     if (!email) { editProfileError.textContent = currentT.emailRequired || 'Email is required'; editProfileError.style.display = 'block'; return; }
     if (newPassword && newPassword !== confirmPassword) { editProfileError.textContent = currentT.passwordsMismatch || 'Passwords do not match'; editProfileError.style.display = 'block'; return; }
     if (newPassword && newPassword.length < 6) { editProfileError.textContent = currentT.passwordTooShort || 'Password must be at least 6 characters'; editProfileError.style.display = 'block'; return; }
-        
+
     try {
       const updates = { name: displayName, email: email, dob: dob || null };
       if (newPassword) { updates.password = newPassword; }
-            
+
       await auth.updateProfile(updates);
       await updateAuthUI();
       updateProfileSection();
-            
+
       closeModal(editProfileModal);
       setTimeout(() => openModal(settingsModal), 300);
-            
+
       showNotification(currentT.profileUpdated || 'Profile updated successfully');
     } catch (err) {
       if (editProfileError) { editProfileError.textContent = err.message || 'Failed to update profile'; editProfileError.style.display = 'block'; }
     }
   });
-    
+
   document.getElementById('sign-out-from-profile')?.addEventListener('click', async () => {
     if (confirm(currentT.confirmSignOut || 'Sign out of your account?')) {
       await auth.logout();
@@ -521,10 +495,6 @@ function initProfileManagement() {
     }
   });
 }
-
-/* ============================================ */
-/* USER MENU                                    */
-/* ============================================ */
 
 function toggleUserMenu() {
   const isActive = userDropdown.classList.toggle('active');
@@ -541,10 +511,6 @@ document.addEventListener('click', (e) => {
   if (userDropdown && !userDropdown.contains(e.target) && !userMenuBtn.contains(e.target)) { closeUserMenu(); }
 });
 document.getElementById('open-settings')?.addEventListener('click', () => { openModal(settingsModal); closeUserMenu(); });
-
-/* ============================================ */
-/* AVATAR LOGIC                                 */
-/* ============================================ */
 
 function renderHeaderAvatar() {
   const headerAvatar = document.getElementById('header-avatar');
@@ -606,7 +572,7 @@ function renderAvatarPicker() {
     if (previewEmoji) { previewEmoji.textContent = tempAvatar.emoji; }
   }
   bgGrid.innerHTML = AVATAR_DATA.backgrounds.map(bg => `
-        <button class="avatar-option ${tempAvatar.background === bg.id && !tempAvatar.photo ? 'selected' : ''} ${bg.id === 'none' ? 'bg-none' : ''}" 
+        <button class="avatar-option ${tempAvatar.background === bg.id && !tempAvatar.photo ? 'selected' : ''} ${bg.id === 'none' ? 'bg-none' : ''}"
                 data-bg="${bg.id}" style="${bg.id !== 'none' ? `background: ${bg.css};` : ''}" title="${bg.name || bg.id}"></button>
     `).join('');
   emojiGrid.innerHTML = AVATAR_DATA.emojis.map(emoji => `
@@ -654,19 +620,19 @@ function initAvatarPicker() {
   });
 
   saveBtn?.addEventListener('click', async () => {
-    const newAvatar = { 
-      background: tempAvatar.background, 
+    const newAvatar = {
+      background: tempAvatar.background,
       emoji: tempAvatar.emoji,
-      photo: tempAvatar.photo || null 
+      photo: tempAvatar.photo || null
     };
-        
+
     if (await auth.isAuthenticated()) {
       await auth.updateProfile({ avatar: newAvatar });
     } else {
       settings.avatar = newAvatar;
       storage.set('cultiva-settings', settings);
     }
-        
+
     settings.avatar = newAvatar;
     applySettings();
     closeModal(modal);
@@ -683,17 +649,13 @@ function initAvatarPicker() {
   modal.querySelector('.modal-overlay')?.addEventListener('click', () => closeModal(modal));
 }
 
-/* ============================================ */
-/* RENDER                                       */
-/* ============================================ */
-
 function createHabitCard(habit, isTrophy = false) {
   const stage = isTrophy ? GROWTH_STAGES.LEGACY : habits.getStage(habit.progress);
   const today = getTodayStr();
-  const isCompleted = habit.trackType === 'binary' 
-    ? habit.lastCompleted === today 
+  const isCompleted = habit.trackType === 'binary'
+    ? habit.lastCompleted === today
     : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
-    
+
   let progressBar = '';
   if (habit.trackType === 'quantity') {
     const cur = habits.quantityDayProgress(habit, today);
@@ -701,12 +663,12 @@ function createHabitCard(habit, isTrophy = false) {
     const pct = Math.min(100, (cur / tgt) * 100);
     progressBar = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
   }
-    
+
   const t = TRANSLATIONS[settings.lang];
   const categoryName = habit.category ? (t.categories?.[habit.category] || habit.category) : '';
   const categoryBadge = categoryName ? `<span class="category-badge" data-i18n-category="${habit.category}">${categoryName}</span>` : '';
   const streakText = habit.currentStreak > 0 ? ` • 🔥 ${habit.currentStreak}` : '';
-    
+
   const card = document.createElement('article');
   card.className = 'habit-card';
   card.dataset.id = habit.id;
@@ -764,7 +726,7 @@ function renderGarden() {
   } else if (focusedHabitId && !active.some((h) => h.id === focusedHabitId)) {
     focusedHabitId = active[0]?.id || null;
   }
-    
+
   if (gardenEl) {
     gardenEl.innerHTML = '';
     if (active.length === 0) {
@@ -815,10 +777,6 @@ function openStats(id) {
   openModal(statsModal);
 }
 
-/* ============================================ */
-/* EXPORT / IMPORT                              */
-/* ============================================ */
-
 function exportData() {
   const t = TRANSLATIONS[settings.lang];
   const data = { habits: habits.getAll(), settings, exportedAt: new Date().toISOString(), version: BRANDING.VERSION };
@@ -827,7 +785,7 @@ function exportData() {
   const a = document.createElement('a');
   a.href = url; a.download = `${BRANDING.BACKUP_PREFIX}-${getTodayStr()}.json`;
   a.click(); URL.revokeObjectURL(url);
-  showNotification(t.exported);    
+  showNotification(t.exported);
 }
 
 async function exportZip() {
@@ -865,10 +823,6 @@ function importData(file) {
     .catch(err => alert(err.message));
 }
 
-/* ============================================ */
-/* UPDATES SECTION                              */
-/* ============================================ */
-
 const updateStatus = {
   state: 'checking',
   message: '',
@@ -878,27 +832,27 @@ const updateStatus = {
 
 function updateUpdatesSection() {
   const isElectron = typeof window.electron !== 'undefined';
-    
+
   const versionDisplay = document.getElementById('current-version-display');
   const codenameDisplay = document.getElementById('current-codename-display');
-    
+
   if (versionDisplay) {
     versionDisplay.textContent = BRANDING?.VERSION || '0.0.0';
   }
   if (codenameDisplay) {
     codenameDisplay.textContent = BRANDING?.CODENAME || 'Sequoia';
   }
-    
+
   if (!isElectron) {
     updateStatusCard('browser', 'Browser mode', 'Updates only available in desktop app');
     document.getElementById('check-updates-btn')?.setAttribute('disabled', 'disabled');
     return;
   }
-    
+
   if (window.electron.onUpdateMessage) {
     window.electron.onUpdateMessage((message) => {
       console.log('[Updater]', message);
-            
+
       if (message.includes('Checking for updates')) {
         updateStatusCard('checking', 'Checking...', message);
       } else if (message.includes('Update') && message.includes('found')) {
@@ -928,9 +882,9 @@ function updateUpdatesSection() {
       }
     });
   }
-    
+
   fetchReleaseInfo();
-    
+
   document.getElementById('check-updates-btn')?.addEventListener('click', () => {
     if (updateStatus.state === 'downloaded') {
       window.electron.restartApp?.();
@@ -939,25 +893,25 @@ function updateUpdatesSection() {
       updateStatusCard('checking', 'Checking for updates...', 'Contacting GitHub...');
     }
   });
-    
+
   document.getElementById('view-releases-link')?.addEventListener('click', (e) => {
     e.preventDefault();
-    window.open('https://github.com/FlokeStudio/Cultiva/releases', '_blank');
+    window.open('https://github.com/krwg/Cultiva/releases', '_blank');
   });
 }
 
 function updateStatusCard(state, title, message) {
   updateStatus.state = state;
-    
+
   const card = document.getElementById('update-status-card');
   const icon = document.getElementById('update-status-icon');
   const titleEl = document.getElementById('update-status-title');
   const messageEl = document.getElementById('update-status-message');
-    
+
   if (card) {
     card.className = 'update-status-card ' + state;
   }
-    
+
   if (icon) {
     const icons = {
       checking: '🔍',
@@ -970,10 +924,10 @@ function updateStatusCard(state, title, message) {
     };
     icon.textContent = icons[state] || 'ℹ️';
   }
-    
+
   if (titleEl) { titleEl.textContent = title; }
   if (messageEl) { messageEl.textContent = message; }
-    
+
   const progressEl = document.getElementById('update-progress');
   if (progressEl) {
     progressEl.style.display = state === 'downloading' ? 'block' : 'none';
@@ -983,7 +937,7 @@ function updateStatusCard(state, title, message) {
 function updateDownloadProgress(percent, _message) {
   const progressBar = document.getElementById('update-progress-bar');
   const progressText = document.getElementById('update-progress-text');
-    
+
   if (progressBar) {
     progressBar.style.width = percent + '%';
   }
@@ -998,43 +952,43 @@ async function fetchReleaseInfo() {
 
   const cached = localStorage.getItem('cultiva-releases-cache');
   const cacheTime = localStorage.getItem('cultiva-releases-cache-time');
-    
+
   if (cached && cacheTime && (Date.now() - parseInt(cacheTime)) < 3600000) {
     renderReleases(JSON.parse(cached));
     return;
   }
-    
+
   try {
-    const response = await fetch('https://api.github.com/repos/FlokeStudio/Cultiva/releases');
-        
+    const response = await fetch('https://api.github.com/repos/krwg/Cultiva/releases');
+
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);
     }
-        
+
     const releases = await response.json();
-        
+
     if (!Array.isArray(releases) || releases.length === 0) {
       releaseInfo.innerHTML = '<div class="release-loading">No releases found</div>';
       return;
     }
-        
+
     localStorage.setItem('cultiva-releases-cache', JSON.stringify(releases));
     localStorage.setItem('cultiva-releases-cache-time', Date.now().toString());
-        
+
     renderReleases(releases);
-        
+
   } catch (error) {
     console.error('Failed to fetch releases:', error);
-        
+
     if (cached) {
       renderReleases(JSON.parse(cached));
       return;
     }
-        
+
     releaseInfo.innerHTML = `
             <div class="release-loading">
                 Failed to load releases<br>
-                <a href="#" onclick="window.open('https://github.com/FlokeStudio/Cultiva/releases', '_blank'); return false;" style="color: var(--accent-blue);">
+                <a href="#" onclick="window.open('https://github.com/krwg/Cultiva/releases', '_blank'); return false;" style="color: var(--accent-blue);">
                     View on GitHub →
                 </a>
             </div>
@@ -1045,22 +999,22 @@ async function fetchReleaseInfo() {
 function renderReleases(releases) {
   const releaseInfo = document.getElementById('release-info');
   if (!releaseInfo) { return; }
-    
+
   const latestReleases = releases.slice(0, 3);
-    
+
   releaseInfo.innerHTML = latestReleases.map((release, index) => {
     const date = new Date(release.published_at).toLocaleDateString(
       currentLang === 'ru' ? 'ru-RU' : 'en-US',
       { year: 'numeric', month: 'short', day: 'numeric' }
     );
-        
+
     const isLatest = index === 0 && !release.prerelease;
     const badge = isLatest ? '<span class="release-badge latest">Latest</span>' :
       release.prerelease ? '<span class="release-badge prerelease">Pre-release</span>' : '';
-        
+
     let body = release.body || 'No description';
     body = body.replace(/[#*`]/g, '').substring(0, 200);
-        
+
     return `
             <div class="release-item">
                 <div class="release-header">
@@ -1091,39 +1045,39 @@ const authError = document.getElementById('auth-error');
 async function updateAuthUI() {
   const isLoggedIn = auth.isAuthenticated();
   const user = auth.getCurrentUser();
-    
+
   const authTriggerEl = document.getElementById('auth-trigger');
   const signOutBtnEl = document.getElementById('sign-out-btn');
-    
+
   if (authTriggerEl) { authTriggerEl.style.display = isLoggedIn ? 'none' : 'flex'; }
   if (signOutBtnEl) { signOutBtnEl.style.display = isLoggedIn ? 'flex' : 'none'; }
-    
+
   const statusText = document.getElementById('user-status-text');
   if (statusText) { statusText.textContent = isLoggedIn ? 'Signed In' : 'Local Storage'; }
-    
+
   let displayName = 'Guest';
   let dropdownDisplay = 'Guest User';
-    
+
   if (isLoggedIn && user) {
     if (user.name && user.name.trim() !== '') { displayName = user.name; }
     else if (user.email) { displayName = user.email.split('@')[0]; }
     dropdownDisplay = user.email || 'User';
   }
-    
+
   const headerName = document.getElementById('user-name-display');
   const dropdownName = document.getElementById('dropdown-user-name');
-    
+
   if (headerName) { headerName.textContent = displayName; }
   if (dropdownName) { dropdownName.textContent = dropdownDisplay; }
 
   if (isLoggedIn && user?.avatar) {
     settings.avatar = { ...user.avatar };
   }
-    
+
   const dropAvatarEmoji = document.getElementById('dropdown-avatar-emoji');
   const dropAvatarImg = document.getElementById('dropdown-avatar-img');
   const dropAvatarLarge = document.getElementById('dropdown-avatar-large');
-    
+
   if (dropAvatarLarge && dropAvatarEmoji && dropAvatarImg) {
     if (settings.avatar?.photo) {
       dropAvatarImg.src = settings.avatar.photo;
@@ -1155,10 +1109,10 @@ function switchAuthTab(tab) {
 async function handleAuthSubmit(e, type) {
   e.preventDefault();
   if (authError) { authError.style.display = 'none'; }
-    
+
   const emailInput = document.getElementById(type === 'login' ? 'login-email' : 'reg-email');
   const passInput = document.getElementById(type === 'login' ? 'login-password' : 'reg-password');
-    
+
   const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
   const password = passInput ? passInput.value : '';
 
@@ -1178,11 +1132,11 @@ async function handleAuthSubmit(e, type) {
         dob: dobInput ? dobInput.value : null
       });
     }
-        
+
     await updateAuthUI();
     closeModal(authModal);
     showNotification(type === 'login' ? 'Welcome back!' : 'Account created!');
-        
+
     emailInput.value = ''; passInput.value = '';
     const nameInput = document.getElementById('reg-name');
     const dobInput = document.getElementById('reg-dob');
@@ -1199,7 +1153,7 @@ async function handleAuthSubmit(e, type) {
 
 function initEvents() {
   document.getElementById('open-add-modal')?.addEventListener('click', () => openModal(addModal));
-    
+
   document.querySelectorAll('.modal-close, .modal-overlay').forEach(btn => {
     btn.addEventListener('click', (e) => {
       if (e.target === btn || btn.classList.contains('modal-close')) {
@@ -1208,7 +1162,7 @@ function initEvents() {
       }
     });
   });
-    
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (settings.focusMode) { toggleFocusMode(false); showNotification('Focus Mode Disabled'); }
@@ -1224,7 +1178,7 @@ function initEvents() {
       openModal(addModal);
     }
   });
-    
+
   document.addEventListener('keydown', (e) => {
     if (e.key === '?' && !document.activeElement.matches('input, textarea')) {
       e.preventDefault();
@@ -1237,7 +1191,7 @@ function initEvents() {
       if (targetContainer) { targetContainer.classList.toggle('visible', e.target.value === 'quantity'); }
     });
   });
-    
+
   document.getElementById('quantity-log-save')?.addEventListener('click', () => {
     const t = TRANSLATIONS[settings.lang];
     const raw = quantityLogInput?.value;
@@ -1279,7 +1233,7 @@ function initEvents() {
       showNotification(TRANSLATIONS[settings.lang].habitPlanted);
     } catch (err) { alert(err.message); }
   });
-    
+
   const handleCardClick = (e) => {
     const card = e.target.closest('.habit-card');
     if (!card) { return; }
@@ -1289,14 +1243,14 @@ function initEvents() {
       e.stopPropagation();
       const h = habits.getAll().find(x => x.id === id);
       if (!h) { return; }
-            
+
       const today = getTodayStr();
-      const isCompleted = h.trackType === 'binary' 
-        ? h.lastCompleted === today 
+      const isCompleted = h.trackType === 'binary'
+        ? h.lastCompleted === today
         : habits.quantityDayProgress(h, today) >= habits.quantityTarget(h);
-                
+
       if (isCompleted) { return; }
-            
+
       if (h.trackType === 'quantity') {
         const cur = habits.quantityDayProgress(h, today);
         const t = TRANSLATIONS[settings.lang];
@@ -1316,7 +1270,7 @@ function initEvents() {
         return;
       }
       habits.toggle(id);
-            
+
       renderGarden();
       card.querySelector('.plant-visual')?.classList.add('growing');
       setTimeout(() => card.querySelector('.plant-visual')?.classList.remove('growing'), 250);
@@ -1326,10 +1280,10 @@ function initEvents() {
       if (confirm('Remove habit?')) { habits.remove(id); renderGarden(); showNotification(TRANSLATIONS[settings.lang].removed); }
     } else { openStats(id); }
   };
-    
+
   gardenEl?.addEventListener('click', handleCardClick);
   trophyEl?.addEventListener('click', handleCardClick);
-    
+
   document.getElementById('close-settings')?.addEventListener('click', () => closeModal(settingsModal));
   document.getElementById('close-stats')?.addEventListener('click', () => closeModal(statsModal));
   document.getElementById('settings-export')?.addEventListener('click', exportData);
@@ -1345,8 +1299,8 @@ function initEvents() {
   });
 
   authTrigger?.addEventListener('click', () => { openModal(authModal); closeUserMenu(); });
-  signOutBtn?.addEventListener('click', async () => { 
-    await auth.logout(); await updateAuthUI(); renderGarden(); closeUserMenu(); showNotification('Signed out'); 
+  signOutBtn?.addEventListener('click', async () => {
+    await auth.logout(); await updateAuthUI(); renderGarden(); closeUserMenu(); showNotification('Signed out');
   });
   authModal?.querySelector('.modal-close')?.addEventListener('click', () => closeModal(authModal));
   authModal?.querySelector('.modal-overlay')?.addEventListener('click', () => closeModal(authModal));
@@ -1375,32 +1329,32 @@ function initDiscordSettings() {
   const isElectron = typeof window.discord !== 'undefined';
   const discordSection = document.querySelector('[data-section="discord"]');
   const discordContent = document.getElementById('section-discord');
-  
+
   if (!isElectron) {
     if (discordSection) { discordSection.style.display = 'none'; }
     if (discordContent) { discordContent.style.display = 'none'; }
     return;
   }
-  
+
   const discordToggle = document.getElementById('toggle-discord');
   const discordStatusBadge = document.getElementById('discord-status-badge');
   const discordStatusText = document.getElementById('discord-status-text');
   const previewDetails = document.getElementById('discord-preview-details');
   const previewState = document.getElementById('discord-preview-state');
   const previewTime = document.getElementById('discord-preview-time');
-  
+
   let sessionStartTime = null;
-  
+
   const savedEnabled = localStorage.getItem('cultiva-discord-enabled') !== 'false';
   if (discordToggle) { discordToggle.checked = savedEnabled; }
-  
+
   async function checkDiscordStatus() {
     if (!window.discord) { return; }
     try {
       const status = await window.discord.getStatus();
       const enabled = discordToggle?.checked || false;
       const t = currentT;
-      
+
       if (status.connected && enabled) {
         discordStatusBadge.textContent = '●';
         discordStatusBadge.style.color = '#4caf50';
@@ -1425,23 +1379,23 @@ function initDiscordSettings() {
       sessionStartTime = null;
     }
   }
-  
+
   function updatePreviewTime() {
     if (!previewTime || !sessionStartTime) { return; }
     const elapsed = Math.floor((new Date() - sessionStartTime) / 1000);
     const hours = Math.floor(elapsed / 3600);
     const minutes = Math.floor((elapsed % 3600) / 60);
     const seconds = elapsed % 60;
-    
+
     if (hours > 0) { previewTime.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} elapsed`; }
     else { previewTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} elapsed`; }
   }
-  
+
   function updatePreviewText(details, state) {
     if (previewDetails) { previewDetails.textContent = details || 'In the garden'; }
     if (previewState) { previewState.textContent = state || 'Growing habits'; }
   }
-  
+
   function detectCurrentPage() {
     const url = window.location.href;
     if (url.includes('/calendar')) { return 'calendar'; }
@@ -1451,12 +1405,12 @@ function initDiscordSettings() {
     if (url.includes('trophy')) { return 'trophy'; }
     return 'garden';
   }
-  
+
   if (discordToggle) {
     discordToggle.addEventListener('change', async (e) => {
       const enabled = e.target.checked;
       localStorage.setItem('cultiva-discord-enabled', enabled);
-      
+
       if (window.discord) {
         if (enabled) {
           await window.discord.enable();
@@ -1475,14 +1429,14 @@ function initDiscordSettings() {
       }
     });
   }
-  
+
   setInterval(() => {
     if (discordContent?.classList.contains('active')) {
       checkDiscordStatus();
       updatePreviewTime();
     }
   }, 2000);
-  
+
   const discordSidebarItem = document.querySelector('[data-section="discord"]');
   if (discordSidebarItem) {
     discordSidebarItem.addEventListener('click', () => {
@@ -1495,7 +1449,7 @@ function initDiscordSettings() {
       }
     });
   }
-  
+
   window.updateDiscordPreview = updatePreviewText;
   window.checkDiscordStatus = checkDiscordStatus;
 }
@@ -1515,7 +1469,6 @@ function getPageState(page, locale) {
   };
   return strings[locale]?.[page] || strings.en[page] || 'Growing habits';
 }
-
 
 window.showNotification = showNotification;
 
@@ -1550,21 +1503,21 @@ async function init() {
     await ensureAppReady();
 
     await loadSettings();
-    
+
     applyBranding();
     applySettings();
     renderGarden();
-    
+
     initEvents();
     initAvatarPicker();
     initSettingsNavigation();
     initProfileManagement();
     initDiscordSettings();
-    
+
     await updateAuthUI();
     updateCultivaDatePreview();
     updateProfileSection();
-    
+
     renderPluginHeaderItems();
 
     initNativeNotificationsScheduler(() => settings);
@@ -1626,7 +1579,7 @@ async function init() {
 
     applyAccentColor(settings.accentColor);
     applyAmbientIntensity(settings.ambientIntensity);
-    
+
     console.log(`[App] Cultiva [${BRANDING.VERSION}] initialized successfully`);
   } catch (err) {
     console.error('[App] Init failed:', err);

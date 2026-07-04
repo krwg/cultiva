@@ -1,13 +1,9 @@
-/**
- * Shared timezone helpers (cultiva-timezone in localStorage).
- */
 
 export function getCultivaTimezone() {
   const tz = localStorage.getItem('cultiva-timezone') || 'auto';
   return tz === 'auto' ? undefined : tz;
 }
 
-/** @returns {string} YYYY-MM-DD in configured timezone */
 export function getTodayInTZ() {
   const now = new Date();
   const tz = getCultivaTimezone();
@@ -36,7 +32,6 @@ export function getTodayInTZ() {
   }
 }
 
-/** @returns {string} YYYY-MM-DD for the given Date in configured timezone */
 export function getDateInTZ(date) {
   const tz = getCultivaTimezone();
   if (!tz) {

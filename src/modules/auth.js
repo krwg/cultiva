@@ -197,9 +197,6 @@ export const auth = {
     return this._sanitizeUser(_currentUser);
   },
 
-  /**
-   * Never expose passwordHash / salt / credentialsEnc to UI — full user only in-memory for verification.
-   */
   _sanitizeUser: function(user) {
     if (!user) {
       return null;

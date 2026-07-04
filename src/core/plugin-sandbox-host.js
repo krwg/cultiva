@@ -1,21 +1,6 @@
-/**
- * Runs Cultiva plugin code in a sandboxed iframe (opaque origin, no allow-same-origin).
- * Plugin execution uses new Function only inside the iframe — not in the app renderer,
- * so the plugin cannot access window.electron or other privileged APIs.
- *
- * Parent ↔ iframe protocol: postMessage with __cultivaPlugin: true and targetPluginId.
- *
- * Plugin source is injected via postMessage (INIT_PLUGIN) after a tiny bootstrap document
- * loads, so large files and accidental `</script>`-like sequences in plugin text cannot
- * break HTML parsing of the blob document.
- */
 
 const RPC_METHODS = new Set(['storage.get', 'storage.set', 'ui.showNotification']);
 
-/**
- * Minimal HTML/JS — no embedded plugin body. Parent sends { type: 'INIT_PLUGIN', manifest, pluginCode }.
- * @param {string} pluginId
- */
 function buildSandboxBootstrapDocument(pluginId) {
   const mid = JSON.stringify(pluginId);
   return `<!DOCTYPE html>
@@ -473,10 +458,6 @@ export class PluginSandboxHost {
     return this._registeredHooks.has(hookName);
   }
 
-  /**
-   * @param {string} pluginCode
-   * @returns {Promise<{ methods: string[], instanceProxy: object }>}
-   */
   load(pluginCode) {
     return new Promise((resolve, reject) => {
       this._pendingPluginCode = pluginCode;
@@ -519,7 +500,7 @@ export class PluginSandboxHost {
         }
       });
     } catch {
-      /* ignore */
+
     }
     window.removeEventListener('message', this._onMessage);
     if (this.iframe) {

@@ -158,7 +158,7 @@ export const TRANSLATIONS = {
     pluginsBulletCatalog: 'Catalog refreshes when you open this section.',
     installedPluginsHint: 'On your device',
     browsePluginsHint: 'From registry',
-    // Plugins
+
     plugins: 'Plugins',
     enablePlugins: 'Enable Plugins',
     enablePluginsDesc: 'Allow third-party extensions',

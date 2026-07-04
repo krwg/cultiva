@@ -39,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* === GLASS HEADER === */
         .header {
             position: fixed; top: 0; left: 0; right: 0; z-index: 100;
             background: rgba(255, 255, 255, 0.7);
@@ -62,7 +61,6 @@
         }
         .nav-link:hover { color: var(--text-primary); }
 
-        /* === HERO === */
         .hero {
             min-height: 90vh; display: flex; flex-direction: column;
             align-items: center; justify-content: center; text-align: center;
@@ -86,7 +84,6 @@
             max-width: 600px; margin-bottom: 48px; line-height: 1.5;
         }
 
-        /* === CODE BLOCK === */
         .code-container {
             position: relative; width: 100%; max-width: 540px;
             background: var(--card-bg); border: 1px solid var(--border);
@@ -107,7 +104,6 @@
         .copy-btn:hover { background: var(--border); color: var(--text-primary); }
         .copy-btn.copied { color: #34c759; }
 
-        /* === BUTTONS === */
         .cta-group { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
         .btn {
             display: inline-flex; align-items: center; gap: 8px;
@@ -124,7 +120,6 @@
         }
         .btn-secondary:hover { background: var(--border); }
 
-        /* === FEATURES GRID === */
         .features {
             max-width: 980px; margin: 0 auto; padding: 80px 24px 120px;
             display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -139,7 +134,6 @@
         .feature-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
         .feature-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
 
-        /* === FOOTER === */
         .footer {
             border-top: 1px solid var(--border); padding: 40px 24px;
             text-align: center; font-size: 13px; color: var(--text-secondary);
@@ -168,14 +162,14 @@
 
     <main>
         <section class="hero">
-            <div class="hero-badge">Open Source • [0.3.5]</div>
-            <h1 class="hero-title">Grow habits.<br>Build software.</h1>
+            <div class="hero-badge">Open Source · 1.1.0 · Cypress</div>
+            <h1 class="hero-title">Grow habits.<br>Build yourself.</h1>
             <p class="hero-subtitle">
-                A minimalist, gamified habit tracker built with Vanilla JS. Zero dependencies. Apple-inspired design. Built with Electron + Vite. Zero telemetry. Fully client-side.
+                Offline-first habit tracker for Windows. Habits grow from seed to legacy tree — plugins, themes, ambient backgrounds, calendar. No cloud. No accounts.
             </p>
 
             <div class="code-container">
-                <code class="code-text">git clone https://github.com/krwg/Cultiva</code>
+                <code class="code-text" id="clone-line"></code>
                 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
             </div>
 
@@ -195,8 +189,11 @@
     </footer>
 
     <script>
+        const CLONE_CMD = 'git clone https://github.com/krwg/Cultiva.git';
+        document.getElementById('clone-line').textContent = CLONE_CMD;
+
         function copyCode(btn) {
-            const text = btn.previousElementSibling.innerText;
+            const text = CLONE_CMD;
             navigator.clipboard.writeText(text).then(() => {
                 btn.textContent = 'Copied!';
                 btn.classList.add('copied');

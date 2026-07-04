@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon.ico">
 </head>
 <body>
-    <!-- LOADING SCREEN -->
+
     <div class="loading-screen" id="loading-screen">
         <div class="loading-cloud">
             <div class="cloud-body"></div>
@@ -18,7 +18,6 @@
         <p class="loading-text">Syncing your garden...</p>
     </div>
 
-    <!-- HEADER -->
     <header class="app-header">
         <div class="header-content">
             <div class="header-brand">
@@ -30,7 +29,7 @@
                 </div>
                 <a href="./pages/calendar/index.html" class="header-link" data-i18n="calendar" title="Calendar">Calendar</a>
                 <button class="add-btn" id="open-add-modal" aria-label="Add new habit">+</button>
-                
+
                 <div class="user-menu" id="user-menu">
                     <button class="user-btn" id="user-menu-btn" aria-label="User menu" aria-expanded="false">
                         <span class="user-name-text" id="user-name-display">Guest</span>
@@ -38,7 +37,7 @@
                             <span class="avatar-emoji" id="header-avatar-emoji">🌱</span>
                         </div>
                     </button>
-                    
+
                     <div class="user-dropdown" id="user-dropdown">
                         <div class="dropdown-section user-info-section">
                             <div class="user-avatar-large" id="dropdown-avatar-large">
@@ -50,9 +49,9 @@
                                 <div class="user-status" id="user-status-text">Local Storage</div>
                             </div>
                         </div>
-                        
+
                         <div class="dropdown-divider"></div>
-                        
+
                         <div class="dropdown-section" id="auth-section">
                             <button class="dropdown-item primary" id="auth-trigger">
                                 <span>Sign In</span>
@@ -61,9 +60,9 @@
                                 <span>Sign Out</span>
                             </button>
                         </div>
-                        
+
                         <div class="dropdown-divider"></div>
-                        
+
                         <div class="dropdown-section">
                             <button class="dropdown-item" id="open-avatar-picker">
                                 <span data-i18n="changeAvatar">Change Avatar</span>
@@ -78,7 +77,6 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main class="app-main">
         <section class="garden-section">
             <div class="section-header">
@@ -87,7 +85,7 @@
             </div>
             <div class="garden-grid" id="garden-container"></div>
         </section>
-        
+
         <section class="trophy-section hidden" id="trophy-section">
             <div class="section-header">
                 <h2 data-i18n="trophyGarden">Trophy Garden</h2>
@@ -98,7 +96,6 @@
         </section>
     </main>
 
-    <!-- MODAL: ADD HABIT -->
     <div class="modal" id="add-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet">
@@ -171,7 +168,6 @@
         </div>
     </div>
 
-    <!-- MODAL: QUANTITY LOG (Electron prompt is unreliable) -->
     <div class="modal" id="quantity-log-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width:420px;">
@@ -193,7 +189,6 @@
         </div>
     </div>
 
-    <!-- MODAL: STATS -->
     <div class="modal" id="stats-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet modal-sheet-large">
@@ -225,7 +220,6 @@
         </div>
     </div>
 
-    <!-- MODAL: SETTINGS -->
     <div class="modal" id="settings-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet settings-sheet-ipados">
@@ -234,8 +228,7 @@
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body settings-body-ipados">
-                
-                <!-- SIDEBAR -->
+
                 <div class="settings-sidebar" id="settings-sidebar">
                     <div class="settings-sidebar-item active" data-section="profile">
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true">◉</span></div>
@@ -286,18 +279,15 @@
                         <span class="sidebar-label" data-i18n="aboutHelp">About</span>
                     </div>
                 </div>
-                
-                <!-- CONTENT -->
+
                 <div class="settings-content" id="settings-content">
-                    
-                    <!-- EMPTY STATE -->
+
                     <div class="settings-empty-state" id="settings-empty">
                         <div class="empty-state-icon" aria-hidden="true">◎</div>
                         <div class="empty-state-title" data-i18n="selectSetting">Select a setting</div>
                         <div class="empty-state-desc" data-i18n="selectSettingDesc">Choose a category from the sidebar</div>
                     </div>
 
-                    <!-- PROFILE SECTION -->
                     <div class="settings-section-content" id="section-profile">
                         <div class="profile-header">
                             <div class="profile-avatar-large" id="settings-profile-avatar">
@@ -339,7 +329,6 @@
                         </div>
                     </div>
 
-                    <!-- APPEARANCE SECTION -->
                     <div class="settings-section-content" id="section-appearance">
                         <div class="settings-section-hero">
                             <div class="settings-section-hero-title" data-i18n="appearanceSectionTitle">Look &amp; atmosphere</div>
@@ -448,7 +437,6 @@
                         </div>
                     </div>
 
-                    <!-- SHORTCUTS -->
                     <div class="settings-section-content" id="section-shortcuts">
                         <div class="settings-section-hero">
                             <div class="settings-section-hero-title" data-i18n="shortcutsSectionTitle">Keyboard shortcuts</div>
@@ -507,7 +495,6 @@
                         <p class="shortcuts-footnote" data-i18n="shortcutsFootnote">Final shortcuts may differ by platform. Cultiva will respect macOS Human Interface Guidelines where applicable.</p>
                     </div>
 
-                    <!-- GARDEN SECTION -->
                     <div class="settings-section-content" id="section-garden">
                         <div class="setting-item">
                             <div class="setting-info">
@@ -531,7 +518,6 @@
                         </div>
                     </div>
 
-                    <!-- CALENDAR SECTION -->
                     <div class="settings-section-content" id="section-calendar">
                         <div class="setting-item">
                             <div class="setting-info">
@@ -580,7 +566,6 @@
                         </div>
                     </div>
 
-                    <!-- DISCORD SECTION -->
                     <div class="settings-section-content" id="section-discord">
                         <div class="setting-item">
                             <div class="setting-info">
@@ -621,7 +606,6 @@
                         <p class="discord-hint" data-i18n="discordMustBeRunning">Discord must be running on your computer</p>
                     </div>
 
-                    <!-- DATA SECTION -->
                     <div class="settings-section-content" id="section-data">
                         <div class="setting-item">
                             <div class="setting-info">
@@ -653,7 +637,6 @@
                         </div>
                     </div>
 
-                    <!-- NOTIFICATIONS (desktop, Apple-style groups) -->
                     <div class="settings-section-content" id="section-notifications">
                         <div class="settings-section-hero notifications-apple-hero">
                             <div class="settings-section-hero-title" data-i18n="notificationsSectionTitle">Notifications</div>
@@ -736,10 +719,9 @@
                         <p class="notifications-footnote" data-i18n="notificationsOsFootnote">If alerts do not appear, check Cultiva in System Settings → Notifications (iOS, iPadOS, macOS) or Windows Settings → Notifications.</p>
                     </div>
 
-                    <!-- UPDATES SECTION (MODERN) -->
                     <div class="settings-section-content" id="section-updates">
                         <div class="updates-container">
-                            <!-- Current Version Card -->
+
                             <div class="version-card">
                                 <img src="./images/favicon.ico" class="version-icon-img" alt="Cultiva" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 <span class="version-icon-fallback">🌱</span>
@@ -752,7 +734,6 @@
 
                             <div class="settings-divider"></div>
 
-                            <!-- Update Status -->
                             <div class="update-status-card" id="update-status-card">
                                 <div class="status-icon" id="update-status-icon">✓</div>
                                 <div class="status-info">
@@ -761,7 +742,6 @@
                                 </div>
                             </div>
 
-                            <!-- Download Progress -->
                             <div class="update-progress" id="update-progress" style="display:none;">
                                 <div class="progress-bar-container">
                                     <div class="progress-bar-fill" id="update-progress-bar"></div>
@@ -769,7 +749,6 @@
                                 <div class="progress-text" id="update-progress-text">Downloading... 0%</div>
                             </div>
 
-                            <!-- Actions -->
                             <div class="updates-actions">
                                 <button class="btn-primary" id="check-updates-btn">
                                     <span class="btn-icon">🔄</span>
@@ -779,7 +758,6 @@
 
                             <div class="settings-divider"></div>
 
-                            <!-- Release Notes -->
                             <div class="release-notes-section">
                                 <div class="release-notes-header">
                                     <span data-i18n="latestRelease">Latest Release</span>
@@ -791,7 +769,6 @@
                             </div>
                         </div>
                     </div>
-
 
 <div class="settings-section-content" id="section-plugins">
     <div class="settings-section-hero">
@@ -838,8 +815,6 @@
     </div>
 </div>
 
-
-                    <!-- ABOUT SECTION -->
                     <div class="settings-section-content" id="section-about">
                         <div class="about-stack">
                             <div class="about-app-icon">
@@ -856,19 +831,18 @@
                                 </div>
                                 <div class="about-meta-row">
                                     <span data-i18n="aboutMade">Made by</span>
-                                    <span>Floke Studio</span>
+                                    <span>krwg</span>
                                 </div>
                             </div>
-                            <a href="https://github.com/FlokeStudio/Cultiva" target="_blank" rel="noopener noreferrer" class="btn-primary about-github-btn" data-i18n="aboutGitHub">GitHub repository</a>
+                            <a href="https://github.com/krwg/Cultiva" target="_blank" rel="noopener noreferrer" class="btn-primary about-github-btn" data-i18n="aboutGitHub">GitHub repository</a>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: AVATAR -->
     <div class="modal" id="avatar-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width:520px;">
@@ -884,13 +858,12 @@
         </div>
         <p class="preview-label">Preview</p>
     </div>
-    
-    <!-- Кнопки Upload и Remove -->
+
     <div class="avatar-upload-actions">
         <label class="btn-upload" for="avatar-upload">Upload Photo<input type="file" id="avatar-upload" accept="image/*" style="display:none;"></label>
         <button class="btn-upload btn-upload-danger" id="avatar-clear-photo" style="display:none;">Remove</button>
     </div>
-    
+
     <div class="avatar-section">
         <h4 class="avatar-section-title">Background</h4>
         <div class="avatar-grid" id="avatar-bg-grid"></div>
@@ -899,8 +872,7 @@
         <h4 class="avatar-section-title">Icon</h4>
         <div class="avatar-grid" id="avatar-emoji-grid"></div>
     </div>
-    
-    <!-- Кнопки Reset и Save -->
+
     <div class="avatar-modal-actions">
         <button class="btn-secondary" id="avatar-reset">Reset</button>
         <button class="btn-primary" id="avatar-save">Save Avatar</button>
@@ -909,7 +881,6 @@
         </div>
     </div>
 
-    <!-- MODAL: AUTH -->
     <div class="modal" id="auth-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width:420px;">
@@ -957,7 +928,6 @@
         </div>
     </div>
 
-    <!-- MODAL: EDIT PROFILE -->
     <div class="modal" id="edit-profile-modal">
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width:460px;">
@@ -1003,7 +973,6 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
     <footer class="app-footer">
         <div class="footer-content">
             <nav class="footer-links">
@@ -1013,7 +982,6 @@
         </div>
     </footer>
 
-        <!-- BACKGROUNDS -->
         <div class="bg-aurora" id="bg-aurora" style="display:none;"></div>
         <div class="bg-rainfall" id="bg-rainfall" style="display:none;"></div>
         <div class="bg-starlight" id="bg-starlight" style="display:none;"></div>

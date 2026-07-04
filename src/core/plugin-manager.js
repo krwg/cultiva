@@ -2,19 +2,12 @@ import { storage } from '../modules/storage.js';
 import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
 
-/** Public plugin store; install copies files into userData/cultiva-plugins via Electron (never from a local repo plugins/ path). */
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/CultivaPlugins/main/registry.json';
 
 function stripUtf8Bom(s) {
   return String(s ?? '').replace(/^\uFEFF/, '');
 }
 
-/**
- * Small HTTPS GET as UTF-8 text. In Electron the main process performs the request (avoids renderer CSP blocking `fetch` to GitHub in packaged builds).
- * Falls back to `fetch` if IPC fails (e.g. old preload without pluginHttpGet).
- * @param {string} url
- * @returns {Promise<string>}
- */
 async function fetchPluginHttpText(url) {
   const w = typeof window !== 'undefined' ? window : null;
   let text = '';
@@ -65,7 +58,6 @@ async function getInstalledPluginIdsNormalized() {
 
 const plugins = new Map();
 
-/** Set when loadPlugin returns false so installPlugin can show a specific reason. */
 let _lastPluginLoadFailure = null;
 function notePluginLoadFailure(message) {
   _lastPluginLoadFailure = message ? String(message) : null;
@@ -76,7 +68,6 @@ function takePluginLoadFailure() {
   return m;
 }
 
-/** Resolve which modal opener exists on the plugin instance (header click wiring). */
 function resolveHeaderModalMethod(instance) {
   if (!instance) {
     return null;
@@ -96,7 +87,6 @@ function resolveHeaderModalMethod(instance) {
   return null;
 }
 
-/** @type {Record<string, string[]>} hookName -> pluginIds that subscribed (deduped) */
 const pluginHooks = {
   onHabitComplete: [],
   onAppStart: [],
@@ -823,10 +813,6 @@ export const pluginManager = {
     }));
   },
 
-  /**
-   * All plugin ids marked installed in storage, merged with in-memory state.
-   * Used by Settings so rows appear even when load failed (e.g. browser-only dev).
-   */
   async getInstalledPluginsForUI() {
     const ids = await getInstalledPluginIdsNormalized();
     const rows = [];

@@ -2,16 +2,11 @@ import { storage } from './storage.js';
 import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS } from '../core/config.js';
 import { getTodayInTZ, getDateInTZ } from '../core/timezone.js';
 
-/* ============================================ */
-/* HABITS CORE                                  */
-/* ============================================ */
-
 export const habits = {
   getAll() {
     return storage.getHabits();
   },
 
-  /** Coerce stored daily progress to a number (IDB/JSON may keep strings). */
   quantityDayProgress(habit, dayKey) {
     const raw = habit?.dailyProgress?.[dayKey];
     const n = Number(raw);
@@ -54,7 +49,7 @@ export const habits = {
       treeName: null,
       createdAt: new Date().toISOString()
     };
-    
+
     allHabits.push(newHabit);
     storage.saveHabits(allHabits);
     return newHabit;
@@ -64,7 +59,7 @@ export const habits = {
     const allHabits = this.getAll();
     const habit = allHabits.find(h => h.id === id);
     if (!habit) {return null;}
-    
+
     const today = getTodayInTZ();
 
     if (habit.trackType === 'quantity') {
@@ -79,10 +74,10 @@ export const habits = {
       }
       habit.dailyProgress = habit.dailyProgress || {};
       habit.dailyProgress[today] = newAmount;
-      
+
       const wasCompleted = current >= target;
       const isCompleted = newAmount >= target;
-      
+
       if (isCompleted && !wasCompleted) {
         habit.progress++;
         habit.lastCompleted = today;
@@ -92,7 +87,7 @@ export const habits = {
         habit.lastCompleted = null;
         habit.history = habit.history.filter(d => d !== today);
       }
-      
+
       this._recalculateStreaks(habit);
     } else {
       if (habit.lastCompleted === today) {
@@ -104,10 +99,10 @@ export const habits = {
         habit.lastCompleted = today;
         if (!habit.history.includes(today)) {habit.history.push(today);}
       }
-      
+
       this._recalculateStreaks(habit);
     }
-    
+
     storage.saveHabits(allHabits);
     return habit;
   },
@@ -116,13 +111,13 @@ export const habits = {
     const today = getTodayInTZ();
     const history = habit.history || [];
     const sortedHistory = [...new Set(history)].sort();
-    
+
     let currentStreak = 0;
     const checkDate = new Date();
-    
+
     while (true) {
       const dateStr = getDateInTZ(checkDate);
-      
+
       if (sortedHistory.includes(dateStr)) {
         currentStreak++;
         checkDate.setDate(checkDate.getDate() - 1);
@@ -132,13 +127,13 @@ export const habits = {
         break;
       }
     }
-    
+
     let bestStreak = 0;
     let tempStreak = 0;
-    
+
     for (let i = 0; i < sortedHistory.length; i++) {
       const currentDate = sortedHistory[i];
-      
+
       if (i === 0) {
         tempStreak = 1;
       } else {
@@ -146,30 +141,30 @@ export const habits = {
         const curr = new Date(currentDate);
         const prev = new Date(prevDate);
         const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays === 1) {
           tempStreak++;
         } else {
           tempStreak = 1;
         }
       }
-      
+
       bestStreak = Math.max(bestStreak, tempStreak);
     }
-    
+
     if (habit.lastCompleted !== today) {
       const lastDate = sortedHistory[sortedHistory.length - 1];
       if (lastDate) {
         const last = new Date(lastDate);
         const now = new Date();
         const diffDays = Math.round((now - last) / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays > 1) {
           currentStreak = 0;
         }
       }
     }
-    
+
     habit.currentStreak = currentStreak;
     habit.bestStreak = Math.max(habit.bestStreak || 0, bestStreak, currentStreak);
   },
@@ -193,7 +188,7 @@ export const habits = {
 
     const today = getTodayInTZ();
     const startDate = h.startDate || today;
-    
+
     const totalDays = Math.max(1, Math.floor((new Date(today) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1);
     const completedDays = h.history?.length || 0;
     const completionRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
@@ -217,16 +212,16 @@ export const habits = {
 
     const start = new Date();
     start.setDate(start.getDate() - 364);
-    
+
     const days = [];
     const historySet = new Set(h.history || []);
-    
+
     for (let i = 0; i < 365; i++) {
       const d = new Date(start);
       d.setDate(d.getDate() + i);
       const ds = getDateInTZ(d);
       let level = 0;
-      
+
       if (historySet.has(ds)) {
         if (h.trackType === 'quantity') {
           const cur = this.quantityDayProgress(h, ds);
@@ -237,10 +232,10 @@ export const habits = {
           level = 4;
         }
       }
-      
+
       days.push({ date: ds, level });
     }
-    
+
     return days;
   }
 };

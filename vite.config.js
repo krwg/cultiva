@@ -8,7 +8,7 @@ export default defineConfig({
   root: 'src',
   base: './',
   publicDir: '../public',
-  
+
   build: {
     outDir: '../dist',
     emptyOutDir: true,
@@ -19,7 +19,7 @@ export default defineConfig({
       }
     }
   },
-  
+
   server: {
     port: 3000,
   },

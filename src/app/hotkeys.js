@@ -1,13 +1,4 @@
-/**
- * Global keyboard shortcuts for Cultiva desktop / web shell.
- * @param {object} h
- * @param {() => void} h.openAddModal
- * @param {() => void} h.openSettings
- * @param {() => void} h.focusSearch
- * @param {() => void} h.completeHighlighted
- * @param {() => void} h.logQuantityHighlighted
- * @param {() => void} h.closeTopModal
- */
+
 export function initHotkeys(h) {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {

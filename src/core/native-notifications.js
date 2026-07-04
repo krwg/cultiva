@@ -1,7 +1,3 @@
-/**
- * Schedules OS-level (Electron main process) notifications for habits and calendar.
- * Only runs when `window.electron.showNativeNotification` exists (desktop build).
- */
 
 import { habits } from '../modules/habits.js';
 import { LEGACY_THRESHOLD } from './config.js';
@@ -153,10 +149,6 @@ async function maybeNotifyCalendar(settings) {
   }
 }
 
-/**
- * @param {() => object} getSettings
- * @returns {() => void} disposer
- */
 export function initNativeNotificationsScheduler(getSettings) {
   if (typeof window === 'undefined' || !window.electron?.showNativeNotification) {
     return () => {};
