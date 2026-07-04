@@ -1,9 +1,4 @@
-/**
- * Builds Windows `build/icon.ico` (multi-size, includes 256×256 for NSIS + portable targets)
- * and copies the same file to `electron/app-icon.ico` (runtime window icon).
- *
- * Source: `src/images/favicon.ico` (may contain only 16/32/48px — we upscale the largest frame).
- */
+
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';

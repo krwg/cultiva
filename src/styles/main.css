@@ -1,18 +1,14 @@
-/* ============================================
-   CULTIVA CSS
-   ============================================ */
 
-/* === VARIABLES & THEMES === */
 :root {
     --bg-primary: #ffffff;
     --bg-secondary: #f5f5f7;
     --bg-tertiary: #efeff4;
     --bg-quaternary: #e5e5ea;
-    
+
     --text-primary: #1d1d1f;
     --text-secondary: #6e6e73;
     --text-tertiary: #aeaeb2;
-    
+
     --accent-blue: #0071e3;
     --accent-blue-hover: #0077ed;
     --accent-green: #34c759;
@@ -20,46 +16,39 @@
     --accent-orange: #ff9500;
     --accent-purple: #af52de;
     --accent-pink: #ff2d55;
-    
+
     --border-light: #d2d2d7;
     --border-medium: #c6c6c8;
-    
-    /* Shadows */
+
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
     --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.16);
-    
-    /* Radius */
+
     --radius-xs: 6px;
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
     --radius-xl: 20px;
     --radius-full: 9999px;
-    
-    /* Fonts */
+
     --font-main: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
     --font-mono: 'SF Mono', 'Monaco', 'Consolas', monospace;
-    
-    /* Categories */
-    --cat-health: #FF6B6B; --cat-learning: #4ECDC4; --cat-work: #45B7D1; 
-    --cat-mindfulness: #96CEB4; --cat-creative: #FFEAA7; --cat-fitness: #FF9F43; 
-    --cat-social: #A29BFE; --cat-finance: #F1C40F; --cat-hobby: #FD79A8; 
-    --cat-family: #E17055; --cat-career: #0984E3; --cat-spiritual: #6C5CE7; 
+
+    --cat-health: #FF6B6B; --cat-learning: #4ECDC4; --cat-work: #45B7D1;
+    --cat-mindfulness: #96CEB4; --cat-creative: #FFEAA7; --cat-fitness: #FF9F43;
+    --cat-social: #A29BFE; --cat-finance: #F1C40F; --cat-hobby: #FD79A8;
+    --cat-family: #E17055; --cat-career: #0984E3; --cat-spiritual: #6C5CE7;
     --cat-environment: #00CEC9; --cat-other: #B2BEC3;
-    
-    /* Calendar */
-    --calendar-0: #ebedf0; --calendar-1: #c6e48b; --calendar-2: #7bc96f; 
+
+    --calendar-0: #ebedf0; --calendar-1: #c6e48b; --calendar-2: #7bc96f;
     --calendar-3: #239a3b; --calendar-4: #196127;
-    
-    /* Animations */
+
     --ease-apple: cubic-bezier(0.4, 0, 0.2, 1);
     --duration-fast: 150ms;
     --duration-normal: 250ms;
     --duration-slow: 400ms;
 
-    /* Cultiva UI layer (cv) — use for new surfaces; maps to theme tokens above */
     --cv-space-xs: 0.25rem;
     --cv-space-sm: 0.5rem;
     --cv-space-md: 1rem;
@@ -68,7 +57,6 @@
     --cv-radius-sheet: var(--radius-xl);
 }
 
-/* Dark Mode */
 @media (prefers-color-scheme: dark) {
     :root {
         --bg-primary: #000000; --bg-secondary: #1c1c1e; --bg-tertiary: #2c2c2e; --bg-quaternary: #3a3a3c;
@@ -88,7 +76,6 @@ body.theme-dark {
     --text-primary: #f5f5f7; --text-secondary: #98989d; --border-light: #38383a;
 }
 
-/* Cultiva UI utilities (cv) — optional layer on cards / sheets */
 .cv-surface {
     background: var(--bg-primary);
     border: 1px solid var(--border-light);
@@ -101,9 +88,6 @@ body.theme-dark {
     box-shadow: var(--shadow-lg);
 }
 
-/* ============================================
-   PINK THEME
-   ============================================ */
 body.theme-pink {
   --bg-primary: #fff0f5;
   --bg-secondary: #ffe4ec;
@@ -146,9 +130,6 @@ body.theme-pink .btn-primary:hover {
   background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
 }
 
-/* ============================================
-   MOON THEME
-   ============================================ */
 body.theme-moon {
   --bg-primary: #0f1426;
   --bg-secondary: #1a1f3a;
@@ -191,7 +172,6 @@ body.theme-moon .btn-primary:hover {
   background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
 }
 
-/* === BASE & RESET === */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -205,14 +185,12 @@ body {
     transition: background 0.3s var(--ease-apple), color 0.3s var(--ease-apple);
 }
 
-/* === TYPOGRAPHY === */
 h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
 h1 { font-size: 28px; } h2 { font-size: 22px; } h3 { font-size: 18px; } h4 { font-size: 16px; font-weight: 500; }
 p { font-size: 15px; color: var(--text-secondary); }
 a { color: var(--accent-blue); text-decoration: none; transition: color var(--duration-fast) var(--ease-apple); }
 a:hover { color: var(--accent-blue-hover); }
 
-/* === LAYOUT: HEADER === */
 .app-header, .calendar-header {
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-light);
@@ -221,14 +199,14 @@ a:hover { color: var(--accent-blue-hover); }
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
-.header-content, .calendar-container.calendar-nav { 
-    max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; 
+.header-content, .calendar-container.calendar-nav {
+    max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;
 }
 .header-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
 .header-actions { display: flex; align-items: center; gap: 16px; }
 
 .calendar-nav .calendar-back {
-    color: var(--accent-blue); text-decoration: none; font-size: 14px; font-weight: 500; 
+    color: var(--accent-blue); text-decoration: none; font-size: 14px; font-weight: 500;
     display: flex; align-items: center; gap: 4px;
 }
 .calendar-nav .calendar-back:hover { opacity: 0.7; }
@@ -254,7 +232,6 @@ a:hover { color: var(--accent-blue-hover); }
 .add-btn:hover { background: var(--accent-blue-hover); transform: scale(1.05); }
 .add-btn:active { transform: scale(0.95); }
 
-/* === USER MENU & DROPDOWN === */
 .user-menu { position: relative; display: flex; align-items: center; }
 .user-btn {
     display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px;
@@ -334,7 +311,6 @@ a:hover { color: var(--accent-blue-hover); }
 .dropdown-item.danger { color: var(--accent-red); justify-content: center; padding: 12px; background: rgba(255, 59, 48, 0.08); }
 .dropdown-item.danger:hover { background: rgba(255, 59, 48, 0.15); }
 
-/* === LAYOUT: MAIN & FOOTER === */
 .app-main, .calendar-body { max-width: 1200px; margin: 0 auto; padding: 32px 24px; min-height: calc(100vh - 200px); transition: padding 0.3s var(--ease-apple); }
 .calendar-body { padding: 24px 0 80px; max-width: 900px; }
 .calendar-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
@@ -358,18 +334,17 @@ a:hover { color: var(--accent-blue-hover); }
 .footer-links a:hover { color: var(--text-primary); }
 .footer-version { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 4px; letter-spacing: 0.5px; }
 
-/* === CALENDAR GRID (COMPACT) === */
-.calendar-grid { 
-    background: var(--bg-primary); border-radius: 20px; padding: 20px; 
+.calendar-grid {
+    background: var(--bg-primary); border-radius: 20px; padding: 20px;
     border: 1px solid var(--border-light); margin-bottom: 24px;
 }
 .calendar-month { text-align: center; font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
 .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
 .weekday { text-align: center; font-size: 12px; font-weight: 500; color: var(--text-secondary); padding: 8px 0; }
 .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.day { 
-    aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-    border-radius: 12px; font-size: 13px; color: var(--text-primary); cursor: pointer; 
+.day {
+    aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 12px; font-size: 13px; color: var(--text-primary); cursor: pointer;
     transition: all 0.2s; position: relative; min-height: 36px; max-height: 48px;
 }
 .day:hover { background: var(--bg-tertiary); }
@@ -378,29 +353,28 @@ a:hover { color: var(--accent-blue-hover); }
 .day.has-event::after { content: ""; position: absolute; bottom: 4px; width: 5px; height: 5px; background: var(--accent-pink); border-radius: 50%; }
 .day.has-holiday::before { content: ""; position: absolute; top: 4px; width: 5px; height: 5px; background: #ff9500; border-radius: 50%; }
 .day.selected { box-shadow: 0 0 0 2px var(--accent-blue); }
-.calendar-note-panel { 
-    margin-top: 24px; background: var(--bg-primary); border-radius: 16px; padding: 20px; 
-    border: 1px solid var(--border-light); display: none; 
+.calendar-note-panel {
+    margin-top: 24px; background: var(--bg-primary); border-radius: 16px; padding: 20px;
+    border: 1px solid var(--border-light); display: none;
 }
 .calendar-note-panel.active { display: block; animation: slideUp 0.3s ease; }
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .note-date { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 .note-close { background: none; border: none; font-size: 20px; color: var(--text-secondary); cursor: pointer; }
-.note-input { 
-    width: 100%; min-height: 80px; padding: 12px; border-radius: 12px; border: 1px solid var(--border-light); 
-    background: var(--bg-tertiary); color: var(--text-primary); font-size: 14px; resize: vertical; 
-    outline: none; transition: border-color 0.2s; 
+.note-input {
+    width: 100%; min-height: 80px; padding: 12px; border-radius: 12px; border: 1px solid var(--border-light);
+    background: var(--bg-tertiary); color: var(--text-primary); font-size: 14px; resize: vertical;
+    outline: none; transition: border-color 0.2s;
 }
 .note-input:focus { border-color: var(--accent-blue); }
 .note-hints { margin-top: 8px; font-size: 12px; color: var(--text-tertiary); display: flex; gap: 12px; }
 .note-hints span { display: flex; align-items: center; gap: 4px; }
-.holiday-badge { 
-    position: absolute; top: 2px; right: 2px; font-size: 9px; background: #ff9500; color: #fff; 
-    padding: 1px 4px; border-radius: 4px; font-weight: 500; 
+.holiday-badge {
+    position: absolute; top: 2px; right: 2px; font-size: 9px; background: #ff9500; color: #fff;
+    padding: 1px 4px; border-radius: 4px; font-weight: 500;
 }
 
-/* === COMPONENTS: CARDS === */
 .habit-card {
     background: var(--bg-primary); border-radius: var(--radius-xl); padding: 20px;
     border: 1px solid var(--border-light); cursor: pointer; transition: all var(--duration-normal) var(--ease-apple);
@@ -450,7 +424,6 @@ a:hover { color: var(--accent-blue-hover); }
 .btn-card-danger { background: var(--bg-tertiary); color: var(--accent-red); max-width: 40px; flex: none; }
 .btn-card-danger:hover { background: var(--accent-red); color: white; }
 
-/* === COMPONENTS: MODALS === */
 .modal { display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
 .modal.active { display: flex; }
 .modal-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); opacity: 0; transition: opacity var(--duration-normal) var(--ease-apple); }
@@ -475,7 +448,6 @@ a:hover { color: var(--accent-blue-hover); }
 }
 .modal-close:hover { background: var(--border-light); color: var(--text-primary); }
 
-/* === FORMS & INPUTS === */
 .form-group { margin-bottom: 18px; }
 .form-group:last-child { margin-bottom: 0; }
 .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 8px; }
@@ -614,7 +586,7 @@ textarea { resize: vertical; min-height: 80px; }
 @keyframes fadeSlide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 .auth-error { background: rgba(255,59,48,0.1); padding: 10px; border-radius: 8px; font-size: 13px; color: var(--accent-red); text-align: center; }
 
-body.focus-mode .app-header, body.focus-mode .user-menu, body.focus-mode .section-header h2, 
+body.focus-mode .app-header, body.focus-mode .user-menu, body.focus-mode .section-header h2,
 body.focus-mode .trophy-section, body.focus-mode .category-badge, body.focus-mode .footer { display: none !important; }
 body.focus-mode .app-main { padding: 24px 16px; max-width: 900px; margin: 0 auto; }
 body.focus-mode .garden-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
@@ -640,10 +612,6 @@ body.focus-mode .plant-visual { font-size: 36px; }
     .footer-content { gap: 12px; padding: 24px 16px; }
     .footer-links { gap: 10px 16px; }
 }
-
-/* ============================================ */
-/* EVERGREEN THEME                              */
-/* ============================================ */
 
 body.theme-evergreen {
   --bg-primary: #0d2b1f;
@@ -680,10 +648,6 @@ body.theme-evergreen .btn-primary:hover {
   background: linear-gradient(135deg, var(--accent-blue), #81c784);
 }
 
-/* ============================================ */
-/* BLOSSOM THEME                                */
-/* ============================================ */
-
 body.theme-blossom {
   --bg-primary: #fff5f7;
   --bg-secondary: #ffe8ed;
@@ -718,10 +682,6 @@ body.theme-blossom .btn-primary {
 body.theme-blossom .btn-primary:hover {
   background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
 }
-
-/* ============================================ */
-/* OCEAN THEME                                  */
-/* ============================================ */
 
 body.theme-ocean {
   --bg-primary: #0a192f;
@@ -760,10 +720,6 @@ body.theme-ocean .btn-primary:hover {
   color: white;
 }
 
-/* ============================================ */
-/* SUNSET THEME                                 */
-/* ============================================ */
-
 body.theme-sunset {
   --bg-primary: #1a0b2e;
   --bg-secondary: #2d1b3d;
@@ -800,10 +756,6 @@ body.theme-sunset .btn-primary:hover {
   color: #1a0b2e;
 }
 
-/* ============================================ */
-/* BACKGROUND ANIMATIONS                        */
-/* ============================================ */
-
 .bg-aurora {
   position: fixed;
   top: 0;
@@ -822,7 +774,7 @@ body.theme-sunset .btn-primary:hover {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: 
+  background:
     radial-gradient(circle at 30% 40%, rgba(100, 255, 218, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 70% 60%, rgba(124, 77, 255, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 50% 30%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
@@ -836,7 +788,6 @@ body.theme-sunset .btn-primary:hover {
   75% { transform: translate(-2%, 2%) scale(1.05); opacity: 0.9; }
 }
 
-/* Rainfall — дождь в саду */
 .bg-rainfall {
   position: fixed;
   top: 0;
@@ -894,10 +845,6 @@ body.with-ambient-bg .app-main {
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* ============================================ */
-/* IPADOS-STYLE SETTINGS                        */
-/* ============================================ */
-
 .settings-sheet-ipados {
     max-width: 720px;
     width: 90vw;
@@ -914,10 +861,6 @@ body.with-ambient-bg .app-main {
     min-height: 400px;
     overflow: hidden;
 }
-
-/* ============================================ */
-/* LEFT SIDEBAR                                 */
-/* ============================================ */
 
 .settings-sidebar {
     width: 160px;
@@ -987,10 +930,6 @@ body.with-ambient-bg .app-main {
     font-size: 14px;
     font-weight: 500;
 }
-
-/* ============================================ */
-/* RIGHT CONTENT                                */
-/* ============================================ */
 
 .settings-content {
     flex: 1;
@@ -1078,7 +1017,6 @@ body.with-ambient-bg .app-main {
     background: var(--bg-tertiary);
 }
 
-/* Settings → Notifications (grouped, Apple-like) */
 .notifications-apple-hero {
     margin-bottom: 8px;
 }
@@ -1324,10 +1262,6 @@ select.select-input optgroup {
     background: var(--bg-secondary);
 }
 
-/* ============================================ */
-/* PROFILE HEADER                               */
-/* ============================================ */
-
 .profile-header {
     display: flex;
     align-items: center;
@@ -1338,7 +1272,7 @@ select.select-input optgroup {
 .profile-avatar-large {
     width: 64px;
     height: 64px;
-    border-radius: 50%;  
+    border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
     display: flex;
     align-items: center;
@@ -1352,7 +1286,7 @@ select.select-input optgroup {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%;  /* Добавь эту строку */
+    border-radius: 50%;
 }
 
 .profile-info {
@@ -1371,20 +1305,12 @@ select.select-input optgroup {
     color: var(--text-tertiary);
 }
 
-/* ============================================ */
-/* INLINE FOOTER                                */
-/* ============================================ */
-
 .settings-footer-inline {
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px solid var(--border-light);
     text-align: center;
 }
-
-/* ============================================ */
-/* ABOUT SECTION                                */
-/* ============================================ */
 
 .about-app-icon {
     font-size: 56px;
@@ -1458,37 +1384,28 @@ select.select-input optgroup {
     text-decoration: none;
 }
 
-/* ============================================ */
-/* RESPONSIVE                                   */
-/* ============================================ */
-
 @media (max-width: 600px) {
     .settings-sheet-ipados {
         width: 95vw;
     }
-    
+
     .settings-sidebar {
         width: 130px;
     }
-    
+
     .sidebar-label {
         font-size: 13px;
     }
-    
+
     .sidebar-icon-wrapper {
         width: 28px;
         height: 28px;
     }
-    
+
     .sidebar-icon {
         font-size: 16px;
     }
 }
-
-
-/* ============================================ */
-/* PROFILE SETTINGS                             */
-/* ============================================ */
 
 .setting-item-static {
     cursor: default;
@@ -1511,10 +1428,6 @@ select.select-input optgroup {
     background: var(--accent-green);
     color: white;
 }
-
-/* ============================================ */
-/* DANGER ZONE                                  */
-/* ============================================ */
 
 .danger-zone {
     padding: 16px;
@@ -1549,10 +1462,6 @@ select.select-input optgroup {
     background: var(--accent-red);
     color: white;
 }
-
-/* ============================================ */
-/* UPDATES SECTION                              */
-/* ============================================ */
 
 .updates-container {
     padding: 8px 0;
@@ -1851,7 +1760,7 @@ select.select-input optgroup {
     font-size: 24px;
 }
 
-.discord-preview-icon:not([src]), 
+.discord-preview-icon:not([src]),
 .discord-preview-icon[src=""] {
     display: none;
 }
@@ -1894,7 +1803,6 @@ select.select-input optgroup {
     text-align: center;
 }
 
-/* Updates section icon */
 .version-icon-img {
     width: 40px;
     height: 40px;
@@ -1907,7 +1815,7 @@ select.select-input optgroup {
     display: none;
 }
 
-.version-icon-img:not([src]), 
+.version-icon-img:not([src]),
 .version-icon-img[src=""] {
     display: none;
 }
@@ -1917,7 +1825,6 @@ select.select-input optgroup {
     display: flex;
 }
 
-/* About section icon */
 .about-icon-img {
     width: 56px;
     height: 56px;
@@ -1929,7 +1836,7 @@ select.select-input optgroup {
     display: none;
 }
 
-.about-icon-img:not([src]), 
+.about-icon-img:not([src]),
 .about-icon-img[src=""] {
     display: none;
 }
@@ -1939,7 +1846,6 @@ select.select-input optgroup {
     display: block;
 }
 
-/* Avatar Modal */
 .avatar-preview-container {
     text-align: center;
     margin-bottom: 24px;
@@ -1970,7 +1876,6 @@ select.select-input optgroup {
     flex: 1;
 }
 
-/* Event buttons (для Edit Profile) */
 .event-actions {
     display: flex;
     gap: 12px;
@@ -2006,10 +1911,6 @@ select.select-input optgroup {
 .event-btn-secondary:hover {
     background: var(--border-light);
 }
-
-/* ============================================ */
-/* SNOWFALL BACKGROUND                          */
-/* ============================================ */
 
 .bg-snowfall {
     position: fixed;
@@ -2048,10 +1949,6 @@ select.select-input optgroup {
         opacity: 0;
     }
 }
-
-/* ============================================ */
-/* FIREFLIES BACKGROUND                         */
-/* ============================================ */
 
 .bg-fireflies {
     position: fixed;
@@ -2103,10 +2000,6 @@ select.select-input optgroup {
         opacity: 0;
     }
 }
-
-/* ============================================ */
-/* PETAL DRIFT, SILICON MIST, EMBER GLOW, BREEZE */
-/* ============================================ */
 
 .bg-petal {
     position: fixed;
@@ -2240,10 +2133,6 @@ select.select-input optgroup {
     pointer-events: none;
 }
 
-/* ============================================ */
-/* FROST THEME — морозное утро                  */
-/* ============================================ */
-
 body.theme-frost {
     --bg-primary: #e8f0fe;
     --bg-secondary: #dce6f5;
@@ -2270,10 +2159,6 @@ body.theme-frost {
     --calendar-3: #4a94c4;
     --calendar-4: #2a78b4;
 }
-
-/* ============================================ */
-/* CEDAR THEME — тёплое дерево                  */
-/* ============================================ */
 
 body.theme-cedar {
     --bg-primary: #f5ebe0;
@@ -2302,10 +2187,6 @@ body.theme-cedar {
     --calendar-4: #8b6a3c;
 }
 
-/* ============================================ */
-/* DUSK THEME — сумеречный, пурпурный           */
-/* ============================================ */
-
 body.theme-dusk {
     --bg-primary: #1a1423;
     --bg-secondary: #231b30;
@@ -2332,10 +2213,6 @@ body.theme-dusk {
     --calendar-3: #7a4aa0;
     --calendar-4: #9b6dff;
 }
-
-/* ============================================ */
-/* MEADOW THEME — луговая свежесть              */
-/* ============================================ */
 
 body.theme-meadow {
     --bg-primary: #f0f7e6;
@@ -2364,10 +2241,6 @@ body.theme-meadow {
     --calendar-4: #5aa42a;
 }
 
-/* ============================================ */
-/* ORCHARD — светлый, садовый «как у яблони»     */
-/* ============================================ */
-
 body.theme-orchard {
     --bg-primary: #f4faf4;
     --bg-secondary: #e8f4ea;
@@ -2394,10 +2267,6 @@ body.theme-orchard {
     --calendar-3: #6bc48a;
     --calendar-4: #3aaf6c;
 }
-
-/* ============================================ */
-/* HONEYCRISP — тёплый светлый «мёд и стекло»   */
-/* ============================================ */
 
 body.theme-honeycrisp {
     --bg-primary: #fff9f0;
@@ -2426,10 +2295,6 @@ body.theme-honeycrisp {
     --calendar-4: #d88820;
 }
 
-/* ============================================ */
-/* INKWELL — глубокий тёмный «как у iPad»       */
-/* ============================================ */
-
 body.theme-inkwell {
     --bg-primary: #1c1c1e;
     --bg-secondary: #2c2c2e;
@@ -2457,10 +2322,6 @@ body.theme-inkwell {
     --calendar-4: #64d2ff;
 }
 
-/* ============================================ */
-/* SEQUOIA — ночной лес, тёплый тёмный          */
-/* ============================================ */
-
 body.theme-sequoia {
     --bg-primary: #1a1410;
     --bg-secondary: #241c16;
@@ -2487,10 +2348,6 @@ body.theme-sequoia {
     --calendar-3: #8a7058;
     --calendar-4: #c4956a;
 }
-
-/* ============================================ */
-/* CYPRESS (Кипарис) — тёмная зелень, медiterranean */
-/* ============================================ */
 
 body.theme-cypress {
     --bg-primary: #0f1812;
@@ -2649,10 +2506,6 @@ body.with-ambient-bg > [id^="bg-"] {
     max-width: 200px;
 }
 
-/* ============================================ */
-/* PLUGINS SECTION                              */
-/* ============================================ */
-
 .plugins-container {
     padding: 8px 0;
 }
@@ -2784,7 +2637,6 @@ body.with-ambient-bg > [id^="bg-"] {
     color: var(--text-tertiary);
     font-size: 13px;
 }
-
 
 .header-plugin-item {
     display: flex;

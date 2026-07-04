@@ -4,23 +4,8 @@ import { settings, ensureAppReady } from './renderer-bootstrap.js';
 import { applyTranslations } from './i18n-dom.js';
 import { applyAccentColor, applyAmbientIntensity } from '../core/customization.js';
 
-/**
- * @typedef {object} SettingsControllerContext
- * @property {HTMLSelectElement | null} langSelect
- * @property {HTMLSelectElement | null} themeSelect
- * @property {HTMLInputElement | null} trophyToggle
- * @property {HTMLInputElement | null} focusToggle
- * @property {(lang: string) => void} setLangAndT
- * @property {() => void} renderHeaderAvatar
- * @property {() => void} renderGarden
- */
-
-/** @type {SettingsControllerContext | null} */
 let ctx = null;
 
-/**
- * @param {SettingsControllerContext} c
- */
 export function configureSettingsController(c) {
   ctx = c;
 }

@@ -5,15 +5,8 @@ const https = require('https');
 const crypto = require('crypto');
 const { app } = require('electron');
 
-/**
- * Canonical install location for plugin files (manifest + entry + assets).
- * - Written only by plugin:install, which downloads from HTTPS URLs (registry baseUrl, e.g. raw.githubusercontent.com/krwg/CultivaPlugins/...).
- * - Read only by plugin:read-file / get-resource-path under this directory.
- * The Cultiva repo may contain a plugins/ folder for authors and the GitHub store — the desktop app never loads plugins from the project tree on disk.
- */
 const PLUGIN_FILES_DIR = path.join(app.getPath('userData'), 'cultiva-plugins');
 
-/** Hostnames allowed for plugin file downloads and redirects (HTTPS only). */
 const PLUGIN_DOWNLOAD_HOSTS = new Set([
   'raw.githubusercontent.com',
   'github.com',
@@ -43,12 +36,6 @@ function assertAllowedDownloadUrl(urlString) {
   }
 }
 
-/**
- * Ensures resolved path is inside rootDir (zip-slip / path traversal safe).
- * @param {string} rootDir
- * @param {string} resolvedPath from path.resolve(rootDir, ...)
- * @returns {boolean}
- */
 function isPathInsideDir(rootDir, resolvedPath) {
   const root = path.resolve(rootDir);
   const resolved = path.resolve(resolvedPath);
@@ -85,12 +72,6 @@ function assertSafeRelativeFileName(name) {
   }
 }
 
-/**
- * HTTPS GET returning UTF-8 body (for registry / manifest in main process — avoids renderer CSP limits).
- * @param {string} urlString
- * @param {number} maxBytes
- * @returns {Promise<string>}
- */
 function httpsGetText(urlString, maxBytes = 8 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
     const run = (currentUrl, redirectCount) => {

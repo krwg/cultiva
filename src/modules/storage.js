@@ -1,9 +1,5 @@
 import { db } from './db.js';
 
-/* ============================================ */
-/* STORAGE - CONSTANTS & STATE                   */
-/* ============================================ */
-
 const SESSION_KEY = 'cultiva_current_session';
 
 let _habitsCache = [];
@@ -11,10 +7,6 @@ let _settingsCache = {};
 let _isInitialized = false;
 let _initPromise = null;
 let _currentUserId = null;
-
-/* ============================================ */
-/* VALIDATION                                   */
-/* ============================================ */
 
 function validateHabit(habit) {
   if (!habit || typeof habit !== 'object') {
@@ -32,10 +24,6 @@ function validateHabit(habit) {
   }
   return true;
 }
-
-/* ============================================ */
-/* MIGRATION                                    */
-/* ============================================ */
 
 function migrateHabit(habit) {
   const migrated = { ...habit };
@@ -78,10 +66,6 @@ function migrateHabit(habit) {
 
   return migrated;
 }
-
-/* ============================================ */
-/* HABITS PERSIST (no clear-before-write)       */
-/* ============================================ */
 
 async function _persistHabitsUpsert(myHabits) {
   const dbInstance = await db.open();

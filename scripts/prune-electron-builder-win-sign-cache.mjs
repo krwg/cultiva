@@ -1,7 +1,4 @@
-/**
- * Removes electron-builder's winCodeSign cache (broken partial extracts cause repeat failures).
- * Run: npm run electron:prune-sign-cache
- */
+
 import { existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import os from 'os';

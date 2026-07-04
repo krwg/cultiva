@@ -2,10 +2,10 @@
   "name": "cultiva",
   "version": "1.1.0",
   "description": "Grow your habits. Grow yourself.",
-  "homepage": "https://github.com/FlokeStudio/Cultiva",
+  "homepage": "https://github.com/krwg/Cultiva",
   "main": "electron/main.cjs",
   "type": "module",
-  "author": "Floke Studio",
+  "author": "krwg",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -28,7 +28,7 @@
     "productName": "Cultiva",
     "publish": {
       "provider": "github",
-      "owner": "FlokeStudio",
+      "owner": "krwg",
       "repo": "Cultiva",
       "releaseType": "release"
     },

@@ -1,9 +1,4 @@
-/**
- * Removes release/win-unpacked so electron-builder can repackage app.asar.
- *
- * On Windows, if app.asar is locked (EBUSY), tries to end Cultiva.exe and retries.
- * Set SKIP_KILL=1 to never send taskkill (close the app yourself first).
- */
+
 import { execSync } from 'child_process';
 import { existsSync, rmSync } from 'fs';
 import { resolve } from 'path';
@@ -25,7 +20,7 @@ function tryKillCultivaWindows() {
     execSync('taskkill /F /IM Cultiva.exe /T', { stdio: 'ignore', windowsHide: true });
     console.log('[clean-electron-release] Ended Cultiva.exe (was locking the build output).');
   } catch {
-    // Process not found — normal if Cultiva was not running.
+
   }
 }
 

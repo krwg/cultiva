@@ -26,11 +26,6 @@ export function readCustomBackgroundDataUrl() {
   }
 }
 
-/**
- * @param {Document} doc
- * @param {HTMLElement} body
- * @param {string} bg value from cultiva-background (none | layer id | custom)
- */
 export function applyAmbientBackground(doc, body, bg) {
   stripAmbientClasses(body);
   hideAllLayers(doc);
@@ -98,7 +93,7 @@ export function saveCustomBackgroundFromFile(file) {
 export function clearCustomBackground() {
   try {
     localStorage.removeItem(LS_CUSTOM_BG_DATA);
-  } catch { /* ignore */ }
+  } catch {  }
 }
 
 function generateRaindrops(container) {

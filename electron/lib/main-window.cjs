@@ -1,10 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 
-/**
- * Apply CSP on the default session so file:// and all windows (including plugin sandbox) get one policy.
- * Strips any existing Content-Security-Policy headers to avoid merging with a stricter duplicate.
- */
 function attachSessionContentSecurityPolicy({ isDev, session }) {
   if (attachSessionContentSecurityPolicy._done) {
     return;

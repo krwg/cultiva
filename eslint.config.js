@@ -3,7 +3,7 @@ import globals from 'globals';
 
 export default [
   js.configs.recommended,
-  
+
   {
     files: ['src/**/*.js'],
     languageOptions: {
@@ -26,7 +26,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
       globals: {
-        ...globals.node, 
+        ...globals.node,
       },
     },
   },
@@ -44,6 +44,6 @@ export default [
       'no-var': 'error',
     },
   },
-  
+
   { ignores: ['dist/**', 'release/**', 'node_modules/**', 'vite.config.js', 'vitest.config.js'] }
 ];

@@ -1,10 +1,4 @@
-/**
- * Runs electron-builder with retries (GitHub / TCP resets are common on some networks).
- *
- * Optional mirrors (pick one if downloads fail):
- *   set ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/
- * Or use: npm run electron:build:cn
- */
+
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { spawn } from 'child_process';

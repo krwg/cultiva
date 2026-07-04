@@ -13,7 +13,7 @@ const DEBUG = true;
 const STORAGE_KEY = 'cultiva_calendar_events';
 
 const EVENT_COLORS = [
-  '#FF3B30', '#FF9500', '#FFCC00', '#34C759', 
+  '#FF3B30', '#FF9500', '#FFCC00', '#34C759',
   '#007AFF', '#5856D6', '#AF52DE', '#FF2D55',
   '#00C7BE', '#64D2FF', '#FF9F0A', '#BF5AF2'
 ];
@@ -38,16 +38,8 @@ let holidayRegion = 'us';
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
 
-/* ============================================ */
-/* DEBUG                                        */
-/* ============================================ */
-
 function log(...args) { if (DEBUG) { console.log('[Calendar]', ...args); } }
 function error(...args) { console.error('[Calendar]', ...args); }
-
-/* ============================================ */
-/* HOLIDAYS                                     */
-/* ============================================ */
 
 function loadHolidays() {
   const region = localStorage.getItem('cultiva-holiday-region') || 'us';
@@ -55,10 +47,6 @@ function loadHolidays() {
   currentHolidays = getHolidaysForRegion(region);
   log('Holidays loaded for region:', region, 'count:', Object.keys(currentHolidays).length);
 }
-
-/* ============================================ */
-/* THEME & BACKGROUND SYNC                      */
-/* ============================================ */
 
 function syncTheme() {
   const theme = localStorage.getItem('cultiva-theme') || 'auto';
@@ -76,10 +64,6 @@ function syncBackground() {
   applyAmbientBackground(document, document.body, bg);
   log('Background synced:', bg);
 }
-
-/* ============================================ */
-/* UTILITIES                                    */
-/* ============================================ */
 
 function getTodayInTZ() {
   const now = new Date();
@@ -142,10 +126,6 @@ function getStartOfWeek(date) {
   return d;
 }
 
-/* ============================================ */
-/* EVENT STORAGE                                */
-/* ============================================ */
-
 function loadEvents() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -195,17 +175,13 @@ function deleteEvent(date, eventId) {
   return true;
 }
 
-/* ============================================ */
-/* HABIT INTEGRATION                            */
-/* ============================================ */
-
 function getHabitsForDate(date) {
   try {
     const allHabits = habits.getAll();
     const dateStr = formatDateKey(date);
-    
+
     log('getHabitsForDate:', dateStr, 'total habits:', allHabits.length);
-    
+
     return allHabits.filter(h => {
       if (h.trackType === 'binary') {
         const completed = h.lastCompleted === dateStr;
@@ -219,14 +195,14 @@ function getHabitsForDate(date) {
     }).map(h => {
       let stageEmoji = '🌱';
       const progress = h.progress || 0;
-      
+
       if (progress >= 365) { stageEmoji = '🌟'; }
       else if (progress >= 50) { stageEmoji = '🌳'; }
       else if (progress >= 21) { stageEmoji = '🪴'; }
       else if (progress >= 7) { stageEmoji = '🌿'; }
-      
+
       const color = CATEGORY_COLORS[h.category] || '#34C759';
-      
+
       return {
         id: `habit-${h.id}`,
         title: `${stageEmoji} ${h.name}`,
@@ -241,57 +217,53 @@ function getHabitsForDate(date) {
   }
 }
 
-/* ============================================ */
-/* RENDER MONTH                                 */
-/* ============================================ */
-
 function renderMonthView() {
   log('renderMonthView');
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  
+
   const titleEl = document.getElementById('calendar-title');
   if (titleEl) { titleEl.textContent = formatMonth(currentDate); }
-  
+
   const firstDay = new Date(year, month, 1);
   const firstDayOfWeek = firstDay.getDay();
   const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const prevMonthDays = new Date(year, month, 0).getDate();
-  
+
   const container = document.getElementById('month-days');
   if (!container) { error('month-days container not found'); return; }
   container.innerHTML = '';
-  
+
   const todayStr = getTodayStr();
   const selectedStr = formatDateKey(selectedDate);
-  
+
   for (let i = startOffset - 1; i >= 0; i--) {
     const day = prevMonthDays - i;
     const date = new Date(year, month - 1, day);
     container.appendChild(createMonthDayElement(day, true, date));
   }
-  
+
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day);
     const dateStr = formatDateKey(date);
     const isToday = dateStr === todayStr;
     const isSelected = dateStr === selectedStr;
     const cell = createMonthDayElement(day, false, date);
-    
+
     if (isToday) { cell.classList.add('today'); }
     if (isSelected) { cell.classList.add('selected'); }
-    
+
     const holiday = getHolidayForDate(dateStr, holidayRegion);
     if (holiday) {
       cell.classList.add('has-holiday');
       cell.title = holiday.name;
     }
-    
+
     const dayEvents = events[dateStr] || [];
     const habitEvents = getHabitsForDate(date);
     const allEvents = [...dayEvents, ...habitEvents];
-    
+
     if (allEvents.length > 0) {
       const eventsContainer = document.createElement('div');
       eventsContainer.className = 'month-events';
@@ -306,7 +278,7 @@ function renderMonthView() {
     }
     container.appendChild(cell);
   }
-  
+
   const totalCells = startOffset + daysInMonth;
   const remaining = 42 - totalCells;
   for (let day = 1; day <= remaining; day++) {
@@ -327,16 +299,12 @@ function createMonthDayElement(day, isOther, date) {
   return cell;
 }
 
-/* ============================================ */
-/* RENDER WEEK                                  */
-/* ============================================ */
-
 function renderWeekView() {
   log('renderWeekView');
   const startOfWeek = getStartOfWeek(currentDate);
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
-  
+
   const titleEl = document.getElementById('calendar-title');
   if (titleEl) {
     titleEl.textContent = `${startOfWeek.toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric' })} – ${endOfWeek.toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
@@ -350,13 +318,13 @@ function renderWeekHeader(startOfWeek) {
   if (!header) { return; }
   header.innerHTML = '';
   const todayStr = getTodayStr();
-  
+
   for (let i = 0; i < 7; i++) {
     const day = new Date(startOfWeek);
     day.setDate(startOfWeek.getDate() + i);
     const dateStr = formatDateKey(day);
     const isToday = dateStr === todayStr;
-    
+
     const dayEl = document.createElement('div');
     dayEl.className = `week-day ${isToday ? 'today' : ''}`;
     dayEl.innerHTML = `
@@ -372,7 +340,7 @@ function renderWeekTimeline(startOfWeek) {
   const timeline = document.getElementById('week-timeline');
   if (!timeline) { return; }
   timeline.innerHTML = '';
-  
+
   const weekEvents = [];
   for (let i = 0; i < 7; i++) {
     const day = new Date(startOfWeek);
@@ -381,7 +349,7 @@ function renderWeekTimeline(startOfWeek) {
     if (events[dateStr]) { events[dateStr].forEach(event => weekEvents.push({ ...event, date: day, dateStr })); }
     getHabitsForDate(day).forEach(habit => weekEvents.push({ ...habit, date: day, dateStr }));
   }
-  
+
   for (let hour = 0; hour < 24; hour++) {
     const hourEl = document.createElement('div');
     hourEl.className = 'timeline-hour';
@@ -389,11 +357,11 @@ function renderWeekTimeline(startOfWeek) {
     timeLabel.className = 'timeline-time';
     timeLabel.textContent = `${hour.toString().padStart(2, '0')}:00`;
     hourEl.appendChild(timeLabel);
-    
+
     const slots = document.createElement('div');
     slots.className = 'timeline-slots';
     slots.style.position = 'relative';
-    
+
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeek);
       day.setDate(startOfWeek.getDate() + i);
@@ -411,7 +379,7 @@ function renderWeekTimeline(startOfWeek) {
     hourEl.appendChild(slots);
     timeline.appendChild(hourEl);
   }
-  
+
   weekEvents.forEach(event => event.isHabit ? renderWeekHabitEvent(event, startOfWeek) : renderWeekEvent(event, startOfWeek));
 }
 
@@ -419,21 +387,21 @@ function renderWeekEvent(event, startOfWeek) {
   const eventDate = new Date(event.date);
   const dayIndex = Math.floor((eventDate - startOfWeek) / (1000 * 60 * 60 * 24));
   if (dayIndex < 0 || dayIndex > 6) { return; }
-  
+
   const [startHour, startMin] = event.start.split(':').map(Number);
   const [endHour, endMin] = event.end.split(':').map(Number);
   const durationHours = (endHour + endMin / 60) - (startHour + startMin / 60);
   const height = Math.max(24, durationHours * 60);
-  
+
   const timeline = document.getElementById('week-timeline');
   const hourElements = timeline.querySelectorAll('.timeline-hour');
   const startHourEl = hourElements[startHour];
   if (!startHourEl) { return; }
-  
+
   const slots = startHourEl.querySelector('.timeline-slots');
   const slot = slots.children[dayIndex];
   if (!slot) { return; }
-  
+
   const eventEl = document.createElement('div');
   eventEl.className = 'week-event';
   eventEl.style.backgroundColor = event.color || EVENT_COLORS[0];
@@ -450,16 +418,16 @@ function renderWeekHabitEvent(habit, startOfWeek) {
   const habitDate = new Date(habit.date);
   const dayIndex = Math.floor((habitDate - startOfWeek) / (1000 * 60 * 60 * 24));
   if (dayIndex < 0 || dayIndex > 6) { return; }
-  
+
   const timeline = document.getElementById('week-timeline');
   const hourElements = timeline.querySelectorAll('.timeline-hour');
   const hourEl = hourElements[0];
   if (!hourEl) { return; }
-  
+
   const slots = hourEl.querySelector('.timeline-slots');
   const slot = slots.children[dayIndex];
   if (!slot) { return; }
-  
+
   const habitEl = document.createElement('div');
   habitEl.className = 'week-event habit-event';
   habitEl.style.backgroundColor = habit.color;
@@ -471,20 +439,16 @@ function renderWeekHabitEvent(habit, startOfWeek) {
   slot.appendChild(habitEl);
 }
 
-/* ============================================ */
-/* RENDER DAY                                   */
-/* ============================================ */
-
 function renderDayView() {
   log('renderDayView');
   const titleEl = document.getElementById('calendar-title');
   if (titleEl) { titleEl.textContent = formatMonth(currentDate); }
-  
+
   const dateEl = document.getElementById('day-view-date');
   if (dateEl) { dateEl.textContent = selectedDate.toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
   const weekdayEl = document.getElementById('day-view-weekday');
   if (weekdayEl) { weekdayEl.textContent = selectedDate.toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { weekday: 'long' }); }
-  
+
   const dateStr = formatDateKey(selectedDate);
   const holiday = getHolidayForDate(dateStr, holidayRegion);
   const holidayBanner = document.getElementById('holiday-banner');
@@ -496,16 +460,16 @@ function renderDayView() {
       holidayBanner.style.display = 'none';
     }
   }
-  
+
   const timeline = document.getElementById('day-timeline');
   if (!timeline) { return; }
   timeline.innerHTML = '';
-  
+
   const dayEvents = events[dateStr] || [];
   const habitEvents = getHabitsForDate(selectedDate);
-  
+
   log('Day view - date:', dateStr, 'events:', dayEvents.length, 'habits:', habitEvents.length);
-  
+
   if (habitEvents.length > 0) {
     const allDaySection = document.createElement('div');
     allDaySection.className = 'all-day-section';
@@ -518,7 +482,7 @@ function renderDayView() {
     });
     timeline.appendChild(allDaySection);
   }
-  
+
   for (let hour = 0; hour < 24; hour++) {
     const hourEl = document.createElement('div');
     hourEl.className = 'day-hour';
@@ -537,7 +501,7 @@ function renderDayView() {
     hourEl.appendChild(slot);
     timeline.appendChild(hourEl);
   }
-  
+
   dayEvents.forEach(event => renderDayEvent(event));
 }
 
@@ -546,14 +510,14 @@ function renderDayEvent(event) {
   const [endHour, endMin] = event.end.split(':').map(Number);
   const durationHours = (endHour + endMin / 60) - (startHour + startMin / 60);
   const height = Math.max(40, durationHours * 60);
-  
+
   const timeline = document.getElementById('day-timeline');
   const hourElements = timeline.querySelectorAll('.day-hour');
   const startHourEl = hourElements[startHour];
   if (!startHourEl) { return; }
   const slot = startHourEl.querySelector('.day-slot');
   if (!slot) { return; }
-  
+
   const eventEl = document.createElement('div');
   eventEl.className = 'day-event';
   eventEl.style.backgroundColor = event.color || EVENT_COLORS[0];
@@ -592,20 +556,20 @@ function openEventPanel(date, existingEvent = null) {
   log('openEventPanel', formatDateKey(date), existingEvent?.title);
   editingEventDate = date;
   editingEventId = existingEvent?.id || null;
-  
+
   const title = document.getElementById('event-panel-title');
   const titleInput = document.getElementById('event-title');
   const startInput = document.getElementById('event-start');
   const endInput = document.getElementById('event-end');
   const notesInput = document.getElementById('event-notes');
   const deleteBtn = document.getElementById('event-delete');
-  
+
   const startDateTime = new Date(date);
   const endDateTime = new Date(date);
   endDateTime.setHours(endDateTime.getHours() + 1);
-  
+
   if (title) { title.textContent = existingEvent ? (currentT.editEvent || 'Edit Event') : (currentT.newEvent || 'New Event'); }
-  
+
   if (existingEvent) {
     if (titleInput) { titleInput.value = existingEvent.title || ''; }
     if (startInput) { startInput.value = formatDateTime(parseDateTime(formatDateKey(date), existingEvent.start)); }
@@ -621,7 +585,7 @@ function openEventPanel(date, existingEvent = null) {
     if (deleteBtn) { deleteBtn.style.display = 'none'; }
     document.querySelectorAll('.color-option').forEach((opt, i) => opt.classList.toggle('selected', i === 0));
   }
-  
+
   const panel = document.getElementById('event-panel');
   if (panel) { panel.classList.add('active'); }
   if (titleInput) { titleInput.focus(); }
@@ -638,15 +602,15 @@ function saveEvent() {
   const titleInput = document.getElementById('event-title');
   const title = titleInput?.value.trim();
   if (!title) { alert(currentT.enterTitle || 'Please enter a title'); return; }
-  
+
   const selectedColor = document.querySelector('.color-option.selected')?.dataset.color || EVENT_COLORS[0];
   const startInput = document.getElementById('event-start');
   const endInput = document.getElementById('event-end');
   const notesInput = document.getElementById('event-notes');
-  
+
   const startDateTime = startInput ? new Date(startInput.value) : new Date();
   const endDateTime = endInput ? new Date(endInput.value) : new Date();
-  
+
   const eventData = {
     title,
     start: startDateTime.toTimeString().slice(0, 5),
@@ -654,10 +618,10 @@ function saveEvent() {
     notes: notesInput?.value.trim() || '',
     color: selectedColor
   };
-  
+
   if (editingEventId) { updateEvent(editingEventDate, editingEventId, eventData); }
   else { addEvent(editingEventDate, eventData); }
-  
+
   closeEventPanel();
   renderCurrentView();
 }
@@ -729,13 +693,13 @@ function applyI18n() {
     const key = el.dataset.i18nPlaceholder;
     if (currentT[key]) { el.placeholder = currentT[key]; }
   });
-  
+
   const weekdayOrder = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
   document.querySelectorAll('.weekday[data-i18n]').forEach((el, index) => {
     const key = weekdayOrder[index];
     if (currentT[key]) { el.textContent = currentT[key]; }
   });
-  
+
   const panelTitle = document.getElementById('event-panel-title');
   if (panelTitle) { panelTitle.textContent = editingEventId !== null ? (currentT.editEvent || 'Edit Event') : (currentT.newEvent || 'New Event'); }
 }
@@ -744,7 +708,7 @@ let renderTimeout;
 window.addEventListener('storage', (e) => {
   const relevantKeys = ['cultiva_calendar_events', 'cultiva-lang', 'cultiva-theme', 'cultiva-background', LS_CUSTOM_BG_DATA, 'cultiva-timezone', 'cultiva-holiday-region'];
   if (!relevantKeys.includes(e.key)) { return; }
-  
+
   clearTimeout(renderTimeout);
   renderTimeout = setTimeout(() => {
     if (e.key === 'cultiva-lang') { applyI18n(); }
@@ -765,33 +729,33 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syn
 
 async function init() {
   log('Calendar initializing...');
-  
+
   try {
     await storage.init();
     log('Storage initialized, habits count:', habits.getAll().length);
   } catch (e) {
     error('Storage init failed:', e);
   }
-  
+
   document.title = `${BRANDING.APP_TITLE} | Calendar`;
   document.querySelectorAll('.footer-version').forEach(el => { el.textContent = BRANDING.FOOTER_TEXT; });
-  
+
   updateTranslations();
   loadHolidays();
   loadEvents();
   initColorSelector();
   syncTheme();
   syncBackground();
-  
+
   const todayDate = getTodayInTZ();
   currentDate = todayDate;
   selectedDate = todayDate;
-  
+
   document.querySelectorAll('.view-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
   document.getElementById('prev-period')?.addEventListener('click', goPrevious);
   document.getElementById('next-period')?.addEventListener('click', goNext);
   document.getElementById('today-btn')?.addEventListener('click', goToToday);
-  
+
   document.getElementById('event-panel-close')?.addEventListener('click', closeEventPanel);
   document.getElementById('event-cancel')?.addEventListener('click', closeEventPanel);
   document.getElementById('event-save')?.addEventListener('click', saveEvent);
@@ -802,7 +766,7 @@ async function init() {
       renderCurrentView();
     }
   });
-  
+
   const holidaySelect = document.getElementById('holiday-select');
   if (holidaySelect) {
     holidaySelect.addEventListener('change', () => {
@@ -813,7 +777,7 @@ async function init() {
       log('Holiday region changed to:', newRegion);
     });
   }
-  
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.getElementById('event-panel')?.classList.contains('active')) { closeEventPanel(); }
   });
@@ -823,7 +787,7 @@ async function init() {
   document.getElementById('event-title')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.ctrlKey) { saveEvent(); }
   });
-  
+
   renderMonthView();
   applyI18n();
   log('Calendar initialized with', habits.getAll().length, 'habits');

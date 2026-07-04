@@ -1,6 +1,5 @@
 import { habits } from '../modules/habits.js';
 
-/** @type {null | ((value: number | null) => void)} */
 let quantityLogResolve = null;
 
 let quantityLogModal = null;
@@ -9,14 +8,6 @@ let quantityLogTitle = null;
 let quantityLogDesc = null;
 let quantityLogLabel = null;
 
-/**
- * @param {object} el
- * @param {HTMLElement | null} el.quantityLogModal
- * @param {HTMLInputElement | null} el.quantityLogInput
- * @param {HTMLElement | null} el.quantityLogTitle
- * @param {HTMLElement | null} el.quantityLogDesc
- * @param {HTMLElement | null} el.quantityLogLabel
- */
 export function configureModals(el) {
   quantityLogModal = el.quantityLogModal;
   quantityLogInput = el.quantityLogInput;
@@ -46,10 +37,6 @@ export function closeModal(modal) {
   document.body.style.overflow = '';
 }
 
-/**
- * After validated numeric input from quantity log save.
- * @param {number} parsed
- */
 export function completeQuantityLogWithValue(parsed) {
   const done = quantityLogResolve;
   quantityLogResolve = null;
@@ -62,12 +49,6 @@ export function completeQuantityLogWithValue(parsed) {
   }
 }
 
-/**
- * @param {object} habit
- * @param {number} currentValue
- * @param {Record<string, string>} t
- * @returns {Promise<number | null>}
- */
 export function openQuantityLogModal(habit, currentValue, t) {
   return new Promise((resolve) => {
     quantityLogResolve = resolve;

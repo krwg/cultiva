@@ -6,7 +6,7 @@ export const db = {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
       request.onerror = (e) => reject(e.target.error);
-      
+
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
         const oldVersion = e.oldVersion || 0;
@@ -28,7 +28,7 @@ export const db = {
 
         console.log(`[DB] Upgraded from v${oldVersion} to v${DB_VERSION} safely`);
       };
-      
+
       request.onsuccess = (e) => resolve(e.target.result);
     });
   },
@@ -116,25 +116,25 @@ export const db = {
 
   async deleteByIndex(storeName, indexName, value) {
     if (value === null || value === undefined) { return Promise.resolve(); }
-    
+
     const db = await this.open();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(storeName, 'readwrite');
       const store = tx.objectStore(storeName);
-      
-      if (!store.indexNames.contains(indexName)) { 
-        reject(new Error('Index not found')); 
-        return; 
+
+      if (!store.indexNames.contains(indexName)) {
+        reject(new Error('Index not found'));
+        return;
       }
-      
+
       const cursorReq = store.index(indexName).openCursor(IDBKeyRange.only(value));
       cursorReq.onsuccess = (e) => {
         const cursor = e.target.result;
-        if (cursor) { 
-          cursor.delete(); 
-          cursor.continue(); 
-        } else { 
-          resolve(); 
+        if (cursor) {
+          cursor.delete();
+          cursor.continue();
+        } else {
+          resolve();
         }
       };
       cursorReq.onerror = (e) => reject(e.target.error);
