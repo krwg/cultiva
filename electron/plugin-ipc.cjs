@@ -203,12 +203,13 @@ function setupPluginIPC() {
           throw new Error(`Blocked destination path for plugin file: ${file.name}`);
         }
         await downloadFile(file.url, destPath);
-        if (file.sha256 && typeof file.sha256 === 'string') {
-          const expected = file.sha256.trim().toLowerCase();
-          const actual = sha256HexOfFile(destPath);
-          if (actual !== expected) {
-            throw new Error(`Integrity check failed for ${file.name}`);
-          }
+        if (!file.sha256 || typeof file.sha256 !== 'string' || file.sha256.trim().length !== 64) {
+          throw new Error(`Missing registry sha256 for ${file.name}`);
+        }
+        const expected = file.sha256.trim().toLowerCase();
+        const actual = sha256HexOfFile(destPath);
+        if (actual !== expected) {
+          throw new Error(`Integrity check failed for ${file.name}`);
         }
       }
 
