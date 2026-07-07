@@ -13,3 +13,4 @@ export const STORAGE_KEYS = {
 
 export const MAX_ACTIVE_HABITS = 9;
 export const LEGACY_THRESHOLD = 365;
+export const STREAK_GRACE_DAYS_PER_MONTH = 1;

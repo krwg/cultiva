@@ -70,4 +70,36 @@ describe('habits', () => {
     expect(cur.dailyProgress['2026-05-30']).toBe(2);
     expect(cur.progress).toBe(1);
   });
+
+  it('bridges one missed day per month when streak grace is enabled', async () => {
+    vi.stubGlobal('localStorage', createMemoryStorage({
+      'cultiva-settings': JSON.stringify({ streakGraceEnabled: true })
+    }));
+    const { habits } = await import('./habits.js');
+    const h = habits.add({ name: 'Read', trackType: 'binary' });
+    vi.setSystemTime(new Date('2026-05-28T12:00:00.000Z'));
+    habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-05-29T12:00:00.000Z'));
+    habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-05-31T12:00:00.000Z'));
+    habits.toggle(h.id);
+    const bridged = habits.getAll().find((x) => x.id === h.id);
+    expect(bridged.currentStreak).toBe(3);
+    expect(bridged.bestStreak).toBe(3);
+  });
+
+  it('breaks streak across two missed days even with grace enabled', async () => {
+    vi.stubGlobal('localStorage', createMemoryStorage({
+      'cultiva-settings': JSON.stringify({ streakGraceEnabled: true })
+    }));
+    const { habits } = await import('./habits.js');
+    const h = habits.add({ name: 'Run', trackType: 'binary' });
+    vi.setSystemTime(new Date('2026-05-28T12:00:00.000Z'));
+    habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-05-31T12:00:00.000Z'));
+    habits.toggle(h.id);
+    const broken = habits.getAll().find((x) => x.id === h.id);
+    expect(broken.currentStreak).toBe(1);
+    expect(broken.bestStreak).toBe(1);
+  });
 });

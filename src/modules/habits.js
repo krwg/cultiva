@@ -1,6 +1,35 @@
 import { storage } from './storage.js';
-import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS } from '../core/config.js';
+import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS, STREAK_GRACE_DAYS_PER_MONTH } from '../core/config.js';
 import { getTodayInTZ, getDateInTZ } from '../core/timezone.js';
+
+function isStreakGraceEnabled() {
+  try {
+    const raw = localStorage.getItem('cultiva-settings');
+    if (!raw) {
+      return true;
+    }
+    const s = JSON.parse(raw);
+    return s.streakGraceEnabled !== false;
+  } catch {
+    return true;
+  }
+}
+
+function monthKey(dateStr) {
+  return dateStr.slice(0, 7);
+}
+
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function daysBetween(aStr, bStr) {
+  const a = new Date(aStr);
+  const b = new Date(bStr);
+  return Math.round((b - a) / (1000 * 60 * 60 * 24));
+}
 
 export const habits = {
   getAll() {
@@ -114,18 +143,28 @@ export const habits = {
     const today = getTodayInTZ();
     const history = habit.history || [];
     const sortedHistory = [...new Set(history)].sort();
+    const historySet = new Set(sortedHistory);
+    const graceEnabled = isStreakGraceEnabled() && STREAK_GRACE_DAYS_PER_MONTH > 0;
 
     let currentStreak = 0;
     const checkDate = new Date();
+    const graceMonthsUsed = new Set();
 
     while (true) {
       const dateStr = getDateInTZ(checkDate);
-
-      if (sortedHistory.includes(dateStr)) {
+      if (historySet.has(dateStr)) {
         currentStreak++;
         checkDate.setDate(checkDate.getDate() - 1);
       } else if (dateStr === today) {
         break;
+      } else if (graceEnabled && !graceMonthsUsed.has(monthKey(dateStr))) {
+        const prevStr = getDateInTZ(addDays(checkDate, -1));
+        if (historySet.has(prevStr)) {
+          graceMonthsUsed.add(monthKey(dateStr));
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
       } else {
         break;
       }
@@ -133,6 +172,7 @@ export const habits = {
 
     let bestStreak = 0;
     let tempStreak = 0;
+    const bestGraceMonthsUsed = new Set();
 
     for (let i = 0; i < sortedHistory.length; i++) {
       const currentDate = sortedHistory[i];
@@ -141,11 +181,16 @@ export const habits = {
         tempStreak = 1;
       } else {
         const prevDate = sortedHistory[i - 1];
-        const curr = new Date(currentDate);
-        const prev = new Date(prevDate);
-        const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+        const diffDays = daysBetween(prevDate, currentDate);
 
         if (diffDays === 1) {
+          tempStreak++;
+        } else if (
+          graceEnabled
+          && diffDays === 2
+          && !bestGraceMonthsUsed.has(monthKey(currentDate))
+        ) {
+          bestGraceMonthsUsed.add(monthKey(currentDate));
           tempStreak++;
         } else {
           tempStreak = 1;
@@ -158,11 +203,8 @@ export const habits = {
     if (habit.lastCompleted !== today) {
       const lastDate = sortedHistory[sortedHistory.length - 1];
       if (lastDate) {
-        const last = new Date(lastDate);
-        const now = new Date();
-        const diffDays = Math.round((now - last) / (1000 * 60 * 60 * 24));
-
-        if (diffDays > 1) {
+        const diffDays = daysBetween(lastDate, today);
+        if (diffDays > 1 && !(graceEnabled && diffDays === 2)) {
           currentStreak = 0;
         }
       }
@@ -170,6 +212,12 @@ export const habits = {
 
     habit.currentStreak = currentStreak;
     habit.bestStreak = Math.max(habit.bestStreak || 0, bestStreak, currentStreak);
+  },
+
+  recalculateAllStreaks() {
+    const allHabits = this.getAll();
+    allHabits.forEach((h) => this._recalculateStreaks(h));
+    storage.saveHabits(allHabits);
   },
 
   remove(id) {

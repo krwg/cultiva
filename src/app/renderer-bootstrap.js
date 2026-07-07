@@ -19,7 +19,8 @@ export const settings = {
   accentColor: '',
   ambientIntensity: 100,
   firstRunComplete: false,
-  autoBackupEnabled: true
+  autoBackupEnabled: true,
+  streakGraceEnabled: true
 };
 
 const _preInitSettings = localStorage.getItem('cultiva-settings');

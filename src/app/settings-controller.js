@@ -91,6 +91,9 @@ export async function loadSettings() {
       if (typeof saved.autoBackupEnabled === 'boolean') {
         settings.autoBackupEnabled = saved.autoBackupEnabled;
       }
+      if (typeof saved.streakGraceEnabled === 'boolean') {
+        settings.streakGraceEnabled = saved.streakGraceEnabled;
+      }
     }
 
     requireCtx().setLangAndT(settings.lang);
@@ -170,6 +173,11 @@ export function applySettings() {
   document.body.classList.toggle('focus-mode', settings.focusMode);
   if (c.focusToggle) {
     c.focusToggle.checked = settings.focusMode;
+  }
+
+  const streakGraceToggle = document.getElementById('toggle-streak-grace');
+  if (streakGraceToggle) {
+    streakGraceToggle.checked = settings.streakGraceEnabled !== false;
   }
 
   const holidaySelect = document.getElementById('holiday-select');
