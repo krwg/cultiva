@@ -61,6 +61,7 @@ export const habits = {
     if (!habit) {return null;}
 
     const today = getTodayInTZ();
+    let justCompleted = false;
 
     if (habit.trackType === 'quantity') {
       const current = this.quantityDayProgress(habit, today);
@@ -82,6 +83,7 @@ export const habits = {
         habit.progress++;
         habit.lastCompleted = today;
         if (!habit.history.includes(today)) {habit.history.push(today);}
+        justCompleted = true;
       } else if (!isCompleted && wasCompleted) {
         habit.progress = Math.max(0, habit.progress - 1);
         habit.lastCompleted = null;
@@ -98,13 +100,14 @@ export const habits = {
         habit.progress++;
         habit.lastCompleted = today;
         if (!habit.history.includes(today)) {habit.history.push(today);}
+        justCompleted = true;
       }
 
       this._recalculateStreaks(habit);
     }
 
     storage.saveHabits(allHabits);
-    return habit;
+    return { habit, justCompleted };
   },
 
   _recalculateStreaks(habit) {

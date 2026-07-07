@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('electron', {
   getAppPath: () => ipcRenderer.invoke('get-app-path'),
   saveFile: (data, fileName) => ipcRenderer.invoke('save-file', data, fileName),
   exportBackupZip: (jsonPayload, fileName) => ipcRenderer.invoke('backup:export-zip', jsonPayload, fileName),
+  saveAutoBackup: (jsonPayload) => ipcRenderer.invoke('backup:save-automatic', jsonPayload),
   isElectron: true,
   readPluginFile: (filePath) => ipcRenderer.invoke('plugin:read-file', filePath),
 

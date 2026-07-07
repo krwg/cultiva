@@ -3,6 +3,7 @@ import { storage } from '../modules/storage.js';
 import { settings, ensureAppReady } from './renderer-bootstrap.js';
 import { applyTranslations } from './i18n-dom.js';
 import { applyAccentColor, applyAmbientIntensity } from '../core/customization.js';
+import { pluginManager } from '../core/plugin-manager.js';
 
 let ctx = null;
 
@@ -122,6 +123,7 @@ export function saveSettings() {
   c.setLangAndT(settings.lang);
   applySettings();
   c.renderGarden();
+  pluginManager.triggerHook('onSettingsChange', settings);
 }
 
 export function handleHolidayChange(e) {

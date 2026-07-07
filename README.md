@@ -135,6 +135,6 @@ When Discord is running on the same machine, Cultiva can show a simple presence 
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · MIT License · **1.1.0 · Cypress**
+Built with care by [krwg](https://github.com/krwg) · GPL-3.0 · **1.7.0 · Linden**
 
 </div>

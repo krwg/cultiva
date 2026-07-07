@@ -4,72 +4,24 @@ const path = require('path');
 const https = require('https');
 const crypto = require('crypto');
 const { app } = require('electron');
+const {
+  assertAllowedDownloadUrl,
+  isPathInsideDir,
+  resolveUnderPluginRoot,
+  assertSafeRelativeFileName,
+  isSafePluginId
+} = require('./lib/plugin-path-guards.cjs');
 
 const PLUGIN_FILES_DIR = path.join(app.getPath('userData'), 'cultiva-plugins');
 
-const PLUGIN_DOWNLOAD_HOSTS = new Set([
-  'raw.githubusercontent.com',
-  'github.com',
-  'objects.githubusercontent.com'
-]);
-
 const MAX_REDIRECTS = 8;
-
-const SAFE_PLUGIN_ID = /^[a-zA-Z0-9_-]{1,128}$/;
 
 if (!fs.existsSync(PLUGIN_FILES_DIR)) {
   fs.mkdirSync(PLUGIN_FILES_DIR, { recursive: true });
 }
 
-function assertAllowedDownloadUrl(urlString) {
-  let u;
-  try {
-    u = new URL(urlString);
-  } catch {
-    throw new Error('Invalid download URL');
-  }
-  if (u.protocol !== 'https:') {
-    throw new Error('Only HTTPS plugin downloads are allowed');
-  }
-  if (!PLUGIN_DOWNLOAD_HOSTS.has(u.hostname)) {
-    throw new Error(`Blocked plugin download host: ${u.hostname}`);
-  }
-}
-
-function isPathInsideDir(rootDir, resolvedPath) {
-  const root = path.resolve(rootDir);
-  const resolved = path.resolve(resolvedPath);
-  const prefix = root.endsWith(path.sep) ? root : root + path.sep;
-  return resolved === root || resolved.startsWith(prefix);
-}
-
-function resolveUnderPluginRoot(relativePath) {
-  const cleanPath = String(relativePath).replace(/^cultiva-plugins[\\/]/, '').replace(/^[/\\]+/, '');
-  const resolved = path.resolve(PLUGIN_FILES_DIR, cleanPath);
-  if (!isPathInsideDir(PLUGIN_FILES_DIR, resolved)) {
-    console.error('[Plugin IPC] Path traversal attempt blocked:', relativePath);
-    return null;
-  }
-  return resolved;
-}
-
 function sha256HexOfFile(filePath) {
   return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
-}
-
-function assertSafeRelativeFileName(name) {
-  if (!name || typeof name !== 'string') {
-    throw new Error('Invalid file name');
-  }
-  const norm = path.normalize(name);
-  if (path.isAbsolute(norm)) {
-    throw new Error(`Blocked absolute plugin file path: ${name}`);
-  }
-  for (const seg of norm.split(/[/\\]/)) {
-    if (seg === '..') {
-      throw new Error(`Blocked path in plugin file name: ${name}`);
-    }
-  }
 }
 
 function httpsGetText(urlString, maxBytes = 8 * 1024 * 1024) {
@@ -214,15 +166,12 @@ function setupPluginIPC() {
 
   ipcMain.handle('plugin:read-file', async (event, filePath) => {
     try {
-      const fullPath = resolveUnderPluginRoot(filePath);
+      const fullPath = resolveUnderPluginRoot(PLUGIN_FILES_DIR, filePath);
       if (!fullPath) {
         return null;
       }
 
-      console.log('[Plugin IPC] Reading file:', fullPath);
-
       if (!fs.existsSync(fullPath)) {
-        console.error('[Plugin IPC] File not found:', fullPath);
         return null;
       }
 
@@ -235,7 +184,7 @@ function setupPluginIPC() {
 
   ipcMain.handle('plugin:install', async (event, pluginId, files) => {
     try {
-      if (!SAFE_PLUGIN_ID.test(pluginId)) {
+      if (!isSafePluginId(pluginId)) {
         throw new Error('Invalid plugin id');
       }
 
@@ -247,15 +196,12 @@ function setupPluginIPC() {
       }
       fs.mkdirSync(pluginDir, { recursive: true });
 
-      console.log('[Plugin IPC] Installing plugin to:', pluginDir);
-
       for (const file of files) {
         assertSafeRelativeFileName(file.name);
         const destPath = path.resolve(pluginDir, file.name);
         if (!isPathInsideDir(pluginRootResolved, destPath)) {
           throw new Error(`Blocked destination path for plugin file: ${file.name}`);
         }
-        console.log('[Plugin IPC] Downloading:', file.url);
         await downloadFile(file.url, destPath);
         if (file.sha256 && typeof file.sha256 === 'string') {
           const expected = file.sha256.trim().toLowerCase();
@@ -271,7 +217,6 @@ function setupPluginIPC() {
         throw new Error('Invalid plugin: manifest.json not found');
       }
 
-      console.log('[Plugin IPC] Plugin installed successfully:', pluginId);
       return true;
     } catch (e) {
       console.error('[Plugin IPC] Installation failed:', e);
@@ -281,7 +226,7 @@ function setupPluginIPC() {
 
   ipcMain.handle('plugin:uninstall', async (event, pluginId) => {
     try {
-      if (!SAFE_PLUGIN_ID.test(pluginId)) {
+      if (!isSafePluginId(pluginId)) {
         return false;
       }
       const pluginDir = path.join(PLUGIN_FILES_DIR, pluginId);
@@ -299,7 +244,7 @@ function setupPluginIPC() {
   });
 
   ipcMain.handle('plugin:get-resource-path', async (event, pluginId, resourcePath) => {
-    if (!SAFE_PLUGIN_ID.test(pluginId)) {
+    if (!isSafePluginId(pluginId)) {
       return null;
     }
     const cleanResource = String(resourcePath || '').replace(/^[/\\]+/, '');
@@ -310,11 +255,10 @@ function setupPluginIPC() {
     const pluginDir = path.join(PLUGIN_FILES_DIR, pluginId);
     const resolved = path.resolve(pluginDir, cleanResource);
     if (!isPathInsideDir(path.resolve(pluginDir), resolved)) {
-      console.error('[Plugin IPC] get-resource-path traversal blocked:', pluginId, resourcePath);
       return null;
     }
     return resolved;
   });
 }
 
-module.exports = { setupPluginIPC };
+module.exports = { setupPluginIPC, PLUGIN_FILES_DIR };

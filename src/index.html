@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    <div class="loading-screen" id="loading-screen">
+    <div class="loading-screen" id="loading-screen" aria-hidden="true">
         <div class="loading-cloud">
             <div class="cloud-body"></div>
             <div class="cloud-data"></div>
@@ -18,12 +18,12 @@
         <p class="loading-text">Syncing your garden...</p>
     </div>
 
-    <header class="app-header">
+    <header class="app-header" role="banner">
         <div class="header-content">
             <div class="header-brand">
                 <h1><a href="./index.html">Cultiva</a></h1>
             </div>
-            <div class="header-actions">
+            <div class="header-actions" role="navigation" aria-label="Garden actions">
                 <div class="habit-search-wrap">
                     <input type="search" id="habit-search" class="habit-search-input" data-i18n-placeholder="searchHabitsPlaceholder" placeholder="Search habits…" autocomplete="off" aria-label="Search habits">
                 </div>
@@ -78,7 +78,7 @@
     </header>
 
     <main class="app-main">
-        <section class="garden-section">
+        <section class="garden-section" role="main" aria-label="Habit garden">
             <div class="section-header">
                 <h2 data-i18n="activeGarden">Active Garden</h2>
                 <span class="habit-count" id="habit-count">0/9</span>

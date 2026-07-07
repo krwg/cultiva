@@ -4,8 +4,8 @@ export const BRANDING = {
   CORE_ENGINE: 'CoreV5',
   HABIT_ENGINE: 'GrowthKit2',
   DATABASE: 'IDB2',
-  VERSION: '1.1.0',
-  CODENAME: 'Cypress',
+  VERSION: '1.7.0',
+  CODENAME: 'Linden',
 
   KEYS: {
     SESSION: 'cultiva_current_session',

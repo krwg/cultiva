@@ -1,5 +1,5 @@
 
-const RPC_METHODS = new Set(['storage.get', 'storage.set', 'ui.showNotification']);
+import { isAllowedPluginRpcMethod } from './plugin-rpc.js';
 
 function buildSandboxBootstrapDocument(pluginId) {
   const mid = JSON.stringify(pluginId);
@@ -13,6 +13,20 @@ function buildSandboxBootstrapDocument(pluginId) {
   var PLUGIN_ID = ${mid};
   var manifest = null;
   var PLUGIN_CODE = null;
+  var PLUGIN_PERMISSIONS = [];
+
+  function installNetworkGate() {
+    var nativeFetch = window.fetch ? window.fetch.bind(window) : null;
+    window.fetch = function () {
+      if (PLUGIN_PERMISSIONS.indexOf('network') === -1) {
+        return Promise.reject(new Error('Network permission denied'));
+      }
+      if (!nativeFetch) {
+        return Promise.reject(new Error('Fetch unavailable'));
+      }
+      return nativeFetch.apply(window, arguments);
+    };
+  }
 
   var pendingRpc = new Map();
   var rpcId = 0;
@@ -135,6 +149,8 @@ function buildSandboxBootstrapDocument(pluginId) {
       if (PLUGIN_CODE != null) return;
       manifest = d.manifest;
       PLUGIN_CODE = d.pluginCode;
+      PLUGIN_PERMISSIONS = Array.isArray(d.permissions) ? d.permissions : (Array.isArray(manifest && manifest.permissions) ? manifest.permissions : []);
+      installNetworkGate();
       if (typeof PLUGIN_CODE !== 'string' || !manifest) {
         send({ type: 'SANDBOX_ERROR', error: 'Invalid INIT_PLUGIN payload' });
         return;
@@ -311,7 +327,8 @@ export class PluginSandboxHost {
             targetPluginId: this.pluginId,
             type: 'INIT_PLUGIN',
             manifest: this.manifest,
-            pluginCode: this._pendingPluginCode
+            pluginCode: this._pendingPluginCode,
+            permissions: Array.isArray(this.manifest.permissions) ? this.manifest.permissions : []
           },
           '*'
         );
@@ -321,7 +338,7 @@ export class PluginSandboxHost {
 
     if (d.type === 'RPC') {
       const { id, method, args } = d;
-      if (!RPC_METHODS.has(method)) {
+      if (!isAllowedPluginRpcMethod(method)) {
         this._replyRpc(id, undefined, 'Blocked RPC: ' + method);
         return;
       }
