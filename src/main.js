@@ -33,6 +33,7 @@ import { initHotkeys } from './app/hotkeys.js';
 import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
 import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents } from './app/garden-controller.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
+import { renderStatsDashboard } from './app/stats-dashboard-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
 import { initAutoBackup } from './app/auto-backup.js';
 import { bindOnboardingEvents, maybeShowOnboarding } from './app/onboarding-wizard.js';
@@ -346,6 +347,7 @@ function initSettingsNavigation() {
       if (section === 'profile') { updateProfileSection(); }
       if (section === 'plugins') { renderPluginsSection(); }
       if (section === 'notifications') { updateNotificationsDesktopBanner(); }
+      if (section === 'statistics') { renderStatsDashboard(settings.lang); }
     });
   });
 
