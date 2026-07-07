@@ -5,8 +5,10 @@ import { getTodayStr } from './date-ui.js';
 import { showNotification } from './ui-shell.js';
 import { renderGarden } from './garden-controller.js';
 import { buildBackupPayload, runAutoBackup } from './auto-backup.js';
+import { openModal, closeModal } from './modals.js';
 
 let ctx = null;
+let pendingImport = null;
 
 export function configureBackupUi(c) {
   ctx = c;
@@ -48,20 +50,61 @@ export async function exportZip() {
   exportData();
 }
 
-export function importData(file) {
+function showImportPreview(data) {
   const c = requireCtx();
   const t = TRANSLATIONS[c.settings.lang];
+  const modal = document.getElementById('import-preview-modal');
+  const body = document.getElementById('import-preview-body');
+  if (!modal || !body) {
+    return;
+  }
+  const habitCount = Array.isArray(data.habits) ? data.habits.length : 0;
+  const exportedAt = data.exportedAt ? new Date(data.exportedAt).toLocaleString(c.settings.lang === 'ru' ? 'ru-RU' : 'en-US') : '—';
+  const version = data.version || '—';
+  body.innerHTML = `
+    <dl class="import-preview-stats">
+      <dt>${t.importPreviewHabits || 'Habits'}</dt><dd>${habitCount}</dd>
+      <dt>${t.importPreviewDate || 'Exported'}</dt><dd>${exportedAt}</dd>
+      <dt>${t.importPreviewVersion || 'Version'}</dt><dd>${version}</dd>
+    </dl>
+    <p class="onboarding-muted">${t.importPreviewWarn || 'This replaces your current habits with the backup.'}</p>`;
+  pendingImport = data;
+  openModal(modal);
+}
+
+function confirmImport() {
+  const c = requireCtx();
+  const t = TRANSLATIONS[c.settings.lang];
+  if (!pendingImport?.habits || !Array.isArray(pendingImport.habits)) {
+    closeModal(document.getElementById('import-preview-modal'));
+    return;
+  }
+  storage.saveHabits(pendingImport.habits);
+  pendingImport = null;
+  closeModal(document.getElementById('import-preview-modal'));
+  renderGarden();
+  showNotification(t.imported);
+  runAutoBackup(true);
+}
+
+export function importData(file) {
+  const c = requireCtx();
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        if (data.habits && Array.isArray(data.habits)) { storage.saveHabits(data.habits); resolve(true); }
-        else { reject(new Error('Invalid format')); }
-      } catch (err) { reject(err); }
+        if (data.habits && Array.isArray(data.habits)) {
+          resolve(data);
+        } else {
+          reject(new Error('Invalid format'));
+        }
+      } catch (err) {
+        reject(err);
+      }
     };
     reader.readAsText(file);
-  }).then(() => { renderGarden(); showNotification(t.imported); runAutoBackup(true); })
+  }).then((data) => { showImportPreview(data); })
     .catch(err => alert(err.message));
 }
 
@@ -75,6 +118,11 @@ export function bindBackupUiEvents() {
     input.onchange = (e) => { if (e.target.files?.[0]) { importData(e.target.files[0]); } };
     input.click();
   });
+  document.getElementById('import-preview-cancel')?.addEventListener('click', () => {
+    pendingImport = null;
+    closeModal(document.getElementById('import-preview-modal'));
+  });
+  document.getElementById('import-preview-confirm')?.addEventListener('click', confirmImport);
   document.getElementById('settings-reset')?.addEventListener('click', () => {
     const c = requireCtx();
     const t = TRANSLATIONS[c.settings.lang];

@@ -38,6 +38,9 @@ export function initAutoBackup() {
   if (!window.electron?.saveAutoBackup) {
     return;
   }
+  if (settings.autoBackupEnabled === false) {
+    return;
+  }
   runAutoBackup(true);
   if (backupTimer) {
     clearInterval(backupTimer);

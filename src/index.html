@@ -104,6 +104,7 @@
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
+                <div id="habit-templates" class="habit-templates" aria-label="Habit templates"></div>
                 <form id="habit-form">
                     <div class="form-group">
                         <label for="habit-name" data-i18n="habitName">Name</label>
@@ -184,6 +185,41 @@
                 <div class="modal-actions" style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
                     <button type="button" class="btn-secondary" id="quantity-log-cancel" data-i18n="cancel">Cancel</button>
                     <button type="button" class="btn-primary" id="quantity-log-save" data-i18n="save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet onboarding-sheet">
+            <div class="modal-header">
+                <h2 id="onboarding-title">Welcome</h2>
+                <button type="button" class="onboarding-skip-link" id="onboarding-skip" data-i18n="onboardingSkip">Skip</button>
+            </div>
+            <div class="modal-body">
+                <div id="onboarding-dots" class="onboarding-dots"></div>
+                <div id="onboarding-body"></div>
+            </div>
+            <div class="onboarding-footer">
+                <button type="button" class="btn-secondary" id="onboarding-back" data-i18n="onboardingBack">Back</button>
+                <button type="button" class="btn-primary" id="onboarding-next" data-i18n="onboardingNext">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="import-preview-modal" role="dialog" aria-modal="true">
+        <div class="modal-overlay"></div>
+        <div class="modal-sheet" style="max-width:420px;">
+            <div class="modal-header">
+                <h2 data-i18n="importPreviewTitle">Import backup</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="import-preview-body"></div>
+                <div class="modal-actions" style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
+                    <button type="button" class="btn-secondary" id="import-preview-cancel" data-i18n="cancel">Cancel</button>
+                    <button type="button" class="btn-primary" id="import-preview-confirm" data-i18n="importPreviewConfirm">Import</button>
                 </div>
             </div>
         </div>
