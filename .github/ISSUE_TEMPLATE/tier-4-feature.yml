@@ -1,0 +1,37 @@
+name: "Tier 4 · Strategic feature"
+description: Track a Tier 4 roadmap item for Cultiva 1.7 Linden
+title: "[Tier 4] "
+labels: ["tier-4", "enhancement"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Platform (builds / packaging)
+        - Plugins (registry / security)
+        - Data (export / calendar)
+        - Garden (stats / gamification)
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What problem does this solve for offline-first users?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Files, modules, or repos touched
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist of done conditions
+    validations:
+      required: true

@@ -2,19 +2,7 @@
 
 All notable changes to Cultiva are documented here.
 
-## [1.8.0] — Rowan · 2026-07-08
-
-### Added
-- First-run onboarding wizard (language, theme, timezone, first habit, backup opt-in)
-- Import preview before restore (habit count, export date, version)
-- Habit templates when planting (Read, Exercise, Meditate, Water, Journal)
-- NSIS installer welcome/finish pages and GPL license step
-- Plugin install support for manifest `data` files
-
-### Changed
-- Version 1.8.0 · Rowan
-
-## [1.7.0] — Linden · 2026-07-08
+## [1.7.0] — Linden · unreleased
 
 ### Added
 - Automatic rotating local backups (7 snapshots in userData/backups)
@@ -27,6 +15,11 @@ All notable changes to Cultiva are documented here.
 - CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
 - Dependabot configuration and npm audit in CI
 - Tests for plugin RPC, storage migration, plugin path guards
+- First-run onboarding wizard (language, theme, timezone, first habit, backup opt-in)
+- Import preview before restore (habit count, export date, version)
+- Habit templates when planting (Read, Exercise, Meditate, Water, Journal)
+- NSIS installer welcome/finish pages and GPL license step
+- Plugin install support for manifest `data` files
 
 ### Changed
 - Refactored garden and backup UI into app controllers
