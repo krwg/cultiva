@@ -9,6 +9,7 @@ const { setupAutoUpdater, registerUpdaterIpc } = require('./lib/auto-updater.cjs
 const mainWindowMod = require('./lib/main-window.cjs');
 const { registerCoreIpc } = require('./lib/ipc-main-handlers.cjs');
 const { registerBackupIpc } = require('./lib/backup.cjs');
+const { registerAutoBackupIpc } = require('./lib/zip-backup.cjs');
 
 let mainWindow = null;
 const getMainWindow = () => mainWindow;
@@ -49,6 +50,7 @@ app.whenReady().then(() => {
     resolveAppIconPath: mainWindowMod.resolveAppIconPath
   });
   registerBackupIpc(ipcMain, { getMainWindow, dialog });
+  registerAutoBackupIpc(ipcMain);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

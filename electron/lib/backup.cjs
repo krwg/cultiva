@@ -1,25 +1,5 @@
 const { writeFile } = require('fs/promises');
-async function createZipBuffer(entries) {
-  const archiver = (await import('archiver')).default;
-  const { PassThrough } = require('stream');
-
-  return new Promise((resolve, reject) => {
-    const stream = new PassThrough();
-    const chunks = [];
-    stream.on('data', (c) => chunks.push(c));
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
-    stream.on('error', reject);
-
-    const archive = archiver('zip', { zlib: { level: 9 } });
-    archive.on('error', reject);
-    archive.pipe(stream);
-
-    for (const [name, content] of entries) {
-      archive.append(content, { name });
-    }
-    archive.finalize();
-  });
-}
+const { buildBackupZipBuffer } = require('./zip-backup.cjs');
 
 function registerBackupIpc(ipcMain, { getMainWindow, dialog }) {
   ipcMain.handle('backup:export-zip', async (_event, jsonPayload, suggestedName) => {
@@ -34,27 +14,13 @@ function registerBackupIpc(ipcMain, { getMainWindow, dialog }) {
       return { success: false };
     }
 
-    const manifest = typeof jsonPayload === 'string' ? jsonPayload : JSON.stringify(jsonPayload, null, 2);
-    let parsed;
     try {
-      parsed = JSON.parse(manifest);
-    } catch {
-      return { success: false, error: 'Invalid backup JSON' };
+      const zipBuffer = await buildBackupZipBuffer(jsonPayload);
+      await writeFile(filePath, zipBuffer);
+      return { success: true, path: filePath };
+    } catch (e) {
+      return { success: false, error: e && e.message ? e.message : String(e) };
     }
-
-    const habitsJson = JSON.stringify(parsed.habits ?? [], null, 2);
-    const settingsJson = JSON.stringify(parsed.settings ?? {}, null, 2);
-    const readme = `Cultiva backup\nExported: ${parsed.exportedAt || new Date().toISOString()}\nVersion: ${parsed.version || 'unknown'}\n\nImport habits.json via Settings → Import (JSON).\n`;
-
-    const zipBuffer = await createZipBuffer([
-      ['habits.json', habitsJson],
-      ['settings.json', settingsJson],
-      ['manifest.json', manifest],
-      ['README.txt', readme]
-    ]);
-
-    await writeFile(filePath, zipBuffer);
-    return { success: true, path: filePath };
   });
 }
 

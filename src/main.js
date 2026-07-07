@@ -1,9 +1,8 @@
 import { auth } from './modules/auth.js';
 import { TRANSLATIONS } from './core/i18n.js';
 import './styles/main.css';
-import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS } from './core/config.js';
-import { storage } from './modules/storage.js';
 import { BRANDING } from './core/branding.js';
+import { storage } from './modules/storage.js';
 import { habits } from './modules/habits.js';
 import { renderPluginsSection, renderPluginHeaderItems } from './app/plugins-ui.js';
 import { initNativeNotificationsScheduler } from './core/native-notifications.js';
@@ -34,6 +33,10 @@ import {
 } from './app/settings-controller.js';
 import { initHotkeys } from './app/hotkeys.js';
 import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
+import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents } from './app/garden-controller.js';
+import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
+import { toggleHabitWithHooks } from './app/habit-actions.js';
+import { initAutoBackup } from './app/auto-backup.js';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
@@ -81,6 +84,23 @@ configureSettingsController({
   },
   renderHeaderAvatar,
   renderGarden
+});
+
+configureGardenController({
+  get settings() { return settings; },
+  get habitSearchQuery() { return habitSearchQuery; },
+  get focusedHabitId() { return focusedHabitId; },
+  setFocusedHabitId(id) { focusedHabitId = id; },
+  gardenEl,
+  trophyEl,
+  countEl,
+  trophyCountEl,
+  addModal,
+  statsModal
+});
+
+configureBackupUi({
+  get settings() { return settings; }
 });
 
 const AVATAR_DATA = {
@@ -649,180 +669,6 @@ function initAvatarPicker() {
   modal.querySelector('.modal-overlay')?.addEventListener('click', () => closeModal(modal));
 }
 
-function createHabitCard(habit, isTrophy = false) {
-  const stage = isTrophy ? GROWTH_STAGES.LEGACY : habits.getStage(habit.progress);
-  const today = getTodayStr();
-  const isCompleted = habit.trackType === 'binary'
-    ? habit.lastCompleted === today
-    : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
-
-  let progressBar = '';
-  if (habit.trackType === 'quantity') {
-    const cur = habits.quantityDayProgress(habit, today);
-    const tgt = habits.quantityTarget(habit);
-    const pct = Math.min(100, (cur / tgt) * 100);
-    progressBar = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
-  }
-
-  const t = TRANSLATIONS[settings.lang];
-  const categoryName = habit.category ? (t.categories?.[habit.category] || habit.category) : '';
-  const categoryBadge = categoryName ? `<span class="category-badge" data-i18n-category="${habit.category}">${categoryName}</span>` : '';
-  const streakText = habit.currentStreak > 0 ? ` • 🔥 ${habit.currentStreak}` : '';
-
-  const card = document.createElement('article');
-  card.className = 'habit-card';
-  card.dataset.id = habit.id;
-  card.dataset.category = habit.category || 'none';
-  card.innerHTML = `
-        <div class="card-header">
-            <div class="plant-visual">${stage.emoji}</div>
-            <div class="card-info">
-                <div class="card-title">${habit.treeName || habit.name}</div>
-                ${habit.description ? `<div class="card-description">${habit.description}</div>` : ''}
-                <div class="card-subtitle">${stage.name} • ${habit.progress}d${streakText}</div>
-                ${categoryBadge}
-            </div>
-        </div>
-        ${progressBar}
-        <div class="card-actions">
-            <button class="btn-card btn-card-primary${isCompleted ? ' completed' : ''}">${isCompleted ? (t.done || 'Done') : (habit.trackType === 'quantity' ? (t.log || 'Log') : (t.complete || 'Complete'))}</button>
-            <button class="btn-card btn-card-danger">✕</button>
-        </div>
-    `;
-  return card;
-}
-
-function filterHabits(list) {
-  const q = habitSearchQuery.trim().toLowerCase();
-  if (!q) {
-    return list;
-  }
-  return list.filter((h) => {
-    const name = (h.name || '').toLowerCase();
-    const desc = (h.description || '').toLowerCase();
-    const cat = (h.category || '').toLowerCase();
-    return name.includes(q) || desc.includes(q) || cat.includes(q);
-  });
-}
-
-function getFocusedHabit() {
-  const all = filterHabits(habits.getAll().filter((h) => h.progress < LEGACY_THRESHOLD));
-  if (focusedHabitId) {
-    const hit = all.find((h) => h.id === focusedHabitId);
-    if (hit) {
-      return hit;
-    }
-  }
-  return all[0] || null;
-}
-
-function renderGarden() {
-  const all = habits.getAll();
-  const active = filterHabits(all.filter(h => h.progress < LEGACY_THRESHOLD));
-  const trophies = all.filter(h => h.progress >= LEGACY_THRESHOLD);
-  const t = TRANSLATIONS[settings.lang];
-  if (!focusedHabitId && active[0]) {
-    focusedHabitId = active[0].id;
-  } else if (focusedHabitId && !active.some((h) => h.id === focusedHabitId)) {
-    focusedHabitId = active[0]?.id || null;
-  }
-
-  if (gardenEl) {
-    gardenEl.innerHTML = '';
-    if (active.length === 0) {
-      const emptyMsg = habitSearchQuery.trim() ? (t.searchEmpty || 'No habits match your search') : t.emptyGarden;
-      gardenEl.innerHTML = `<div class="empty-state"><p style="font-size:40px">🌱</p><p>${emptyMsg}</p>${habitSearchQuery.trim() ? '' : `<button class="btn-primary" id="add-first" style="width:auto;padding:10px 20px;margin-top:16px" data-i18n="plantFirst">${t.plantFirst}</button>`}</div>`;
-      document.getElementById('add-first')?.addEventListener('click', () => openModal(addModal));
-    } else {
-      active.forEach(h => {
-        const card = createHabitCard(h);
-        if (h.id === focusedHabitId) {
-          card.classList.add('habit-card--focus');
-        }
-        gardenEl.appendChild(card);
-      });
-    }
-  }
-  if (trophyEl) {
-    trophyEl.innerHTML = '';
-    trophies.forEach(h => trophyEl.appendChild(createHabitCard(h, true)));
-  }
-  if (countEl) { countEl.textContent = `${active.length}/${MAX_ACTIVE_HABITS}`; }
-  if (trophyCountEl) { trophyCountEl.textContent = trophies.length; }
-  applyTranslations(settings.lang);
-}
-
-function openStats(id) {
-  const s = habits.getStats(id);
-  if (!s) { return; }
-  document.getElementById('stats-title').textContent = s.name;
-  const t = TRANSLATIONS[settings.lang];
-  document.getElementById('stats-content').innerHTML = `
-        <div class="stat-card"><div class="stat-label">${t.currentStreak}</div><div class="stat-value">${s.currentStreak}</div><div class="stat-subvalue">${t.days}</div></div>
-        <div class="stat-card"><div class="stat-label">${t.bestStreak}</div><div class="stat-value">${s.bestStreak}</div><div class="stat-subvalue">${t.days}</div></div>
-        <div class="stat-card"><div class="stat-label">${t.completion}</div><div class="stat-value">${s.completionRate}%</div><div class="stat-subvalue">${s.totalDays} ${t.days}</div></div>
-        <div class="stat-card"><div class="stat-label">${t.stage}</div><div class="stat-value">${s.stage.name}</div><div class="stat-subvalue">${habits.getAll().find(x => x.id === id)?.progress} ${s.trackType === 'quantity' ? t.completions : t.days}</div></div>
-    `;
-  const cal = document.getElementById('contribution-calendar');
-  if (cal) {
-    cal.innerHTML = '';
-    habits.getCalendarData(id).forEach(d => {
-      const el = document.createElement('div');
-      el.className = 'calendar-day';
-      el.style.background = `var(--calendar-${d.level})`;
-      el.title = d.date;
-      cal.appendChild(el);
-    });
-  }
-  openModal(statsModal);
-}
-
-function exportData() {
-  const t = TRANSLATIONS[settings.lang];
-  const data = { habits: habits.getAll(), settings, exportedAt: new Date().toISOString(), version: BRANDING.VERSION };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `${BRANDING.BACKUP_PREFIX}-${getTodayStr()}.json`;
-  a.click(); URL.revokeObjectURL(url);
-  showNotification(t.exported);
-}
-
-async function exportZip() {
-  const t = TRANSLATIONS[settings.lang];
-  const payload = {
-    habits: habits.getAll(),
-    settings,
-    exportedAt: new Date().toISOString(),
-    version: BRANDING.VERSION
-  };
-  const name = `${BRANDING.BACKUP_PREFIX}-${getTodayStr()}.zip`;
-  if (window.electron?.exportBackupZip) {
-    const r = await window.electron.exportBackupZip(JSON.stringify(payload), name);
-    if (r?.success) {
-      showNotification(t.exportedZip || t.exported);
-    }
-    return;
-  }
-  exportData();
-}
-
-function importData(file) {
-  const t = TRANSLATIONS[settings.lang];
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target.result);
-        if (data.habits && Array.isArray(data.habits)) { storage.saveHabits(data.habits); resolve(true); }
-        else { reject(new Error('Invalid format')); }
-      } catch (err) { reject(err); }
-    };
-    reader.readAsText(file);
-  }).then(() => { renderGarden(); showNotification(t.imported); })
-    .catch(err => alert(err.message));
-}
-
 const updateStatus = {
   state: 'checking',
   message: '',
@@ -1234,69 +1080,11 @@ function initEvents() {
     } catch (err) { alert(err.message); }
   });
 
-  const handleCardClick = (e) => {
-    const card = e.target.closest('.habit-card');
-    if (!card) { return; }
-    const id = card.dataset.id;
-    focusedHabitId = id;
-    if (e.target.closest('.btn-card-primary')) {
-      e.stopPropagation();
-      const h = habits.getAll().find(x => x.id === id);
-      if (!h) { return; }
-
-      const today = getTodayStr();
-      const isCompleted = h.trackType === 'binary'
-        ? h.lastCompleted === today
-        : habits.quantityDayProgress(h, today) >= habits.quantityTarget(h);
-
-      if (isCompleted) { return; }
-
-      if (h.trackType === 'quantity') {
-        const cur = habits.quantityDayProgress(h, today);
-        const t = TRANSLATIONS[settings.lang];
-        openQuantityLogModal(h, cur, t).then((parsed) => {
-          if (parsed === null) { return; }
-          if (!Number.isFinite(parsed) || parsed < 0) {
-            showNotification(t.invalidQuantity || 'Enter a valid number (0 or greater)');
-            return;
-          }
-          habits.toggle(id, parsed);
-          renderGarden();
-          const c = document.querySelector(`.habit-card[data-id="${id}"]`);
-          c?.querySelector('.plant-visual')?.classList.add('growing');
-          setTimeout(() => c?.querySelector('.plant-visual')?.classList.remove('growing'), 250);
-          showNotification(TRANSLATIONS[settings.lang].progressSaved);
-        });
-        return;
-      }
-      habits.toggle(id);
-
-      renderGarden();
-      card.querySelector('.plant-visual')?.classList.add('growing');
-      setTimeout(() => card.querySelector('.plant-visual')?.classList.remove('growing'), 250);
-      showNotification(TRANSLATIONS[settings.lang].progressSaved);
-    } else if (e.target.closest('.btn-card-danger')) {
-      e.stopPropagation();
-      if (confirm('Remove habit?')) { habits.remove(id); renderGarden(); showNotification(TRANSLATIONS[settings.lang].removed); }
-    } else { openStats(id); }
-  };
-
-  gardenEl?.addEventListener('click', handleCardClick);
-  trophyEl?.addEventListener('click', handleCardClick);
+  bindGardenCardEvents();
+  bindBackupUiEvents();
 
   document.getElementById('close-settings')?.addEventListener('click', () => closeModal(settingsModal));
   document.getElementById('close-stats')?.addEventListener('click', () => closeModal(statsModal));
-  document.getElementById('settings-export')?.addEventListener('click', exportData);
-  document.getElementById('settings-export-zip')?.addEventListener('click', () => { exportZip(); });
-  document.getElementById('settings-import')?.addEventListener('click', () => {
-    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
-    input.onchange = (e) => { if (e.target.files?.[0]) { importData(e.target.files[0]); } };
-    input.click();
-  });
-  document.getElementById('settings-reset')?.addEventListener('click', () => {
-    const t = TRANSLATIONS[settings.lang];
-    if (confirm(t.reset + '?') && confirm('Are you absolutely sure?')) { storage.saveHabits([]); renderGarden(); showNotification(t.resetDone); }
-  });
 
   authTrigger?.addEventListener('click', () => { openModal(authModal); closeUserMenu(); });
   signOutBtn?.addEventListener('click', async () => {
@@ -1514,6 +1302,8 @@ async function init() {
     initProfileManagement();
     initDiscordSettings();
 
+    initAutoBackup();
+
     await updateAuthUI();
     updateCultivaDatePreview();
     updateProfileSection();
@@ -1554,10 +1344,10 @@ async function init() {
       openAddModal: () => openModal(addModal),
       openSettings: () => openModal(settingsModal),
       focusSearch: () => document.getElementById('habit-search')?.focus(),
-      completeHighlighted: () => {
+      completeHighlighted: async () => {
         const h = getFocusedHabit();
         if (h) {
-          habits.toggle(h.id);
+          await toggleHabitWithHooks(h.id);
           renderGarden();
           showNotification(TRANSLATIONS[settings.lang].progressSaved);
         }

@@ -67,6 +67,10 @@ function migrateHabit(habit) {
   return migrated;
 }
 
+export function migrateHabitRecord(habit) {
+  return migrateHabit(habit);
+}
+
 async function _persistHabitsUpsert(myHabits) {
   const dbInstance = await db.open();
   const uid = myHabits.length > 0 ? myHabits[0].userId : (_currentUserId ?? null);

@@ -1,6 +1,7 @@
 import { storage } from '../modules/storage.js';
 import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
+import { pluginHasPermission } from './plugin-rpc.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/CultivaPlugins/main/registry.json';
 
@@ -260,6 +261,16 @@ function _mountPluginMainSheet(pluginId, html) {
 function _wireSandboxHost(host, pluginId, manifest) {
   host.setHandler('onRpc', async (method, args) => {
     const prefix = `plugin_${manifest.id}_`;
+    if (method === 'storage.get' || method === 'storage.set') {
+      if (!pluginHasPermission(manifest, 'storage')) {
+        throw new Error('Storage permission denied');
+      }
+    }
+    if (method === 'ui.showNotification') {
+      if (!pluginHasPermission(manifest, 'ui')) {
+        throw new Error('UI permission denied');
+      }
+    }
     if (method === 'storage.get') {
       return storage.get(prefix + args[0]);
     }

@@ -1,5 +1,6 @@
 import { TRANSLATIONS } from '../core/i18n.js';
 import { pluginManager } from '../core/plugin-manager.js';
+import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
 import { saveSettings } from './settings-controller.js';
 import { showNotification } from './ui-shell.js';
@@ -235,9 +236,75 @@ window.uninstallPlugin = async (pluginId) => {
   }
 };
 
-window.openPluginSettings = (pluginId) => {
-  console.log('[Plugins] Open settings for:', pluginId);
-  showNotification('', 'Plugin settings coming soon');
+window.openPluginSettings = async (pluginId) => {
+  const t = tStrings();
+  const pluginData = pluginManager.plugins.get(pluginId);
+  if (!pluginData?.manifest) {
+    showNotification('', t.pluginNotLoadedHint || 'Plugin not loaded');
+    return;
+  }
+  const fields = Array.isArray(pluginData.manifest.settings) ? pluginData.manifest.settings : [];
+  if (!fields.length) {
+    showNotification('', t.pluginSettingsEmpty || 'No settings for this plugin');
+    return;
+  }
+  const prefix = `plugin_${pluginId}_`;
+  let current = await storage.get(prefix + 'settings');
+  if (typeof current === 'string') {
+    try {
+      current = JSON.parse(current);
+    } catch {
+      current = {};
+    }
+  }
+  if (!current || typeof current !== 'object') {
+    current = {};
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'plugin-settings-modal';
+  wrap.setAttribute('role', 'dialog');
+  wrap.setAttribute('aria-modal', 'true');
+  const rows = fields.map((field) => {
+    const key = field.key;
+    const val = current[key] !== undefined ? current[key] : field.default;
+    if (field.type === 'boolean') {
+      return `<label class="plugin-settings-row"><span>${field.label || key}</span><input type="checkbox" name="${key}" ${val ? 'checked' : ''}></label>`;
+    }
+    if (field.type === 'select' && Array.isArray(field.options)) {
+      const opts = field.options.map((o) => `<option value="${o.value}" ${String(val) === String(o.value) ? 'selected' : ''}>${o.label || o.value}</option>`).join('');
+      return `<label class="plugin-settings-row"><span>${field.label || key}</span><select name="${key}">${opts}</select></label>`;
+    }
+    return `<label class="plugin-settings-row"><span>${field.label || key}</span><input type="text" name="${key}" value="${val !== undefined && val !== null ? String(val).replace(/"/g, '&quot;') : ''}"></label>`;
+  }).join('');
+  wrap.innerHTML = `<div class="plugin-settings-sheet"><h3>${pluginData.manifest.name}</h3><form id="plugin-settings-form">${rows}</form><div class="plugin-settings-actions"><button type="button" id="plugin-settings-cancel">${t.cancel || 'Cancel'}</button><button type="button" id="plugin-settings-save">${t.save || 'Save'}</button></div></div>`;
+  document.body.appendChild(wrap);
+  const close = () => wrap.remove();
+  wrap.querySelector('#plugin-settings-cancel')?.addEventListener('click', close);
+  wrap.querySelector('#plugin-settings-save')?.addEventListener('click', async () => {
+    const form = wrap.querySelector('#plugin-settings-form');
+    const next = {};
+    fields.forEach((field) => {
+      const el = form.querySelector(`[name="${field.key}"]`);
+      if (!el) {
+        return;
+      }
+      if (field.type === 'boolean') {
+        next[field.key] = el.checked;
+      } else {
+        next[field.key] = el.value;
+      }
+    });
+    await storage.set(prefix + 'settings', next);
+    close();
+    showNotification('', t.pluginSettingsSaved || 'Plugin settings saved');
+    if (pluginData.instance?.onEnable) {
+      try {
+        await pluginData.instance.onEnable();
+      } catch {
+        void 0;
+      }
+    }
+  });
 };
 
 export function renderPluginHeaderItems() {
