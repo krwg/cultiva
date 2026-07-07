@@ -14,7 +14,6 @@ import {
   readCustomBackgroundDataUrl
 } from './core/ambient-bg.js';
 import { settings, ensureAppReady } from './app/renderer-bootstrap.js';
-import { getTodayStr } from './app/date-ui.js';
 import {
   configureModals,
   openModal,
@@ -23,7 +22,6 @@ import {
   completeQuantityLogWithValue
 } from './app/modals.js';
 import { applyBranding, showNotification } from './app/ui-shell.js';
-import { applyTranslations } from './app/i18n-dom.js';
 import {
   configureSettingsController,
   loadSettings,

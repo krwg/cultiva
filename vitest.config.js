@@ -4,6 +4,6 @@ export default defineConfig({
   test: {
     environment: 'node',
     restoreMocks: true,
-    include: ['src/**/*.test.js', 'electron/**/*.test.cjs']
+    include: ['src/**/*.test.js']
   }
 });

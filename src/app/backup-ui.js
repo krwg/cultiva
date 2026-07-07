@@ -1,5 +1,4 @@
 import { TRANSLATIONS } from '../core/i18n.js';
-import { habits } from '../modules/habits.js';
 import { storage } from '../modules/storage.js';
 import { BRANDING } from '../core/branding.js';
 import { getTodayStr } from './date-ui.js';
