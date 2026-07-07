@@ -2,6 +2,7 @@ import { storage } from '../modules/storage.js';
 import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
 import { pluginHasPermission } from './plugin-rpc.js';
+import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/CultivaPlugins/main/registry.json';
 
@@ -694,34 +695,9 @@ export const pluginManager = {
 
     const manifestText = await fetchPluginHttpText(`${base}/manifest.json`);
     const manifest = JSON.parse(stripUtf8Bom(manifestText).trim());
-    const entryFileRaw =
-      typeof manifest.entry === 'string' && manifest.entry.trim() ? manifest.entry.trim() : 'index.js';
-    const entryFile = entryFileRaw.replace(/^[/\\]+/, '');
 
-    const files = [
-      { name: 'manifest.json', url: `${base}/manifest.json`, sha256: sh['manifest.json'] },
-      { name: entryFile, url: `${base}/${entryFile}`, sha256: sh[entryFile] }
-    ];
-
-    if (Array.isArray(manifest.styles)) {
-      for (const rel of manifest.styles) {
-        if (typeof rel !== 'string' || !rel.trim()) {
-          continue;
-        }
-        const name = rel.replace(/^[/\\]+/, '');
-        files.push({ name, url: `${base}/${name}`, sha256: sh[name] });
-      }
-    }
-
-    if (Array.isArray(manifest.data)) {
-      for (const rel of manifest.data) {
-        if (typeof rel !== 'string' || !rel.trim()) {
-          continue;
-        }
-        const name = rel.replace(/^[/\\]+/, '');
-        files.push({ name, url: `${base}/${name}`, sha256: sh[name] });
-      }
-    }
+    const files = buildPluginInstallFileList(manifest, base, sh);
+    assertRegistrySha256ForFiles(files);
 
     const success = await window.electron.installPlugin(pluginId, files);
     if (!success) {
