@@ -6,6 +6,8 @@ import { showNotification } from './ui-shell.js';
 import { renderGarden } from './garden-controller.js';
 import { buildBackupPayload, runAutoBackup } from './auto-backup.js';
 import { openModal, closeModal } from './modals.js';
+import { habits } from '../modules/habits.js';
+import { buildIcalDocument, downloadIcalFile } from '../core/ical-export.js';
 
 let ctx = null;
 let pendingImport = null;
@@ -48,6 +50,24 @@ export async function exportZip() {
     return;
   }
   exportData();
+}
+
+export function exportIcal() {
+  const c = requireCtx();
+  const t = TRANSLATIONS[c.settings.lang];
+  let calendarEvents = null;
+  try {
+    const raw = localStorage.getItem('cultiva_calendar_events');
+    if (raw) {
+      calendarEvents = JSON.parse(raw);
+    }
+  } catch {
+    calendarEvents = null;
+  }
+  const ics = buildIcalDocument({ habits: habits.getAll(), calendarEvents });
+  const name = `${BRANDING.BACKUP_PREFIX}-${getTodayStr()}.ics`;
+  downloadIcalFile(ics, name);
+  showNotification(t.exportedIcal || t.exported);
 }
 
 function showImportPreview(data) {
@@ -111,6 +131,7 @@ export function importData(file) {
 export function bindBackupUiEvents() {
   document.getElementById('settings-export')?.addEventListener('click', exportData);
   document.getElementById('settings-export-zip')?.addEventListener('click', () => { exportZip(); });
+  document.getElementById('settings-export-ical')?.addEventListener('click', exportIcal);
   document.getElementById('settings-import')?.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
