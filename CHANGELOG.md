@@ -20,6 +20,11 @@ All notable changes to Cultiva are documented here.
 - Habit templates when planting (Read, Exercise, Meditate, Water, Journal)
 - NSIS installer welcome/finish pages and GPL license step
 - Plugin install support for manifest `data` files
+- Streak grace day (one missed day per calendar month, optional toggle)
+- Statistics dashboard in settings (weekly/monthly completion trends)
+- iCal export for habit completions and calendar events
+- macOS (dmg, zip) and Linux (AppImage, deb) electron-builder targets
+- Registry sha256 enforcement for official plugin installs
 
 ### Changed
 - Refactored garden and backup UI into app controllers
