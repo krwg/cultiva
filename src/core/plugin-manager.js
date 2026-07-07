@@ -713,6 +713,16 @@ export const pluginManager = {
       }
     }
 
+    if (Array.isArray(manifest.data)) {
+      for (const rel of manifest.data) {
+        if (typeof rel !== 'string' || !rel.trim()) {
+          continue;
+        }
+        const name = rel.replace(/^[/\\]+/, '');
+        files.push({ name, url: `${base}/${name}`, sha256: sh[name] });
+      }
+    }
+
     const success = await window.electron.installPlugin(pluginId, files);
     if (!success) {
       return false;

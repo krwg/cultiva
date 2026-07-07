@@ -35,6 +35,8 @@ import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCar
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
 import { initAutoBackup } from './app/auto-backup.js';
+import { bindOnboardingEvents, maybeShowOnboarding } from './app/onboarding-wizard.js';
+import { bindHabitTemplates } from './app/habit-templates-ui.js';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
@@ -1301,6 +1303,10 @@ async function init() {
     initDiscordSettings();
 
     initAutoBackup();
+
+    bindOnboardingEvents();
+    bindHabitTemplates(settings.lang);
+    maybeShowOnboarding();
 
     await updateAuthUI();
     updateCultivaDatePreview();

@@ -4,6 +4,7 @@ import { settings, ensureAppReady } from './renderer-bootstrap.js';
 import { applyTranslations } from './i18n-dom.js';
 import { applyAccentColor, applyAmbientIntensity } from '../core/customization.js';
 import { pluginManager } from '../core/plugin-manager.js';
+import { bindHabitTemplates } from './habit-templates-ui.js';
 
 let ctx = null;
 
@@ -84,6 +85,12 @@ export async function loadSettings() {
           settings.ambientIntensity = Math.max(0, Math.min(100, ai));
         }
       }
+      if (typeof saved.firstRunComplete === 'boolean') {
+        settings.firstRunComplete = saved.firstRunComplete;
+      }
+      if (typeof saved.autoBackupEnabled === 'boolean') {
+        settings.autoBackupEnabled = saved.autoBackupEnabled;
+      }
     }
 
     requireCtx().setLangAndT(settings.lang);
@@ -123,6 +130,7 @@ export function saveSettings() {
   c.setLangAndT(settings.lang);
   applySettings();
   c.renderGarden();
+  bindHabitTemplates(settings.lang);
   pluginManager.triggerHook('onSettingsChange', settings);
 }
 

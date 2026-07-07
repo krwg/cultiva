@@ -17,7 +17,9 @@ export const settings = {
   nativeNotifyCalendar: true,
   nativeNotifyCalendarLeadMinutes: 30,
   accentColor: '',
-  ambientIntensity: 100
+  ambientIntensity: 100,
+  firstRunComplete: false,
+  autoBackupEnabled: true
 };
 
 const _preInitSettings = localStorage.getItem('cultiva-settings');

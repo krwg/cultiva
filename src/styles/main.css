@@ -2710,3 +2710,102 @@ body.with-ambient-bg > [id^="bg-"] {
     gap: 8px;
     margin-top: 16px;
 }
+
+.habit-templates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.habit-template-chip {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.habit-template-chip:hover {
+    border-color: var(--accent-green);
+}
+
+.onboarding-sheet {
+    max-width: 480px;
+}
+
+.onboarding-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.onboarding-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-subtle);
+}
+
+.onboarding-dot.active {
+    background: var(--accent-green);
+}
+
+.onboarding-lead {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.onboarding-muted {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.onboarding-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.onboarding-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.onboarding-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 20px 20px;
+}
+
+.onboarding-skip-link {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.import-preview-stats {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 16px;
+    margin: 0 0 12px;
+}
+
+.import-preview-stats dt {
+    color: var(--text-secondary);
+}
+
+.import-preview-stats dd {
+    margin: 0;
+    font-weight: 600;
+}
