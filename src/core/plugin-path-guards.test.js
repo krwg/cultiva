@@ -1,12 +1,15 @@
-const { describe, it, expect } = require('vitest');
-const path = require('path');
+import { describe, it, expect } from 'vitest';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
 const {
   isPathInsideDir,
   resolveUnderPluginRoot,
   assertSafeRelativeFileName,
   assertAllowedDownloadUrl,
   isSafePluginId
-} = require('./plugin-path-guards.cjs');
+} = require('../../electron/lib/plugin-path-guards.cjs');
 
 describe('plugin-path-guards', () => {
   const root = path.join('/tmp', 'cultiva-plugins-test');
