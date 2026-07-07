@@ -154,6 +154,11 @@ langSelect?.addEventListener('change', (e) => { settings.lang = e.target.value; 
 themeSelect?.addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); });
 trophyToggle?.addEventListener('change', (e) => { settings.showTrophies = e.target.checked; saveSettings(); });
 focusToggle?.addEventListener('change', (e) => { settings.focusMode = e.target.checked; saveSettings(); });
+document.getElementById('toggle-streak-grace')?.addEventListener('change', (e) => {
+  settings.streakGraceEnabled = e.target.checked;
+  habits.recalculateAllStreaks();
+  saveSettings();
+});
 
 const tzSelect = document.getElementById('tz-select');
 if (tzSelect) {
