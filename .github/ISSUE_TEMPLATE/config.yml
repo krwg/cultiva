@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support / questions (start here)
+    url: https://github.com/krwg/cultiva/blob/main/SUPPORT.md
+    about: Wiki, Discussions, and when not to open an issue
+  - name: Plugin registry
+    url: https://github.com/krwg/cultiva-plugins/issues/new/choose
+    about: Official plugin bugs and submissions — cultiva-plugins repo
+  - name: Security (private)
+    url: https://github.com/krwg/cultiva/blob/main/SECURITY.md
+    about: Do not post vulnerabilities publicly — email shevotsukov@icloud.com
