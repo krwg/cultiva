@@ -61,3 +61,7 @@ Contributions to this repository are licensed under GPL-3.0.
 ## Code of Conduct
 
 See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## Support
+
+Questions and how to avoid mis-filed issues: [SUPPORT.md](SUPPORT.md).
