@@ -5,25 +5,25 @@
       "action": "close",
       "title": "fix: closeTopModal checks .open instead of .active — Escape broken",
       "labels": ["bug", "1.7"],
-      "commit": "a5108de413bac9635295664275b3214ddc0155f7",
+      "commit": "55a2d56030414456354c5f3edc6965818570a7d4",
       "body": "## Problem\n\n`closeTopModal` in `main.js` checked `classList.contains('open')` but modals use `.active` (`modals.js`). Escape never closed add/stats/settings/quantity-log modals.\n\n## Expected\n\nEscape closes the topmost open modal.\n\n## Scope\n\n- `src/app/modals.js` — add `isModalOpen()` / `closeTopModal()`\n- `src/main.js` — wire hotkeys",
-      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/a5108de413bac9635295664275b3214ddc0155f7\n\nAdded `isModalOpen()` and `closeTopModal()` helpers; hotkeys now check `.active`."
+      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/55a2d56030414456354c5f3edc6965818570a7d4\n\nAdded `isModalOpen()` and `closeTopModal()` helpers; hotkeys now check `.active`."
     },
     {
       "action": "close",
       "title": "perf: renderGarden full innerHTML rebuild on every habit toggle",
       "labels": ["performance", "1.7"],
-      "commit": "5a0a687840c2bdadfcdd5f12256ddfbdb2e31d84",
+      "commit": "d1cbe2efa0188fcc61e4bfcea59eb430ff6507f7",
       "body": "## Problem\n\n`renderGarden()` cleared `gardenEl.innerHTML` and rebuilt all cards on every completion, causing layout jank with many habits.\n\n## Proposal\n\nIncremental DOM sync keyed by habit id + render fingerprint.",
-      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/5a0a687840c2bdadfcdd5f12256ddfbdb2e31d84\n\n`syncHabitCards()` patches cards in place using a `renderKey` fingerprint."
+      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/d1cbe2efa0188fcc61e4bfcea59eb430ff6507f7\n\n`syncHabitCards()` patches cards in place using a `renderKey` fingerprint."
     },
     {
       "action": "close",
       "title": "perf: defer Discord, updates, onboarding, and lazy-load settings modules",
       "labels": ["performance", "1.7"],
-      "commit": "46691a6ea9d3917f37aac3e7fd66dfd4d06051c9",
+      "commit": "6156900867ca35b93560e87d536e794d58706805",
       "body": "## Problem\n\n`main.js` eagerly initialized Discord RPC polling, updates UI, onboarding wizard, and static-imported heavy settings modules on every cold start.\n\n## Proposal\n\n- Extract `updates-ui.js` and `discord-settings.js`\n- Dynamic `import()` for plugins catalog, stats dashboard, onboarding\n- `requestIdleCallback` for Discord warmup and onboarding",
-      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/46691a6ea9d3917f37aac3e7fd66dfd4d06051c9"
+      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/6156900867ca35b93560e87d536e794d58706805\n\nExtracted `updates-ui.js` and `discord-settings.js`; lazy imports and deferred onboarding/Discord init."
     },
     {
       "action": "open",
