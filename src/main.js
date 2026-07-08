@@ -323,11 +323,11 @@ function initSettingsNavigation() {
 
       if (section === 'profile') { updateProfileSection(); }
       if (section === 'plugins') {
-        import('./plugins-ui.js').then((m) => m.renderPluginsSection());
+        import('./app/plugins-ui.js').then((m) => m.renderPluginsSection());
       }
       if (section === 'notifications') { updateNotificationsDesktopBanner(); }
       if (section === 'statistics') {
-        import('./stats-dashboard-ui.js').then((m) => m.renderStatsDashboard(settings.lang));
+        import('./app/stats-dashboard-ui.js').then((m) => m.renderStatsDashboard(settings.lang));
       }
       if (section === 'discord') {
         ensureDiscordSettingsInitialized();
