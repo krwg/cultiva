@@ -95,6 +95,75 @@ function createHabitCard(habit, isTrophy = false) {
   return card;
 }
 
+function habitRenderKey(habit, isTrophy) {
+  const c = requireCtx();
+  const today = getTodayStr();
+  const isCompleted = habit.trackType === 'binary'
+    ? habit.lastCompleted === today
+    : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
+  const qty = habit.trackType === 'quantity' ? habits.quantityDayProgress(habit, today) : 0;
+  return [
+    isTrophy ? 'trophy' : 'active',
+    habit.progress,
+    habit.currentStreak,
+    isCompleted ? 1 : 0,
+    qty,
+    habit.treeName,
+    habit.name,
+    habit.description,
+    habit.category,
+    habit.trackType,
+    habits.quantityTarget(habit),
+    c.settings.lang
+  ].join('|');
+}
+
+function syncHabitCards(container, habitList, isTrophy = false) {
+  const c = requireCtx();
+  if (!container) {
+    return;
+  }
+
+  const existingIds = new Set(
+    [...container.querySelectorAll('.habit-card')].map((el) => el.dataset.id)
+  );
+  const nextIds = new Set(habitList.map((h) => h.id));
+
+  for (const id of existingIds) {
+    if (!nextIds.has(id)) {
+      container.querySelector(`.habit-card[data-id="${id}"]`)?.remove();
+    }
+  }
+
+  habitList.forEach((habit, index) => {
+    const key = habitRenderKey(habit, isTrophy);
+    let card = container.querySelector(`.habit-card[data-id="${habit.id}"]`);
+
+    if (!card) {
+      card = createHabitCard(habit, isTrophy);
+      card.dataset.renderKey = key;
+      const ref = container.children[index] || null;
+      container.insertBefore(card, ref);
+    } else if (card.dataset.renderKey !== key) {
+      const next = createHabitCard(habit, isTrophy);
+      next.dataset.renderKey = key;
+      card.replaceWith(next);
+      card = next;
+    }
+
+    const ref = container.children[index];
+    if (ref && ref !== card) {
+      container.insertBefore(card, ref);
+    } else if (!ref) {
+      container.appendChild(card);
+    }
+
+    if (!isTrophy) {
+      card.classList.toggle('habit-card--focus', habit.id === c.focusedHabitId);
+    }
+  });
+}
+
 export function renderGarden() {
   const c = requireCtx();
   const all = habits.getAll();
@@ -117,18 +186,15 @@ export function renderGarden() {
       c.gardenEl.innerHTML = `<div class="empty-state"><p>${emptyMsg}</p>${inSearchMode ? '' : `<button class="btn-primary" id="add-first" style="width:auto;padding:10px 20px;margin-top:16px" data-i18n="plantFirst">${t.plantFirst}</button>`}</div>`;
       document.getElementById('add-first')?.addEventListener('click', () => openModal(c.addModal));
     } else {
-      active.forEach(h => {
-        const card = createHabitCard(h);
-        if (h.id === c.focusedHabitId) {
-          card.classList.add('habit-card--focus');
-        }
-        c.gardenEl.appendChild(card);
-      });
+      syncHabitCards(c.gardenEl, active, false);
     }
   }
   if (c.trophyEl) {
-    c.trophyEl.innerHTML = '';
-    trophies.forEach(h => c.trophyEl.appendChild(createHabitCard(h, true)));
+    if (trophies.length === 0) {
+      c.trophyEl.innerHTML = '';
+    } else {
+      syncHabitCards(c.trophyEl, trophies, true);
+    }
   }
   if (c.countEl) { c.countEl.textContent = `${active.length}/${MAX_ACTIVE_HABITS}`; }
   if (c.trophyCountEl) { c.trophyCountEl.textContent = trophies.length; }
