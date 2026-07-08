@@ -99,8 +99,11 @@ export function renderGarden() {
   if (c.gardenEl) {
     c.gardenEl.innerHTML = '';
     if (active.length === 0) {
-      const emptyMsg = c.habitSearchQuery.trim() ? (t.searchEmpty || 'No habits match your search') : t.emptyGarden;
-      c.gardenEl.innerHTML = `<div class="empty-state"><p style="font-size:40px">🌱</p><p>${emptyMsg}</p>${c.habitSearchQuery.trim() ? '' : `<button class="btn-primary" id="add-first" style="width:auto;padding:10px 20px;margin-top:16px" data-i18n="plantFirst">${t.plantFirst}</button>`}</div>`;
+      const inSearchMode = c.habitSearchQuery.trim().length > 0;
+      const emptyMsg = inSearchMode
+        ? (t.emptyStateSearchHint || t.searchEmpty || 'No habits match your search')
+        : (t.emptyStateCreateHint || t.plantFirst || 'Create your first habit');
+      c.gardenEl.innerHTML = `<div class="empty-state"><p>${emptyMsg}</p>${inSearchMode ? '' : `<button class="btn-primary" id="add-first" style="width:auto;padding:10px 20px;margin-top:16px" data-i18n="plantFirst">${t.plantFirst}</button>`}</div>`;
       document.getElementById('add-first')?.addEventListener('click', () => openModal(c.addModal));
     } else {
       active.forEach(h => {

@@ -40,6 +40,7 @@ import { bindOnboardingEvents, maybeShowOnboarding } from './app/onboarding-wiza
 import { bindHabitTemplates } from './app/habit-templates-ui.js';
 import { AVATAR_BACKGROUNDS, AVATAR_EMOJIS, DEFAULT_AVATAR } from './core/avatar-presets.js';
 import { showAlertDialog, showConfirmDialog } from './app/dialogs.js';
+import { initTooltipManager } from './app/tooltip-manager.js';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
@@ -1258,6 +1259,7 @@ if (typeof window.electron !== 'undefined' && window.electron.onUpdateMessage) {
 
 async function init() {
   try {
+    initTooltipManager();
 
     await ensureAppReady();
 
