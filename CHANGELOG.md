@@ -28,6 +28,7 @@ All notable changes to Cultiva are documented here.
 
 ### Changed
 - Refactored garden and backup UI into app controllers
+- CI: dependency security updates (Electron 40, electron-builder 26, Vite 6.4.3); removed vulnerable `to-ico` build chain
 - README license corrected to GPL-3.0
 - Plugin minAppVersion aligned to 1.7.0
 

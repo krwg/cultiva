@@ -281,7 +281,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
         throw new Error(`Data file not allowed: ${rel}`);
       }
       const raw = await window.electron.readPluginFile(`${pluginId}/${rel}`);
-      if (raw == null || raw === '') {
+      if (raw === null || raw === undefined || raw === '') {
         throw new Error(`Data file missing: ${rel}`);
       }
       const text = stripUtf8Bom(raw).trim();
