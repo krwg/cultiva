@@ -1,4 +1,5 @@
 import { getThemeBodyClassList, resolveThemeBodyId } from '../core/theme-config.js';
+import { syncNativeShellChrome } from '../core/shell-chrome.js';
 import { storage } from '../modules/storage.js';
 import { settings, ensureAppReady } from './renderer-bootstrap.js';
 import { applyTranslations } from './i18n-dom.js';
@@ -234,5 +235,6 @@ export function applySettings() {
 
   localStorage.setItem('cultiva-theme', settings.theme);
   localStorage.setItem('cultiva-lang', settings.lang);
+  syncNativeShellChrome();
   console.log('[Settings] Applied theme:', appliedTheme);
 }

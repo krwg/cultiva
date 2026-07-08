@@ -3,6 +3,7 @@ import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
 import { settings } from '../app/renderer-bootstrap.js';
 import { pluginHasPermission } from './plugin-rpc.js';
+import { readThemeCssColor } from './shell-chrome.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
@@ -400,6 +401,13 @@ function _wireSandboxHost(host, pluginId, manifest) {
       }
       return settings.lang || 'en';
     }
+    if (method === 'app.getThemeColor') {
+      if (!pluginHasPermission(manifest, 'ui')) {
+        throw new Error('UI permission denied');
+      }
+      const key = String(args[0] || 'text-primary').replace(/^--/, '');
+      return readThemeCssColor(`--${key}`);
+    }
   });
 
   host.setHandler('onHookRegister', (hookName) => {
@@ -436,6 +444,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
     }
     const wrap = document.createElement('div');
     wrap.id = `${pluginId}-garden-widget`;
+    wrap.className = 'garden-plugin-widget';
     wrap.innerHTML = data.html;
     const plugin = plugins.get(pluginId);
     const position = plugin?.gardenWidget?.position || 'top';
@@ -503,11 +512,18 @@ function _wireSandboxHost(host, pluginId, manifest) {
     if (labelEl && data.label !== null && data.label !== undefined) {
       labelEl.textContent = data.label;
     }
-    if (labelEl && data.labelColor !== null && data.labelColor !== undefined) {
-      labelEl.style.color = data.labelColor || '';
-    }
-    if (plugin?.headerItem && data.labelColor !== null && data.labelColor !== undefined) {
-      plugin.headerItem.labelColor = data.labelColor;
+    if (labelEl && Object.prototype.hasOwnProperty.call(data, 'labelColor')) {
+      if (data.labelColor === null || data.labelColor === '') {
+        labelEl.style.color = '';
+        if (plugin?.headerItem) {
+          plugin.headerItem.labelColor = null;
+        }
+      } else {
+        labelEl.style.color = data.labelColor;
+        if (plugin?.headerItem) {
+          plugin.headerItem.labelColor = data.labelColor;
+        }
+      }
     }
   });
 }
@@ -820,6 +836,7 @@ export const pluginManager = {
           appendChild(node) {
             const wrap = document.createElement('div');
             wrap.id = `${pluginId}-garden-widget`;
+            wrap.className = 'garden-plugin-widget';
             if (node && typeof node.outerHTML === 'string') {
               wrap.innerHTML = node.outerHTML;
             }
@@ -830,6 +847,7 @@ export const pluginManager = {
         if (typeof relay.innerHTML === 'string' && relay.innerHTML.trim()) {
           const wrap = document.createElement('div');
           wrap.id = `${pluginId}-garden-widget`;
+          wrap.className = 'garden-plugin-widget';
           wrap.innerHTML = relay.innerHTML;
           _insertGardenWidget(container, wrap, plugin.gardenWidget.position);
         }

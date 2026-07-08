@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld('electron', {
   installPlugin: (pluginId, files) => ipcRenderer.invoke('plugin:install', pluginId, files),
   uninstallPlugin: (pluginId) => ipcRenderer.invoke('plugin:uninstall', pluginId),
   getPluginResourcePath: (pluginId, resourcePath) => ipcRenderer.invoke('plugin:get-resource-path', pluginId, resourcePath),
+  setTitleBarOverlay: (options) => ipcRenderer.invoke('shell:set-titlebar-overlay', options),
 });
 
 let discordEnabled = true;

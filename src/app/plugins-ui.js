@@ -1,4 +1,5 @@
 import { TRANSLATIONS } from '../core/i18n.js';
+import { getPluginCatalogStrings } from '../core/plugin-i18n.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
@@ -36,6 +37,110 @@ export async function renderPluginsSection() {
   await loadAvailablePlugins();
 }
 
+function localizedPluginMeta(pluginId, fallbackName, fallbackDesc) {
+  const localized = getPluginCatalogStrings(pluginId, settings.lang);
+  return {
+    name: localized?.name || fallbackName || '',
+    description: localized?.description || fallbackDesc || ''
+  };
+}
+
+function createPluginCardMain(p, pluginData, t, { showSettings = false } = {}) {
+  const meta = localizedPluginMeta(p.id, p.name, p.description);
+  const main = document.createElement('div');
+  main.className = 'plugin-card-main';
+
+  const iconWrap = document.createElement('div');
+  iconWrap.className = 'plugin-icon';
+  iconWrap.textContent = '';
+
+  const info = document.createElement('div');
+  info.className = 'plugin-info';
+
+  const nameEl = document.createElement('div');
+  nameEl.className = 'plugin-name';
+  nameEl.textContent = meta.name;
+
+  const descEl = document.createElement('div');
+  descEl.className = 'plugin-description';
+  const baseDesc = meta.description;
+  const failReason = showSettings ? pluginManager.getPluginFailure(p.id) : null;
+  descEl.textContent = showSettings && !p.loaded
+    ? `${baseDesc ? `${baseDesc} — ` : ''}${failReason || t.pluginNotLoadedHint || 'Not loaded.'}`
+    : baseDesc;
+
+  const versionRow = document.createElement('div');
+  versionRow.className = 'plugin-meta';
+  const ver = document.createElement('span');
+  ver.className = 'plugin-version';
+  ver.textContent = p.version ? `v${p.version}` : '';
+  versionRow.appendChild(ver);
+
+  info.appendChild(nameEl);
+  info.appendChild(descEl);
+  info.appendChild(versionRow);
+
+  const actions = document.createElement('div');
+  actions.className = 'plugin-actions';
+
+  if (showSettings) {
+    const fields = Array.isArray(pluginData?.manifest?.settings) ? pluginData.manifest.settings : [];
+    if (fields.length) {
+      const btnSettings = document.createElement('button');
+      btnSettings.type = 'button';
+      btnSettings.className = 'plugin-btn plugin-btn-settings';
+      btnSettings.title = t.pluginSettings;
+      btnSettings.textContent = t.pluginSettings || 'Settings';
+      btnSettings.disabled = !p.loaded;
+      btnSettings.addEventListener('click', () => window.openPluginSettings(p.id));
+      actions.appendChild(btnSettings);
+    }
+
+    const btnRetry = document.createElement('button');
+    btnRetry.type = 'button';
+    btnRetry.className = 'plugin-btn plugin-btn-settings';
+    btnRetry.textContent = t.retry || 'Retry';
+    btnRetry.style.display = p.loaded ? 'none' : 'inline-flex';
+    btnRetry.addEventListener('click', async () => {
+      await pluginManager.loadPlugin(p.id);
+      await renderPluginsSection();
+      renderPluginHeaderItems();
+    });
+    actions.appendChild(btnRetry);
+
+    const btnUninstall = document.createElement('button');
+    btnUninstall.type = 'button';
+    btnUninstall.className = 'plugin-btn plugin-btn-uninstall';
+    btnUninstall.title = t.uninstall;
+    btnUninstall.textContent = t.uninstall || 'Uninstall';
+    btnUninstall.addEventListener('click', () => window.uninstallPlugin(p.id));
+    actions.appendChild(btnUninstall);
+
+    const toggleWrap = document.createElement('label');
+    toggleWrap.className = 'plugin-enable-switch toggle-switch';
+    toggleWrap.title = t.enabled || 'Enabled';
+    const toggleInput = document.createElement('input');
+    toggleInput.type = 'checkbox';
+    toggleInput.checked = Boolean(p.enabled);
+    toggleInput.setAttribute('aria-label', t.enabled || 'Enabled');
+    toggleInput.addEventListener('change', async () => {
+      await pluginManager.setPluginEnabled(p.id, toggleInput.checked);
+      await renderPluginsSection();
+      renderPluginHeaderItems();
+    });
+    const toggleSlider = document.createElement('span');
+    toggleSlider.className = 'toggle-slider';
+    toggleWrap.appendChild(toggleInput);
+    toggleWrap.appendChild(toggleSlider);
+    actions.appendChild(toggleWrap);
+  }
+
+  main.appendChild(iconWrap);
+  main.appendChild(info);
+  main.appendChild(actions);
+  return main;
+}
+
 async function loadInstalledPlugins() {
   const container = document.getElementById('installed-plugins-list');
   if (!container) {
@@ -63,193 +168,10 @@ async function loadInstalledPlugins() {
       card.classList.add('plugin-card-disabled');
     }
 
-    const main = document.createElement('div');
-    main.className = 'plugin-card-main';
-
-    const iconWrap = document.createElement('div');
-    iconWrap.className = 'plugin-icon';
-    iconWrap.textContent = '';
-
-    const info = document.createElement('div');
-    info.className = 'plugin-info';
-
-    const nameEl = document.createElement('div');
-    nameEl.className = 'plugin-name';
-    nameEl.textContent = p.name || '';
-
-    const descEl = document.createElement('div');
-    descEl.className = 'plugin-description';
-    const baseDesc = p.description || '';
-    const failReason = pluginManager.getPluginFailure(p.id);
-    descEl.textContent = p.loaded
-      ? baseDesc
-      : `${baseDesc ? `${baseDesc} — ` : ''}${failReason || t.pluginNotLoadedHint || 'Not loaded.'}`;
-
-    const meta = document.createElement('div');
-    meta.className = 'plugin-meta';
-    const ver = document.createElement('span');
-    ver.className = 'plugin-version';
-    ver.textContent = p.version ? `v${p.version}` : '';
-    meta.appendChild(ver);
-
-    info.appendChild(nameEl);
-    info.appendChild(descEl);
-    info.appendChild(meta);
-
-    const actions = document.createElement('div');
-    actions.className = 'plugin-actions';
-
-    const toggleWrap = document.createElement('label');
-    toggleWrap.className = 'plugin-enable-switch toggle-switch';
-    const toggleInput = document.createElement('input');
-    toggleInput.type = 'checkbox';
-    toggleInput.checked = Boolean(p.enabled);
-    toggleInput.addEventListener('change', async () => {
-      await pluginManager.setPluginEnabled(p.id, toggleInput.checked);
-      await renderPluginsSection();
-      renderPluginHeaderItems();
-    });
-    const toggleSlider = document.createElement('span');
-    toggleSlider.className = 'toggle-slider';
-    const toggleLabel = document.createElement('span');
-    toggleLabel.textContent = t.enabled || 'Enabled';
-    toggleWrap.appendChild(toggleInput);
-    toggleWrap.appendChild(toggleSlider);
-    toggleWrap.appendChild(toggleLabel);
-
-    const btnUninstall = document.createElement('button');
-    btnUninstall.type = 'button';
-    btnUninstall.className = 'plugin-btn plugin-btn-uninstall';
-    btnUninstall.title = t.uninstall;
-    btnUninstall.textContent = t.uninstall || 'Uninstall';
-    btnUninstall.addEventListener('click', () => window.uninstallPlugin(p.id));
-
-    const btnRetry = document.createElement('button');
-    btnRetry.type = 'button';
-    btnRetry.className = 'plugin-btn plugin-btn-settings';
-    btnRetry.textContent = t.retry || 'Retry';
-    btnRetry.style.display = p.loaded ? 'none' : 'inline-flex';
-    btnRetry.addEventListener('click', async () => {
-      await pluginManager.loadPlugin(p.id);
-      await renderPluginsSection();
-      renderPluginHeaderItems();
-    });
-
-    actions.appendChild(btnRetry);
-    actions.appendChild(btnUninstall);
-    actions.appendChild(toggleWrap);
-
-    main.appendChild(iconWrap);
-    main.appendChild(info);
-    main.appendChild(actions);
-    card.appendChild(main);
-
     const pluginData = pluginManager.plugins.get(p.id);
-    const settingsPanel = await buildPluginInlineSettings(p.id, pluginData, p.loaded, t);
-    if (settingsPanel) {
-      card.appendChild(settingsPanel);
-    }
-
+    card.appendChild(createPluginCardMain(p, pluginData, t, { showSettings: true }));
     container.appendChild(card);
   }
-}
-
-async function buildPluginInlineSettings(pluginId, pluginData, loaded, t) {
-  const fields = Array.isArray(pluginData?.manifest?.settings) ? pluginData.manifest.settings : [];
-  if (!fields.length) {
-    return null;
-  }
-
-  const prefix = `plugin_${pluginId}_`;
-  let current = await storage.get(prefix + 'settings');
-  if (typeof current === 'string') {
-    try {
-      current = JSON.parse(current);
-    } catch {
-      current = {};
-    }
-  }
-  if (!current || typeof current !== 'object') {
-    current = {};
-  }
-
-  const panel = document.createElement('div');
-  panel.className = 'plugin-card-settings';
-
-  const persist = async (next) => {
-    await storage.set(prefix + 'settings', next);
-    if (loaded && pluginData?.sandbox) {
-      try {
-        await pluginData.sandbox.runLifecycle('onDisable');
-        await pluginData.sandbox.runLifecycle('onEnable');
-      } catch {
-        void 0;
-      }
-    }
-    showNotification('', t.pluginSettingsSaved || 'Plugin settings saved');
-  };
-
-  for (const field of fields) {
-    const row = document.createElement('div');
-    row.className = 'plugin-setting-row';
-    const label = document.createElement('span');
-    label.textContent = field.label || field.key;
-    row.appendChild(label);
-
-    const val = current[field.key] !== undefined ? current[field.key] : field.default;
-
-    if (field.type === 'boolean') {
-      const toggle = document.createElement('label');
-      toggle.className = 'plugin-enable-switch toggle-switch';
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.checked = Boolean(val);
-      input.disabled = !loaded;
-      input.addEventListener('change', async () => {
-        const next = { ...current, [field.key]: input.checked };
-        current = next;
-        await persist(next);
-      });
-      const slider = document.createElement('span');
-      slider.className = 'toggle-slider';
-      toggle.appendChild(input);
-      toggle.appendChild(slider);
-      row.appendChild(toggle);
-    } else if (field.type === 'select' && Array.isArray(field.options)) {
-      const select = document.createElement('select');
-      select.disabled = !loaded;
-      for (const opt of field.options) {
-        const option = document.createElement('option');
-        option.value = opt.value;
-        option.textContent = opt.label || opt.value;
-        if (String(val) === String(opt.value)) {
-          option.selected = true;
-        }
-        select.appendChild(option);
-      }
-      select.addEventListener('change', async () => {
-        const next = { ...current, [field.key]: select.value };
-        current = next;
-        await persist(next);
-      });
-      row.appendChild(select);
-    } else {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = val !== undefined && val !== null ? String(val) : '';
-      input.disabled = !loaded;
-      input.addEventListener('change', async () => {
-        const next = { ...current, [field.key]: input.value };
-        current = next;
-        await persist(next);
-      });
-      row.appendChild(input);
-    }
-
-    panel.appendChild(row);
-  }
-
-  return panel;
 }
 
 async function loadAvailablePlugins() {
@@ -284,38 +206,12 @@ async function loadAvailablePlugins() {
       const card = document.createElement('div');
       card.className = 'plugin-card';
 
-      const iconWrap = document.createElement('div');
-      iconWrap.className = 'plugin-icon';
-      iconWrap.textContent = '';
+      const meta = localizedPluginMeta(p.id, p.name, p.description);
+      const stub = { id: p.id, name: meta.name, description: meta.description, version: p.version, loaded: true, enabled: true };
+      const main = createPluginCardMain(stub, null, t, { showSettings: false });
 
-      const info = document.createElement('div');
-      info.className = 'plugin-info';
-
-      const nameEl = document.createElement('div');
-      nameEl.className = 'plugin-name';
-      nameEl.textContent = p.name || '';
-
-      const descEl = document.createElement('div');
-      descEl.className = 'plugin-description';
-      descEl.textContent = p.description || '';
-
-      const meta = document.createElement('div');
-      meta.className = 'plugin-meta';
-      const ver = document.createElement('span');
-      ver.className = 'plugin-version';
-      ver.textContent = `v${p.version || ''}`;
-      const author = document.createElement('span');
-      author.className = 'plugin-author';
-      author.textContent = p.author !== null && p.author !== undefined ? String(p.author) : '';
-      meta.appendChild(ver);
-      meta.appendChild(author);
-
-      info.appendChild(nameEl);
-      info.appendChild(descEl);
-      info.appendChild(meta);
-
-      const actions = document.createElement('div');
-      actions.className = 'plugin-actions';
+      const actions = main.querySelector('.plugin-actions');
+      actions.replaceChildren();
       const btnInstall = document.createElement('button');
       btnInstall.type = 'button';
       const pid = p.id;
@@ -336,9 +232,12 @@ async function loadAvailablePlugins() {
       }
       actions.appendChild(btnInstall);
 
-      card.appendChild(iconWrap);
-      card.appendChild(info);
-      card.appendChild(actions);
+      const author = document.createElement('span');
+      author.className = 'plugin-author';
+      author.textContent = p.author !== null && p.author !== undefined ? String(p.author) : '';
+      main.querySelector('.plugin-meta')?.appendChild(author);
+
+      card.appendChild(main);
       container.appendChild(card);
     }
   } catch (e) {
@@ -404,28 +303,103 @@ window.openPluginSettings = async (pluginId) => {
   if (!current || typeof current !== 'object') {
     current = {};
   }
+  const localized = localizedPluginMeta(pluginId, pluginData.manifest.name, pluginData.manifest.description);
   const wrap = document.createElement('div');
   wrap.className = 'plugin-settings-modal';
   wrap.setAttribute('role', 'dialog');
   wrap.setAttribute('aria-modal', 'true');
-  const rows = fields.map((field) => {
-    const key = field.key;
-    const val = current[key] !== undefined ? current[key] : field.default;
+
+  const sheet = document.createElement('div');
+  sheet.className = 'plugin-settings-sheet modal-sheet';
+
+  const header = document.createElement('div');
+  header.className = 'modal-header';
+  header.innerHTML = `<h2>${localized.name}</h2><button type="button" class="modal-close" aria-label="${t.cancel || 'Close'}">&times;</button>`;
+
+  const body = document.createElement('div');
+  body.className = 'modal-body';
+  const form = document.createElement('form');
+  form.id = 'plugin-settings-form';
+  form.className = 'plugin-settings-form';
+
+  for (const field of fields) {
+    const row = document.createElement('div');
+    row.className = 'plugin-settings-row';
+    const label = document.createElement('span');
+    label.className = 'plugin-settings-label';
+    label.textContent = field.label || field.key;
+    row.appendChild(label);
+
+    const val = current[field.key] !== undefined ? current[field.key] : field.default;
     if (field.type === 'boolean') {
-      return `<label class="plugin-settings-row"><span>${field.label || key}</span><input type="checkbox" name="${key}" ${val ? 'checked' : ''}></label>`;
+      const toggle = document.createElement('label');
+      toggle.className = 'plugin-enable-switch toggle-switch';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.name = field.key;
+      input.checked = Boolean(val);
+      const slider = document.createElement('span');
+      slider.className = 'toggle-slider';
+      toggle.appendChild(input);
+      toggle.appendChild(slider);
+      row.appendChild(toggle);
+    } else if (field.type === 'select' && Array.isArray(field.options)) {
+      const select = document.createElement('select');
+      select.name = field.key;
+      select.className = 'select-input';
+      for (const opt of field.options) {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.label || opt.value;
+        if (String(val) === String(opt.value)) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      }
+      row.appendChild(select);
+    } else {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.name = field.key;
+      input.className = 'select-input';
+      input.value = val !== undefined && val !== null ? String(val) : '';
+      row.appendChild(input);
     }
-    if (field.type === 'select' && Array.isArray(field.options)) {
-      const opts = field.options.map((o) => `<option value="${o.value}" ${String(val) === String(o.value) ? 'selected' : ''}>${o.label || o.value}</option>`).join('');
-      return `<label class="plugin-settings-row"><span>${field.label || key}</span><select name="${key}">${opts}</select></label>`;
-    }
-    return `<label class="plugin-settings-row"><span>${field.label || key}</span><input type="text" name="${key}" value="${val !== undefined && val !== null ? String(val).replace(/"/g, '&quot;') : ''}"></label>`;
-  }).join('');
-  wrap.innerHTML = `<div class="plugin-settings-sheet"><h3>${pluginData.manifest.name}</h3><form id="plugin-settings-form">${rows}</form><div class="plugin-settings-actions"><button type="button" id="plugin-settings-cancel">${t.cancel || 'Cancel'}</button><button type="button" id="plugin-settings-save">${t.save || 'Save'}</button></div></div>`;
+    form.appendChild(row);
+  }
+
+  body.appendChild(form);
+
+  const footer = document.createElement('div');
+  footer.className = 'plugin-settings-actions modal-footer';
+  const btnCancel = document.createElement('button');
+  btnCancel.type = 'button';
+  btnCancel.className = 'btn-secondary';
+  btnCancel.id = 'plugin-settings-cancel';
+  btnCancel.textContent = t.cancel || 'Cancel';
+  const btnSave = document.createElement('button');
+  btnSave.type = 'button';
+  btnSave.className = 'btn-primary';
+  btnSave.id = 'plugin-settings-save';
+  btnSave.textContent = t.save || 'Save';
+  footer.appendChild(btnCancel);
+  footer.appendChild(btnSave);
+
+  sheet.appendChild(header);
+  sheet.appendChild(body);
+  sheet.appendChild(footer);
+  wrap.appendChild(sheet);
   document.body.appendChild(wrap);
+
   const close = () => wrap.remove();
-  wrap.querySelector('#plugin-settings-cancel')?.addEventListener('click', close);
-  wrap.querySelector('#plugin-settings-save')?.addEventListener('click', async () => {
-    const form = wrap.querySelector('#plugin-settings-form');
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap) {
+      close();
+    }
+  });
+  header.querySelector('.modal-close')?.addEventListener('click', close);
+  btnCancel.addEventListener('click', close);
+  btnSave.addEventListener('click', async () => {
     const next = {};
     fields.forEach((field) => {
       const el = form.querySelector(`[name="${field.key}"]`);
@@ -441,9 +415,10 @@ window.openPluginSettings = async (pluginId) => {
     await storage.set(prefix + 'settings', next);
     close();
     showNotification('', t.pluginSettingsSaved || 'Plugin settings saved');
-    if (pluginData.instance?.onEnable) {
+    if (pluginData.sandbox) {
       try {
-        await pluginData.instance.onEnable();
+        await pluginData.sandbox.runLifecycle('onDisable');
+        await pluginData.sandbox.runLifecycle('onEnable');
       } catch {
         void 0;
       }

@@ -222,7 +222,15 @@ a:hover { color: var(--accent-blue-hover); }
     max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;
 }
 .header-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-.header-actions { display: flex; align-items: center; gap: 16px; }
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: min(58vw, 720px);
+    scrollbar-width: thin;
+}
 
 .calendar-nav .calendar-back {
     color: var(--accent-blue); text-decoration: none; font-size: 14px; font-weight: 500;
@@ -2646,60 +2654,41 @@ body.with-ambient-bg > [id^="bg-"] {
     opacity: 0.62;
 }
 
-.plugin-card-settings {
-    border-top: 1px solid var(--border-light);
-    padding: 12px 18px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: var(--bg-primary);
-}
-
-.plugin-setting-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--text-primary);
-}
-
-.plugin-setting-row span {
-    flex: 1;
-    min-width: 0;
-}
-
-.plugin-setting-row select,
-.plugin-setting-row input[type="text"] {
-    min-width: 140px;
-    max-width: 52%;
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px solid var(--border-light);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 13px;
-}
-
 .plugin-enable-switch {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-left: 4px;
-    cursor: pointer;
+    display: inline-block;
+    flex-shrink: 0;
+    margin-left: 2px;
 }
 
 .plugin-enable-switch.toggle-switch {
     width: 51px;
     height: 31px;
-    flex-shrink: 0;
 }
 
 .plugin-enable-switch.toggle-switch input:checked + .toggle-slider {
     background: var(--accent-pink);
+}
+
+.garden-plugin-widget {
+    display: contents;
+}
+
+.garden-plugin-widget .habit-card,
+.habit-card.garden-plugin-card {
+    min-height: 100%;
+    height: 100%;
+}
+
+.habit-card.garden-plugin-card--quote .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    font-style: italic;
+    line-height: 1.45;
+}
+
+.habit-card.garden-plugin-card--quote .card-subtitle {
+    font-size: 12px;
+    color: var(--text-tertiary);
 }
 
 .plugin-icon {
@@ -2913,6 +2902,10 @@ body.with-ambient-bg > [id^="bg-"] {
 
 .header-plugin-label {
     font-variant-numeric: tabular-nums;
+    max-width: 88px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2929,33 +2922,51 @@ body.with-ambient-bg > [id^="bg-"] {
 .plugin-settings-modal {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: 12000;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 20px;
     background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .plugin-settings-sheet {
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    padding: 24px;
-    width: min(420px, 92vw);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    width: min(460px, 94vw);
+    max-height: 86vh;
+    overflow: auto;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    box-shadow: var(--shadow-xl);
+}
+
+.plugin-settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .plugin-settings-row {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.plugin-settings-label {
+    font-size: 14px;
+    color: var(--text-primary);
+    flex: 1;
 }
 
 .plugin-settings-actions {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    margin-top: 16px;
+    padding: 14px 18px 18px;
+    border-top: 1px solid var(--border-light);
 }
 
 .habit-templates {

@@ -72,7 +72,8 @@ function buildSandboxBootstrapDocument(pluginId) {
         read: function (name) { return rpc('data.read', [name]); }
       },
       app: {
-        getLocale: function () { return rpc('app.getLocale', []); }
+        getLocale: function () { return rpc('app.getLocale', []); },
+        getThemeColor: function (name) { return rpc('app.getThemeColor', [name]); }
       },
       ui: {
         registerHeaderItem: function (config) {
