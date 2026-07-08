@@ -62,7 +62,7 @@ function createMainWindow({
   const mainWindow = new BrowserWindow({
     width: 1100,
     height: 800,
-    title: `${pkg.productName || pkg.name} v${pkg.version}`,
+    title: `${pkg.productName || pkg.name}`,
     minWidth: 360,
     minHeight: 600,
     webPreferences: {
@@ -74,7 +74,22 @@ function createMainWindow({
     },
     icon: resolveAppIconPath(),
     backgroundColor: '#1c1c1e',
-    show: false
+    show: false,
+    ...(process.platform === 'darwin'
+      ? {
+        titleBarStyle: 'hiddenInset',
+        trafficLightPosition: { x: 14, y: 12 }
+      }
+      : process.platform === 'win32'
+        ? {
+          titleBarStyle: 'hidden',
+          titleBarOverlay: {
+            color: '#1c1c1e',
+            symbolColor: '#f5f5f7',
+            height: 32
+          }
+        }
+        : {})
   });
 
   setMainWindow(mainWindow);

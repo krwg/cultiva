@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cultiva - Grow your habits, grow yourself">
-    <title>Home | Cultiva</title>
+    <title>Cultiva | Garden</title>
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon.ico">
 </head>
@@ -54,7 +54,7 @@
 
                         <div class="dropdown-section" id="auth-section">
                             <button class="dropdown-item primary" id="auth-trigger">
-                                <span>Sign In</span>
+                                <span data-i18n="signIn">Sign In</span>
                             </button>
                             <button class="dropdown-item danger" id="sign-out-btn" style="display:none;">
                                 <span>Sign Out</span>
@@ -802,8 +802,8 @@
                             <div class="update-status-card" id="update-status-card">
                                 <div class="status-icon" id="update-status-icon">✓</div>
                                 <div class="status-info">
-                                    <div class="status-title" id="update-status-title">Up to date</div>
-                                    <div class="status-message" id="update-status-message">You have the latest version</div>
+                                    <div class="status-title" id="update-status-title" data-i18n="updatesUpToDate">Up to date</div>
+                                    <div class="status-message" id="update-status-message" data-i18n="updatesLatestMessage">You have the latest version</div>
                                 </div>
                             </div>
 
@@ -829,7 +829,7 @@
                                     <a href="#" id="view-releases-link" class="release-link" data-i18n="viewOnGitHub">View on GitHub →</a>
                                 </div>
                                 <div class="release-info" id="release-info">
-                                    <div class="release-loading">Loading release info...</div>
+                                    <div class="release-loading" data-i18n="updatesLoadingRelease">Loading release info...</div>
                                 </div>
                             </div>
                         </div>
@@ -912,7 +912,7 @@
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width:520px;">
             <div class="modal-header">
-                <h2>Customize Avatar</h2>
+                <h2 data-i18n="avatarCustomize">Customize Avatar</h2>
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
@@ -921,26 +921,26 @@
             <span class="avatar-emoji-large" id="preview-emoji">🌱</span>
             <img id="preview-image" style="display:none;">
         </div>
-        <p class="preview-label">Preview</p>
+        <p class="preview-label" data-i18n="preview">Preview</p>
     </div>
 
     <div class="avatar-upload-actions">
-        <label class="btn-upload" for="avatar-upload">Upload Photo<input type="file" id="avatar-upload" accept="image/*" style="display:none;"></label>
-        <button class="btn-upload btn-upload-danger" id="avatar-clear-photo" style="display:none;">Remove</button>
+        <label class="btn-upload" for="avatar-upload"><span data-i18n="avatarUpload">Upload Photo</span><input type="file" id="avatar-upload" accept="image/*" style="display:none;"></label>
+        <button class="btn-upload btn-upload-danger" id="avatar-clear-photo" style="display:none;" data-i18n="remove">Remove</button>
     </div>
 
     <div class="avatar-section">
-        <h4 class="avatar-section-title">Background</h4>
+        <h4 class="avatar-section-title" data-i18n="background">Background</h4>
         <div class="avatar-grid" id="avatar-bg-grid"></div>
     </div>
     <div class="avatar-section">
-        <h4 class="avatar-section-title">Icon</h4>
+        <h4 class="avatar-section-title" data-i18n="icon">Icon</h4>
         <div class="avatar-grid" id="avatar-emoji-grid"></div>
     </div>
 
     <div class="avatar-modal-actions">
-        <button class="btn-secondary" id="avatar-reset">Reset</button>
-        <button class="btn-primary" id="avatar-save">Save Avatar</button>
+        <button class="btn-secondary" id="avatar-reset" data-i18n="reset">Reset</button>
+        <button class="btn-primary" id="avatar-save" data-i18n="saveAvatar">Save Avatar</button>
     </div>
 </div>
         </div>
@@ -950,13 +950,13 @@
         <div class="modal-overlay"></div>
         <div class="modal-sheet" style="max-width:420px;">
             <div class="modal-header">
-                <h2 id="auth-modal-title">Sign In</h2>
+                <h2 id="auth-modal-title" data-i18n="signIn">Sign In</h2>
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="auth-tabs">
-                    <button class="auth-tab active" data-tab="login">Sign In</button>
-                    <button class="auth-tab" data-tab="register">Sign Up</button>
+                    <button class="auth-tab active" data-tab="login" data-i18n="signIn">Sign In</button>
+                    <button class="auth-tab" data-tab="register" data-i18n="signUp">Sign Up</button>
                 </div>
                 <form id="login-form" class="auth-form active">
                     <div class="form-group">
@@ -964,10 +964,10 @@
                         <input type="email" id="login-email" required placeholder="you@example.com">
                     </div>
                     <div class="form-group">
-                        <label for="login-password">Password</label>
+                        <label for="login-password" data-i18n="password">Password</label>
                         <input type="password" id="login-password" required placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn-primary">Continue</button>
+                    <button type="submit" class="btn-primary" data-i18n="continue">Continue</button>
                 </form>
                 <form id="register-form" class="auth-form">
                     <div class="form-group">
@@ -975,18 +975,18 @@
                         <input type="text" id="reg-name" placeholder="Your name" required>
                     </div>
                     <div class="form-group">
-                        <label for="reg-email">Email</label>
+                        <label for="reg-email" data-i18n="email">Email</label>
                         <input type="email" id="reg-email" required placeholder="you@example.com">
                     </div>
                     <div class="form-group">
-                        <label for="reg-password">Password</label>
+                        <label for="reg-password" data-i18n="password">Password</label>
                         <input type="password" id="reg-password" required placeholder="Min 6 characters" minlength="6">
                     </div>
                     <div class="form-group">
-                        <label for="reg-dob">Date of Birth (Optional)</label>
+                        <label for="reg-dob" data-i18n="dateOfBirthOptional">Date of Birth (Optional)</label>
                         <input type="date" id="reg-dob">
                     </div>
-                    <button type="submit" class="btn-primary">Create Account</button>
+                    <button type="submit" class="btn-primary" data-i18n="createAccount">Create Account</button>
                 </form>
                 <p id="auth-error" class="auth-error" style="display:none;"></p>
             </div>
