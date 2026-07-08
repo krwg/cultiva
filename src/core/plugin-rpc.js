@@ -1,4 +1,4 @@
-export const PLUGIN_RPC_METHODS = new Set(['storage.get', 'storage.set', 'ui.showNotification']);
+export const PLUGIN_RPC_METHODS = new Set(['storage.get', 'storage.set', 'ui.showNotification', 'data.read']);
 
 export function isAllowedPluginRpcMethod(method) {
   return PLUGIN_RPC_METHODS.has(method);

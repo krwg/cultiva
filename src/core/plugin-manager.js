@@ -4,7 +4,7 @@ import { PluginSandboxHost } from './plugin-sandbox-host.js';
 import { pluginHasPermission } from './plugin-rpc.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
 
-const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/CultivaPlugins/main/registry.json';
+const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
 
 function stripUtf8Bom(s) {
   return String(s ?? '').replace(/^\uFEFF/, '');
@@ -272,6 +272,24 @@ function _wireSandboxHost(host, pluginId, manifest) {
         throw new Error('UI permission denied');
       }
     }
+    if (method === 'data.read') {
+      const rel = String(args[0] || '').replace(/^[/\\]+/, '');
+      const allowed = Array.isArray(manifest.data)
+        ? manifest.data.map((d) => String(d).replace(/^[/\\]+/, ''))
+        : [];
+      if (!allowed.includes(rel)) {
+        throw new Error(`Data file not allowed: ${rel}`);
+      }
+      const raw = await window.electron.readPluginFile(`${pluginId}/${rel}`);
+      if (raw == null || raw === '') {
+        throw new Error(`Data file missing: ${rel}`);
+      }
+      const text = stripUtf8Bom(raw).trim();
+      if (rel.endsWith('.json')) {
+        return JSON.parse(text);
+      }
+      return text;
+    }
     if (method === 'storage.get') {
       return storage.get(prefix + args[0]);
     }
@@ -279,7 +297,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
       return storage.set(prefix + args[0], args[1]);
     }
     if (method === 'ui.showNotification') {
-      const icon = args[0] ?? '🔌';
+      const icon = args[0] ?? '';
       const text = args[1] ?? '';
       if (typeof window.showNotification === 'function') {
         window.showNotification(icon, text);
@@ -616,7 +634,7 @@ export const pluginManager = {
     plugin.headerItem = {
       id: `${pluginId}-header`,
       label: typeof data.label === 'string' ? data.label : plugin.manifest.name,
-      icon: typeof data.icon === 'string' ? data.icon : (plugin.manifest.icon || '🔌'),
+      icon: typeof data.icon === 'string' ? data.icon : (plugin.manifest.icon || ''),
       labelColor: undefined,
       instance,
       modalMethod,
@@ -830,7 +848,7 @@ export const pluginManager = {
       let name = id;
       let version = '';
       let description = '';
-      let icon = '⚠️';
+      let icon = '';
       if (window.electron?.readPluginFile) {
         try {
           const mj = await window.electron.readPluginFile(`${id}/manifest.json`);
@@ -839,7 +857,7 @@ export const pluginManager = {
             name = m.name || id;
             version = m.version || '';
             description = m.description || '';
-            icon = m.icon || '🔌';
+            icon = m.icon || '';
           }
         } catch (e) {
           console.warn('[PluginManager] Could not read manifest for', id, e);
