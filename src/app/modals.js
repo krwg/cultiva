@@ -94,6 +94,10 @@ export function openModal(modal) {
   installFocusTrap(modal);
 }
 
+export function isModalOpen(modal) {
+  return Boolean(modal?.classList.contains('active'));
+}
+
 export function closeModal(modal) {
   if (!modal) {
     return;
@@ -108,6 +112,17 @@ export function closeModal(modal) {
   if (activeModal === modal) {
     releaseFocusTrap();
   }
+}
+
+/** Close the topmost open modal from the given list (first match wins). */
+export function closeTopModal(modals) {
+  for (const modal of modals) {
+    if (isModalOpen(modal)) {
+      closeModal(modal);
+      return true;
+    }
+  }
+  return false;
 }
 
 export function completeQuantityLogWithValue(parsed) {
