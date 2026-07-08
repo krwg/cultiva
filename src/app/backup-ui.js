@@ -100,12 +100,14 @@ function confirmImport() {
     closeModal(document.getElementById('import-preview-modal'));
     return;
   }
-  storage.saveHabits(pendingImport.habits);
-  pendingImport = null;
-  closeModal(document.getElementById('import-preview-modal'));
-  renderGarden();
-  showNotification(t.imported);
-  runAutoBackup(true);
+  void (async () => {
+    await storage.saveHabits(pendingImport.habits);
+    pendingImport = null;
+    closeModal(document.getElementById('import-preview-modal'));
+    renderGarden();
+    showNotification(t.imported);
+    await runAutoBackup(true);
+  })();
 }
 
 export function importData(file) {
@@ -165,9 +167,10 @@ export function bindBackupUiEvents() {
       tone: 'danger'
     });
     if (secondConfirm) {
-      storage.saveHabits([]);
+      await storage.saveHabits([]);
       renderGarden();
       showNotification(t.resetDone);
+      await runAutoBackup(true);
     }
   });
 }

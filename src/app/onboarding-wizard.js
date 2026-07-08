@@ -118,7 +118,7 @@ async function nextStep() {
     const name = el('onboarding-habit-name')?.value?.trim();
     if (name) {
       try {
-        habits.add({ name, trackType: 'binary', category: 'other' });
+        await habits.add({ name, trackType: 'binary', category: 'other' });
       } catch {
         void 0;
       }

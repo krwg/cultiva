@@ -213,7 +213,7 @@ export function bindGardenCardEvents() {
         tone: 'danger'
       });
       if (shouldRemove) {
-        habits.remove(id);
+        await habits.remove(id);
         renderGarden();
         showNotification(TRANSLATIONS[c.settings.lang].removed);
       }
