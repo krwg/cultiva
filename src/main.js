@@ -116,7 +116,7 @@ trophyToggle?.addEventListener('change', (e) => { settings.showTrophies = e.targ
 focusToggle?.addEventListener('change', (e) => { settings.focusMode = e.target.checked; saveSettings(); });
 document.getElementById('toggle-streak-grace')?.addEventListener('change', (e) => {
   settings.streakGraceEnabled = e.target.checked;
-  habits.recalculateAllStreaks();
+  void habits.recalculateAllStreaks();
   saveSettings();
 });
 
@@ -1049,21 +1049,26 @@ function initEvents() {
     const name = document.getElementById('habit-name')?.value.trim();
     if (!name) { return; }
     const trackType = document.querySelector('input[name="track-type"]:checked')?.value === 'quantity' ? 'quantity' : 'binary';
-    try {
-      habits.add({
-        name,
-        description: document.getElementById('habit-desc')?.value.trim() || '',
-        category: document.getElementById('habit-category')?.value || '',
-        trackType,
-        target: trackType === 'quantity' ? parseInt(document.getElementById('habit-target')?.value) || 1 : 1,
-        unit: trackType === 'quantity' ? document.getElementById('habit-unit')?.value.trim() || '' : ''
-      });
-      habitForm.reset();
-      if (targetContainer) { targetContainer.classList.remove('visible'); }
-      document.querySelector('input[name="track-type"][value="binary"]').checked = true;
-      closeModal(addModal); renderGarden();
-      showNotification(TRANSLATIONS[settings.lang].habitPlanted);
-    } catch (err) { showAlertDialog(err.message, { title: 'Habit' }); }
+    void (async () => {
+      try {
+        await habits.add({
+          name,
+          description: document.getElementById('habit-desc')?.value.trim() || '',
+          category: document.getElementById('habit-category')?.value || '',
+          trackType,
+          target: trackType === 'quantity' ? parseInt(document.getElementById('habit-target')?.value) || 1 : 1,
+          unit: trackType === 'quantity' ? document.getElementById('habit-unit')?.value.trim() || '' : ''
+        });
+        habitForm.reset();
+        if (targetContainer) { targetContainer.classList.remove('visible'); }
+        document.querySelector('input[name="track-type"][value="binary"]').checked = true;
+        closeModal(addModal);
+        renderGarden();
+        showNotification(TRANSLATIONS[settings.lang].habitPlanted);
+      } catch (err) {
+        showNotification(err.message || 'Could not add habit');
+      }
+    })();
   });
 
   bindGardenCardEvents();
@@ -1405,7 +1410,7 @@ async function init() {
           tone: 'danger'
         });
         if (shouldRemove) {
-          habits.remove(id);
+          await habits.remove(id);
           renderGarden();
           showNotification(t.removed);
         }

@@ -14,7 +14,7 @@ const store = { habits: [] };
 vi.mock('./storage.js', () => ({
   storage: {
     getHabits: () => store.habits,
-    saveHabits: (list) => { store.habits = list; },
+    saveHabits: async (list) => { store.habits = list; },
     getCurrentUserId: () => null
   }
 }));
@@ -47,12 +47,12 @@ describe('habits', () => {
 
   it('toggles binary completion for today', async () => {
     const { habits } = await import('./habits.js');
-    const h = habits.add({ name: 'Meditate', trackType: 'binary' });
-    habits.toggle(h.id);
+    const h = await habits.add({ name: 'Meditate', trackType: 'binary' });
+    await habits.toggle(h.id);
     const done = habits.getAll().find((x) => x.id === h.id);
     expect(done.lastCompleted).toBe('2026-05-30');
     expect(done.progress).toBe(1);
-    habits.toggle(h.id);
+    await habits.toggle(h.id);
     const undone = habits.getAll().find((x) => x.id === h.id);
     expect(undone.lastCompleted).toBeNull();
     expect(undone.progress).toBe(0);
@@ -60,12 +60,12 @@ describe('habits', () => {
 
   it('increments quantity habits until target is met', async () => {
     const { habits } = await import('./habits.js');
-    const h = habits.add({ name: 'Water', trackType: 'quantity', target: 2 });
-    habits.toggle(h.id);
+    const h = await habits.add({ name: 'Water', trackType: 'quantity', target: 2 });
+    await habits.toggle(h.id);
     let cur = habits.getAll().find((x) => x.id === h.id);
     expect(cur.dailyProgress['2026-05-30']).toBe(1);
     expect(cur.progress).toBe(0);
-    habits.toggle(h.id);
+    await habits.toggle(h.id);
     cur = habits.getAll().find((x) => x.id === h.id);
     expect(cur.dailyProgress['2026-05-30']).toBe(2);
     expect(cur.progress).toBe(1);
@@ -76,13 +76,13 @@ describe('habits', () => {
       'cultiva-settings': JSON.stringify({ streakGraceEnabled: true })
     }));
     const { habits } = await import('./habits.js');
-    const h = habits.add({ name: 'Read', trackType: 'binary' });
+    const h = await habits.add({ name: 'Read', trackType: 'binary' });
     vi.setSystemTime(new Date('2026-05-28T12:00:00.000Z'));
-    habits.toggle(h.id);
+    await habits.toggle(h.id);
     vi.setSystemTime(new Date('2026-05-29T12:00:00.000Z'));
-    habits.toggle(h.id);
+    await habits.toggle(h.id);
     vi.setSystemTime(new Date('2026-05-31T12:00:00.000Z'));
-    habits.toggle(h.id);
+    await habits.toggle(h.id);
     const bridged = habits.getAll().find((x) => x.id === h.id);
     expect(bridged.currentStreak).toBe(3);
     expect(bridged.bestStreak).toBe(3);
@@ -93,11 +93,11 @@ describe('habits', () => {
       'cultiva-settings': JSON.stringify({ streakGraceEnabled: true })
     }));
     const { habits } = await import('./habits.js');
-    const h = habits.add({ name: 'Run', trackType: 'binary' });
+    const h = await habits.add({ name: 'Run', trackType: 'binary' });
     vi.setSystemTime(new Date('2026-05-28T12:00:00.000Z'));
-    habits.toggle(h.id);
+    await habits.toggle(h.id);
     vi.setSystemTime(new Date('2026-05-31T12:00:00.000Z'));
-    habits.toggle(h.id);
+    await habits.toggle(h.id);
     const broken = habits.getAll().find((x) => x.id === h.id);
     expect(broken.currentStreak).toBe(1);
     expect(broken.bestStreak).toBe(1);

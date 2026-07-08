@@ -1,6 +1,7 @@
 import { db } from './db.js';
 
 const SESSION_KEY = 'cultiva_current_session';
+const HABITS_IDB_MIGRATION_KEY = 'cultiva-habits-idb-migrated';
 
 let _habitsCache = [];
 let _settingsCache = {};
@@ -182,14 +183,25 @@ export const storage = {
       await this._forceSaveHabits(_habitsCache);
     }
 
-    const localHabits = localStorage.getItem('cultiva-habits');
-    if (localHabits && _habitsCache.length === 0) {
+    if (!localStorage.getItem(HABITS_IDB_MIGRATION_KEY)) {
       try {
-        const parsed = JSON.parse(localHabits);
-        _habitsCache = parsed.map(migrateHabit);
-        await this._forceSaveHabits(_habitsCache);
+        const allInDb = await db.getAll('habits');
+        const localHabits = localStorage.getItem('cultiva-habits');
+        if (allInDb.length === 0 && localHabits && _habitsCache.length === 0) {
+          const parsed = JSON.parse(localHabits);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            _habitsCache = parsed.map(migrateHabit);
+            await this._forceSaveHabits(_habitsCache);
+            console.log('[Storage] One-time migration: restored', _habitsCache.length, 'habits from localStorage');
+          }
+        }
       } catch (e) {
-        console.error('[Storage] Failed to restore habits from localStorage:', e);
+        console.error('[Storage] One-time habits migration failed:', e);
+      }
+      try {
+        localStorage.setItem(HABITS_IDB_MIGRATION_KEY, '1');
+      } catch {
+        void 0;
       }
     }
 
@@ -224,8 +236,10 @@ export const storage = {
 
       console.log('[Storage] Loaded', _habitsCache.length, 'habits for user:', _currentUserId || 'guest');
 
-      if (_habitsCache.length > 0) {
+      try {
         localStorage.setItem('cultiva-habits', JSON.stringify(_habitsCache));
+      } catch (e) {
+        console.warn('[Storage] Could not mirror habits to localStorage:', e);
       }
     } catch (e) {
       console.error('[Storage] Failed to load from IndexedDB:', e);

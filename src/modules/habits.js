@@ -48,6 +48,10 @@ export const habits = {
   },
 
   add(data) {
+    return this._add(data);
+  },
+
+  async _add(data) {
     const allHabits = this.getAll();
     const active = allHabits.filter(h => h.progress < LEGACY_THRESHOLD);
     if (active.length >= MAX_ACTIVE_HABITS) {
@@ -80,11 +84,15 @@ export const habits = {
     };
 
     allHabits.push(newHabit);
-    storage.saveHabits(allHabits);
+    await storage.saveHabits(allHabits);
     return newHabit;
   },
 
   toggle(id, amount = null) {
+    return this._toggle(id, amount);
+  },
+
+  async _toggle(id, amount = null) {
     const allHabits = this.getAll();
     const habit = allHabits.find(h => h.id === id);
     if (!habit) {return null;}
@@ -135,7 +143,7 @@ export const habits = {
       this._recalculateStreaks(habit);
     }
 
-    storage.saveHabits(allHabits);
+    await storage.saveHabits(allHabits);
     return { habit, justCompleted };
   },
 
@@ -215,14 +223,22 @@ export const habits = {
   },
 
   recalculateAllStreaks() {
+    return this._recalculateAllStreaks();
+  },
+
+  async _recalculateAllStreaks() {
     const allHabits = this.getAll();
     allHabits.forEach((h) => this._recalculateStreaks(h));
-    storage.saveHabits(allHabits);
+    await storage.saveHabits(allHabits);
   },
 
   remove(id) {
+    return this._remove(id);
+  },
+
+  async _remove(id) {
     const allHabits = this.getAll().filter(h => h.id !== id);
-    storage.saveHabits(allHabits);
+    await storage.saveHabits(allHabits);
   },
 
   getStage(progress) {
