@@ -211,11 +211,18 @@ a:hover { color: var(--accent-blue-hover); }
 .platform-win32 .header-brand,
 .platform-win32 .header-brand a,
 .platform-win32 .user-menu,
+.platform-win32 .user-btn,
+.platform-win32 .user-dropdown,
 .platform-win32 .habit-search-wrap,
+.platform-win32 .habit-search-input,
 .platform-win32 .header-link,
 .platform-win32 .add-btn,
 .platform-win32 .btn-calendar,
-.platform-win32 .header-plugin-item {
+.platform-win32 .header-plugin-item,
+.platform-win32 .calendar-back,
+.platform-win32 .calendar-controls,
+.platform-win32 .calendar-controls button,
+.platform-win32 .calendar-title {
     -webkit-app-region: no-drag;
 }
 .header-content, .calendar-container.calendar-nav {
