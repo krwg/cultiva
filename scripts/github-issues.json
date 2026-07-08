@@ -1,0 +1,179 @@
+{
+  "repo": "krwg/cultiva",
+  "issues": [
+    {
+      "action": "close",
+      "title": "fix: closeTopModal checks .open instead of .active — Escape broken",
+      "labels": ["bug", "1.7"],
+      "commit": "a5108de413bac9635295664275b3214ddc0155f7",
+      "body": "## Problem\n\n`closeTopModal` in `main.js` checked `classList.contains('open')` but modals use `.active` (`modals.js`). Escape never closed add/stats/settings/quantity-log modals.\n\n## Expected\n\nEscape closes the topmost open modal.\n\n## Scope\n\n- `src/app/modals.js` — add `isModalOpen()` / `closeTopModal()`\n- `src/main.js` — wire hotkeys",
+      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/a5108de413bac9635295664275b3214ddc0155f7\n\nAdded `isModalOpen()` and `closeTopModal()` helpers; hotkeys now check `.active`."
+    },
+    {
+      "action": "close",
+      "title": "perf: renderGarden full innerHTML rebuild on every habit toggle",
+      "labels": ["performance", "1.7"],
+      "commit": "5a0a687840c2bdadfcdd5f12256ddfbdb2e31d84",
+      "body": "## Problem\n\n`renderGarden()` cleared `gardenEl.innerHTML` and rebuilt all cards on every completion, causing layout jank with many habits.\n\n## Proposal\n\nIncremental DOM sync keyed by habit id + render fingerprint.",
+      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/5a0a687840c2bdadfcdd5f12256ddfbdb2e31d84\n\n`syncHabitCards()` patches cards in place using a `renderKey` fingerprint."
+    },
+    {
+      "action": "close",
+      "title": "perf: defer Discord, updates, onboarding, and lazy-load settings modules",
+      "labels": ["performance", "1.7"],
+      "commit": "46691a6ea9d3917f37aac3e7fd66dfd4d06051c9",
+      "body": "## Problem\n\n`main.js` eagerly initialized Discord RPC polling, updates UI, onboarding wizard, and static-imported heavy settings modules on every cold start.\n\n## Proposal\n\n- Extract `updates-ui.js` and `discord-settings.js`\n- Dynamic `import()` for plugins catalog, stats dashboard, onboarding\n- `requestIdleCallback` for Discord warmup and onboarding",
+      "closeBody": "Fixed in https://github.com/krwg/cultiva/commit/46691a6ea9d3917f37aac3e7fd66dfd4d06051c9"
+    },
+    {
+      "action": "open",
+      "title": "build: add macOS (dmg, zip) and Linux (AppImage, deb) electron-builder targets",
+      "labels": ["enhancement", "1.7", "platform"],
+      "body": "## Context\n\nCHANGELOG 1.7 claims macOS/Linux targets but `package.json` build config and CI only produce Windows artifacts.\n\n## Tasks\n\n- [ ] Add `mac` and `linux` sections to electron-builder config\n- [ ] Extend `.github/workflows/release.yml` matrix\n- [ ] Update README platform badge and download table\n- [ ] Test signed/unsigned builds per platform"
+    },
+    {
+      "action": "open",
+      "title": "bug: auth password change UI does not hash password in updateProfile",
+      "labels": ["bug", "auth", "1.7"],
+      "body": "## Problem\n\nEdit profile collects `password` but `auth.updateProfile` merges raw fields without hashing. Email migration on change also absent.\n\n## Options\n\n1. Implement `changePassword()` with proper hashing\n2. Remove password field from UI and document local-only profile scope\n\n## Files\n\n- `src/modules/auth.js`\n- `src/main.js` (profile form)"
+    },
+    {
+      "action": "open",
+      "title": "bug: seven keyboard shortcuts listed in Settings are not wired",
+      "labels": ["bug", "accessibility", "1.7"],
+      "body": "## Problem\n\nSettings → Shortcuts lists calendar navigation, focus mode toggle, and garden reload bindings that are not implemented in `hotkeys.js` or `calendar.js`.\n\n## Tasks\n\n- [ ] Implement shortcuts OR remove from Settings UI\n- [ ] Remove stale `shortcutsSectionDesc` i18n key\n- [ ] Align help dialog with active bindings"
+    },
+    {
+      "action": "open",
+      "title": "docs: align README, CHANGELOG, and release.yml with Electron 40 / Vite 6 / 1.7 Linden",
+      "labels": ["documentation", "1.7"],
+      "body": "## Drift\n\n- README tech stack: Electron 30, Vite 5\n- README release notes link: 1.1.0 Cypress\n- Footer vs CHANGELOG owner naming (FlokeStudio vs krwg)\n\n## Tasks\n\n- [ ] Update README tech stack and plugin catalog (6 plugins)\n- [ ] Add 1.7 Linden release notes\n- [ ] Point release workflow body_path to 1.7 notes"
+    },
+    {
+      "action": "open",
+      "title": "docs: update PLUGIN_AUTHOR_GUIDE and cultiva-plugin.d.ts for 1.7 API",
+      "labels": ["documentation", "plugins", "1.7"],
+      "body": "## Missing from public types/docs\n\n- `context.ui.patchMainSheet`\n- `context.app.getLocale` / `getThemeColor`\n- `manifest.settings` contract\n- RPC allowlist: `data.read`, `app.*`\n\n## Tasks\n\n- [ ] Refresh PLUGIN_AUTHOR_GUIDE.md (minAppVersion 1.7.0)\n- [ ] Extend cultiva-plugin.d.ts\n- [ ] Sync wiki Cultiva-Plugins-Guide.md"
+    },
+    {
+      "action": "open",
+      "title": "security: document sandbox unsafe-eval and postMessage targetOrigin in SECURITY.md",
+      "labels": ["security", "documentation"],
+      "body": "## Context\n\nPlugin sandbox uses `unsafe-eval` (required for `new Function`) and `postMessage(..., '*')` in `plugin-sandbox-host.js`.\n\n## Tasks\n\n- [ ] Add SECURITY.md section on sandbox threat model\n- [ ] Evaluate narrowing postMessage origin where feasible\n- [ ] Cross-link PLUGIN_AUTHOR_GUIDE permissions"
+    },
+    {
+      "action": "open",
+      "title": "plugins: plugin settings save should fire onSettingsChange hook",
+      "labels": ["plugins", "bug"],
+      "body": "## Problem\n\nSaving manifest-driven plugin settings via `plugins-ui.js` writes storage and reloads lifecycle but bypasses `saveSettings()` → `onSettingsChange` hook path.\n\n## Expected\n\nPlugins receive locale/theme changes without disable/re-enable."
+    },
+    {
+      "action": "open",
+      "title": "a11y: plugin settings modal focus trap and calendar aria-label i18n",
+      "labels": ["accessibility", "1.7"],
+      "body": "## Gaps\n\n- Plugin settings modal (dynamic) lacks `installFocusTrap()`\n- Calendar header controls hard-coded English aria-labels\n- Context menu missing `role=\"menuitem\"` and keyboard nav\n- Habit cards: no roving tabindex / arrow-key navigation\n\n## Reference\n\nPartial 1.7 work: landmarks, main modal focus trap, prefers-reduced-motion"
+    },
+    {
+      "action": "open",
+      "title": "feat: habit schedule (weekdays / N times per week)",
+      "labels": ["enhancement", "habits"],
+      "body": "## Problem\n\nAll habits are treated as daily. No weekday or frequency schedule field in `habits.js`.\n\n## User story\n\nAs a user I want to mark \"Exercise\" only on Mon/Wed/Fri without breaking streak logic."
+    },
+    {
+      "action": "open",
+      "title": "feat: pause or archive habit without delete",
+      "labels": ["enhancement", "habits"],
+      "body": "## Problem\n\nOnly delete via context menu — users lose history when pausing seasonal habits.\n\n## Proposal\n\n- `archived` / `paused` flag on habit\n- Hide from garden by default, preserve stats and calendar data"
+    },
+    {
+      "action": "open",
+      "title": "feat: per-habit native reminders",
+      "labels": ["enhancement", "notifications"],
+      "body": "## Context\n\n`native-notifications.js` supports daily summary and calendar events only — not per-habit reminder times.\n\n## Depends on\n\nOptional schedule feature (#habit-schedule)"
+    },
+    {
+      "action": "open",
+      "title": "feat: undo habit completion",
+      "labels": ["enhancement", "habits", "ux"],
+      "body": "## Problem\n\nAccidental tap on Complete has no undo path.\n\n## Proposal\n\nToast with Undo action or toggle completion when already done today (quantity habits need confirm)."
+    },
+    {
+      "action": "open",
+      "title": "feat: manual habit reorder / drag sort in garden",
+      "labels": ["enhancement", "ux"],
+      "body": "## Context\n\nGarden supports search filter only (`glyph-s-search.js`). No persisted sort order.\n\n## Proposal\n\nDrag handle on habit cards + `sortOrder` field in storage."
+    },
+    {
+      "action": "open",
+      "title": "feat: CSV export for habit completions",
+      "labels": ["enhancement", "backup"],
+      "body": "## Context\n\nExport formats: JSON, ZIP, iCal. Spreadsheet export requested for analysis.\n\n## Proposal\n\nAdd CSV export alongside backup UI; optional plugin using download bridge."
+    },
+    {
+      "action": "open",
+      "title": "plugins: read-only app.getHabits() API for reminder/analytics plugins",
+      "labels": ["plugins", "enhancement"],
+      "body": "## Blocker\n\nPlugins cannot read habit list — blocks habit-reminder, weekly-review, nudge plugins.\n\n## Proposal\n\n- Permission: `habits.read` or scoped read-only namespace\n- Document in cultiva-plugin.d.ts"
+    },
+    {
+      "action": "open",
+      "title": "plugins: calendar page plugin surface",
+      "labels": ["plugins", "enhancement"],
+      "body": "## Problem\n\nCalendar route has zero plugin integration; header/garden only.\n\n## Proposal\n\nShared hooks or widget rail on `/pages/calendar/`."
+    },
+    {
+      "action": "open",
+      "title": "perf: split theme/ambient CSS from main.css for on-demand loading",
+      "labels": ["performance"],
+      "body": "## Context\n\n`src/styles/main.css` is 3k+ lines with all palettes and ambient animations loaded upfront.\n\n## Proposal\n\nExtract per-theme CSS chunks; load active palette only."
+    },
+    {
+      "action": "open",
+      "title": "perf: unload plugin sandboxes when master toggle off",
+      "labels": ["performance", "plugins"],
+      "body": "## Context\n\nOne hidden iframe per enabled plugin (`plugin-sandbox-host.js`). Master toggle disables UI but may retain iframes.\n\n## Proposal\n\nTear down sandbox on disable; lazy recreate on enable."
+    },
+    {
+      "action": "open",
+      "title": "perf: batch IndexedDB writes during burst completions",
+      "labels": ["performance"],
+      "body": "## Context\n\nStorage dual-write syncs on every `set()` — costly during rapid logging.\n\n## Proposal\n\nMicro-batch with requestAnimationFrame or debounce window."
+    },
+    {
+      "action": "open",
+      "title": "chore: remove dead i18n keys and legacy DOM cleanup IDs",
+      "labels": ["chore"],
+      "body": "## Items\n\n- `shortcutsSectionDesc` (superseded by `shortcutsSectionDescActive`)\n- `pluginSettingsComingSoon` (settings UI shipped)\n- `weather-plugin-styles` hard-coded cleanup in plugin-manager\n- `renderHeaderItem` / `renderGardenWidget` dead hook surface"
+    },
+    {
+      "action": "open",
+      "title": "feat: system tray / menu bar quick-complete",
+      "labels": ["enhancement", "desktop"],
+      "body": "## Context\n\nDiscord RPC exists; no tray icon for quick habit log from background.\n\n## Proposal\n\nElectron tray menu with today's habits; optional plugin API `ui.registerTray`."
+    },
+    {
+      "action": "open",
+      "title": "feat: notify user when installed plugin has registry update",
+      "labels": ["enhancement", "plugins"],
+      "body": "## Problem\n\nPlugin updates require manual re-install from registry.\n\n## Proposal\n\nCompare installed manifest version vs registry on app start; toast in Settings → Plugins."
+    },
+    {
+      "action": "open",
+      "title": "test: expand coverage for auth, hotkeys, onboarding, plugin install flow",
+      "labels": ["testing"],
+      "body": "## Gap\n\n8 Vitest files cover habits, storage, plugin RPC, path guards — no renderer integration tests.\n\n## Priority targets\n\n- auth.js password hashing\n- closeTopModal / hotkey wiring\n- plugin install/uninstall E2E (Playwright or manual checklist automation)"
+    },
+    {
+      "action": "open",
+      "title": "bug: quantity log hotkey omits currentValue and locale args",
+      "labels": ["bug"],
+      "body": "## Problem\n\n`main.js` hotkey path calls `openQuantityLogModal(h)` without `currentValue` / `t`; garden click passes both (`garden-controller.js`).\n\n## Fix\n\nPass today progress and `TRANSLATIONS[settings.lang]` from hotkey handler."
+    },
+    {
+      "action": "open",
+      "title": "docs: document GPL app vs MIT plugins license split in CONTRIBUTING",
+      "labels": ["documentation", "legal"],
+      "body": "## Context\n\nApp is GPL-3.0; cultiva-plugins registry is MIT. Authors need clear guidance.\n\n## Tasks\n\n- [ ] CONTRIBUTING.md license section\n- [ ] Plugin submission checklist item"
+    }
+  ]
+}
