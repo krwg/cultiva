@@ -25,7 +25,7 @@
             </div>
             <div class="header-actions" role="navigation" aria-label="Garden actions">
                 <div class="habit-search-wrap">
-                    <input type="search" id="habit-search" class="habit-search-input" data-i18n-placeholder="searchHabitsPlaceholder" data-i18n-tooltip="tooltipSearch" placeholder="Search habits…" autocomplete="off" aria-label="Search habits">
+                    <input type="search" id="habit-search" class="habit-search-input" data-i18n-placeholder="searchHabitsPlaceholder" data-i18n-aria-label="searchHabitsAriaLabel" data-i18n-tooltip="tooltipSearch" placeholder="Search habits…" autocomplete="off" aria-label="Search habits">
                 </div>
                 <a href="./pages/calendar/index.html" class="header-link" data-i18n="calendar" data-i18n-tooltip="tooltipCalendar">Calendar</a>
                 <button class="add-btn" id="open-add-modal" data-i18n-tooltip="tooltipNewHabit" aria-label="Add new habit">+</button>
@@ -403,6 +403,7 @@
                                         <option value="meadow" data-i18n="themeMeadow">Meadow</option>
                                         <option value="orchard" data-i18n="themeOrchard">Orchard</option>
                                         <option value="honeycrisp" data-i18n="themeHoneycrisp">Honeycrisp</option>
+                                        <option value="linden" data-i18n="themeLinden">Linden</option>
                                         <option value="pink" data-i18n="themePink">Pink</option>
                                     </optgroup>
                                     <optgroup data-i18n-label="themeGroupDark" label="Dark appearance">
@@ -440,6 +441,7 @@
                                     <option value="cypress-drift" data-i18n="backgroundCypressDrift">Cypress Drift</option>
                                     <option value="dew" data-i18n="backgroundDew">Morning Dew</option>
                                     <option value="sunbeam" data-i18n="backgroundSunbeam">Canopy Sunbeam</option>
+                                    <option value="linden-bloom" data-i18n="backgroundLindenBloom">Linden Bloom</option>
                                     <option value="custom" data-i18n="backgroundCustom">My Photo…</option>
                                 </select>
                             </div>
@@ -583,7 +585,7 @@
                                 <span class="setting-desc" data-i18n="timezoneDesc">Fix calendar & habit timestamps</span>
                             </div>
                             <select id="tz-select" class="select-input select-small">
-                                <option value="auto">Auto (System)</option>
+                                <option value="auto" data-i18n="timeFormatAuto">Auto (System)</option>
                                 <option value="UTC">UTC / GMT</option>
                                 <option value="Europe/Moscow">Moscow (UTC+3)</option>
                                 <option value="Europe/London">London (UTC+0)</option>
@@ -613,14 +615,14 @@
                                 <span class="setting-desc" data-i18n="timeFormatDesc">12h or 24h clock</span>
                             </div>
                             <select id="time-format-select" class="select-input select-small">
-                                <option value="auto">Auto (System)</option>
-                                <option value="12h">12h (AM/PM)</option>
-                                <option value="24h">24h</option>
+                                <option value="auto" data-i18n="timeFormatAuto">Auto (System)</option>
+                                <option value="12h" data-i18n="timeFormat12h">12h (AM/PM)</option>
+                                <option value="24h" data-i18n="timeFormat24h">24h</option>
                             </select>
                         </div>
                         <div class="settings-footer-inline">
-                            <span class="cultiva-date-label">Cultiva sees</span>
-                            <span id="cultiva-date-preview" class="cultiva-date-value">Loading...</span>
+                            <span class="cultiva-date-label" data-i18n="cultivaSees">Cultiva sees</span>
+                            <span id="cultiva-date-preview" class="cultiva-date-value" data-i18n="loading">Loading...</span>
                         </div>
                     </div>
 
@@ -1059,6 +1061,7 @@
         <div class="bg-cypress-drift" id="bg-cypress-drift" style="display:none;"></div>
         <div class="bg-dew" id="bg-dew" style="display:none;"></div>
         <div class="bg-sunbeam" id="bg-sunbeam" style="display:none;"></div>
+        <div class="bg-linden-bloom" id="bg-linden-bloom" style="display:none;"></div>
         <div class="bg-custom" id="bg-custom" style="display:none;" aria-hidden="true"></div>
 
     <script type="module" src="main.js"></script>

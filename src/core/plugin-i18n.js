@@ -16,8 +16,8 @@ const PLUGIN_CATALOG = {
     ru: { name: 'Помодоро', description: 'Таймер фокуса с рабочими и короткими перерывами в шапке.' }
   },
   quote: {
-    en: { name: 'Daily Quote', description: 'A fresh motivational quote in the garden each day.' },
-    ru: { name: 'Цитата дня', description: 'Мотивирующая цитата в саду — обновляется каждый день.' }
+    en: { name: 'Daily Quote', description: 'A fresh motivational quote in the garden each day (500 EN quotes).' },
+    ru: { name: 'Цитата дня', description: 'Мотивационная цитата в саду каждый день (500 RU цитат).' }
   },
   streak: {
     en: { name: 'Streak Highlights', description: 'Celebrate habit streak milestones in the garden.' },
