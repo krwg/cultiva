@@ -4,7 +4,7 @@ import './styles/main.css';
 import { BRANDING } from './core/branding.js';
 import { storage } from './modules/storage.js';
 import { habits } from './modules/habits.js';
-import { renderPluginsSection, renderPluginHeaderItems } from './app/plugins-ui.js';
+import { renderPluginHeaderItems } from './app/plugins-ui.js';
 import { initNativeNotificationsScheduler } from './core/native-notifications.js';
 import { getCultivaTimezone } from './core/timezone.js';
 import {
@@ -18,6 +18,8 @@ import {
   configureModals,
   openModal,
   closeModal,
+  closeTopModal as closeTopmostModal,
+  isModalOpen,
   openQuantityLogModal,
   completeQuantityLogWithValue
 } from './app/modals.js';
@@ -34,14 +36,18 @@ import { initContextMenu } from './app/context-menu.js';
 import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
 import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats } from './app/garden-controller.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
-import { renderStatsDashboard } from './app/stats-dashboard-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
 import { initAutoBackup } from './app/auto-backup.js';
-import { bindOnboardingEvents, maybeShowOnboarding } from './app/onboarding-wizard.js';
-import { bindHabitTemplates } from './app/habit-templates-ui.js';
 import { AVATAR_BACKGROUNDS, AVATAR_EMOJIS, DEFAULT_AVATAR } from './core/avatar-presets.js';
 import { showAlertDialog, showConfirmDialog } from './app/dialogs.js';
 import { initTooltipManager } from './app/tooltip-manager.js';
+import { configureUpdatesUi, updateUpdatesSection } from './app/updates-ui.js';
+import {
+  configureDiscordSettings,
+  prepareDiscordSettingsSection,
+  ensureDiscordSettingsInitialized,
+  scheduleDiscordWarmup
+} from './app/discord-settings.js';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
@@ -107,6 +113,16 @@ configureGardenController({
 configureBackupUi({
   get settings() { return settings; }
 });
+
+configureUpdatesUi({
+  getLang: () => settings.lang || currentLang
+});
+
+configureDiscordSettings({
+  getSettings: () => settings
+});
+
+prepareDiscordSettingsSection();
 
 let tempAvatar = { ...settings.avatar };
 
@@ -306,9 +322,16 @@ function initSettingsNavigation() {
       if (targetSection) { targetSection.classList.add('active'); }
 
       if (section === 'profile') { updateProfileSection(); }
-      if (section === 'plugins') { renderPluginsSection(); }
+      if (section === 'plugins') {
+        import('./plugins-ui.js').then((m) => m.renderPluginsSection());
+      }
       if (section === 'notifications') { updateNotificationsDesktopBanner(); }
-      if (section === 'statistics') { renderStatsDashboard(settings.lang); }
+      if (section === 'statistics') {
+        import('./stats-dashboard-ui.js').then((m) => m.renderStatsDashboard(settings.lang));
+      }
+      if (section === 'discord') {
+        ensureDiscordSettingsInitialized();
+      }
     });
   });
 
@@ -644,216 +667,6 @@ function initAvatarPicker() {
   modal.querySelector('.modal-overlay')?.addEventListener('click', () => closeModal(modal));
 }
 
-const updateStatus = {
-  state: 'checking',
-  message: '',
-  progress: 0,
-  version: null
-};
-
-function updateUpdatesSection() {
-  const isElectron = typeof window.electron !== 'undefined';
-
-  const versionDisplay = document.getElementById('current-version-display');
-  const codenameDisplay = document.getElementById('current-codename-display');
-
-  if (versionDisplay) {
-    versionDisplay.textContent = BRANDING?.VERSION || '0.0.0';
-  }
-  if (codenameDisplay) {
-    codenameDisplay.textContent = BRANDING?.CODENAME || 'Sequoia';
-  }
-
-  if (!isElectron) {
-    updateStatusCard('browser', 'Browser mode', 'Updates only available in desktop app');
-    document.getElementById('check-updates-btn')?.setAttribute('disabled', 'disabled');
-    return;
-  }
-
-  if (window.electron.onUpdateMessage) {
-    window.electron.onUpdateMessage((message) => {
-      console.log('[Updater]', message);
-
-      if (message.includes('Checking for updates')) {
-        updateStatusCard('checking', 'Checking...', message);
-      } else if (message.includes('Update') && message.includes('found')) {
-        const versionMatch = message.match(/(\d+\.\d+\.\d+)/);
-        updateStatus.version = versionMatch ? versionMatch[1] : null;
-        updateStatusCard('available', 'Update available', message);
-      } else if (message.includes('Downloading')) {
-        updateStatusCard('downloading', 'Downloading update', message);
-      } else if (message.includes('Download progress')) {
-        const percentMatch = message.match(/Downloaded (\d+)%/);
-        if (percentMatch) {
-          updateStatus.progress = parseInt(percentMatch[1]);
-          updateDownloadProgress(updateStatus.progress, message);
-        }
-      } else if (message.includes('downloaded')) {
-        updateStatusCard('downloaded', 'Update ready', message);
-        document.getElementById('check-updates-btn').innerHTML = `
-                    <span class="btn-icon">🔄</span>
-                    <span>Restart to Update</span>
-                `;
-      } else if (message.includes('latest version')) {
-        updateStatusCard('uptodate', 'Up to date', message);
-      } else if (message.includes('error')) {
-        updateStatusCard('error', 'Update error', message);
-      } else {
-        updateStatusCard('info', 'Update status', message);
-      }
-    });
-  }
-
-  fetchReleaseInfo();
-
-  document.getElementById('check-updates-btn')?.addEventListener('click', () => {
-    if (updateStatus.state === 'downloaded') {
-      window.electron.restartApp?.();
-    } else {
-      window.electron.checkForUpdates?.();
-      updateStatusCard('checking', 'Checking for updates...', 'Contacting GitHub...');
-    }
-  });
-
-  document.getElementById('view-releases-link')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.open('https://github.com/krwg/Cultiva/releases', '_blank');
-  });
-}
-
-function updateStatusCard(state, title, message) {
-  updateStatus.state = state;
-
-  const card = document.getElementById('update-status-card');
-  const icon = document.getElementById('update-status-icon');
-  const titleEl = document.getElementById('update-status-title');
-  const messageEl = document.getElementById('update-status-message');
-
-  if (card) {
-    card.className = 'update-status-card ' + state;
-  }
-
-  if (icon) {
-    const icons = {
-      checking: '',
-      available: '⬇️',
-      downloading: '⬇️',
-      downloaded: '✅',
-      uptodate: '✓',
-      error: '❌',
-      browser: '⌘'
-    };
-    icon.textContent = icons[state] || 'ℹ️';
-  }
-
-  if (titleEl) { titleEl.textContent = title; }
-  if (messageEl) { messageEl.textContent = message; }
-
-  const progressEl = document.getElementById('update-progress');
-  if (progressEl) {
-    progressEl.style.display = state === 'downloading' ? 'block' : 'none';
-  }
-}
-
-function updateDownloadProgress(percent, _message) {
-  const progressBar = document.getElementById('update-progress-bar');
-  const progressText = document.getElementById('update-progress-text');
-
-  if (progressBar) {
-    progressBar.style.width = percent + '%';
-  }
-  if (progressText) {
-    progressText.textContent = `Downloading... ${percent}%`;
-  }
-}
-
-async function fetchReleaseInfo() {
-  const releaseInfo = document.getElementById('release-info');
-  if (!releaseInfo) { return; }
-
-  const cached = localStorage.getItem('cultiva-releases-cache');
-  const cacheTime = localStorage.getItem('cultiva-releases-cache-time');
-
-  if (cached && cacheTime && (Date.now() - parseInt(cacheTime)) < 3600000) {
-    renderReleases(JSON.parse(cached));
-    return;
-  }
-
-  try {
-    const response = await fetch('https://api.github.com/repos/krwg/Cultiva/releases');
-
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    const releases = await response.json();
-
-    if (!Array.isArray(releases) || releases.length === 0) {
-      releaseInfo.innerHTML = '<div class="release-loading">No releases found</div>';
-      return;
-    }
-
-    localStorage.setItem('cultiva-releases-cache', JSON.stringify(releases));
-    localStorage.setItem('cultiva-releases-cache-time', Date.now().toString());
-
-    renderReleases(releases);
-
-  } catch (error) {
-    console.error('Failed to fetch releases:', error);
-
-    if (cached) {
-      renderReleases(JSON.parse(cached));
-      return;
-    }
-
-    releaseInfo.innerHTML = `
-            <div class="release-loading">
-                Failed to load releases<br>
-                <a href="#" onclick="window.open('https://github.com/krwg/Cultiva/releases', '_blank'); return false;" style="color: var(--accent-blue);">
-                    View on GitHub →
-                </a>
-            </div>
-        `;
-  }
-}
-
-function renderReleases(releases) {
-  const releaseInfo = document.getElementById('release-info');
-  if (!releaseInfo) { return; }
-
-  const latestReleases = releases.slice(0, 3);
-
-  releaseInfo.innerHTML = latestReleases.map((release, index) => {
-    const date = new Date(release.published_at).toLocaleDateString(
-      currentLang === 'ru' ? 'ru-RU' : 'en-US',
-      { year: 'numeric', month: 'short', day: 'numeric' }
-    );
-
-    const isLatest = index === 0 && !release.prerelease;
-    const badge = isLatest ? '<span class="release-badge latest">Latest</span>' :
-      release.prerelease ? '<span class="release-badge prerelease">Pre-release</span>' : '';
-
-    let body = release.body || 'No description';
-    body = body.replace(/[#*`]/g, '').substring(0, 200);
-
-    return `
-            <div class="release-item">
-                <div class="release-header">
-                    <span class="release-tag">${release.name || release.tag_name}</span>
-                    ${badge}
-                    <span class="release-date">${date}</span>
-                </div>
-                <div class="release-body">
-                    ${body}...
-                </div>
-                <button class="release-expand" onclick="window.open('${release.html_url}', '_blank')">
-                    View on GitHub →
-                </button>
-            </div>
-        `;
-  }).join('');
-}
-
 /* ============================================ */
 /* AUTH UI LOGIC                                */
 /* ============================================ */
@@ -1100,153 +913,19 @@ function toggleFocusMode(enabled) {
   renderGarden();
 }
 
-/* ============================================ */
-/* DISCORD SETTINGS UI (DESKTOP ONLY)           */
-/* ============================================ */
-
-function initDiscordSettings() {
-  const isElectron = typeof window.discord !== 'undefined';
-  const discordSection = document.querySelector('[data-section="discord"]');
-  const discordContent = document.getElementById('section-discord');
-
-  if (!isElectron) {
-    if (discordSection) { discordSection.style.display = 'none'; }
-    if (discordContent) { discordContent.style.display = 'none'; }
-    return;
-  }
-
-  const discordToggle = document.getElementById('toggle-discord');
-  const discordStatusBadge = document.getElementById('discord-status-badge');
-  const discordStatusText = document.getElementById('discord-status-text');
-  const previewDetails = document.getElementById('discord-preview-details');
-  const previewState = document.getElementById('discord-preview-state');
-  const previewTime = document.getElementById('discord-preview-time');
-
-  let sessionStartTime = null;
-
-  const savedEnabled = localStorage.getItem('cultiva-discord-enabled') !== 'false';
-  if (discordToggle) { discordToggle.checked = savedEnabled; }
-
-  async function checkDiscordStatus() {
-    if (!window.discord) { return; }
-    try {
-      const status = await window.discord.getStatus();
-      const enabled = discordToggle?.checked || false;
-      const t = currentT;
-
-      if (status.connected && enabled) {
-        discordStatusBadge.textContent = '●';
-        discordStatusBadge.style.color = '#4caf50';
-        discordStatusText.textContent = t.discordConnected || 'Connected';
-        if (!sessionStartTime) { sessionStartTime = new Date(); }
-      } else if (status.connected && !enabled) {
-        discordStatusBadge.textContent = '○';
-        discordStatusBadge.style.color = '#ff9500';
-        discordStatusText.textContent = t.discordDisabled || 'Disabled';
-        sessionStartTime = null;
-      } else {
-        discordStatusBadge.textContent = '○';
-        discordStatusBadge.style.color = 'var(--text-tertiary)';
-        discordStatusText.textContent = t.discordDisconnected || 'Disconnected';
-        sessionStartTime = null;
-      }
-    } catch (err) {
-      console.warn('[Discord] Status check failed:', err);
-      discordStatusBadge.textContent = '○';
-      discordStatusBadge.style.color = 'var(--text-tertiary)';
-      discordStatusText.textContent = t.discordUnavailable || 'Unavailable';
-      sessionStartTime = null;
-    }
-  }
-
-  function updatePreviewTime() {
-    if (!previewTime || !sessionStartTime) { return; }
-    const elapsed = Math.floor((new Date() - sessionStartTime) / 1000);
-    const hours = Math.floor(elapsed / 3600);
-    const minutes = Math.floor((elapsed % 3600) / 60);
-    const seconds = elapsed % 60;
-
-    if (hours > 0) { previewTime.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} elapsed`; }
-    else { previewTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} elapsed`; }
-  }
-
-  function updatePreviewText(details, state) {
-    if (previewDetails) { previewDetails.textContent = details || 'In the garden'; }
-    if (previewState) { previewState.textContent = state || 'Growing habits'; }
-  }
-
-  function detectCurrentPage() {
-    const url = window.location.href;
-    if (url.includes('/calendar')) { return 'calendar'; }
-    if (url.includes('/pages/')) { return 'pages'; }
-    if (url.includes('settings')) { return 'settings'; }
-    if (url.includes('stats')) { return 'stats'; }
-    if (url.includes('trophy')) { return 'trophy'; }
-    return 'garden';
-  }
-
-  if (discordToggle) {
-    discordToggle.addEventListener('change', async (e) => {
-      const enabled = e.target.checked;
-      localStorage.setItem('cultiva-discord-enabled', enabled);
-
-      if (window.discord) {
-        if (enabled) {
-          await window.discord.enable();
-          sessionStartTime = new Date();
-          const page = detectCurrentPage();
-          const locale = settings.lang || 'en';
-          await window.discord.updateActivity({ page, locale });
-          updatePreviewText(getPageDetails(page, locale), getPageState(page, locale));
-        } else {
-          await window.discord.disable();
-          sessionStartTime = null;
-          updatePreviewText('Rich Presence', 'Disabled');
-          if (previewTime) { previewTime.textContent = '--:--'; }
-        }
-        await checkDiscordStatus();
-      }
-    });
-  }
-
-  setInterval(() => {
-    if (discordContent?.classList.contains('active')) {
-      checkDiscordStatus();
-      updatePreviewTime();
-    }
-  }, 2000);
-
-  const discordSidebarItem = document.querySelector('[data-section="discord"]');
-  if (discordSidebarItem) {
-    discordSidebarItem.addEventListener('click', () => {
-      checkDiscordStatus();
-      if (discordToggle?.checked) {
-        sessionStartTime = new Date();
-        const page = detectCurrentPage();
-        const locale = settings.lang || 'en';
-        updatePreviewText(getPageDetails(page, locale), getPageState(page, locale));
-      }
-    });
-  }
-
-  window.updateDiscordPreview = updatePreviewText;
-  window.checkDiscordStatus = checkDiscordStatus;
-}
-
-function getPageDetails(page, locale) {
-  const strings = {
-    en: { garden: 'In the garden', calendar: 'Planning habits', stats: 'Reviewing progress', settings: 'Customizing', trophy: 'Trophy Garden', focus: 'Focus Mode', pages: 'Exploring Cultiva' },
-    ru: { garden: 'В саду', calendar: 'Планирует', stats: 'Анализирует', settings: 'Настраивает', trophy: 'Сад трофеев', focus: 'Режим фокуса', pages: 'Изучает Cultiva' }
+function scheduleDeferredOnboarding() {
+  const run = async () => {
+    const onboarding = await import('./app/onboarding-wizard.js');
+    const templates = await import('./app/habit-templates-ui.js');
+    onboarding.bindOnboardingEvents();
+    templates.bindHabitTemplates(settings.lang);
+    onboarding.maybeShowOnboarding();
   };
-  return strings[locale]?.[page] || strings.en[page] || 'In the garden';
-}
-
-function getPageState(page, locale) {
-  const strings = {
-    en: { garden: 'Growing habits', calendar: 'Browsing calendar', stats: 'Checking statistics', settings: 'Adjusting settings', trophy: 'Admiring legacy trees', focus: 'Deep work session', pages: 'Reading documentation' },
-    ru: { garden: 'Выращивает привычки', calendar: 'Смотрит календарь', stats: 'Проверяет статистику', settings: 'Меняет параметры', trophy: 'Любуется деревьями', focus: 'Глубокая работа', pages: 'Читает документацию' }
-  };
-  return strings[locale]?.[page] || strings.en[page] || 'Growing habits';
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => { void run(); }, { timeout: 2500 });
+  } else {
+    setTimeout(() => { void run(); }, 400);
+  }
 }
 
 window.showNotification = showNotification;
@@ -1295,13 +974,10 @@ async function init() {
     initAvatarPicker();
     initSettingsNavigation();
     initProfileManagement();
-    initDiscordSettings();
 
     initAutoBackup();
-
-    bindOnboardingEvents();
-    bindHabitTemplates(settings.lang);
-    maybeShowOnboarding();
+    scheduleDeferredOnboarding();
+    scheduleDiscordWarmup();
 
     await updateAuthUI();
     updateCultivaDatePreview();
@@ -1359,7 +1035,7 @@ async function init() {
       },
       openHelp: async () => {
         const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
-        const settingsOpen = Boolean(settingsModal?.classList.contains('open'));
+        const settingsOpen = isModalOpen(settingsModal);
         const calendarOpen = window.location.pathname.includes('/calendar');
         let message = t.helpHome || TRANSLATIONS.en.helpHome;
         if (settingsOpen) {
@@ -1378,11 +1054,7 @@ async function init() {
         });
       },
       closeTopModal: () => {
-        [addModal, statsModal, settingsModal, quantityLogModal, authModal].forEach((m) => {
-          if (m && m.classList.contains('open')) {
-            closeModal(m);
-          }
-        });
+        closeTopmostModal([addModal, statsModal, settingsModal, quantityLogModal, authModal]);
       }
     });
 
