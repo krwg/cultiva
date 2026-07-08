@@ -6,6 +6,7 @@ import { getHolidaysForRegion, getHolidayForDate } from '../../core/holidays.js'
 import { getCultivaTimezone } from '../../core/timezone.js';
 import { getThemeBodyClassList, resolveThemeBodyId, LS_CUSTOM_BG_DATA } from '../../core/theme-config.js';
 import { applyAmbientBackground, readCustomBackgroundDataUrl } from '../../core/ambient-bg.js';
+import { showAlertDialog, showConfirmDialog } from '../../app/dialogs.js';
 
 document.documentElement.dataset.page = 'calendar';
 
@@ -598,10 +599,15 @@ function closeEventPanel() {
   editingEventDate = null;
 }
 
-function saveEvent() {
+async function saveEvent() {
   const titleInput = document.getElementById('event-title');
   const title = titleInput?.value.trim();
-  if (!title) { alert(currentT.enterTitle || 'Please enter a title'); return; }
+  if (!title) {
+    await showAlertDialog(currentT.enterTitle || 'Please enter a title', {
+      title: currentT.newEvent || 'New Event'
+    });
+    return;
+  }
 
   const selectedColor = document.querySelector('.color-option.selected')?.dataset.color || EVENT_COLORS[0];
   const startInput = document.getElementById('event-start');
@@ -758,9 +764,14 @@ async function init() {
 
   document.getElementById('event-panel-close')?.addEventListener('click', closeEventPanel);
   document.getElementById('event-cancel')?.addEventListener('click', closeEventPanel);
-  document.getElementById('event-save')?.addEventListener('click', saveEvent);
-  document.getElementById('event-delete')?.addEventListener('click', () => {
-    if (editingEventId && editingEventDate && confirm(currentT.confirmDelete || 'Delete this event?')) {
+  document.getElementById('event-save')?.addEventListener('click', () => { void saveEvent(); });
+  document.getElementById('event-delete')?.addEventListener('click', async () => {
+    if (editingEventId && editingEventDate && await showConfirmDialog(currentT.confirmDelete || 'Delete this event?', {
+      title: currentT.delete || 'Delete',
+      confirmText: currentT.delete || 'Delete',
+      cancelText: currentT.cancel || 'Cancel',
+      tone: 'danger'
+    })) {
       deleteEvent(editingEventDate, editingEventId);
       closeEventPanel();
       renderCurrentView();
@@ -785,7 +796,7 @@ async function init() {
     if (e.target === document.getElementById('event-panel')) { closeEventPanel(); }
   });
   document.getElementById('event-title')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && e.ctrlKey) { saveEvent(); }
+    if (e.key === 'Enter' && e.ctrlKey) { void saveEvent(); }
   });
 
   renderMonthView();
