@@ -118,6 +118,24 @@ function registerCoreIpc(ipcMain, {
       return { ok: false, error: e && e.message ? e.message : String(e) };
     }
   });
+
+  ipcMain.handle('shell:set-titlebar-overlay', (event, options) => {
+    const mainWindow = getMainWindow();
+    if (!mainWindow || process.platform !== 'win32') {
+      return { ok: false };
+    }
+    try {
+      const payload = options && typeof options === 'object' ? options : {};
+      mainWindow.setTitleBarOverlay({
+        color: String(payload.color || '#1c1c1e'),
+        symbolColor: String(payload.symbolColor || '#f5f5f7'),
+        height: Number(payload.height) || 32
+      });
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e && e.message ? e.message : String(e) };
+    }
+  });
 }
 
 module.exports = {
