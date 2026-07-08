@@ -310,7 +310,7 @@ window.openPluginSettings = async (pluginId) => {
   wrap.setAttribute('aria-modal', 'true');
 
   const sheet = document.createElement('div');
-  sheet.className = 'plugin-settings-sheet modal-sheet';
+  sheet.className = 'plugin-settings-sheet';
 
   const header = document.createElement('div');
   header.className = 'modal-header';
@@ -426,6 +426,18 @@ window.openPluginSettings = async (pluginId) => {
   });
 };
 
+function getOrCreatePluginsRail(headerActions) {
+  let rail = headerActions.querySelector('.header-plugins-rail');
+  if (!rail) {
+    rail = document.createElement('div');
+    rail.className = 'header-plugins-rail';
+    rail.setAttribute('aria-label', 'Plugin shortcuts');
+    const addBtn = document.getElementById('open-add-modal');
+    headerActions.insertBefore(rail, addBtn);
+  }
+  return rail;
+}
+
 export function renderPluginHeaderItems() {
   if (!settings.pluginsEnabled) {
     return;
@@ -436,7 +448,8 @@ export function renderPluginHeaderItems() {
     return;
   }
 
-  document.querySelectorAll('.header-plugin-item').forEach((el) => el.remove());
+  const pluginsRail = getOrCreatePluginsRail(headerActions);
+  pluginsRail.querySelectorAll('.header-plugin-item').forEach((el) => el.remove());
 
   const installedPlugins = pluginManager.getInstalledPlugins();
 
@@ -480,10 +493,11 @@ export function renderPluginHeaderItems() {
         }
       };
 
-      const addBtn = document.getElementById('open-add-modal');
-      headerActions.insertBefore(item, addBtn);
+      pluginsRail.appendChild(item);
     }
   });
+
+  pluginsRail.hidden = pluginsRail.childElementCount === 0;
 }
 
 window.renderPluginHeaderItems = renderPluginHeaderItems;

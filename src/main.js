@@ -30,8 +30,9 @@ import {
   updateNotificationsDesktopBanner
 } from './app/settings-controller.js';
 import { initHotkeys } from './app/hotkeys.js';
+import { initContextMenu } from './app/context-menu.js';
 import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
-import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents } from './app/garden-controller.js';
+import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats } from './app/garden-controller.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
 import { renderStatsDashboard } from './app/stats-dashboard-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
@@ -173,14 +174,16 @@ function updateCultivaDatePreview() {
   const preview = document.getElementById('cultiva-date-preview');
   if (!preview) { return; }
 
+  const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
   const tz = getCultivaTimezone();
+  const locale = settings.lang === 'ru' ? 'ru-RU' : (settings.lang === 'en' ? 'en-US' : navigator.language);
   const now = new Date();
-  const formatted = new Intl.DateTimeFormat(navigator.language, {
+  const formatted = new Intl.DateTimeFormat(locale, {
     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZone: tz
+    hour: '2-digit', minute: '2-digit', timeZone: tz || undefined
   }).format(now);
 
-  preview.textContent = formatted + (tz ? ` (${tz})` : ' (System)');
+  preview.textContent = `${formatted} (${tz || t.timezoneSystem})`;
 }
 
 if (tzSelect) {
@@ -1146,7 +1149,7 @@ function initDiscordSettings() {
       console.warn('[Discord] Status check failed:', err);
       discordStatusBadge.textContent = '○';
       discordStatusBadge.style.color = 'var(--text-tertiary)';
-      discordStatusText.textContent = 'Unavailable';
+      discordStatusText.textContent = t.discordUnavailable || 'Unavailable';
       sessionStartTime = null;
     }
   }
@@ -1376,6 +1379,40 @@ async function init() {
           }
         });
       }
+    });
+
+    initContextMenu({
+      t: () => TRANSLATIONS[settings.lang] || TRANSLATIONS.en,
+      completeHabit: async (id) => {
+        await toggleHabitWithHooks(id);
+        renderGarden();
+        showNotification(TRANSLATIONS[settings.lang].progressSaved);
+      },
+      logHabit: (id) => {
+        const h = habits.getAll().find((x) => x.id === id);
+        if (h) {
+          openQuantityLogModal(h);
+        }
+      },
+      canLog: (id) => habits.getAll().find((x) => x.id === id)?.trackType === 'quantity',
+      openStats: (id) => openStats(id),
+      deleteHabit: async (id) => {
+        const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+        const shouldRemove = await showConfirmDialog(t.confirmRemoveHabit, {
+          title: t.delete,
+          confirmText: t.delete,
+          cancelText: t.cancel,
+          tone: 'danger'
+        });
+        if (shouldRemove) {
+          habits.remove(id);
+          renderGarden();
+          showNotification(t.removed);
+        }
+      },
+      newHabit: () => openModal(addModal),
+      openSettings: () => openModal(settingsModal),
+      reloadGarden: () => renderGarden()
     });
 
     applyAccentColor(settings.accentColor);

@@ -63,6 +63,7 @@ export function applyAmbientBackground(doc, body, bg) {
   if (bg === 'cypress-drift') { generateCypressNeedles(container); }
   if (bg === 'dew') { generateDew(container); }
   if (bg === 'sunbeam') { generateSunbeams(container); }
+  if (bg === 'linden-bloom') { generateLindenLeaves(container); }
 }
 
 export function saveCustomBackgroundFromFile(file) {
@@ -224,5 +225,19 @@ function generateSunbeams(container) {
     beam.style.left = `${10 + i * 14}%`;
     beam.style.animationDelay = `${i * 1.2}s`;
     container.appendChild(beam);
+  }
+}
+
+function generateLindenLeaves(container) {
+  container.innerHTML = '';
+  for (let i = 0; i < 42; i++) {
+    const leaf = document.createElement('div');
+    leaf.className = 'linden-leaf';
+    leaf.style.left = `${Math.random() * 100}%`;
+    leaf.style.animationDelay = `${Math.random() * 14}s`;
+    leaf.style.animationDuration = `${16 + Math.random() * 14}s`;
+    leaf.style.setProperty('--drift', `${(Math.random() - 0.5) * 90}px`);
+    leaf.style.setProperty('--spin', `${120 + Math.random() * 220}deg`);
+    container.appendChild(leaf);
   }
 }

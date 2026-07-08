@@ -5,6 +5,20 @@ import { getTodayStr } from './date-ui.js';
 export function applyTranslations(lang) {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const key = el.dataset.i18nPlaceholder;
+    if (key && t[key] && ('placeholder' in el)) {
+      el.placeholder = t[key];
+    }
+  });
+
+  document.querySelectorAll('[data-i18n-aria-label]').forEach((el) => {
+    const key = el.dataset.i18nAriaLabel;
+    if (key && t[key]) {
+      el.setAttribute('aria-label', t[key]);
+    }
+  });
+
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n;
     if (t[key]) {
@@ -48,6 +62,24 @@ export function applyTranslations(lang) {
         option.textContent = t[key];
       }
     });
+  }
+
+  const timeFormatSelect = document.getElementById('time-format-select');
+  if (timeFormatSelect) {
+    Array.from(timeFormatSelect.options).forEach((option) => {
+      const key = option.dataset.i18n;
+      if (key && t[key]) {
+        option.textContent = t[key];
+      }
+    });
+  }
+
+  const tzSelect = document.getElementById('tz-select');
+  if (tzSelect) {
+    const auto = tzSelect.querySelector('option[value="auto"]');
+    if (auto && t.timeFormatAuto) {
+      auto.textContent = t.timeFormatAuto;
+    }
   }
 
   const today = getTodayStr();

@@ -40,6 +40,17 @@ export function getFocusedHabit() {
   return all[0] || null;
 }
 
+function stageLabel(stage, t) {
+  const map = {
+    Seed: t.seed,
+    Sprout: t.sprout,
+    Plant: t.plant,
+    Tree: t.tree,
+    Legacy: t.legacy
+  };
+  return map[stage.name] || stage.name;
+}
+
 function createHabitCard(habit, isTrophy = false) {
   const c = requireCtx();
   const stage = isTrophy ? GROWTH_STAGES.LEGACY : habits.getStage(habit.progress);
@@ -71,7 +82,7 @@ function createHabitCard(habit, isTrophy = false) {
             <div class="card-info">
                 <div class="card-title">${habit.treeName || habit.name}</div>
                 ${habit.description ? `<div class="card-description">${habit.description}</div>` : ''}
-                <div class="card-subtitle">${stage.name} • ${habit.progress}d${streakText}</div>
+                <div class="card-subtitle">${stageLabel(stage, t)} • ${habit.progress}${t.days}${streakText}</div>
                 ${categoryBadge}
             </div>
         </div>
@@ -134,7 +145,7 @@ export function openStats(id) {
         <div class="stat-card"><div class="stat-label">${t.currentStreak}</div><div class="stat-value">${s.currentStreak}</div><div class="stat-subvalue">${t.days}</div></div>
         <div class="stat-card"><div class="stat-label">${t.bestStreak}</div><div class="stat-value">${s.bestStreak}</div><div class="stat-subvalue">${t.days}</div></div>
         <div class="stat-card"><div class="stat-label">${t.completion}</div><div class="stat-value">${s.completionRate}%</div><div class="stat-subvalue">${s.totalDays} ${t.days}</div></div>
-        <div class="stat-card"><div class="stat-label">${t.stage}</div><div class="stat-value">${s.stage.name}</div><div class="stat-subvalue">${habits.getAll().find(x => x.id === id)?.progress} ${s.trackType === 'quantity' ? t.completions : t.days}</div></div>
+        <div class="stat-card"><div class="stat-label">${t.stage}</div><div class="stat-value">${stageLabel(s.stage, t)}</div><div class="stat-subvalue">${habits.getAll().find(x => x.id === id)?.progress} ${s.trackType === 'quantity' ? t.completions : t.days}</div></div>
     `;
   const cal = document.getElementById('contribution-calendar');
   if (cal) {
@@ -156,6 +167,7 @@ export function bindGardenCardEvents() {
     const card = e.target.closest('.habit-card');
     if (!card) { return; }
     const id = card.dataset.id;
+    const t = TRANSLATIONS[c.settings.lang];
     c.setFocusedHabitId(id);
     if (e.target.closest('.btn-card-primary')) {
       e.stopPropagation();
@@ -194,7 +206,7 @@ export function bindGardenCardEvents() {
       showNotification(TRANSLATIONS[c.settings.lang].progressSaved);
     } else if (e.target.closest('.btn-card-danger')) {
       e.stopPropagation();
-      const shouldRemove = await showConfirmDialog('Remove habit?', {
+      const shouldRemove = await showConfirmDialog(t.confirmRemoveHabit || 'Remove this habit?', {
         title: TRANSLATIONS[c.settings.lang].delete || 'Delete',
         confirmText: TRANSLATIONS[c.settings.lang].delete || 'Delete',
         cancelText: TRANSLATIONS[c.settings.lang].cancel || 'Cancel',
