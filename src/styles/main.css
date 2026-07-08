@@ -227,9 +227,9 @@ a:hover { color: var(--accent-blue-hover); }
     align-items: center;
     gap: 16px;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    max-width: min(58vw, 720px);
-    scrollbar-width: thin;
+    overflow: hidden;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .calendar-nav .calendar-back {
@@ -2670,12 +2670,15 @@ body.with-ambient-bg > [id^="bg-"] {
 }
 
 .garden-plugin-widget {
-    display: contents;
+    display: block;
+    width: 100%;
+    min-width: 0;
 }
 
 .garden-plugin-widget .habit-card,
 .habit-card.garden-plugin-card {
-    min-height: 100%;
+    width: 100%;
+    min-height: 178px;
     height: 100%;
 }
 
@@ -2902,7 +2905,7 @@ body.with-ambient-bg > [id^="bg-"] {
 
 .header-plugin-label {
     font-variant-numeric: tabular-nums;
-    max-width: 88px;
+    max-width: 74px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

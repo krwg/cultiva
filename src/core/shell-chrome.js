@@ -1,6 +1,10 @@
 function readCssVar(name) {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return raw || null;
+  const bodyRaw = getComputedStyle(document.body).getPropertyValue(name).trim();
+  if (bodyRaw) {
+    return bodyRaw;
+  }
+  const rootRaw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return rootRaw || null;
 }
 
 export function syncNativeShellChrome() {
