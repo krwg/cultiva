@@ -44,13 +44,13 @@ Wiki uses **`.md`** files; links use `Page-Name` (spaces → hyphens).
 
 ## cultiva-plugins wiki
 
-Separate repo: https://github.com/krwg/cultiva-plugins/wiki
+**Live:** https://github.com/krwg/cultiva-plugins/wiki
+
+Includes catalog, registry spec, publishing guide, and **[Plugin Hardening](https://github.com/krwg/cultiva-plugins/wiki/Plugin-Hardening)** tracker (audit + issues #2–#10).
 
 ```bash
 git clone https://github.com/krwg/cultiva-plugins.wiki.git
 ```
-
-Enable wiki on the repo (`Settings → Features → Wikis`) before first push if the clone 404s.
 
 ---
 
