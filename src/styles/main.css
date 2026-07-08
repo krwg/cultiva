@@ -199,6 +199,25 @@ a:hover { color: var(--accent-blue-hover); }
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
+.platform-win32 .app-header,
+.platform-win32 .calendar-header {
+    padding-top: 10px;
+    -webkit-app-region: drag;
+}
+.platform-win32 .header-content {
+    padding-right: 148px;
+}
+.platform-win32 .header-actions,
+.platform-win32 .header-brand,
+.platform-win32 .header-brand a,
+.platform-win32 .user-menu,
+.platform-win32 .habit-search-wrap,
+.platform-win32 .header-link,
+.platform-win32 .add-btn,
+.platform-win32 .btn-calendar,
+.platform-win32 .header-plugin-item {
+    -webkit-app-region: no-drag;
+}
 .header-content, .calendar-container.calendar-nav {
     max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;
 }
@@ -2606,16 +2625,81 @@ body.with-ambient-bg > [id^="bg-"] {
 
 .plugin-card {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
     background: var(--bg-secondary);
     border-radius: 14px;
     border: 1px solid var(--border-light);
+    overflow: hidden;
+}
+
+.plugin-card-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
 }
 
 .plugin-card.plugin-card-disabled {
     opacity: 0.62;
+}
+
+.plugin-card-settings {
+    border-top: 1px solid var(--border-light);
+    padding: 12px 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg-primary);
+}
+
+.plugin-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.plugin-setting-row span {
+    flex: 1;
+    min-width: 0;
+}
+
+.plugin-setting-row select,
+.plugin-setting-row input[type="text"] {
+    min-width: 140px;
+    max-width: 52%;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+.plugin-enable-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.plugin-enable-switch.toggle-switch {
+    width: 51px;
+    height: 31px;
+    flex-shrink: 0;
+}
+
+.plugin-enable-switch.toggle-switch input:checked + .toggle-slider {
+    background: var(--accent-pink);
 }
 
 .plugin-icon {
@@ -2680,15 +2764,6 @@ body.with-ambient-bg > [id^="bg-"] {
     display: flex;
     align-items: center;
     gap: 6px;
-}
-
-.plugin-enable-switch {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-left: 4px;
 }
 
 .plugin-btn {

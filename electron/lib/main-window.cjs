@@ -12,7 +12,8 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' file: blob: data:; " +
     "img-src 'self' data: blob: file: https:; " +
     "style-src 'self' 'unsafe-inline'; " +
-    "connect-src 'self' file: data: blob: https: https://raw.githubusercontent.com https://api.github.com https://github.com https://objects.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com; " +
+    "connect-src 'self' file: data: blob: https: https://raw.githubusercontent.com https://api.github.com https://github.com https://objects.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://ice1.somafm.com https://ice2.somafm.com https://ice4.somafm.com https://ice6.somafm.com; " +
+    "media-src 'self' blob: data: https:; " +
     "font-src 'self' data:;";
 
   const cspDev =
@@ -20,7 +21,8 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
     "img-src 'self' data: blob: file: https: http:; " +
     "style-src 'self' 'unsafe-inline'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' file: blob: data: http: https:; " +
-    "connect-src 'self' https: http: ws: wss: https://raw.githubusercontent.com https://api.github.com https://github.com https://objects.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com; " +
+    "connect-src 'self' https: http: ws: wss: https://raw.githubusercontent.com https://api.github.com https://github.com https://objects.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://ice1.somafm.com https://ice2.somafm.com https://ice4.somafm.com https://ice6.somafm.com; " +
+    "media-src 'self' blob: data: https: http:; " +
     "font-src 'self' data:;";
 
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {

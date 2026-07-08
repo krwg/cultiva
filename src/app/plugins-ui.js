@@ -63,6 +63,9 @@ async function loadInstalledPlugins() {
       card.classList.add('plugin-card-disabled');
     }
 
+    const main = document.createElement('div');
+    main.className = 'plugin-card-main';
+
     const iconWrap = document.createElement('div');
     iconWrap.className = 'plugin-icon';
     iconWrap.textContent = '';
@@ -96,14 +99,8 @@ async function loadInstalledPlugins() {
     const actions = document.createElement('div');
     actions.className = 'plugin-actions';
 
-    const btnSettings = document.createElement('button');
-    btnSettings.type = 'button';
-    btnSettings.className = 'plugin-btn plugin-btn-settings';
-    btnSettings.title = t.pluginSettings;
-    btnSettings.textContent = t.pluginSettings || 'Settings';
-    btnSettings.disabled = !p.loaded;
     const toggleWrap = document.createElement('label');
-    toggleWrap.className = 'plugin-enable-switch';
+    toggleWrap.className = 'plugin-enable-switch toggle-switch';
     const toggleInput = document.createElement('input');
     toggleInput.type = 'checkbox';
     toggleInput.checked = Boolean(p.enabled);
@@ -112,12 +109,13 @@ async function loadInstalledPlugins() {
       await renderPluginsSection();
       renderPluginHeaderItems();
     });
+    const toggleSlider = document.createElement('span');
+    toggleSlider.className = 'toggle-slider';
     const toggleLabel = document.createElement('span');
     toggleLabel.textContent = t.enabled || 'Enabled';
     toggleWrap.appendChild(toggleInput);
+    toggleWrap.appendChild(toggleSlider);
     toggleWrap.appendChild(toggleLabel);
-
-    btnSettings.addEventListener('click', () => window.openPluginSettings(p.id));
 
     const btnUninstall = document.createElement('button');
     btnUninstall.type = 'button';
@@ -137,16 +135,121 @@ async function loadInstalledPlugins() {
       renderPluginHeaderItems();
     });
 
-    actions.appendChild(btnSettings);
     actions.appendChild(btnRetry);
     actions.appendChild(btnUninstall);
     actions.appendChild(toggleWrap);
 
-    card.appendChild(iconWrap);
-    card.appendChild(info);
-    card.appendChild(actions);
+    main.appendChild(iconWrap);
+    main.appendChild(info);
+    main.appendChild(actions);
+    card.appendChild(main);
+
+    const pluginData = pluginManager.plugins.get(p.id);
+    const settingsPanel = await buildPluginInlineSettings(p.id, pluginData, p.loaded, t);
+    if (settingsPanel) {
+      card.appendChild(settingsPanel);
+    }
+
     container.appendChild(card);
   }
+}
+
+async function buildPluginInlineSettings(pluginId, pluginData, loaded, t) {
+  const fields = Array.isArray(pluginData?.manifest?.settings) ? pluginData.manifest.settings : [];
+  if (!fields.length) {
+    return null;
+  }
+
+  const prefix = `plugin_${pluginId}_`;
+  let current = await storage.get(prefix + 'settings');
+  if (typeof current === 'string') {
+    try {
+      current = JSON.parse(current);
+    } catch {
+      current = {};
+    }
+  }
+  if (!current || typeof current !== 'object') {
+    current = {};
+  }
+
+  const panel = document.createElement('div');
+  panel.className = 'plugin-card-settings';
+
+  const persist = async (next) => {
+    await storage.set(prefix + 'settings', next);
+    if (loaded && pluginData?.sandbox) {
+      try {
+        await pluginData.sandbox.runLifecycle('onDisable');
+        await pluginData.sandbox.runLifecycle('onEnable');
+      } catch {
+        void 0;
+      }
+    }
+    showNotification('', t.pluginSettingsSaved || 'Plugin settings saved');
+  };
+
+  for (const field of fields) {
+    const row = document.createElement('div');
+    row.className = 'plugin-setting-row';
+    const label = document.createElement('span');
+    label.textContent = field.label || field.key;
+    row.appendChild(label);
+
+    const val = current[field.key] !== undefined ? current[field.key] : field.default;
+
+    if (field.type === 'boolean') {
+      const toggle = document.createElement('label');
+      toggle.className = 'plugin-enable-switch toggle-switch';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = Boolean(val);
+      input.disabled = !loaded;
+      input.addEventListener('change', async () => {
+        const next = { ...current, [field.key]: input.checked };
+        current = next;
+        await persist(next);
+      });
+      const slider = document.createElement('span');
+      slider.className = 'toggle-slider';
+      toggle.appendChild(input);
+      toggle.appendChild(slider);
+      row.appendChild(toggle);
+    } else if (field.type === 'select' && Array.isArray(field.options)) {
+      const select = document.createElement('select');
+      select.disabled = !loaded;
+      for (const opt of field.options) {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.label || opt.value;
+        if (String(val) === String(opt.value)) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      }
+      select.addEventListener('change', async () => {
+        const next = { ...current, [field.key]: select.value };
+        current = next;
+        await persist(next);
+      });
+      row.appendChild(select);
+    } else {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = val !== undefined && val !== null ? String(val) : '';
+      input.disabled = !loaded;
+      input.addEventListener('change', async () => {
+        const next = { ...current, [field.key]: input.value };
+        current = next;
+        await persist(next);
+      });
+      row.appendChild(input);
+    }
+
+    panel.appendChild(row);
+  }
+
+  return panel;
 }
 
 async function loadAvailablePlugins() {

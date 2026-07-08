@@ -5,7 +5,7 @@ function buildSandboxBootstrapDocument(pluginId) {
   const mid = JSON.stringify(pluginId);
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; connect-src https: http:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; connect-src https: http:; media-src https: http: blob: data:;">
 </head><body>
 <script>
 (function () {
@@ -71,6 +71,9 @@ function buildSandboxBootstrapDocument(pluginId) {
       data: {
         read: function (name) { return rpc('data.read', [name]); }
       },
+      app: {
+        getLocale: function () { return rpc('app.getLocale', []); }
+      },
       ui: {
         registerHeaderItem: function (config) {
           headerOnClick = config && config.onClick;
@@ -123,6 +126,9 @@ function buildSandboxBootstrapDocument(pluginId) {
         },
         openMainSheet: function (html) {
           send({ type: 'UI_MAIN_SHEET', html: String(html) });
+        },
+        patchMainSheet: function (selector, html) {
+          send({ type: 'UI_PATCH_MAIN_SHEET', selector: String(selector), html: String(html) });
         },
         closeMainSheet: function () {
           send({ type: 'UI_CLOSE_MAIN_SHEET' });
@@ -302,6 +308,7 @@ export class PluginSandboxHost {
       onGardenRegister: null,
       onGardenHtml: null,
       onUiMainSheet: null,
+      onUiPatchMainSheet: null,
       onUiCloseMainSheet: null,
       onUiUpdateHeader: null,
       onReady: null,
@@ -388,6 +395,13 @@ export class PluginSandboxHost {
     if (d.type === 'UI_MAIN_SHEET') {
       if (this._handlers.onUiMainSheet) {
         this._handlers.onUiMainSheet(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_PATCH_MAIN_SHEET') {
+      if (this._handlers.onUiPatchMainSheet) {
+        this._handlers.onUiPatchMainSheet(d);
       }
       return;
     }

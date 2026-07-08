@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electron', {
   exportBackupZip: (jsonPayload, fileName) => ipcRenderer.invoke('backup:export-zip', jsonPayload, fileName),
   saveAutoBackup: (jsonPayload) => ipcRenderer.invoke('backup:save-automatic', jsonPayload),
   isElectron: true,
+  platform: process.platform,
   readPluginFile: (filePath) => ipcRenderer.invoke('plugin:read-file', filePath),
 
   showNativeNotification: (payload) => ipcRenderer.invoke('native-notification:show', payload),
