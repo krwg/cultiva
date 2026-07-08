@@ -5,6 +5,13 @@ export function initHotkeys(h) {
       h.closeTopModal();
       return;
     }
+    if (e.key === 'F1' || (e.key === '?' && e.shiftKey)) {
+      e.preventDefault();
+      if (typeof h.openHelp === 'function') {
+        h.openHelp();
+      }
+      return;
+    }
 
     const tag = e.target && e.target.tagName;
     const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable;

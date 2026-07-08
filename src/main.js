@@ -1333,6 +1333,26 @@ async function init() {
           openQuantityLogModal(h);
         }
       },
+      openHelp: async () => {
+        const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+        const settingsOpen = Boolean(settingsModal?.classList.contains('open'));
+        const calendarOpen = window.location.pathname.includes('/calendar');
+        let message = t.helpHome || TRANSLATIONS.en.helpHome;
+        if (settingsOpen) {
+          const sec = document.querySelector('.settings-section-content.active')?.id || '';
+          if (sec.includes('plugins')) {
+            message = t.helpPlugins || TRANSLATIONS.en.helpPlugins;
+          } else {
+            message = t.helpSettings || TRANSLATIONS.en.helpSettings;
+          }
+        } else if (calendarOpen) {
+          message = t.helpCalendar || TRANSLATIONS.en.helpCalendar;
+        }
+        await showAlertDialog(message, {
+          title: t.helpTitle || TRANSLATIONS.en.helpTitle,
+          confirmText: t.done || TRANSLATIONS.en.done
+        });
+      },
       closeTopModal: () => {
         [addModal, statsModal, settingsModal, quantityLogModal, authModal].forEach((m) => {
           if (m && m.classList.contains('open')) {
