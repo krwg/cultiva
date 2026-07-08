@@ -1224,7 +1224,12 @@ kbd.shortcut-kbd {
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
-    margin: 8px 0 12px;
+    margin: 20px 0 12px;
+    padding: 0 2px;
+}
+
+.plugins-subsection-head--spaced {
+    margin-top: 24px;
 }
 
 .plugins-subsection-head h3 {
@@ -2542,7 +2547,7 @@ body.with-ambient-bg > [id^="bg-"] {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 14px;
+    padding: 16px 18px;
     background: var(--bg-secondary);
     border-radius: 14px;
     border: 1px solid var(--border-light);
@@ -2556,7 +2561,18 @@ body.with-ambient-bg > [id^="bg-"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.plugin-icon--letter {
+    border: 1px solid var(--border-light);
+}
+
+.plugin-icon-letter {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-secondary);
 }
 
 .plugin-info {
@@ -2600,13 +2616,18 @@ body.with-ambient-bg > [id^="bg-"] {
 }
 
 .plugin-btn {
-    padding: 6px 12px;
+    padding: 8px 12px;
     border-radius: 8px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     border: none;
     cursor: pointer;
     transition: all 0.15s var(--ease-apple);
+}
+
+.plugin-btn-text {
+    min-width: 68px;
+    letter-spacing: -0.01em;
 }
 
 .plugin-btn-install {
@@ -2707,7 +2728,7 @@ body.with-ambient-bg > [id^="bg-"] {
 .plugin-settings-sheet {
     background: var(--bg-secondary);
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px;
     width: min(420px, 92vw);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
