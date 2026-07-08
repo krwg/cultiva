@@ -846,8 +846,10 @@ body.with-ambient-bg .app-main {
 }
 
 .settings-sheet-ipados {
-    max-width: 720px;
-    width: 90vw;
+    width: min(980px, 94vw);
+    height: min(760px, 90vh);
+    max-width: 980px;
+    min-height: 560px;
 }
 
 .settings-header-ipados {
@@ -857,26 +859,46 @@ body.with-ambient-bg .app-main {
 .settings-body-ipados {
     display: flex;
     padding: 0;
-    max-height: 65vh;
-    min-height: 400px;
+    height: 100%;
     overflow: hidden;
 }
 
 .settings-sidebar {
-    width: 160px;
+    width: 200px;
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-light);
-    padding: 8px 0;
+    padding: 10px 0;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-medium) transparent;
+}
+
+.settings-sidebar::-webkit-scrollbar,
+.settings-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.settings-sidebar::-webkit-scrollbar-thumb,
+.settings-content::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.settings-sidebar::-webkit-scrollbar-track,
+.settings-content::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .settings-sidebar-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px;
-    margin: 2px 6px;
-    border-radius: 8px;
+    min-height: 44px;
+    padding: 8px 12px;
+    margin: 2px 8px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.15s var(--ease-apple);
     color: var(--text-secondary);
@@ -907,14 +929,16 @@ body.with-ambient-bg .app-main {
 }
 
 .sidebar-icon-wrapper {
-    width: 32px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
     border-radius: 8px;
-    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.15s var(--ease-apple);
+    flex-shrink: 0;
 }
 
 .settings-sidebar-item.active .sidebar-icon-wrapper {
@@ -925,9 +949,10 @@ body.with-ambient-bg .app-main {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     line-height: 1;
+    color: transparent;
 }
 
 .sidebar-icon svg {
@@ -950,6 +975,8 @@ body.with-ambient-bg .app-main {
     background: var(--bg-primary);
     overflow-y: auto;
     position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-medium) transparent;
 }
 
 .settings-empty-state {
@@ -963,7 +990,11 @@ body.with-ambient-bg .app-main {
 }
 
 .empty-state-icon {
-    font-size: 48px;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-secondary);
     margin-bottom: 16px;
     opacity: 0.5;
 }
@@ -1406,11 +1437,13 @@ select.select-input optgroup {
 
 @media (max-width: 600px) {
     .settings-sheet-ipados {
-        width: 95vw;
+        width: 96vw;
+        min-height: 0;
+        height: 92vh;
     }
 
     .settings-sidebar {
-        width: 130px;
+        width: 152px;
     }
 
     .sidebar-label {
@@ -1418,12 +1451,13 @@ select.select-input optgroup {
     }
 
     .sidebar-icon-wrapper {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
     }
 
     .sidebar-icon {
-        font-size: 16px;
+        width: 12px;
+        height: 12px;
     }
 }
 
@@ -2562,6 +2596,7 @@ body.with-ambient-bg > [id^="bg-"] {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border: 1px solid var(--border-light);
 }
 
 .plugin-icon--letter {
@@ -2697,7 +2732,39 @@ body.with-ambient-bg > [id^="bg-"] {
 }
 
 .header-plugin-icon--empty {
+    width: 0;
     display: none;
+}
+
+.cv-dialog-sheet {
+    max-width: 460px;
+    border-radius: 16px;
+}
+
+.cv-dialog-header {
+    padding: 14px 18px;
+}
+
+.cv-dialog-body {
+    padding: 18px;
+}
+
+.cv-dialog-message {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.cv-dialog-actions {
+    justify-content: flex-end;
+}
+
+.cv-dialog-confirm.cv-dialog-danger {
+    background: var(--accent-red);
+}
+
+.cv-dialog-confirm.cv-dialog-danger:hover {
+    background: #ff2a1f;
 }
 
 .header-plugin-label {
