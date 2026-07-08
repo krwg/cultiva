@@ -16,6 +16,13 @@ export function applyTranslations(lang) {
     }
   });
 
+  document.querySelectorAll('[data-i18n-tooltip]').forEach((el) => {
+    const key = el.dataset.i18nTooltip;
+    if (key && t[key]) {
+      el.dataset.tooltip = t[key];
+    }
+  });
+
   document.querySelectorAll('optgroup[data-i18n-label]').forEach((og) => {
     const key = og.dataset.i18nLabel;
     if (key && t[key]) {

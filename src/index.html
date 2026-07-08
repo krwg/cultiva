@@ -25,10 +25,10 @@
             </div>
             <div class="header-actions" role="navigation" aria-label="Garden actions">
                 <div class="habit-search-wrap">
-                    <input type="search" id="habit-search" class="habit-search-input" data-i18n-placeholder="searchHabitsPlaceholder" placeholder="Search habits…" autocomplete="off" aria-label="Search habits">
+                    <input type="search" id="habit-search" class="habit-search-input" data-i18n-placeholder="searchHabitsPlaceholder" data-i18n-tooltip="tooltipSearch" placeholder="Search habits…" autocomplete="off" aria-label="Search habits">
                 </div>
-                <a href="./pages/calendar/index.html" class="header-link" data-i18n="calendar" title="Calendar">Calendar</a>
-                <button class="add-btn" id="open-add-modal" aria-label="Add new habit">+</button>
+                <a href="./pages/calendar/index.html" class="header-link" data-i18n="calendar" data-i18n-tooltip="tooltipCalendar">Calendar</a>
+                <button class="add-btn" id="open-add-modal" data-i18n-tooltip="tooltipNewHabit" aria-label="Add new habit">+</button>
 
                 <div class="user-menu" id="user-menu">
                     <button class="user-btn" id="user-menu-btn" aria-label="User menu" aria-expanded="false">
@@ -67,7 +67,7 @@
                             <button class="dropdown-item" id="open-avatar-picker">
                                 <span data-i18n="changeAvatar">Change Avatar</span>
                             </button>
-                            <button class="dropdown-item" id="open-settings">
+                            <button class="dropdown-item" id="open-settings" data-i18n-tooltip="tooltipSettings">
                                 <span data-i18n="settings">Settings</span>
                             </button>
                         </div>
@@ -278,7 +278,7 @@
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
                         <span class="sidebar-label" data-i18n="notifications">Notifications</span>
                     </div>
-                    <div class="settings-sidebar-item" data-section="shortcuts">
+                    <div class="settings-sidebar-item" data-section="shortcuts" data-i18n-tooltip="tooltipShortcuts">
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
                         <span class="sidebar-label" data-i18n="shortcuts">Keyboard</span>
                     </div>
@@ -391,7 +391,7 @@
                                     <span class="setting-label" data-i18n="theme">Theme</span>
                                     <span class="setting-desc" data-i18n="themeDescGrouped">Light and dark palettes are grouped so switching feels predictable.</span>
                                 </div>
-                                <select id="theme-select" class="select-input select-small">
+                                <select id="theme-select" class="select-input select-small" data-i18n-tooltip="tooltipTheme">
                                     <optgroup data-i18n-label="themeGroupSystem" label="System">
                                         <option value="auto" data-i18n="themeAuto">Auto</option>
                                     </optgroup>
@@ -426,7 +426,7 @@
                                     <span class="setting-label" data-i18n="background">Background</span>
                                     <span class="setting-desc" data-i18n="backgroundDescFull">Garden and calendar share the same ambient layer.</span>
                                 </div>
-                                <select id="bg-select" class="select-input select-small">
+                                <select id="bg-select" class="select-input select-small" data-i18n-tooltip="tooltipBackground">
                                     <option value="none" data-i18n="backgroundNone">None</option>
                                     <option value="aurora" data-i18n="backgroundAurora">Aurora Garden</option>
                                     <option value="rainfall" data-i18n="backgroundRainfall">Rainfall</option>
@@ -848,7 +848,7 @@
                 <p class="plugins-hero-desc" data-i18n="enablePluginsDesc">Allow third-party extensions</p>
             </div>
             <label class="toggle-switch">
-                <input type="checkbox" id="toggle-plugins" checked>
+                                <input type="checkbox" id="toggle-plugins" data-i18n-tooltip="tooltipPluginsMaster" checked>
                 <span class="toggle-slider"></span>
             </label>
         </div>
