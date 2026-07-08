@@ -732,13 +732,13 @@ function updateStatusCard(state, title, message) {
 
   if (icon) {
     const icons = {
-      checking: '🔍',
+      checking: '',
       available: '⬇️',
       downloading: '⬇️',
       downloaded: '✅',
       uptodate: '✓',
       error: '❌',
-      browser: '🌐'
+      browser: '⌘'
     };
     icon.textContent = icons[state] || 'ℹ️';
   }
@@ -871,7 +871,10 @@ async function updateAuthUI() {
   if (signOutBtnEl) { signOutBtnEl.style.display = isLoggedIn ? 'flex' : 'none'; }
 
   const statusText = document.getElementById('user-status-text');
-  if (statusText) { statusText.textContent = isLoggedIn ? 'Signed In' : 'Local Storage'; }
+  if (statusText) {
+    const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+    statusText.textContent = isLoggedIn ? (t.signedInStatus || 'Signed in') : (t.localStorage || 'Local Storage');
+  }
 
   let displayName = 'Guest';
   let dropdownDisplay = 'Guest User';
@@ -918,9 +921,12 @@ async function updateAuthUI() {
 }
 
 function switchAuthTab(tab) {
+  const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.auth-form').forEach(f => f.classList.toggle('active', f.id === `${tab}-form`));
-  document.getElementById('auth-modal-title').textContent = tab === 'login' ? 'Sign In' : 'Sign Up';
+  document.getElementById('auth-modal-title').textContent = tab === 'login'
+    ? (t.signIn || 'Sign In')
+    : (t.signUp || 'Sign Up');
   if (authError) { authError.style.display = 'none'; }
 }
 
@@ -935,7 +941,11 @@ async function handleAuthSubmit(e, type) {
   const password = passInput ? passInput.value : '';
 
   if (!email || !password) {
-    if (authError) { authError.textContent = 'Email and password are required'; authError.style.display = 'block'; }
+    if (authError) {
+      const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+      authError.textContent = t.authRequiredFields || 'Email and password are required';
+      authError.style.display = 'block';
+    }
     return;
   }
 
@@ -953,7 +963,8 @@ async function handleAuthSubmit(e, type) {
 
     await updateAuthUI();
     closeModal(authModal);
-    showNotification(type === 'login' ? 'Welcome back!' : 'Account created!');
+    const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+    showNotification(type === 'login' ? (t.authWelcomeBack || 'Welcome back') : (t.authAccountCreated || 'Account created'));
 
     emailInput.value = ''; passInput.value = '';
     const nameInput = document.getElementById('reg-name');

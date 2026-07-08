@@ -1,7 +1,7 @@
 import { BRANDING } from '../core/branding.js';
 
 export function applyBranding() {
-  document.title = `${BRANDING.APP_TITLE} | Home`;
+  document.title = `${BRANDING.APP_TITLE} | Garden`;
   document.querySelectorAll('.footer-version').forEach((el) => {
     el.textContent = BRANDING.FOOTER_TEXT;
   });

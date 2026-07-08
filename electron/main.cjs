@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, session, dialog, safeStorage, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, session, dialog, safeStorage, Notification, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const pkg = require('../package.json');
@@ -10,6 +10,7 @@ const mainWindowMod = require('./lib/main-window.cjs');
 const { registerCoreIpc } = require('./lib/ipc-main-handlers.cjs');
 const { registerBackupIpc } = require('./lib/backup.cjs');
 const { registerAutoBackupIpc } = require('./lib/zip-backup.cjs');
+const { installAppMenu } = require('./lib/app-menu.cjs');
 
 let mainWindow = null;
 const getMainWindow = () => mainWindow;
@@ -36,6 +37,7 @@ app.whenReady().then(() => {
   mainWindowMod.attachSessionContentSecurityPolicy({ isDev, session });
   discord.initDiscordRPC();
   setupPluginIPC();
+  installAppMenu({ Menu, app, shell, getMainWindow, isDev });
   openMainWindow();
   discord.registerDiscordIpc(ipcMain);
   registerUpdaterIpc(ipcMain);
