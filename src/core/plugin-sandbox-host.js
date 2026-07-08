@@ -68,6 +68,9 @@ function buildSandboxBootstrapDocument(pluginId) {
         get: function (key) { return rpc('storage.get', [key]); },
         set: function (key, value) { return rpc('storage.set', [key, value]); }
       },
+      data: {
+        read: function (name) { return rpc('data.read', [name]); }
+      },
       ui: {
         registerHeaderItem: function (config) {
           headerOnClick = config && config.onClick;
