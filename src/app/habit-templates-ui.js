@@ -14,7 +14,7 @@ export function bindHabitTemplates(lang) {
     btn.className = 'habit-template-chip';
     btn.dataset.templateId = tpl.id;
     const label = t.habitTemplates?.[tpl.id] || tpl.name;
-    btn.textContent = `${tpl.emoji} ${label}`;
+    btn.textContent = label;
     btn.addEventListener('click', () => applyHabitTemplate(tpl));
     wrap.appendChild(btn);
   }

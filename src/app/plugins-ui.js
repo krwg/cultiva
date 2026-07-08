@@ -4,6 +4,7 @@ import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
 import { saveSettings } from './settings-controller.js';
 import { showNotification } from './ui-shell.js';
+import { showConfirmDialog } from './dialogs.js';
 
 function tStrings() {
   return TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
@@ -59,7 +60,7 @@ async function loadInstalledPlugins() {
 
     const iconWrap = document.createElement('div');
     iconWrap.className = 'plugin-icon';
-    iconWrap.textContent = p.icon || '🔌';
+    iconWrap.textContent = '';
 
     const info = document.createElement('div');
     info.className = 'plugin-info';
@@ -93,7 +94,7 @@ async function loadInstalledPlugins() {
     btnSettings.type = 'button';
     btnSettings.className = 'plugin-btn plugin-btn-settings';
     btnSettings.title = t.pluginSettings;
-    btnSettings.textContent = '⚙️';
+    btnSettings.textContent = t.pluginSettings || 'Settings';
     btnSettings.disabled = !p.loaded;
     btnSettings.addEventListener('click', () => window.openPluginSettings(p.id));
 
@@ -101,7 +102,7 @@ async function loadInstalledPlugins() {
     btnUninstall.type = 'button';
     btnUninstall.className = 'plugin-btn plugin-btn-uninstall';
     btnUninstall.title = t.uninstall;
-    btnUninstall.textContent = '🗑️';
+    btnUninstall.textContent = t.uninstall || 'Uninstall';
     btnUninstall.addEventListener('click', () => window.uninstallPlugin(p.id));
 
     actions.appendChild(btnSettings);
@@ -148,7 +149,7 @@ async function loadAvailablePlugins() {
 
       const iconWrap = document.createElement('div');
       iconWrap.className = 'plugin-icon';
-      iconWrap.textContent = p.icon || '🔌';
+      iconWrap.textContent = '';
 
       const info = document.createElement('div');
       info.className = 'plugin-info';
@@ -228,7 +229,13 @@ window.installPlugin = async (pluginId) => {
 
 window.uninstallPlugin = async (pluginId) => {
   const t = tStrings();
-  if (confirm(t.pluginUninstallConfirm)) {
+  const shouldUninstall = await showConfirmDialog(t.pluginUninstallConfirm, {
+    title: t.uninstall || 'Uninstall',
+    confirmText: t.uninstall || 'Uninstall',
+    cancelText: t.cancel || 'Cancel',
+    tone: 'danger'
+  });
+  if (shouldUninstall) {
     await pluginManager.uninstallPlugin(pluginId);
     showNotification('', t.pluginUninstallSuccess);
     await renderPluginsSection();
@@ -330,29 +337,19 @@ export function renderPluginHeaderItems() {
       item.dataset.pluginId = plugin.id;
       const iconSpan = document.createElement('span');
       iconSpan.className = 'header-plugin-icon';
-      iconSpan.textContent = pluginData.headerItem.icon || '';
-      if (!(pluginData.headerItem.icon || '').toString().trim()) {
-        iconSpan.classList.add('header-plugin-icon--empty');
-      }
+      iconSpan.textContent = '';
+      iconSpan.classList.add('header-plugin-icon--empty');
       const labelSpan = document.createElement('span');
       labelSpan.className = 'header-plugin-label';
       labelSpan.textContent = pluginData.headerItem.label || '';
       labelSpan.style.color = pluginData.headerItem.labelColor || '';
       const pend = pluginData._pendingHeaderUi;
       if (pend) {
-        if (pend.icon !== null && pend.icon !== undefined) {
-          iconSpan.textContent = pend.icon;
-        }
         if (pend.label !== null && pend.label !== undefined) {
           labelSpan.textContent = pend.label;
         }
         if (pend.labelColor !== null && pend.labelColor !== undefined) {
           labelSpan.style.color = pend.labelColor || '';
-        }
-        if (!(iconSpan.textContent || '').trim()) {
-          iconSpan.classList.add('header-plugin-icon--empty');
-        } else {
-          iconSpan.classList.remove('header-plugin-icon--empty');
         }
         delete pluginData._pendingHeaderUi;
       }

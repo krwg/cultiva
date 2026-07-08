@@ -7,6 +7,8 @@ import { getTodayStr } from './date-ui.js';
 import { toggleHabitWithHooks } from './habit-actions.js';
 import { openQuantityLogModal } from './modals.js';
 import { showNotification } from './ui-shell.js';
+import { glyphSearch } from '../core/glyph-s-search.js';
+import { showConfirmDialog } from './dialogs.js';
 
 let ctx = null;
 
@@ -23,16 +25,7 @@ function requireCtx() {
 
 export function filterHabits(list) {
   const c = requireCtx();
-  const q = c.habitSearchQuery.trim().toLowerCase();
-  if (!q) {
-    return list;
-  }
-  return list.filter((h) => {
-    const name = (h.name || '').toLowerCase();
-    const desc = (h.description || '').toLowerCase();
-    const cat = (h.category || '').toLowerCase();
-    return name.includes(q) || desc.includes(q) || cat.includes(q);
-  });
+  return glyphSearch(list, c.habitSearchQuery);
 }
 
 export function getFocusedHabit() {
@@ -198,7 +191,17 @@ export function bindGardenCardEvents() {
       showNotification(TRANSLATIONS[c.settings.lang].progressSaved);
     } else if (e.target.closest('.btn-card-danger')) {
       e.stopPropagation();
-      if (confirm('Remove habit?')) { habits.remove(id); renderGarden(); showNotification(TRANSLATIONS[c.settings.lang].removed); }
+      const shouldRemove = await showConfirmDialog('Remove habit?', {
+        title: TRANSLATIONS[c.settings.lang].delete || 'Delete',
+        confirmText: TRANSLATIONS[c.settings.lang].delete || 'Delete',
+        cancelText: TRANSLATIONS[c.settings.lang].cancel || 'Cancel',
+        tone: 'danger'
+      });
+      if (shouldRemove) {
+        habits.remove(id);
+        renderGarden();
+        showNotification(TRANSLATIONS[c.settings.lang].removed);
+      }
     } else { openStats(id); }
   };
 

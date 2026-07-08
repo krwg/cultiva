@@ -8,6 +8,7 @@ import { buildBackupPayload, runAutoBackup } from './auto-backup.js';
 import { openModal, closeModal } from './modals.js';
 import { habits } from '../modules/habits.js';
 import { buildIcalDocument, downloadIcalFile } from '../core/ical-export.js';
+import { showAlertDialog, showConfirmDialog } from './dialogs.js';
 
 let ctx = null;
 let pendingImport = null;
@@ -109,6 +110,7 @@ function confirmImport() {
 
 export function importData(file) {
   const c = requireCtx();
+  const t = TRANSLATIONS[c.settings.lang];
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -125,7 +127,7 @@ export function importData(file) {
     };
     reader.readAsText(file);
   }).then((data) => { showImportPreview(data); })
-    .catch(err => alert(err.message));
+    .catch(err => showAlertDialog(err.message, { title: t.import || 'Import' }));
 }
 
 export function bindBackupUiEvents() {
@@ -144,10 +146,25 @@ export function bindBackupUiEvents() {
     closeModal(document.getElementById('import-preview-modal'));
   });
   document.getElementById('import-preview-confirm')?.addEventListener('click', confirmImport);
-  document.getElementById('settings-reset')?.addEventListener('click', () => {
+  document.getElementById('settings-reset')?.addEventListener('click', async () => {
     const c = requireCtx();
     const t = TRANSLATIONS[c.settings.lang];
-    if (confirm(t.reset + '?') && confirm('Are you absolutely sure?')) {
+    const firstConfirm = await showConfirmDialog(`${t.reset}?`, {
+      title: t.reset || 'Reset',
+      confirmText: t.resetBtn || 'Reset',
+      cancelText: t.cancel || 'Cancel',
+      tone: 'danger'
+    });
+    if (!firstConfirm) {
+      return;
+    }
+    const secondConfirm = await showConfirmDialog('Are you absolutely sure?', {
+      title: t.dangerZone || 'Danger Zone',
+      confirmText: t.resetBtn || 'Reset',
+      cancelText: t.cancel || 'Cancel',
+      tone: 'danger'
+    });
+    if (secondConfirm) {
       storage.saveHabits([]);
       renderGarden();
       showNotification(t.resetDone);

@@ -38,6 +38,8 @@ import { toggleHabitWithHooks } from './app/habit-actions.js';
 import { initAutoBackup } from './app/auto-backup.js';
 import { bindOnboardingEvents, maybeShowOnboarding } from './app/onboarding-wizard.js';
 import { bindHabitTemplates } from './app/habit-templates-ui.js';
+import { AVATAR_BACKGROUNDS, AVATAR_EMOJIS, DEFAULT_AVATAR } from './core/avatar-presets.js';
+import { showAlertDialog, showConfirmDialog } from './app/dialogs.js';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
@@ -103,51 +105,6 @@ configureGardenController({
 configureBackupUi({
   get settings() { return settings; }
 });
-
-const AVATAR_DATA = {
-  backgrounds: [
-    { id: 'none', name: 'None', css: 'var(--bg-tertiary)' },
-    { id: 'solid-black', css: '#000000' },
-    { id: 'solid-white', css: '#ffffff' },
-    { id: 'solid-grey', css: '#8e8e93' },
-    { id: 'sunset-1', css: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)' },
-    { id: 'sunset-2', css: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' },
-    { id: 'sunset-3', css: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-    { id: 'sunset-4', css: 'linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)' },
-    { id: 'sunset-5', css: 'linear-gradient(135deg, #ff0844 0%, #ffb199 100%)' },
-    { id: 'ocean-1', css: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
-    { id: 'ocean-2', css: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-    { id: 'ocean-3', css: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-    { id: 'ocean-4', css: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)' },
-    { id: 'ocean-5', css: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-    { id: 'nature-1', css: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-    { id: 'nature-2', css: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' },
-    { id: 'nature-3', css: 'linear-gradient(135deg, #96fbc4 0%, #f9f586 100%)' },
-    { id: 'nature-4', css: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' },
-    { id: 'nature-5', css: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
-    { id: 'dark-1', css: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)' },
-    { id: 'dark-2', css: 'linear-gradient(135deg, #232526 0%, #414345 100%)' },
-    { id: 'dark-3', css: 'linear-gradient(135deg, #000000 0%, #434343 100%)' },
-    { id: 'neon-1', css: 'linear-gradient(135deg, #0ba360 0%, #3cba92 100%)' },
-    { id: 'neon-2', css: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)' },
-    { id: 'pastel-1', css: 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)' },
-    { id: 'pastel-2', css: 'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)' },
-    { id: 'pastel-3', css: 'linear-gradient(135deg, #c1dfc4 0%, #deecdd 100%)' },
-    { id: 'pastel-4', css: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' },
-    { id: 'pastel-5', css: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' },
-    { id: 'gold-1', css: 'linear-gradient(135deg, #f5af19 0%, #f12711 100%)' },
-    { id: 'gold-2', css: 'linear-gradient(135deg, #e6b980 0%, #eacda3 100%)' },
-    { id: 'slate-1', css: 'linear-gradient(135deg, #667db6 0%, #0082c8 50%, #667db6 100%)' }
-  ],
-  emojis: [
-    '🌱', '🌿', '🍀', '😊', '😋', '😶‍🌫️', '🌴', '🌵', '🌾', '🤪', '🌸', '🌺', '🌷', '🥳', '🍄', '🍉', '🍋', '👻', '🍏', '🍑',
-    '🦊', '🐶', '🐼', '🐨', '🐯', '🐵', '🐝', '🐋',
-    '⚽', '🎮', '💻', '⌨️', '📷', '🎸', '🧑‍🚀', '🧘', '🧠', '💡', '⏰', '👾', '🚀', '🛸', '🌍', '🧊', '💍', '🎁',
-    '✨', '⭐', '🌟', '🌙', '☀️', '🌊', '⚡', '🔥', '💫', '🥇', '🍃', '☮️', '🕊️',
-    '😎', '🤠', '🧐', '🤓', '😴', '👽', '💀', '👻', '😈', '🤡', '👹', '🫢',
-    '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '❤️‍🔥'
-  ]
-};
 
 let tempAvatar = { ...settings.avatar };
 
@@ -400,7 +357,7 @@ function updateProfileSection() {
       if (avatarImg) { avatarImg.style.display = 'none'; }
       if (avatarEmoji) { avatarEmoji.style.display = 'flex'; avatarEmoji.textContent = settings.avatar?.emoji || '🌱'; }
 
-      const bg = AVATAR_DATA.backgrounds.find(b => b.id === settings.avatar?.background);
+      const bg = AVATAR_BACKGROUNDS.find(b => b.id === settings.avatar?.background);
       avatarContainer.style.background = (bg && bg.id !== 'none') ? bg.css : 'linear-gradient(135deg, var(--accent-purple), var(--accent-pink))';
     }
   }
@@ -512,7 +469,11 @@ function initProfileManagement() {
   });
 
   document.getElementById('sign-out-from-profile')?.addEventListener('click', async () => {
-    if (confirm(currentT.confirmSignOut || 'Sign out of your account?')) {
+    if (await showConfirmDialog(currentT.confirmSignOut || 'Sign out of your account?', {
+      title: currentT.signOut || 'Sign Out',
+      confirmText: currentT.signOut || 'Sign Out',
+      cancelText: currentT.cancel || 'Cancel'
+    })) {
       await auth.logout();
       await updateAuthUI();
       updateProfileSection();
@@ -558,7 +519,7 @@ function renderHeaderAvatar() {
   }
   headerAvatar.classList.remove('has-photo');
   if (headerEmoji) { headerEmoji.style.display = ''; }
-  const bg = AVATAR_DATA.backgrounds.find(b => b.id === settings.avatar.background);
+  const bg = AVATAR_BACKGROUNDS.find(b => b.id === settings.avatar.background);
   if (bg && bg.id !== 'none') {
     headerAvatar.style.backgroundImage = bg.css;
     headerAvatar.style.backgroundColor = 'transparent';
@@ -588,7 +549,7 @@ function renderAvatarPicker() {
     if (previewImage) { previewImage.style.display = 'none'; }
     if (previewEmoji) { previewEmoji.style.display = ''; }
     if (clearPhotoBtn) { clearPhotoBtn.style.display = 'none'; }
-    const bg = AVATAR_DATA.backgrounds.find(b => b.id === tempAvatar.background);
+    const bg = AVATAR_BACKGROUNDS.find(b => b.id === tempAvatar.background);
     if (bg && bg.id !== 'none') {
       preview.style.backgroundImage = bg.css;
       preview.style.backgroundColor = 'transparent';
@@ -598,11 +559,11 @@ function renderAvatarPicker() {
     }
     if (previewEmoji) { previewEmoji.textContent = tempAvatar.emoji; }
   }
-  bgGrid.innerHTML = AVATAR_DATA.backgrounds.map(bg => `
+  bgGrid.innerHTML = AVATAR_BACKGROUNDS.map(bg => `
         <button class="avatar-option ${tempAvatar.background === bg.id && !tempAvatar.photo ? 'selected' : ''} ${bg.id === 'none' ? 'bg-none' : ''}"
                 data-bg="${bg.id}" style="${bg.id !== 'none' ? `background: ${bg.css};` : ''}" title="${bg.name || bg.id}"></button>
     `).join('');
-  emojiGrid.innerHTML = AVATAR_DATA.emojis.map(emoji => `
+  emojiGrid.innerHTML = AVATAR_EMOJIS.map(emoji => `
         <button class="avatar-option ${tempAvatar.emoji === emoji && !tempAvatar.photo ? 'selected' : ''}" data-emoji="${emoji}">${emoji}</button>
     `).join('');
 }
@@ -634,7 +595,10 @@ function initAvatarPicker() {
   uploadInput?.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) { return; }
-    if (file.size > 2 * 1024 * 1024) { alert('Image is too large. Max 2MB.'); return; }
+    if (file.size > 2 * 1024 * 1024) {
+      showAlertDialog('Image is too large. Max 2MB.', { title: 'Avatar' });
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => { tempAvatar.photo = ev.target.result; tempAvatar.background = 'none'; renderAvatarPicker(); };
     reader.readAsDataURL(file);
@@ -667,7 +631,7 @@ function initAvatarPicker() {
   });
 
   resetBtn?.addEventListener('click', () => {
-    tempAvatar = { background: 'green', emoji: '🌱', photo: null };
+    tempAvatar = { ...DEFAULT_AVATAR };
     uploadInput.value = '';
     renderAvatarPicker();
   });
@@ -941,7 +905,7 @@ async function updateAuthUI() {
       dropAvatarImg.style.display = 'none';
       dropAvatarEmoji.style.display = 'flex';
       dropAvatarEmoji.textContent = settings.avatar?.emoji || '🌱';
-      const bg = AVATAR_DATA.backgrounds.find(b => b.id === settings.avatar?.background);
+      const bg = AVATAR_BACKGROUNDS.find(b => b.id === settings.avatar?.background);
       dropAvatarLarge.style.background = (bg && bg.id !== 'none') ? bg.css : 'linear-gradient(135deg, var(--accent-purple), var(--accent-pink))';
     }
   }
@@ -1084,7 +1048,7 @@ function initEvents() {
       document.querySelector('input[name="track-type"][value="binary"]').checked = true;
       closeModal(addModal); renderGarden();
       showNotification(TRANSLATIONS[settings.lang].habitPlanted);
-    } catch (err) { alert(err.message); }
+    } catch (err) { showAlertDialog(err.message, { title: 'Habit' }); }
   });
 
   bindGardenCardEvents();
