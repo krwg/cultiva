@@ -2587,6 +2587,10 @@ body.with-ambient-bg > [id^="bg-"] {
     border: 1px solid var(--border-light);
 }
 
+.plugin-card.plugin-card-disabled {
+    opacity: 0.62;
+}
+
 .plugin-icon {
     width: 44px;
     height: 44px;
@@ -2647,7 +2651,17 @@ body.with-ambient-bg > [id^="bg-"] {
 
 .plugin-actions {
     display: flex;
+    align-items: center;
     gap: 6px;
+}
+
+.plugin-enable-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-left: 4px;
 }
 
 .plugin-btn {
@@ -2734,6 +2748,34 @@ body.with-ambient-bg > [id^="bg-"] {
 .header-plugin-icon--empty {
     width: 0;
     display: none;
+}
+
+.cultiva-plugin-sheet-root {
+    position: fixed;
+    inset: 0;
+    z-index: 11000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+}
+
+.cultiva-sheet-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.cultiva-sheet-card {
+    position: relative;
+    width: min(520px, 92vw);
+    max-height: 86vh;
+    overflow: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-primary);
+    box-shadow: var(--shadow-xl);
 }
 
 .cv-dialog-sheet {

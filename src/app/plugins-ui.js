@@ -17,16 +17,18 @@ export async function renderPluginsSection() {
   }
   if (pluginsToggle && !pluginsToggle.dataset.bound) {
     pluginsToggle.dataset.bound = '1';
-    pluginsToggle.addEventListener('change', (e) => {
+    pluginsToggle.addEventListener('change', async (e) => {
       settings.pluginsEnabled = e.target.checked;
       saveSettings();
 
       if (settings.pluginsEnabled) {
-        pluginManager.init();
+        await pluginManager.init();
         renderPluginHeaderItems();
       } else {
+        await pluginManager.disableAllPlugins();
         document.querySelectorAll('.header-plugin-item').forEach((el) => el.remove());
       }
+      await loadInstalledPlugins();
     });
   }
 
@@ -57,6 +59,9 @@ async function loadInstalledPlugins() {
   for (const p of plugins) {
     const card = document.createElement('div');
     card.className = 'plugin-card';
+    if (!p.enabled) {
+      card.classList.add('plugin-card-disabled');
+    }
 
     const iconWrap = document.createElement('div');
     iconWrap.className = 'plugin-icon';
@@ -72,9 +77,10 @@ async function loadInstalledPlugins() {
     const descEl = document.createElement('div');
     descEl.className = 'plugin-description';
     const baseDesc = p.description || '';
+    const failReason = pluginManager.getPluginFailure(p.id);
     descEl.textContent = p.loaded
       ? baseDesc
-      : `${baseDesc ? `${baseDesc} — ` : ''}${t.pluginNotLoadedHint || 'Not loaded.'}`;
+      : `${baseDesc ? `${baseDesc} — ` : ''}${failReason || t.pluginNotLoadedHint || 'Not loaded.'}`;
 
     const meta = document.createElement('div');
     meta.className = 'plugin-meta';
@@ -96,6 +102,21 @@ async function loadInstalledPlugins() {
     btnSettings.title = t.pluginSettings;
     btnSettings.textContent = t.pluginSettings || 'Settings';
     btnSettings.disabled = !p.loaded;
+    const toggleWrap = document.createElement('label');
+    toggleWrap.className = 'plugin-enable-switch';
+    const toggleInput = document.createElement('input');
+    toggleInput.type = 'checkbox';
+    toggleInput.checked = Boolean(p.enabled);
+    toggleInput.addEventListener('change', async () => {
+      await pluginManager.setPluginEnabled(p.id, toggleInput.checked);
+      await renderPluginsSection();
+      renderPluginHeaderItems();
+    });
+    const toggleLabel = document.createElement('span');
+    toggleLabel.textContent = t.enabled || 'Enabled';
+    toggleWrap.appendChild(toggleInput);
+    toggleWrap.appendChild(toggleLabel);
+
     btnSettings.addEventListener('click', () => window.openPluginSettings(p.id));
 
     const btnUninstall = document.createElement('button');
@@ -105,8 +126,21 @@ async function loadInstalledPlugins() {
     btnUninstall.textContent = t.uninstall || 'Uninstall';
     btnUninstall.addEventListener('click', () => window.uninstallPlugin(p.id));
 
+    const btnRetry = document.createElement('button');
+    btnRetry.type = 'button';
+    btnRetry.className = 'plugin-btn plugin-btn-settings';
+    btnRetry.textContent = t.retry || 'Retry';
+    btnRetry.style.display = p.loaded ? 'none' : 'inline-flex';
+    btnRetry.addEventListener('click', async () => {
+      await pluginManager.loadPlugin(p.id);
+      await renderPluginsSection();
+      renderPluginHeaderItems();
+    });
+
     actions.appendChild(btnSettings);
+    actions.appendChild(btnRetry);
     actions.appendChild(btnUninstall);
+    actions.appendChild(toggleWrap);
 
     card.appendChild(iconWrap);
     card.appendChild(info);

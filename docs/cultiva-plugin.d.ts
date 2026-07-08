@@ -8,6 +8,7 @@ export interface CultivaPluginManifest {
   entry?: string;
   styles?: string[];
   permissions?: Array<'network' | 'storage' | 'ui'>;
+  data?: string[];
   minAppVersion?: string;
   settings?: CultivaPluginSettingField[];
 }
@@ -23,6 +24,10 @@ export interface CultivaPluginSettingField {
 export interface CultivaPluginStorage {
   get(key: string): Promise<unknown>;
   set(key: string, value: unknown): Promise<void>;
+}
+
+export interface CultivaPluginData {
+  read(path: string): Promise<unknown>;
 }
 
 export interface CultivaPluginHeaderConfig {
@@ -56,6 +61,7 @@ export interface CultivaPluginHooks {
 export interface CultivaPluginContext {
   manifest: CultivaPluginManifest;
   storage: CultivaPluginStorage;
+  data: CultivaPluginData;
   ui: CultivaPluginUi;
 }
 
