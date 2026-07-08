@@ -736,6 +736,10 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syn
 async function init() {
   log('Calendar initializing...');
 
+  if (window.electron?.platform) {
+    document.documentElement.classList.add(`platform-${window.electron.platform}`);
+  }
+
   try {
     await storage.init();
     log('Storage initialized, habits count:', habits.getAll().length);

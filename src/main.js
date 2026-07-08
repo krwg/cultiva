@@ -1270,6 +1270,9 @@ if (typeof window.electron !== 'undefined' && window.electron.onUpdateMessage) {
 
 async function init() {
   try {
+    if (window.electron?.platform) {
+      document.documentElement.classList.add(`platform-${window.electron.platform}`);
+    }
     initTooltipManager();
 
     await ensureAppReady();

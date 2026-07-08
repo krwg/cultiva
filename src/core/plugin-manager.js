@@ -1,6 +1,7 @@
 import { storage } from '../modules/storage.js';
 import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
+import { settings } from '../app/renderer-bootstrap.js';
 import { pluginHasPermission } from './plugin-rpc.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
 
@@ -226,6 +227,19 @@ function _insertGardenWidget(container, node, position) {
   container.appendChild(node);
 }
 
+function _patchPluginMainSheet(pluginId, selector, html) {
+  const wrap = document.querySelector(`[data-cultiva-plugin-sheet="${_escapeSelectorSegment(pluginId)}"]`);
+  if (!wrap) {
+    return false;
+  }
+  const el = wrap.querySelector(selector);
+  if (!el) {
+    return false;
+  }
+  el.innerHTML = String(html || '');
+  return true;
+}
+
 function _mountPluginMainSheet(pluginId, html) {
   const previousFocus = _collectSheetFocusState(pluginId);
   _closePluginMainSheet(pluginId);
@@ -272,6 +286,9 @@ function _mountPluginMainSheet(pluginId, html) {
     }
     if (t.dataset.station) {
       payload.stationId = t.dataset.station;
+    }
+    if (t.dataset.format) {
+      payload.format = t.dataset.format;
     }
     if (t.dataset.minutes !== undefined && t.dataset.minutes !== '') {
       const m = parseInt(t.dataset.minutes, 10);
@@ -377,6 +394,12 @@ function _wireSandboxHost(host, pluginId, manifest) {
       }
       return undefined;
     }
+    if (method === 'app.getLocale') {
+      if (!pluginHasPermission(manifest, 'ui')) {
+        throw new Error('UI permission denied');
+      }
+      return settings.lang || 'en';
+    }
   });
 
   host.setHandler('onHookRegister', (hookName) => {
@@ -430,6 +453,10 @@ function _wireSandboxHost(host, pluginId, manifest) {
 
   host.setHandler('onUiMainSheet', (data) => {
     _mountPluginMainSheet(pluginId, data.html);
+  });
+
+  host.setHandler('onUiPatchMainSheet', (data) => {
+    _patchPluginMainSheet(pluginId, data.selector, data.html);
   });
 
   host.setHandler('onUiCloseMainSheet', () => {
