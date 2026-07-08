@@ -347,7 +347,19 @@ a:hover { color: var(--accent-blue-hover); }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .section-header h2 { font-size: 20px; font-weight: 600; }
 .section-desc { font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px; }
-.garden-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.garden-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    align-items: stretch;
+    grid-auto-flow: row;
+}
+.garden-grid > * {
+    min-width: 0;
+}
+.garden-grid .habit-card {
+    height: 100%;
+}
 
 .habit-count, .trophy-count {
     font-size: 13px; color: var(--text-tertiary); background: var(--bg-tertiary);
@@ -2678,7 +2690,7 @@ body.with-ambient-bg > [id^="bg-"] {
 .garden-plugin-widget .habit-card,
 .habit-card.garden-plugin-card {
     width: 100%;
-    min-height: 178px;
+    min-height: 184px;
     height: 100%;
 }
 
