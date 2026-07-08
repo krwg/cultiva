@@ -1,6 +1,6 @@
 # Cultiva Plugin Author Guide
 
-> **Audience:** developers publishing plugins in **[CultivaPlugins](https://github.com/krwg/CultivaPlugins)** and anyone extending the **desktop (Electron)** app.  
+> **Audience:** developers publishing plugins in **[cultiva-plugins](https://github.com/krwg/cultiva-plugins)** and anyone extending the **desktop (Electron)** app.  
 > **Runtime model:** the Cultiva client **downloads** manifests and files over HTTPS and installs them under the user profile (`userData/cultiva-plugins`). The `plugins/` folder in the **Cultiva** or **CultivaPlugins** repo is for **development & publishing only** — the running app does **not** read your local repo path at runtime.
 
 ---
@@ -75,6 +75,8 @@ The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`m
 | `icon` | **yes** | Emoji or short string shown in the list (can be empty `""` if you prefer text-only). |
 | `entry` | **yes** | Entry script filename (default `index.js` if omitted in older docs). |
 | `styles` | no | Array of CSS paths **relative to the plugin folder**; injected into the **main** window `<head>`. |
+| `permissions` | recommended | Explicit capabilities used by your plugin: `network`, `storage`, `ui`. |
+| `data` | no | Array of bundled static files (for example JSON dictionaries) accessible via `context.data.read(path)`. |
 | `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Use **`0.4.0`** if you depend on [**main-window UI**](#6-main-window-ui-bridge-cultiva--040). |
 
 **Minimal example**
@@ -88,6 +90,8 @@ The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`m
   "icon": "✦",
   "entry": "index.js",
   "styles": ["styles.css"],
+  "permissions": ["storage", "ui"],
+  "data": ["cities-ru.json"],
   "minAppVersion": "0.4.0"
 }
 ```
@@ -133,6 +137,12 @@ Parsed `manifest.json` object.
 |------|-----------|
 | `await context.storage.get(key)` | Per-plugin key/value (async). Keys are namespaced by the host. |
 | `await context.storage.set(key, value)` | Persist a JSON-serializable value. |
+
+### `context.data`
+
+| Call | Semantics |
+|------|-----------|
+| `await context.data.read(path)` | Reads a file listed in `manifest.data`. JSON files are parsed by the host before returning. |
 
 ### `context.ui` — always available
 
@@ -224,7 +234,8 @@ The host maintains a **CSP** and RPC **allowlist** (`storage.get` / `storage.set
 
 1. Bump **`version`** in `manifest.json`.  
 2. Bump the same version for that plugin in **`registry.json`**.  
-3. Push to **`main`** on CultivaPlugins.  
+3. Recompute file checksums in `registry.json.sha256` (e.g. `node scripts/compute-registry-sha256.mjs`).  
+4. Push to **`main`** on `krwg/cultiva-plugins`.  
 
 Users install or update from **Settings → Plugins**; the client re-downloads files from `baseUrl`.
 
@@ -258,7 +269,7 @@ Users install or update from **Settings → Plugins**; the client re-downloads f
 | Resource | URL |
 |----------|-----|
 | Cultiva (desktop) | https://github.com/krwg/Cultiva |
-| CultivaPlugins (store) | https://github.com/krwg/CultivaPlugins |
+| cultiva-plugins (store) | https://github.com/krwg/cultiva-plugins |
 | Latest Cultiva release | https://github.com/krwg/Cultiva/releases/latest |
 
 ---

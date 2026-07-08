@@ -58,7 +58,24 @@ async function getInstalledPluginIdsNormalized() {
   return raw.map((x) => String(x).trim()).filter(Boolean);
 }
 
+async function getDisabledPluginIdsNormalized() {
+  let raw = await storage.get(DISABLED_PLUGINS_KEY);
+  if (typeof raw === 'string') {
+    try {
+      raw = JSON.parse(raw);
+    } catch {
+      raw = null;
+    }
+  }
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  return raw.map((x) => String(x).trim()).filter(Boolean);
+}
+
 const plugins = new Map();
+const failedPlugins = new Map();
+const DISABLED_PLUGINS_KEY = 'cultiva-disabled-plugins';
 
 let _lastPluginLoadFailure = null;
 function notePluginLoadFailure(message) {
@@ -131,6 +148,47 @@ function _closePluginMainSheet(pluginId) {
   });
 }
 
+function _collectSheetFocusState(pluginId) {
+  const wrap = document.querySelector(`[data-cultiva-plugin-sheet="${_escapeSelectorSegment(pluginId)}"]`);
+  if (!wrap) {
+    return null;
+  }
+  const active = wrap.contains(document.activeElement) ? document.activeElement : null;
+  if (!active) {
+    return null;
+  }
+  const key = active.getAttribute('name') || active.id || null;
+  if (!key) {
+    return null;
+  }
+  return {
+    key,
+    byName: Boolean(active.getAttribute('name')),
+    selectionStart: typeof active.selectionStart === 'number' ? active.selectionStart : null,
+    selectionEnd: typeof active.selectionEnd === 'number' ? active.selectionEnd : null
+  };
+}
+
+function _restoreSheetFocusState(wrap, state) {
+  if (!wrap || !state) {
+    return;
+  }
+  let target = null;
+  if (state.byName) {
+    target = wrap.querySelector(`[name="${_escapeSelectorSegment(state.key)}"]`);
+  }
+  if (!target) {
+    target = wrap.querySelector(`#${_escapeSelectorSegment(state.key)}`);
+  }
+  if (!target || typeof target.focus !== 'function') {
+    return;
+  }
+  target.focus();
+  if (state.selectionStart !== null && state.selectionEnd !== null && typeof target.setSelectionRange === 'function') {
+    target.setSelectionRange(state.selectionStart, state.selectionEnd);
+  }
+}
+
 function _readCultivaPayloadFromEl(t) {
   const raw = t.getAttribute('data-cultiva-payload');
   if (!raw) {
@@ -157,7 +215,19 @@ function _readDatasetGeoPayload(t) {
   return p;
 }
 
+function _insertGardenWidget(container, node, position) {
+  if (!container || !node) {
+    return;
+  }
+  if (position === 'top') {
+    container.prepend(node);
+    return;
+  }
+  container.appendChild(node);
+}
+
 function _mountPluginMainSheet(pluginId, html) {
+  const previousFocus = _collectSheetFocusState(pluginId);
   _closePluginMainSheet(pluginId);
   const wrap = document.createElement('div');
   wrap.setAttribute('data-cultiva-plugin-sheet', pluginId);
@@ -166,6 +236,7 @@ function _mountPluginMainSheet(pluginId, html) {
   wrap.className = 'cultiva-plugin-sheet-root';
   wrap.innerHTML = String(html || '');
   document.body.appendChild(wrap);
+  _restoreSheetFocusState(wrap, previousFocus);
 
   const sandbox = plugins.get(pluginId)?.sandbox;
   if (!sandbox) {
@@ -343,7 +414,9 @@ function _wireSandboxHost(host, pluginId, manifest) {
     const wrap = document.createElement('div');
     wrap.id = `${pluginId}-garden-widget`;
     wrap.innerHTML = data.html;
-    container.appendChild(wrap);
+    const plugin = plugins.get(pluginId);
+    const position = plugin?.gardenWidget?.position || 'top';
+    _insertGardenWidget(container, wrap, position);
     const method = typeof data.gardenClickMethod === 'string' ? data.gardenClickMethod : null;
     if (method) {
       wrap.addEventListener('click', () => {
@@ -413,6 +486,42 @@ function _wireSandboxHost(host, pluginId, manifest) {
 }
 
 export const pluginManager = {
+  _removePluginRuntimeSurfaces(pluginId) {
+    _closePluginMainSheet(pluginId);
+    document.querySelector(`.header-plugin-item[data-plugin-id="${_escapeSelectorSegment(pluginId)}"]`)?.remove();
+    document.getElementById(`${pluginId}-garden-widget`)?.remove();
+    this._removePluginStyles(pluginId);
+  },
+
+  async _disableLoadedPlugin(pluginId) {
+    const plugin = plugins.get(pluginId);
+    if (!plugin) {
+      return;
+    }
+    if (plugin.sandbox) {
+      try {
+        plugin.sandbox.runLifecycle('onDisable');
+      } catch (e) {
+        console.warn('[PluginManager] onDisable:', e);
+      }
+      await new Promise((r) => setTimeout(r, 50));
+      plugin.sandbox.destroy();
+    }
+    this._removePluginRuntimeSurfaces(pluginId);
+    plugin.enabled = false;
+    plugin.sandbox = null;
+    plugin.instance = null;
+    plugin.headerItem = null;
+    plugin.gardenWidget = null;
+    plugins.delete(pluginId);
+    for (const list of Object.values(pluginHooks)) {
+      const idx = list.indexOf(pluginId);
+      if (idx !== -1) {
+        list.splice(idx, 1);
+      }
+    }
+  },
+
   async init() {
     if (_isInitialized) {
       console.log('[PluginManager] Already initialized');
@@ -434,27 +543,33 @@ export const pluginManager = {
     await storage.init();
 
     const installedIds = await getInstalledPluginIdsNormalized();
+    const disabledIds = await getDisabledPluginIdsNormalized();
+    const disabledSet = new Set(disabledIds);
     console.log('[PluginManager] Installed plugins:', installedIds);
 
+    failedPlugins.clear();
     const failedIds = [];
     for (const pluginId of installedIds) {
+      if (disabledSet.has(pluginId)) {
+        continue;
+      }
       console.log('[PluginManager] Loading plugin:', pluginId);
       const success = await this.loadPlugin(pluginId);
       console.log('[PluginManager] Load result for', pluginId, ':', success);
       if (!success) {
         failedIds.push(pluginId);
+        failedPlugins.set(pluginId, takePluginLoadFailure() || 'Unknown load error');
       }
     }
 
     if (failedIds.length) {
-      const next = installedIds.filter((id) => !failedIds.includes(id));
-      await storage.set('cultiva-installed-plugins', next);
-      try {
-        localStorage.setItem('cultiva-installed-plugins', JSON.stringify(next));
-      } catch {
-        /* ignore quota */
+      if (typeof window.showNotification === 'function') {
+        const lead = failedIds.length === 1
+          ? `Plugin failed to load: ${failedIds[0]}`
+          : `Plugins failed to load: ${failedIds.join(', ')}`;
+        window.showNotification('', lead);
       }
-      console.warn('[PluginManager] Removed unloadable plugin ids from install list:', failedIds);
+      console.warn('[PluginManager] Plugin load failures:', failedIds);
     }
 
     await this.triggerHook('onAppStart');
@@ -673,7 +788,24 @@ export const pluginManager = {
     if (config.render && typeof config.render === 'function') {
       const container = document.getElementById('garden-container');
       if (container) {
-        config.render(container);
+        const relay = {
+          innerHTML: '',
+          appendChild(node) {
+            const wrap = document.createElement('div');
+            wrap.id = `${pluginId}-garden-widget`;
+            if (node && typeof node.outerHTML === 'string') {
+              wrap.innerHTML = node.outerHTML;
+            }
+            _insertGardenWidget(container, wrap, plugin.gardenWidget.position);
+          }
+        };
+        config.render(relay);
+        if (typeof relay.innerHTML === 'string' && relay.innerHTML.trim()) {
+          const wrap = document.createElement('div');
+          wrap.id = `${pluginId}-garden-widget`;
+          wrap.innerHTML = relay.innerHTML;
+          _insertGardenWidget(container, wrap, plugin.gardenWidget.position);
+        }
       }
     }
   },
@@ -754,18 +886,7 @@ export const pluginManager = {
   async uninstallPlugin(pluginId) {
     console.log('[PluginManager] Uninstalling plugin:', pluginId);
 
-    const plugin = plugins.get(pluginId);
-    if (plugin?.sandbox) {
-      try {
-        plugin.sandbox.runLifecycle('onDisable');
-      } catch (e) {
-        console.warn('[PluginManager] onDisable:', e);
-      }
-      await new Promise((r) => setTimeout(r, 80));
-      plugin.sandbox.destroy();
-    }
-
-    plugins.delete(pluginId);
+    await this._disableLoadedPlugin(pluginId);
 
     for (const list of Object.values(pluginHooks)) {
       const idx = list.indexOf(pluginId);
@@ -784,12 +905,7 @@ export const pluginManager = {
       localStorage.setItem('cultiva-installed-plugins', JSON.stringify(installed));
     }
 
-    const widget = document.getElementById(`${pluginId}-garden-widget`);
-    if (widget) {
-      widget.remove();
-    }
-
-    this._removePluginStyles(pluginId);
+    failedPlugins.delete(pluginId);
 
     if (typeof window.renderPluginHeaderItems === 'function') {
       window.renderPluginHeaderItems();
@@ -830,6 +946,7 @@ export const pluginManager = {
 
   async getInstalledPluginsForUI() {
     const ids = await getInstalledPluginIdsNormalized();
+    const disabled = new Set(await getDisabledPluginIdsNormalized());
     const rows = [];
     for (const id of ids) {
       const p = plugins.get(id);
@@ -840,7 +957,7 @@ export const pluginManager = {
           version: p.manifest.version,
           description: p.manifest.description,
           icon: p.manifest.icon,
-          enabled: p.enabled,
+          enabled: !disabled.has(id) && p.enabled,
           loaded: true
         });
         continue;
@@ -869,11 +986,48 @@ export const pluginManager = {
         version,
         description,
         icon,
-        enabled: false,
+        enabled: !disabled.has(id),
         loaded: false
       });
     }
     return rows;
+  },
+
+  getPluginFailure(pluginId) {
+    return failedPlugins.get(pluginId) || null;
+  },
+
+  async setPluginEnabled(pluginId, enabled) {
+    const disabledSet = new Set(await getDisabledPluginIdsNormalized());
+    if (!enabled) {
+      disabledSet.add(pluginId);
+      await this._disableLoadedPlugin(pluginId);
+    } else {
+      disabledSet.delete(pluginId);
+      if (!plugins.has(pluginId)) {
+        await this.loadPlugin(pluginId);
+      }
+    }
+    const next = Array.from(disabledSet);
+    await storage.set(DISABLED_PLUGINS_KEY, next);
+    try {
+      localStorage.setItem(DISABLED_PLUGINS_KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+    if (typeof window.renderPluginHeaderItems === 'function') {
+      window.renderPluginHeaderItems();
+    }
+  },
+
+  async disableAllPlugins() {
+    const ids = await getInstalledPluginIdsNormalized();
+    for (const id of ids) {
+      await this._disableLoadedPlugin(id);
+    }
+    Object.values(pluginHooks).forEach((list) => list.splice(0, list.length));
+    _isInitialized = false;
+    _initPromise = null;
   },
 
   checkVersion(current, required) {
