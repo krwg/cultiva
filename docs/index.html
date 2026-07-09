@@ -4,415 +4,432 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Cultiva — offline-first habit tracker. Grow habits from seed to legacy tree. Plugins, calendar, themes. No cloud.">
-  <meta name="theme-color" content="#F5F5F7">
+  <meta name="theme-color" content="#fbfbfd">
   <title>Cultiva · Grow your habits</title>
   <style>
     :root {
-      --bg: #F5F5F7;
-      --text: #1D1D1F;
-      --text-secondary: #86868B;
-      --accent: #0071E3;
-      --card: rgba(255, 255, 255, 0.8);
-      --border: rgba(0, 0, 0, 0.06);
-      --btn-secondary-bg: #E5E5EA;
-      --btn-secondary-text: #1D1D1F;
+      --bg: #fbfbfd;
+      --bg-alt: #f5f5f7;
+      --surface: #ffffff;
+      --text: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-tertiary: #86868b;
+      --green: #34c759;
+      --green-hover: #2db34f;
+      --green-dark: #248a3d;
+      --green-soft: rgba(52, 199, 89, 0.12);
+      --border: rgba(0, 0, 0, 0.08);
       --font: -apple-system, 'SF Pro Display', 'SF Pro Text', 'PingFang SC', sans-serif;
       --mono: 'SF Mono', ui-monospace, Menlo, monospace;
-      --ease: cubic-bezier(0.25, 1, 0.5, 1);
-      --max: 1120px;
-      --gap: 28px;
-      --radius: 24px;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --max: 980px;
+      --wide: 1200px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #000000;
-        --text: #F5F5F7;
-        --card: rgba(255, 255, 255, 0.08);
-        --border: rgba(255, 255, 255, 0.08);
-        --btn-secondary-bg: #2C2C2E;
-        --btn-secondary-text: #F5F5F7;
+        --bg-alt: #1d1d1f;
+        --surface: #1c1c1e;
+        --text: #f5f5f7;
+        --text-secondary: #a1a1a6;
+        --text-tertiary: #6e6e73;
+        --green-soft: rgba(52, 199, 89, 0.18);
+        --border: rgba(255, 255, 255, 0.1);
       }
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font);
+      font-size: 17px;
       font-weight: 400;
-      font-size: clamp(0.875rem, 2vw, 1.125rem);
-      line-height: 1.5;
+      line-height: 1.47059;
+      letter-spacing: -0.022em;
       background: var(--bg);
       color: var(--text);
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
     }
-    .blobs {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-    }
-    .blob {
-      position: absolute; border-radius: 50%; filter: blur(80px);
-      animation: drift 22s var(--ease) infinite alternate;
-    }
-    .blob-1 {
-      width: 520px; height: 520px; top: -12%; left: -8%;
-      background: radial-gradient(circle, rgba(162, 210, 255, 0.4) 0%, transparent 70%);
-    }
-    .blob-2 {
-      width: 440px; height: 440px; bottom: 5%; right: -10%;
-      background: radial-gradient(circle, rgba(200, 180, 255, 0.3) 0%, transparent 70%);
-      animation-delay: -7s;
-    }
-    .blob-3 {
-      width: 380px; height: 380px; top: 42%; left: 42%;
-      background: radial-gradient(circle, rgba(162, 210, 255, 0.28) 0%, transparent 70%);
-      animation-delay: -14s;
-    }
-    @keyframes drift {
-      from { transform: translate(0, 0) scale(1); }
-      to { transform: translate(28px, -24px) scale(1.04); }
-    }
-    .shell { position: relative; z-index: 1; }
-    .nav {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(245, 245, 247, 0.72);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    a { color: var(--green); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .globalnav {
+      position: sticky; top: 0; z-index: 100;
+      height: 44px;
+      background: rgba(251, 251, 253, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid var(--border);
     }
     @media (prefers-color-scheme: dark) {
-      .nav { background: rgba(0, 0, 0, 0.72); }
+      .globalnav { background: rgba(0, 0, 0, 0.8); }
     }
-    .nav-inner {
-      max-width: var(--max); margin: 0 auto; padding: 16px 24px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    .globalnav-content {
+      max-width: var(--wide); height: 100%; margin: 0 auto; padding: 0 22px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .brand {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: var(--text);
-      font-size: 1rem; font-weight: 600; letter-spacing: -0.025em;
+    .globalnav-logo {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 17px; font-weight: 600; letter-spacing: -0.03em;
+      color: var(--text); text-decoration: none;
     }
-    .brand-mark {
-      width: 32px; height: 32px; border-radius: 10px;
-      background: var(--accent); display: grid; place-items: center;
+    .globalnav-logo:hover { text-decoration: none; }
+    .logo-mark {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: var(--green); display: grid; place-items: center;
     }
-    .nav-links { display: flex; align-items: center; gap: 24px; }
-    .nav-links a {
-      font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-      color: var(--text-secondary); text-decoration: none;
-      transition: color 0.25s var(--ease);
+    .globalnav-links { display: flex; align-items: center; gap: 28px; }
+    .globalnav-links a {
+      font-size: 12px; color: var(--text); opacity: 0.8;
+      text-decoration: none; transition: opacity 0.2s var(--ease);
     }
-    .nav-links a:hover { color: var(--text); }
-    .icon { display: inline-flex; line-height: 0; color: var(--accent); }
-    .icon--on-accent { color: #fff; }
-    .icon svg { display: block; fill: currentColor; }
-    .i-16 svg { width: 16px; height: 16px; }
-    .i-24 svg { width: 24px; height: 24px; }
-    .i-32 svg { width: 32px; height: 32px; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 12px 22px; border-radius: 22px; border: none;
-      font-family: var(--font); font-size: 1rem; font-weight: 600;
-      text-decoration: none; cursor: pointer;
-      transition: transform 0.25s var(--ease), filter 0.25s var(--ease);
+    .globalnav-links a:hover { opacity: 1; text-decoration: none; }
+    .globalnav-cta { font-weight: 500; color: var(--green) !important; opacity: 1 !important; }
+
+    .section { padding: 80px 22px; }
+    .section--alt { background: var(--bg-alt); }
+    .section-inner { max-width: var(--max); margin: 0 auto; }
+    .section-inner--wide { max-width: var(--wide); margin: 0 auto; }
+    .eyebrow {
+      font-size: 17px; font-weight: 600; letter-spacing: -0.022em;
+      color: var(--text-secondary); margin-bottom: 8px;
     }
-    .btn:hover { transform: scale(1.02); }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { filter: brightness(1.06); }
-    .btn-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
-    .btn-secondary:hover { filter: brightness(0.97); }
-    .page {
-      max-width: var(--max); margin: 0 auto; padding: 48px 24px 80px;
+    .headline {
+      font-size: clamp(40px, 6.5vw, 64px);
+      font-weight: 600; letter-spacing: -0.04em; line-height: 1.05;
     }
-    .bento {
-      display: grid; grid-template-columns: repeat(12, 1fr);
-      gap: var(--gap);
+    .headline--section {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 600; letter-spacing: -0.03em; line-height: 1.08;
+      text-align: center; margin-bottom: 12px;
     }
-    .card {
-      background: var(--card);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      padding: 28px;
-      opacity: 0;
-      animation: fadeUp 0.75s var(--ease) forwards;
+    .subhead {
+      font-size: clamp(19px, 2.5vw, 24px);
+      font-weight: 400; letter-spacing: 0.004em; line-height: 1.33341;
+      color: var(--text-secondary); max-width: 28em;
     }
-    .card:nth-child(1) { animation-delay: 0.05s; }
-    .card:nth-child(2) { animation-delay: 0.12s; }
-    .card:nth-child(3) { animation-delay: 0.19s; }
-    .card:nth-child(4) { animation-delay: 0.26s; }
-    .card:nth-child(5) { animation-delay: 0.33s; }
-    .card:nth-child(6) { animation-delay: 0.4s; }
-    .card:nth-child(7) { animation-delay: 0.47s; }
-    .card:nth-child(8) { animation-delay: 0.54s; }
-    .card:nth-child(9) { animation-delay: 0.61s; }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
+    .subhead--center { margin: 0 auto; text-align: center; }
+    .subhead--hero { margin: 12px auto 0; text-align: center; }
+
+    .hero {
+      padding: 52px 22px 0; text-align: center;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--green-soft), transparent 70%);
     }
-    .span-12 { grid-column: span 12; }
-    .span-8 { grid-column: span 8; }
-    .span-6 { grid-column: span 6; }
-    .span-4 { grid-column: span 4; }
-    .caption {
-      font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-      color: var(--text-secondary);
-      letter-spacing: -0.01em;
+    .hero-actions {
+      display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; margin-top: 24px;
     }
-    h1 {
-      font-size: clamp(2.25rem, 5vw, 5rem);
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      line-height: 1.05;
-      margin: 12px 0 16px;
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 28px; padding: 12px 22px; border-radius: 980px;
+      font-family: var(--font); font-size: 17px; font-weight: 400;
+      letter-spacing: -0.022em; line-height: 1.17648;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: background 0.2s var(--ease), color 0.2s var(--ease);
     }
-    h2 {
-      font-size: clamp(1.5rem, 3vw, 2rem);
-      font-weight: 600;
-      letter-spacing: -0.025em;
-      line-height: 1.15;
-      margin-bottom: 10px;
+    .button:hover { text-decoration: none; }
+    .button--primary { background: var(--green); color: #fff; }
+    .button--primary:hover { background: var(--green-hover); }
+    .button--secondary {
+      background: transparent; color: var(--green);
+      box-shadow: inset 0 0 0 1px var(--green);
     }
-    h3 {
-      font-size: 1.0625rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
+    .button--secondary:hover { background: var(--green-soft); }
+    .link-more {
+      font-size: 17px; color: var(--green); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 4px;
     }
-    .lead { color: var(--text-secondary); max-width: 36em; margin-bottom: 24px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    .preview-list { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
-    .preview-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-    }
-    .preview-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .preview-meta { flex: 1; min-width: 0; }
-    .preview-name { font-weight: 600; font-size: 0.9375rem; }
-    .preview-bar {
-      height: 4px; border-radius: 2px; background: var(--border); margin-top: 8px; overflow: hidden;
-    }
-    .preview-fill { height: 100%; background: var(--accent); border-radius: 2px; }
-    .feature { display: flex; flex-direction: column; gap: 12px; height: 100%; }
-    .feature p { color: var(--text-secondary); }
-    .stages {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 8px;
-    }
-    .stage {
-      text-align: center; padding: 16px 8px;
-      border-radius: 16px; background: rgba(0, 113, 227, 0.06);
-    }
-    .stage .caption { display: block; margin-top: 8px; font-weight: 500; color: var(--text); }
-    .privacy-cols {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 8px;
-    }
-    .privacy-cols p { color: var(--text-secondary); font-size: 0.9375rem; }
-    .cta-row {
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;
-    }
-    .code-row {
-      display: flex; align-items: center; gap: 12px; margin-top: 16px;
-      padding: 14px 16px; border-radius: 16px;
-      background: rgba(0, 0, 0, 0.03); border: 1px solid var(--border);
-      font-family: var(--mono); font-size: 0.8125rem;
+    .link-more::after { content: '\203A'; font-size: 20px; line-height: 1; }
+    .link-more:hover { text-decoration: underline; }
+
+    .showcase { padding: 48px 22px 80px; }
+    .showcase-frame {
+      max-width: 920px; margin: 0 auto;
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border);
+      overflow: hidden;
     }
     @media (prefers-color-scheme: dark) {
-      .code-row { background: rgba(255, 255, 255, 0.04); }
-      .stage { background: rgba(0, 113, 227, 0.12); }
+      .showcase-frame { box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--border); }
     }
-    .copy-btn {
-      flex-shrink: 0; border: none; border-radius: 14px;
-      background: var(--btn-secondary-bg); color: var(--text);
-      font-family: var(--font); font-size: 0.75rem; font-weight: 600;
-      padding: 8px 14px; cursor: pointer;
-      transition: transform 0.25s var(--ease);
+    .showcase-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      font-size: 13px; font-weight: 600; letter-spacing: -0.01em;
     }
-    .copy-btn:hover { transform: scale(1.02); }
+    .showcase-bar span { color: var(--text-tertiary); font-weight: 500; }
+    .showcase-body { padding: 28px 24px 32px; }
+    .habit {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 0; border-bottom: 1px solid var(--border);
+    }
+    .habit:last-child { border-bottom: none; padding-bottom: 0; }
+    .habit-icon { color: var(--green); flex-shrink: 0; }
+    .habit-body { flex: 1; min-width: 0; }
+    .habit-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .habit-track { height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+    .habit-fill { height: 100%; background: var(--green); border-radius: 2px; }
+    .habit-stage {
+      font-size: 12px; color: var(--text-tertiary); font-weight: 500;
+      flex-shrink: 0; min-width: 52px; text-align: right;
+    }
+
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 32px;
+      margin-top: 56px;
+    }
+    .feature-item h3 {
+      font-size: 21px; font-weight: 600; letter-spacing: -0.02em;
+      line-height: 1.19048; margin-bottom: 8px;
+    }
+    .feature-item p { font-size: 17px; color: var(--text-secondary); line-height: 1.47059; }
+
+    .stages {
+      display: flex; justify-content: space-between; gap: 12px;
+      margin-top: 56px; max-width: 720px; margin-left: auto; margin-right: auto;
+    }
+    .stage { flex: 1; text-align: center; }
+    .stage-icon { color: var(--green); margin-bottom: 10px; }
+    .stage-label { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+    .stage-desc { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
+
+    .privacy-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px 32px;
+      margin-top: 48px;
+    }
+    .privacy-item h3 {
+      font-size: 19px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px;
+    }
+    .privacy-item p { font-size: 17px; color: var(--text-secondary); }
+
+    .cta-block { text-align: center; }
+    .cta-block .subhead { margin: 12px auto 28px; }
+    .code-strip {
+      display: inline-flex; align-items: center; gap: 12px; margin-top: 32px;
+      padding: 12px 16px; border-radius: 12px;
+      background: var(--bg-alt); border: 1px solid var(--border);
+      font-family: var(--mono); font-size: 13px; color: var(--text-secondary);
+    }
+    .code-strip button {
+      border: none; background: transparent; color: var(--green);
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      cursor: pointer; padding: 4px 8px;
+    }
+
     .footer {
-      max-width: var(--max); margin: 0 auto; padding: 32px 24px 48px;
-      text-align: center; border-top: 1px solid var(--border);
+      padding: 20px 22px 40px; border-top: 1px solid var(--border);
+      text-align: center;
     }
     .footer-links {
-      display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 12px;
+      display: flex; flex-wrap: wrap; gap: 24px; justify-content: center;
+      margin-bottom: 12px;
     }
-    .footer a { color: var(--accent); text-decoration: none; font-weight: 500; }
-    .footer a:hover { text-decoration: underline; }
-    @media (max-width: 900px) {
-      .span-8, .span-6, .span-4 { grid-column: span 12; }
-      .stages { grid-template-columns: repeat(3, 1fr); }
-      .privacy-cols { grid-template-columns: 1fr; }
-      .nav-links a:not(.btn) { display: none; }
+    .footer-links a { font-size: 12px; color: var(--text-secondary); }
+    .footer-links a:hover { color: var(--text); }
+    .footer-note { font-size: 12px; color: var(--text-tertiary); }
+
+    .icon { display: inline-flex; line-height: 0; }
+    .icon svg { display: block; fill: currentColor; }
+    .i-16 svg { width: 16px; height: 16px; }
+    .i-20 svg { width: 20px; height: 20px; }
+    .i-28 svg { width: 28px; height: 28px; }
+    .icon--white { color: #fff; }
+
+    @media (max-width: 834px) {
+      .feature-grid, .privacy-grid { grid-template-columns: 1fr; gap: 36px; }
+      .stages { flex-wrap: wrap; justify-content: center; max-width: 360px; }
+      .stage { flex: 0 0 calc(33.333% - 8px); }
+      .globalnav-links a:not(.globalnav-cta) { display: none; }
     }
-    @media (max-width: 520px) {
-      .stages { grid-template-columns: repeat(2, 1fr); }
-      .actions { flex-direction: column; }
-      .actions .btn { width: 100%; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .blob { animation: none; }
-      .card { animation: none; opacity: 1; }
+    @media (max-width: 480px) {
+      .section { padding: 64px 22px; }
+      .stage { flex: 0 0 calc(50% - 6px); }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .button { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <div class="blobs" aria-hidden="true">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-  </div>
-
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="i-leaf" viewBox="0 0 256 256"><path d="M223.45,40.07a8,8,0,0,0-7.52-7.52C139.8,28.08,78.82,51,52.82,94a87.09,87.09,0,0,0-12.76,49A101.72,101.72,0,0,0,46.7,175.2a4,4,0,0,0,6.61,1.43l85-86.3a8,8,0,0,1,11.32,11.32L56.74,195.94,42.55,210.13a8.2,8.2,0,0,0-.6,11.1,8,8,0,0,0,11.71.43l16.79-16.79c14.14,6.84,28.41,10.57,42.56,11.07q1.67.06,3.33.06A86.93,86.93,0,0,0,162,203.18C205,177.18,227.93,116.21,223.45,40.07Z"/></symbol>
     <symbol id="i-tree" viewBox="0 0 256 256"><path d="M128,187.85a72.44,72.44,0,0,0,8,4.62V232a8,8,0,0,1-16,0V192.47A72.44,72.44,0,0,0,128,187.85ZM198.1,62.59a76,76,0,0,0-140.2,0A71.71,71.71,0,0,0,16,127.8C15.9,166,48,199,86.14,200A72.22,72.22,0,0,0,120,192.47V156.94L76.42,135.16a8,8,0,1,1,7.16-14.32L120,139.06V88a8,8,0,0,1,16,0v27.06l36.42-18.22a8,8,0,1,1,7.16,14.32L136,132.94v59.53A72.17,72.17,0,0,0,168,200l1.82,0C208,199,240.11,166,240,127.8A71.71,71.71,0,0,0,198.1,62.59Z"/></symbol>
     <symbol id="i-branch" viewBox="0 0 256 256"><path d="M205.41,159.07a60.9,60.9,0,0,1-31.83,8.86,71.71,71.71,0,0,1-27.36-5.66A55.55,55.55,0,0,0,136,194.51V224a8,8,0,0,1-8.53,8,8.18,8.18,0,0,1-7.47-8.25V211.31L81.38,172.69A52.5,52.5,0,0,1,63.44,176a45.82,45.82,0,0,1-23.92-6.67C17.73,156.09,6,125.62,8.27,87.79a8,8,0,0,1,7.52-7.52c37.83-2.23,68.3,9.46,81.5,31.25A46,46,0,0,1,103.74,140a4,4,0,0,1-6.89,2.43l-19.2-20.1a8,8,0,0,0-11.31,11.31l53.88,55.25c.06-.78.13-1.56.21-2.33a68.56,68.56,0,0,1,18.64-39.46l50.59-53.46a8,8,0,0,0-11.31-11.32l-49,51.82a4,4,0,0,1-6.78-1.74c-4.74-17.48-2.65-34.88,6.4-49.82,17.86-29.48,59.42-45.26,111.18-42.22a8,8,0,0,1,7.52,7.52C250.67,99.65,234.89,141.21,205.41,159.07Z"/></symbol>
     <symbol id="i-seed" viewBox="0 0 256 256"><path d="M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75Zm9.85,105.59a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/></symbol>
     <symbol id="i-legacy" viewBox="0 0 256 256"><path d="M239.73,208H224V96a16,16,0,0,0-16-16H164a4,4,0,0,0-4,4V208H144V32.41a16.43,16.43,0,0,0-6.16-13,16,16,0,0,0-18.72-.69L39.12,72A16,16,0,0,0,32,85.34V208H16.27A8.18,8.18,0,0,0,8,215.47,8,8,0,0,0,16,224H240a8,8,0,0,0,8-8.53A8.18,8.18,0,0,0,239.73,208ZM76,184a8,8,0,0,1-8.53,8A8.18,8.18,0,0,1,60,183.72V168.27A8.19,8.19,0,0,1,67.47,160,8,8,0,0,1,76,168Zm0-56a8,8,0,0,1-8.53,8A8.19,8.19,0,0,1,60,127.72V112.27A8.19,8.19,0,0,1,67.47,104,8,8,0,0,1,76,112Zm40,56a8,8,0,0,1-8.53,8,8.18,8.18,0,0,1-7.47-8.26V168.27a8.19,8.19,0,0,1,7.47-8.26,8,8,0,0,1,8.53,8Zm0-56a8,8,0,0,1-8.53,8,8.19,8.19,0,0,1-7.47-8.26V112.27a8.19,8.19,0,0,1,7.47-8.26,8,8,0,0,1,8.53,8Z"/></symbol>
-    <symbol id="i-offline" viewBox="0 0 256 256"><path d="M213.92,210.62a8,8,0,1,1-11.84,10.76l-33.67-37-28.1,33.88A15.93,15.93,0,0,1,128,224h0a15.93,15.93,0,0,1-12.31-5.77L11.65,92.8A15.65,15.65,0,0,1,8.11,80.91,15.93,15.93,0,0,1,14.28,70.1,188.26,188.26,0,0,1,46.6,50.35l-4.29-4.72a8.22,8.22,0,0,1,.13-11.38,8,8,0,0,1,11.48.37Zm34-129.71a15.93,15.93,0,0,0-6.17-10.81A186.67,186.67,0,0,0,128,32a191,191,0,0,0-42.49,4.75,4,4,0,0,0-2,6.59L186,156.07a4,4,0,0,0,6-.14L244.35,92.8A15.65,15.65,0,0,0,247.89,80.91Z"/></symbol>
-    <symbol id="i-flame" viewBox="0 0 256 256"><path d="M143.38,17.85a8,8,0,0,0-12.63,3.41l-22,60.41L84.59,58.26a8,8,0,0,0-11.93.89C51,87.53,40,116.08,40,144a88,88,0,0,0,176,0C216,84.55,165.21,36,143.38,17.85Zm40.51,135.49a57.6,57.6,0,0,1-46.56,46.55A7.65,7.65,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/></symbol>
-    <symbol id="i-calendar" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM112,184a8,8,0,0,1-16,0V132.94l-4.42,2.22a8,8,0,0,1-7.16-14.32l16-8A8,8,0,0,1,112,120Zm56-8a8,8,0,0,1,0,16H136a8,8,0,0,1-6.4-12.8l28.78-38.37A8,8,0,1,0,145.07,132a8,8,0,1,1-13.85-8A24,24,0,0,1,176,136a23.76,23.76,0,0,1-4.84,14.45L152,176ZM48,80V48H72v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80Z"/></symbol>
-    <symbol id="i-puzzle" viewBox="0 0 256 256"><path d="M165.78,224H208a16,16,0,0,0,16-16V170.35A8,8,0,0,0,212.94,163a23.37,23.37,0,0,1-8.94,1.77c-13.23,0-24-11.1-24-24.73s10.77-24.73,24-24.73a23.37,23.37,0,0,1,8.94,1.77A8,8,0,0,0,224,109.65V72a16,16,0,0,0-16-16H171.78a35.36,35.36,0,0,0,.22-4,36,36,0,0,0-72,0,35.36,35.36,0,0,0,.22,4H64A16,16,0,0,0,48,72v32.22a35.36,35.36,0,0,0-4-.22,36,36,0,0,0,0,72,35.36,35.36,0,0,0,4-.22V208a16,16,0,0,0,16,16h42.22"/></symbol>
-    <symbol id="i-backup" viewBox="0 0 256 256"><path d="M208,40H48A16,16,0,0,0,32,56v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V56A16,16,0,0,0,208,40ZM180,92a12,12,0,1,1,12-12A12,12,0,0,1,180,92Z"/><path d="M208,136H48a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V152A16,16,0,0,0,208,136Zm-28,52a12,12,0,1,1,12-12A12,12,0,0,1,180,188Z"/></symbol>
   </svg>
 
-  <div class="shell">
-    <nav class="nav">
-      <div class="nav-inner">
-        <a class="brand" href="#">
-          <span class="brand-mark icon icon--on-accent i-16" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span>
-          Cultiva
-        </a>
-        <div class="nav-links">
-          <a href="#features">Features</a>
-          <a href="#garden">Garden</a>
-          <a href="#privacy">Privacy</a>
-          <a href="https://krwg.github.io/cultiva-plugins/">Plugins</a>
-          <a class="btn btn-primary" href="https://github.com/krwg/cultiva/releases">Download</a>
+  <nav class="globalnav" aria-label="Global">
+    <div class="globalnav-content">
+      <a class="globalnav-logo" href="#">
+        <span class="logo-mark icon icon--white i-16" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span>
+        Cultiva
+      </a>
+      <div class="globalnav-links">
+        <a href="#features">Features</a>
+        <a href="#garden">Garden</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://krwg.github.io/cultiva-plugins/">Plugins</a>
+        <a class="globalnav-cta" href="https://github.com/krwg/cultiva/releases">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">Open source · 1.7.0 · Linden</p>
+    <h1 class="headline">Grow habits.<br>Grow yourself.</h1>
+    <p class="subhead subhead--hero">An offline-first habit garden for desktop. Each habit grows from seed to legacy tree — with plugins, calendar, and zero cloud lock-in.</p>
+    <div class="hero-actions">
+      <a class="button button--primary" href="https://github.com/krwg/cultiva/releases">Download</a>
+      <a class="button button--secondary" href="https://github.com/krwg/cultiva">View on GitHub</a>
+    </div>
+  </header>
+
+  <section class="showcase" aria-label="App preview">
+    <div class="showcase-frame">
+      <div class="showcase-bar">
+        Garden
+        <span>Offline · 3 habits</span>
+      </div>
+      <div class="showcase-body">
+        <div class="habit">
+          <span class="habit-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-tree"/></svg></span>
+          <div class="habit-body">
+            <div class="habit-name">Read daily</div>
+            <div class="habit-track"><div class="habit-fill" style="width:92%"></div></div>
+          </div>
+          <span class="habit-stage">Tree</span>
+        </div>
+        <div class="habit">
+          <span class="habit-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-branch"/></svg></span>
+          <div class="habit-body">
+            <div class="habit-name">Meditate</div>
+            <div class="habit-track"><div class="habit-fill" style="width:64%"></div></div>
+          </div>
+          <span class="habit-stage">Sapling</span>
+        </div>
+        <div class="habit">
+          <span class="habit-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span>
+          <div class="habit-body">
+            <div class="habit-name">Water plants</div>
+            <div class="habit-track"><div class="habit-fill" style="width:28%"></div></div>
+          </div>
+          <span class="habit-stage">Sprout</span>
         </div>
       </div>
-    </nav>
+    </div>
+  </section>
 
-    <main class="page">
-      <div class="bento">
-        <section class="card span-8" id="top">
-          <p class="caption">Open source · 1.7.0 · Linden</p>
-          <h1>Grow habits.<br>Grow yourself.</h1>
-          <p class="lead">An offline-first habit garden for desktop. Each habit grows from seed to legacy tree — with plugins, calendar, themes, and zero cloud lock-in.</p>
-          <div class="actions">
-            <a class="btn btn-primary" href="https://github.com/krwg/cultiva/releases">Download for desktop</a>
-            <a class="btn btn-secondary" href="https://github.com/krwg/cultiva">View on GitHub</a>
-          </div>
-        </section>
-
-        <aside class="card span-4" aria-label="Garden preview">
-          <p class="caption">Your garden · offline</p>
-          <div class="preview-list">
-            <div class="preview-row">
-              <span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-tree"/></svg></span>
-              <div class="preview-meta">
-                <div class="preview-name">Read daily</div>
-                <div class="preview-bar"><div class="preview-fill" style="width:92%"></div></div>
-              </div>
-            </div>
-            <div class="preview-row">
-              <span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-branch"/></svg></span>
-              <div class="preview-meta">
-                <div class="preview-name">Meditate</div>
-                <div class="preview-bar"><div class="preview-fill" style="width:64%"></div></div>
-              </div>
-            </div>
-            <div class="preview-row">
-              <span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span>
-              <div class="preview-meta">
-                <div class="preview-name">Water</div>
-                <div class="preview-bar"><div class="preview-fill" style="width:28%"></div></div>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        <article class="card span-4 feature" id="features">
-          <span class="icon i-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-offline"/></svg></span>
+  <section class="section section--alt" id="features">
+    <div class="section-inner">
+      <h2 class="headline--section">Built for focus.<br>Not for feeds.</h2>
+      <p class="subhead subhead--center">Everything stays on your machine. No accounts, no sync servers, no analytics.</p>
+      <div class="feature-grid">
+        <div class="feature-item">
           <h3>Offline-first</h3>
-          <p>IndexedDB on your machine. No account, no sync server, no analytics.</p>
-        </article>
-        <article class="card span-4 feature">
-          <span class="icon i-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-flame"/></svg></span>
+          <p>Habits live in IndexedDB on your device. Cultiva works fully without an internet connection.</p>
+        </div>
+        <div class="feature-item">
           <h3>Streaks and grace</h3>
-          <p>Binary or quantity habits with streak tracking and optional grace days.</p>
-        </article>
-        <article class="card span-4 feature">
-          <span class="icon i-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-calendar"/></svg></span>
+          <p>Binary or quantity habits with streak tracking and optional grace days when life gets in the way.</p>
+        </div>
+        <div class="feature-item">
           <h3>Calendar</h3>
-          <p>Plan events alongside habits. Holidays, themes, and ambient backgrounds.</p>
-        </article>
-
-        <article class="card span-6 feature">
-          <span class="icon i-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-puzzle"/></svg></span>
-          <h3>Plugin ecosystem</h3>
-          <p>Sandboxed widgets from GitHub — weather, radio, pomodoro, and more. Every file sha256-verified at install.</p>
-        </article>
-        <article class="card span-6 feature">
-          <span class="icon i-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-backup"/></svg></span>
-          <h3>Your data, your backup</h3>
+          <p>Plan events alongside habits. Holidays, themes, and ambient backgrounds included.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Plugins</h3>
+          <p>Sandboxed widgets from GitHub — weather, radio, pomodoro, and more. Every file sha256-verified.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Themes</h3>
+          <p>Linden, Evergreen, Ocean, and a dozen more. Light, dark, and custom accent colors.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Your backup</h3>
           <p>Export JSON, ZIP, or iCal. Auto-backup on desktop. Full reset when you need a fresh start.</p>
-        </article>
-
-        <section class="card span-12" id="garden">
-          <p class="caption">Visual progress</p>
-          <h2>A garden that responds</h2>
-          <p class="lead" style="margin-bottom:0">Every habit is a living plant. Consistency moves it through five growth stages.</p>
-          <div class="stages">
-            <div class="stage"><span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-seed"/></svg></span><span class="caption">Seed</span></div>
-            <div class="stage"><span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span><span class="caption">Sprout</span></div>
-            <div class="stage"><span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-branch"/></svg></span><span class="caption">Sapling</span></div>
-            <div class="stage"><span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-tree"/></svg></span><span class="caption">Tree</span></div>
-            <div class="stage"><span class="icon i-24" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-legacy"/></svg></span><span class="caption">Legacy</span></div>
-          </div>
-        </section>
-
-        <section class="card span-12" id="privacy">
-          <p class="caption">Privacy by architecture</p>
-          <h2>Your garden stays yours</h2>
-          <div class="privacy-cols">
-            <div>
-              <h3>No telemetry</h3>
-              <p>No tracking pixels or crash reporters phoning home. The app works without the internet.</p>
-            </div>
-            <div>
-              <h3>Local storage</h3>
-              <p>Habits and settings live in IndexedDB on your device — not our servers.</p>
-            </div>
-            <div>
-              <h3>Open source</h3>
-              <p>GPL-3.0 licensed. Inspect the code, fork it, or build your own release.</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="card span-12" id="get">
-          <div class="cta-row">
-            <div>
-              <p class="caption">Get started</p>
-              <h2>Plant your first habit</h2>
-              <p class="lead" style="margin-bottom:0">Windows, macOS, and Linux builds from GitHub Releases.</p>
-            </div>
-            <a class="btn btn-primary" href="https://krwg.github.io/cultiva-plugins/">Browse plugins</a>
-          </div>
-          <div class="code-row">
-            <code id="clone-cmd">git clone https://github.com/krwg/cultiva.git</code>
-            <button class="copy-btn" type="button" onclick="copyClone(this)">Copy</button>
-          </div>
-        </section>
+        </div>
       </div>
-    </main>
+    </div>
+  </section>
 
-    <footer class="footer">
-      <div class="footer-links">
-        <a href="https://github.com/krwg/cultiva">GitHub</a>
-        <a href="https://github.com/krwg/cultiva/releases">Releases</a>
-        <a href="https://github.com/krwg/cultiva/issues">Issues</a>
-        <a href="https://krwg.github.io/cultiva-plugins/">Plugins</a>
+  <section class="section" id="garden">
+    <div class="section-inner">
+      <h2 class="headline--section">A garden that responds.</h2>
+      <p class="subhead subhead--center">Every habit is a living plant. Consistency moves it through five growth stages.</p>
+      <div class="stages">
+        <div class="stage">
+          <div class="stage-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-seed"/></svg></div>
+          <div class="stage-label">Seed</div>
+          <div class="stage-desc">Day one</div>
+        </div>
+        <div class="stage">
+          <div class="stage-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></div>
+          <div class="stage-label">Sprout</div>
+          <div class="stage-desc">Building</div>
+        </div>
+        <div class="stage">
+          <div class="stage-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-branch"/></svg></div>
+          <div class="stage-label">Sapling</div>
+          <div class="stage-desc">Growing</div>
+        </div>
+        <div class="stage">
+          <div class="stage-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-tree"/></svg></div>
+          <div class="stage-label">Tree</div>
+          <div class="stage-desc">Rooted</div>
+        </div>
+        <div class="stage">
+          <div class="stage-icon icon i-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-legacy"/></svg></div>
+          <div class="stage-label">Legacy</div>
+          <div class="stage-desc">Mastery</div>
+        </div>
       </div>
-      <p class="caption">GPL-3.0 · Built by <a href="https://github.com/krwg">krwg</a></p>
-    </footer>
-  </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="privacy">
+    <div class="section-inner">
+      <h2 class="headline--section">Your garden stays yours.</h2>
+      <p class="subhead subhead--center">Privacy by architecture — not by policy page.</p>
+      <div class="privacy-grid">
+        <div class="privacy-item">
+          <h3>No telemetry</h3>
+          <p>No tracking pixels or crash reporters phoning home. The app never needs the network to function.</p>
+        </div>
+        <div class="privacy-item">
+          <h3>Local storage</h3>
+          <p>Habits and settings live in IndexedDB on your device. Nothing is uploaded to a server.</p>
+        </div>
+        <div class="privacy-item">
+          <h3>Open source</h3>
+          <p>GPL-3.0 licensed. Inspect the code, fork it, or build your own release.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="get">
+    <div class="section-inner cta-block">
+      <h2 class="headline--section">Plant your first habit.</h2>
+      <p class="subhead subhead--center">Windows, macOS, and Linux — free from GitHub Releases.</p>
+      <div class="hero-actions">
+        <a class="button button--primary" href="https://github.com/krwg/cultiva/releases">Download Cultiva</a>
+        <a class="link-more" href="https://krwg.github.io/cultiva-plugins/">Browse plugins</a>
+      </div>
+      <div class="code-strip">
+        <code id="clone-cmd">git clone https://github.com/krwg/cultiva.git</code>
+        <button type="button" onclick="copyClone(this)">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="https://github.com/krwg/cultiva">GitHub</a>
+      <a href="https://github.com/krwg/cultiva/releases">Releases</a>
+      <a href="https://github.com/krwg/cultiva/issues">Issues</a>
+      <a href="https://krwg.github.io/cultiva-plugins/">Plugins</a>
+    </div>
+    <p class="footer-note">GPL-3.0 · Built by <a href="https://github.com/krwg">krwg</a></p>
+  </footer>
 
   <script>
     const CLONE = 'git clone https://github.com/krwg/cultiva.git';
