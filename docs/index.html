@@ -86,7 +86,6 @@
     }
     .icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 0; }
     .icon svg { display: block; fill: currentColor; stroke: none; }
-    .icon svg path[stroke] { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
     .icon--white { color: #fff; }
     .icon--green { color: var(--green); }
     .icon-16 svg { width: 16px; height: 16px; }
@@ -299,21 +298,21 @@
 </head>
 <body>
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
-    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M12 21c-4.5-3.5-6.5-7.5-4-11 1.5.8 2.5 2.2 3.2 3.8.8-1.8 2-3.5 3.8-4.8-2.5 3.5-1 7.5 3 10.5 1 .8 2 .5 2.5 0-.5-1.5-1.5-3-1.5-4.5 0 2.5 1.5 4.5 3.5 6.5z"/></symbol>
-    <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 3 7 11h3V9H8l4-6 4 6h-2v2h3L12 3zm-2 10h4v2h-1v7h-2v-7h-1v-2z"/></symbol>
-    <symbol id="i-branch" viewBox="0 0 24 24"><path d="M12 21V11M12 11c-2.5-1-4-3-4-5 2 .5 3.5 2 4 3.5.5-1.5 2-3 4-3.5 0 2-1.5 4-4 5z"/></symbol>
-    <symbol id="i-seed" viewBox="0 0 24 24"><path d="M12 20c-3-2-4.5-5-3-8 1.2 0 2.2.8 3 2 .8-1.2 1.8-2 3-2 1.5 3 0 6-3 8z"/></symbol>
-    <symbol id="i-legacy" viewBox="0 0 24 24"><path d="M5 21V9l7-4 7 4v12H5zm2-2h10v-8.5l-5-2.9-5 2.9V19zm2-2h2v-4h2v4h2v-6H9v6z"/></symbol>
-    <symbol id="i-offline" viewBox="0 0 24 24"><path d="M12 20c-3.2 0-6-1.2-8-3.4l1.4-1.4A9.5 9.5 0 0 0 12 18c2.4 0 4.6-.8 6.4-2.2l1.4 1.4C17.8 18.7 15.1 20 12 20zM4.4 12.8 3 11.4C4.8 9.2 8.2 7.5 12 7.5s7.2 1.7 9 3.9l-1.4 1.4A9.5 9.5 0 0 0 12 9.5c-2.8 0-5.4 1.2-7.2 3.3zM12 4c2 0 3.8.6 5.3 1.7L16 7.1A7.5 7.5 0 0 0 12 5.5 7.5 7.5 0 0 0 7.2 7.3L5.7 5.8C7.4 4.6 9.6 4 12 4z"/><path d="M4 4l16 16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" fill="none"/></symbol>
-    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 22c-3.5-2-5-5.5-4-9 .5 1.5 1.5 2.5 2.5 3C9.5 12 8 8.5 10 5c1 2.5 3 4 4 6 1-3 4-5.5 4-9 3 4.5 2.5 9-1 12.5-1 1-2 1.5-3.5 2.5-1-.5-1.5-1-2.5-2z"/></symbol>
-    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M7 3v2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2V3h-2v2H9V3H7zm12 8H5v8h14v-8zM7 11h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></symbol>
-    <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M8 4a2 2 0 0 0-2 2v2.1a3 3 0 0 1 0 5.8V16a2 2 0 0 0 2 2h2.1a3 3 0 0 1 5.8 0H16a2 2 0 0 0 2-2v-2.1a3 3 0 0 1 0-5.8V6a2 2 0 0 0-2-2h-2.1a3 3 0 0 1-5.8 0H8z"/></symbol>
-    <symbol id="i-backup" viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-6.4 4H3l3.5 3.5L10 7H8.2A5 5 0 1 1 7 12H5a7 7 0 1 0 7-9z"/><path d="M12 10v4l3 2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 256 256"><path d="M223.45,40.07a8,8,0,0,0-7.52-7.52C139.8,28.08,78.82,51,52.82,94a87.09,87.09,0,0,0-12.76,49A101.72,101.72,0,0,0,46.7,175.2a4,4,0,0,0,6.61,1.43l85-86.3a8,8,0,0,1,11.32,11.32L56.74,195.94,42.55,210.13a8.2,8.2,0,0,0-.6,11.1,8,8,0,0,0,11.71.43l16.79-16.79c14.14,6.84,28.41,10.57,42.56,11.07q1.67.06,3.33.06A86.93,86.93,0,0,0,162,203.18C205,177.18,227.93,116.21,223.45,40.07Z"/></symbol>
+    <symbol id="i-tree" viewBox="0 0 256 256"><path d="M128,187.85a72.44,72.44,0,0,0,8,4.62V232a8,8,0,0,1-16,0V192.47A72.44,72.44,0,0,0,128,187.85ZM198.1,62.59a76,76,0,0,0-140.2,0A71.71,71.71,0,0,0,16,127.8C15.9,166,48,199,86.14,200A72.22,72.22,0,0,0,120,192.47V156.94L76.42,135.16a8,8,0,1,1,7.16-14.32L120,139.06V88a8,8,0,0,1,16,0v27.06l36.42-18.22a8,8,0,1,1,7.16,14.32L136,132.94v59.53A72.17,72.17,0,0,0,168,200l1.82,0C208,199,240.11,166,240,127.8A71.71,71.71,0,0,0,198.1,62.59Z"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 256 256"><path d="M205.41,159.07a60.9,60.9,0,0,1-31.83,8.86,71.71,71.71,0,0,1-27.36-5.66A55.55,55.55,0,0,0,136,194.51V224a8,8,0,0,1-8.53,8,8.18,8.18,0,0,1-7.47-8.25V211.31L81.38,172.69A52.5,52.5,0,0,1,63.44,176a45.82,45.82,0,0,1-23.92-6.67C17.73,156.09,6,125.62,8.27,87.79a8,8,0,0,1,7.52-7.52c37.83-2.23,68.3,9.46,81.5,31.25A46,46,0,0,1,103.74,140a4,4,0,0,1-6.89,2.43l-19.2-20.1a8,8,0,0,0-11.31,11.31l53.88,55.25c.06-.78.13-1.56.21-2.33a68.56,68.56,0,0,1,18.64-39.46l50.59-53.46a8,8,0,0,0-11.31-11.32l-49,51.82a4,4,0,0,1-6.78-1.74c-4.74-17.48-2.65-34.88,6.4-49.82,17.86-29.48,59.42-45.26,111.18-42.22a8,8,0,0,1,7.52,7.52C250.67,99.65,234.89,141.21,205.41,159.07Z"/></symbol>
+    <symbol id="i-seed" viewBox="0 0 256 256"><path d="M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75Zm9.85,105.59a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/></symbol>
+    <symbol id="i-legacy" viewBox="0 0 256 256"><path d="M239.73,208H224V96a16,16,0,0,0-16-16H164a4,4,0,0,0-4,4V208H144V32.41a16.43,16.43,0,0,0-6.16-13,16,16,0,0,0-18.72-.69L39.12,72A16,16,0,0,0,32,85.34V208H16.27A8.18,8.18,0,0,0,8,215.47,8,8,0,0,0,16,224H240a8,8,0,0,0,8-8.53A8.18,8.18,0,0,0,239.73,208ZM76,184a8,8,0,0,1-8.53,8A8.18,8.18,0,0,1,60,183.72V168.27A8.19,8.19,0,0,1,67.47,160,8,8,0,0,1,76,168Zm0-56a8,8,0,0,1-8.53,8A8.19,8.19,0,0,1,60,127.72V112.27A8.19,8.19,0,0,1,67.47,104,8,8,0,0,1,76,112Zm40,56a8,8,0,0,1-8.53,8,8.18,8.18,0,0,1-7.47-8.26V168.27a8.19,8.19,0,0,1,7.47-8.26,8,8,0,0,1,8.53,8Zm0-56a8,8,0,0,1-8.53,8,8.19,8.19,0,0,1-7.47-8.26V112.27a8.19,8.19,0,0,1,7.47-8.26,8,8,0,0,1,8.53,8Z"/></symbol>
+    <symbol id="i-offline" viewBox="0 0 256 256"><path d="M213.92,210.62a8,8,0,1,1-11.84,10.76l-33.67-37-28.1,33.88A15.93,15.93,0,0,1,128,224h0a15.93,15.93,0,0,1-12.31-5.77L11.65,92.8A15.65,15.65,0,0,1,8.11,80.91,15.93,15.93,0,0,1,14.28,70.1,188.26,188.26,0,0,1,46.6,50.35l-4.29-4.72a8.22,8.22,0,0,1,.13-11.38,8,8,0,0,1,11.48.37Zm34-129.71a15.93,15.93,0,0,0-6.17-10.81A186.67,186.67,0,0,0,128,32a191,191,0,0,0-42.49,4.75,4,4,0,0,0-2,6.59L186,156.07a4,4,0,0,0,6-.14L244.35,92.8A15.65,15.65,0,0,0,247.89,80.91Z"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 256 256"><path d="M143.38,17.85a8,8,0,0,0-12.63,3.41l-22,60.41L84.59,58.26a8,8,0,0,0-11.93.89C51,87.53,40,116.08,40,144a88,88,0,0,0,176,0C216,84.55,165.21,36,143.38,17.85Zm40.51,135.49a57.6,57.6,0,0,1-46.56,46.55A7.65,7.65,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM112,184a8,8,0,0,1-16,0V132.94l-4.42,2.22a8,8,0,0,1-7.16-14.32l16-8A8,8,0,0,1,112,120Zm56-8a8,8,0,0,1,0,16H136a8,8,0,0,1-6.4-12.8l28.78-38.37A8,8,0,1,0,145.07,132a8,8,0,1,1-13.85-8A24,24,0,0,1,176,136a23.76,23.76,0,0,1-4.84,14.45L152,176ZM48,80V48H72v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80Z"/></symbol>
+    <symbol id="i-puzzle" viewBox="0 0 256 256"><path d="M165.78,224H208a16,16,0,0,0,16-16V170.35A8,8,0,0,0,212.94,163a23.37,23.37,0,0,1-8.94,1.77c-13.23,0-24-11.1-24-24.73s10.77-24.73,24-24.73a23.37,23.37,0,0,1,8.94,1.77A8,8,0,0,0,224,109.65V72a16,16,0,0,0-16-16H171.78a35.36,35.36,0,0,0,.22-4,36,36,0,0,0-72,0,35.36,35.36,0,0,0,.22,4H64A16,16,0,0,0,48,72v32.22a35.36,35.36,0,0,0-4-.22,36,36,0,0,0,0,72,35.36,35.36,0,0,0,4-.22V208a16,16,0,0,0,16,16h42.22"/></symbol>
+    <symbol id="i-backup" viewBox="0 0 256 256"><path d="M208,40H48A16,16,0,0,0,32,56v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V56A16,16,0,0,0,208,40ZM180,92a12,12,0,1,1,12-12A12,12,0,0,1,180,92Z"/><path d="M208,136H48a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V152A16,16,0,0,0,208,136Zm-28,52a12,12,0,1,1,12-12A12,12,0,0,1,180,188Z"/></symbol>
   </svg>
   <nav class="nav">
     <div class="nav-inner">
       <a class="nav-logo" href="#">
-        <span class="nav-mark icon icon--white icon-16" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-leaf"/></svg></span>
+        <span class="nav-mark icon icon--white icon-16" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span>
         Cultiva
       </a>
       <div class="nav-links">
@@ -343,21 +342,21 @@
         </div>
         <div class="mock-header">
           <span>Your Garden</span>
-          <span class="mock-offline"><span class="icon icon--green icon-16" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-offline"/></svg></span>Offline</span>
+          <span class="mock-offline"><span class="icon icon--green icon-16" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-offline"/></svg></span>Offline</span>
         </div>
         <div class="mock-garden">
           <div class="mock-plant">
-            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-tree"/></svg></span>
+            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-tree"/></svg></span>
             <span class="mock-plant-name">Read daily</span>
             <div class="mock-plant-bar"><div class="mock-plant-fill" style="width:92%"></div></div>
           </div>
           <div class="mock-plant">
-            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-branch"/></svg></span>
+            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-branch"/></svg></span>
             <span class="mock-plant-name">Meditate</span>
             <div class="mock-plant-bar"><div class="mock-plant-fill" style="width:64%"></div></div>
           </div>
           <div class="mock-plant">
-            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-leaf"/></svg></span>
+            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span>
             <span class="mock-plant-name">Water</span>
             <div class="mock-plant-bar"><div class="mock-plant-fill" style="width:28%"></div></div>
           </div>
@@ -374,27 +373,27 @@
     </div>
     <div class="bento">
       <article class="bento-card span-4">
-        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-offline"/></svg></span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-offline"/></svg></span>
         <h3 class="bento-title">Offline-first</h3>
         <p class="bento-text">IndexedDB storage on your machine. No account, no sync server, no analytics.</p>
       </article>
       <article class="bento-card span-4">
-        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-flame"/></svg></span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-flame"/></svg></span>
         <h3 class="bento-title">Streaks &amp; grace</h3>
         <p class="bento-text">Binary or quantity habits with streak tracking and optional grace for missed days.</p>
       </article>
       <article class="bento-card span-4">
-        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg></span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-calendar"/></svg></span>
         <h3 class="bento-title">Calendar</h3>
         <p class="bento-text">Plan events alongside habits. Holidays, themes, and ambient backgrounds included.</p>
       </article>
       <article class="bento-card span-6">
-        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-puzzle"/></svg></span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-puzzle"/></svg></span>
         <h3 class="bento-title">Plugin ecosystem</h3>
         <p class="bento-text">Extend Cultiva with sandboxed widgets — weather, radio, pomodoro, and more. Installed from GitHub with sha256 verification.</p>
       </article>
       <article class="bento-card span-6">
-        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-backup"/></svg></span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-backup"/></svg></span>
         <h3 class="bento-title">Your data, your backup</h3>
         <p class="bento-text">Export JSON, ZIP, or iCal. Auto-backup on desktop. Full reset when you need a fresh start.</p>
       </article>
@@ -408,11 +407,11 @@
       <p class="section-desc">Every habit is a living plant. Consistency moves it through five growth stages — instant feedback without gamification noise.</p>
     </div>
     <div class="stages">
-      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-seed"/></svg></span><span class="stage-name">Seed</span></div>
-      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-leaf"/></svg></span><span class="stage-name">Sprout</span></div>
-      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-branch"/></svg></span><span class="stage-name">Sapling</span></div>
-      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-tree"/></svg></span><span class="stage-name">Tree</span></div>
-      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-legacy"/></svg></span><span class="stage-name">Legacy</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-seed"/></svg></span><span class="stage-name">Seed</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-leaf"/></svg></span><span class="stage-name">Sprout</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-branch"/></svg></span><span class="stage-name">Sapling</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-tree"/></svg></span><span class="stage-name">Tree</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 256 256"><use href="#i-legacy"/></svg></span><span class="stage-name">Legacy</span></div>
     </div>
   </section>
 
