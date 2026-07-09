@@ -68,7 +68,6 @@
       ],
       "icon": "build/icon.png",
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "sign": null,
       "signAndEditExecutable": false,
       "verifyUpdateCodeSignature": false
     },
@@ -78,9 +77,9 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Cultiva",
-      "installerIcon": "build/icon.png",
-      "uninstallerIcon": "build/icon.png",
-      "installerHeaderIcon": "build/icon.png",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false,
       "license": "LICENSE",
@@ -109,7 +108,6 @@
       "icon": "build/icon.icns",
       "category": "public.app-category.productivity",
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
-      "identity": null,
       "gatekeeperAssess": false,
       "hardenedRuntime": false
     },
