@@ -41,7 +41,7 @@ jobs:
         run: npm run test
 
       - name: Build Vite
-        run: npm run build
+        run: npm run prebuild && npm run build
 
       - name: Build Electron (${{ matrix.platform }})
         run: npx electron-builder --${{ matrix.platform }} --publish never

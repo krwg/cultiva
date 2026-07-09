@@ -8,6 +8,10 @@ dist/
 release/
 out/
 build/
+!build/installer.nsh
+!build/icon.png
+!build/icon.ico
+!build/icons/
 
 # === ELECTRON BUILDER ===
 *.app
