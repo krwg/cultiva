@@ -82,8 +82,20 @@
       width: 28px; height: 28px; border-radius: 7px;
       background: linear-gradient(145deg, var(--green-light), var(--green-dark));
       box-shadow: 0 2px 8px var(--green-glow);
-      display: grid; place-items: center; font-size: 14px;
+      display: grid; place-items: center;
     }
+    .icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 0; }
+    .icon svg { display: block; fill: currentColor; stroke: none; }
+    .icon svg path[stroke] { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
+    .icon--white { color: #fff; }
+    .icon--green { color: var(--green); }
+    .icon-16 svg { width: 16px; height: 16px; }
+    .icon-28 svg { width: 28px; height: 28px; }
+    .icon-32 svg { width: 32px; height: 32px; }
+    .mock-plant-icon { margin-bottom: 6px; display: flex; justify-content: center; }
+    .bento-icon { margin-bottom: 14px; display: block; }
+    .stage-icon { margin-bottom: 8px; display: flex; justify-content: center; }
+    .mock-offline { display: inline-flex; align-items: center; gap: 5px; color: var(--green); font-size: 13px; font-weight: 600; }
     .nav-links { display: flex; gap: 22px; align-items: center; }
     .nav-link {
       font-size: 12px; color: var(--text-secondary); text-decoration: none;
@@ -178,7 +190,6 @@
       background: var(--bg-elevated); border: 1px solid var(--separator);
       border-radius: var(--radius-md); padding: 14px 12px; text-align: center;
     }
-    .mock-plant-icon { font-size: 28px; display: block; margin-bottom: 6px; }
     .mock-plant-name { font-size: 11px; font-weight: 600; color: var(--text); }
     .mock-plant-bar {
       height: 4px; border-radius: 2px; background: var(--bg-muted); margin-top: 8px; overflow: hidden;
@@ -216,7 +227,6 @@
     .bento-card.span-6 { grid-column: span 6; }
     .bento-card.span-8 { grid-column: span 8; }
     .bento-card.span-12 { grid-column: span 12; }
-    .bento-icon { font-size: 32px; margin-bottom: 14px; display: block; }
     .bento-title { font-size: 21px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
     .bento-text { font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
 
@@ -229,7 +239,7 @@
       background: var(--bg-elevated); border: 1px solid var(--separator);
       border-radius: var(--radius-md);
     }
-    .stage-emoji { font-size: 26px; display: block; margin-bottom: 8px; }
+    .stage-icon { margin-bottom: 8px; display: flex; justify-content: center; }
     .stage-name { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
 
     .privacy-band {
@@ -288,10 +298,22 @@
   </style>
 </head>
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M12 21c-4.5-3.5-6.5-7.5-4-11 1.5.8 2.5 2.2 3.2 3.8.8-1.8 2-3.5 3.8-4.8-2.5 3.5-1 7.5 3 10.5 1 .8 2 .5 2.5 0-.5-1.5-1.5-3-1.5-4.5 0 2.5 1.5 4.5 3.5 6.5z"/></symbol>
+    <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 3 7 11h3V9H8l4-6 4 6h-2v2h3L12 3zm-2 10h4v2h-1v7h-2v-7h-1v-2z"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 24 24"><path d="M12 21V11M12 11c-2.5-1-4-3-4-5 2 .5 3.5 2 4 3.5.5-1.5 2-3 4-3.5 0 2-1.5 4-4 5z"/></symbol>
+    <symbol id="i-seed" viewBox="0 0 24 24"><path d="M12 20c-3-2-4.5-5-3-8 1.2 0 2.2.8 3 2 .8-1.2 1.8-2 3-2 1.5 3 0 6-3 8z"/></symbol>
+    <symbol id="i-legacy" viewBox="0 0 24 24"><path d="M5 21V9l7-4 7 4v12H5zm2-2h10v-8.5l-5-2.9-5 2.9V19zm2-2h2v-4h2v4h2v-6H9v6z"/></symbol>
+    <symbol id="i-offline" viewBox="0 0 24 24"><path d="M12 20c-3.2 0-6-1.2-8-3.4l1.4-1.4A9.5 9.5 0 0 0 12 18c2.4 0 4.6-.8 6.4-2.2l1.4 1.4C17.8 18.7 15.1 20 12 20zM4.4 12.8 3 11.4C4.8 9.2 8.2 7.5 12 7.5s7.2 1.7 9 3.9l-1.4 1.4A9.5 9.5 0 0 0 12 9.5c-2.8 0-5.4 1.2-7.2 3.3zM12 4c2 0 3.8.6 5.3 1.7L16 7.1A7.5 7.5 0 0 0 12 5.5 7.5 7.5 0 0 0 7.2 7.3L5.7 5.8C7.4 4.6 9.6 4 12 4z"/><path d="M4 4l16 16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 22c-3.5-2-5-5.5-4-9 .5 1.5 1.5 2.5 2.5 3C9.5 12 8 8.5 10 5c1 2.5 3 4 4 6 1-3 4-5.5 4-9 3 4.5 2.5 9-1 12.5-1 1-2 1.5-3.5 2.5-1-.5-1.5-1-2.5-2z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M7 3v2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2V3h-2v2H9V3H7zm12 8H5v8h14v-8zM7 11h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></symbol>
+    <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M8 4a2 2 0 0 0-2 2v2.1a3 3 0 0 1 0 5.8V16a2 2 0 0 0 2 2h2.1a3 3 0 0 1 5.8 0H16a2 2 0 0 0 2-2v-2.1a3 3 0 0 1 0-5.8V6a2 2 0 0 0-2-2h-2.1a3 3 0 0 1-5.8 0H8z"/></symbol>
+    <symbol id="i-backup" viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-6.4 4H3l3.5 3.5L10 7H8.2A5 5 0 1 1 7 12H5a7 7 0 1 0 7-9z"/><path d="M12 10v4l3 2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" fill="none"/></symbol>
+  </svg>
   <nav class="nav">
     <div class="nav-inner">
       <a class="nav-logo" href="#">
-        <span class="nav-mark">🌱</span>
+        <span class="nav-mark icon icon--white icon-16" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-leaf"/></svg></span>
         Cultiva
       </a>
       <div class="nav-links">
@@ -321,21 +343,21 @@
         </div>
         <div class="mock-header">
           <span>Your Garden</span>
-          <span style="color:var(--green)">● Offline</span>
+          <span class="mock-offline"><span class="icon icon--green icon-16" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-offline"/></svg></span>Offline</span>
         </div>
         <div class="mock-garden">
           <div class="mock-plant">
-            <span class="mock-plant-icon">🌳</span>
+            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-tree"/></svg></span>
             <span class="mock-plant-name">Read daily</span>
             <div class="mock-plant-bar"><div class="mock-plant-fill" style="width:92%"></div></div>
           </div>
           <div class="mock-plant">
-            <span class="mock-plant-icon">🌿</span>
+            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-branch"/></svg></span>
             <span class="mock-plant-name">Meditate</span>
             <div class="mock-plant-bar"><div class="mock-plant-fill" style="width:64%"></div></div>
           </div>
           <div class="mock-plant">
-            <span class="mock-plant-icon">🌱</span>
+            <span class="mock-plant-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-leaf"/></svg></span>
             <span class="mock-plant-name">Water</span>
             <div class="mock-plant-bar"><div class="mock-plant-fill" style="width:28%"></div></div>
           </div>
@@ -352,27 +374,27 @@
     </div>
     <div class="bento">
       <article class="bento-card span-4">
-        <span class="bento-icon">📴</span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-offline"/></svg></span>
         <h3 class="bento-title">Offline-first</h3>
         <p class="bento-text">IndexedDB storage on your machine. No account, no sync server, no analytics.</p>
       </article>
       <article class="bento-card span-4">
-        <span class="bento-icon">🔥</span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-flame"/></svg></span>
         <h3 class="bento-title">Streaks &amp; grace</h3>
         <p class="bento-text">Binary or quantity habits with streak tracking and optional grace for missed days.</p>
       </article>
       <article class="bento-card span-4">
-        <span class="bento-icon">📅</span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg></span>
         <h3 class="bento-title">Calendar</h3>
         <p class="bento-text">Plan events alongside habits. Holidays, themes, and ambient backgrounds included.</p>
       </article>
       <article class="bento-card span-6">
-        <span class="bento-icon">🧩</span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-puzzle"/></svg></span>
         <h3 class="bento-title">Plugin ecosystem</h3>
         <p class="bento-text">Extend Cultiva with sandboxed widgets — weather, radio, pomodoro, and more. Installed from GitHub with sha256 verification.</p>
       </article>
       <article class="bento-card span-6">
-        <span class="bento-icon">💾</span>
+        <span class="bento-icon icon icon--green icon-32" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-backup"/></svg></span>
         <h3 class="bento-title">Your data, your backup</h3>
         <p class="bento-text">Export JSON, ZIP, or iCal. Auto-backup on desktop. Full reset when you need a fresh start.</p>
       </article>
@@ -386,11 +408,11 @@
       <p class="section-desc">Every habit is a living plant. Consistency moves it through five growth stages — instant feedback without gamification noise.</p>
     </div>
     <div class="stages">
-      <div class="stage"><span class="stage-emoji">🌰</span><span class="stage-name">Seed</span></div>
-      <div class="stage"><span class="stage-emoji">🌱</span><span class="stage-name">Sprout</span></div>
-      <div class="stage"><span class="stage-emoji">🌿</span><span class="stage-name">Sapling</span></div>
-      <div class="stage"><span class="stage-emoji">🌳</span><span class="stage-name">Tree</span></div>
-      <div class="stage"><span class="stage-emoji">🏛️</span><span class="stage-name">Legacy</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-seed"/></svg></span><span class="stage-name">Seed</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-leaf"/></svg></span><span class="stage-name">Sprout</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-branch"/></svg></span><span class="stage-name">Sapling</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-tree"/></svg></span><span class="stage-name">Tree</span></div>
+      <div class="stage"><span class="stage-icon icon icon--green icon-28" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-legacy"/></svg></span><span class="stage-name">Legacy</span></div>
     </div>
   </section>
 
