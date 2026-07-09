@@ -702,8 +702,6 @@ export const pluginManager = {
       const sandboxHost = new PluginSandboxHost(pluginId, manifest);
       _wireSandboxHost(sandboxHost, pluginId, manifest);
 
-      // Register before sandbox load: onEnable may post UI_REGISTER_HEADER / GARDEN_REGISTER
-      // before SANDBOX_READY; handlers use plugins.get(pluginId) and must not no-op.
       plugins.set(pluginId, {
         id: pluginId,
         manifest,
@@ -921,7 +919,7 @@ export const pluginManager = {
       try {
         localStorage.setItem('cultiva-installed-plugins', JSON.stringify(installed));
       } catch {
-        /* ignore */
+        void 0;
       }
     }
 
@@ -1058,7 +1056,7 @@ export const pluginManager = {
     try {
       localStorage.setItem(DISABLED_PLUGINS_KEY, JSON.stringify(next));
     } catch {
-      /* ignore */
+      void 0;
     }
     if (typeof window.renderPluginHeaderItems === 'function') {
       window.renderPluginHeaderItems();

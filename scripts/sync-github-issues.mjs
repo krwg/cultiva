@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-/**
- * Create or close GitHub issues from scripts/github-issues.json
- * Usage: GITHUB_TOKEN=... node scripts/sync-github-issues.mjs [--dry-run]
- */
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
