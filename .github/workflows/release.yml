@@ -11,48 +11,83 @@ permissions:
 
 jobs:
   release:
-    runs-on: windows-latest
-    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+          - os: macos-latest
+            platform: mac
+          - os: ubuntu-latest
+            platform: linux
+
+    runs-on: ${{ matrix.os }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-          
+
       - name: Install dependencies
         run: npm ci
 
       - name: Run unit tests
         run: npm run test
-        
+
       - name: Build Vite
         run: npm run build
-        
-      - name: Build Electron
-        run: npm run electron:build
+
+      - name: Build Electron (${{ matrix.platform }})
+        run: npx electron-builder --${{ matrix.platform }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_ENV: production
-          
-      - name: List release files
-        run: dir release
-        shell: cmd
-        
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cultiva-${{ matrix.platform }}
+          path: |
+            release/Cultiva-Setup-*.exe
+            release/Cultiva-Portable-*.exe
+            release/Cultiva-*.dmg
+            release/Cultiva-*-mac-*.zip
+            release/Cultiva-*-linux-*.AppImage
+            release/Cultiva-*-linux-*.deb
+            release/latest*.yml
+            release/*.blockmap
+          if-no-files-found: warn
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            release/Cultiva-Setup-*.exe
-            release/Cultiva-Portable-*.exe
-            release/latest.yml
-            release/*.blockmap
+          files: artifacts/**
           draft: false
           prerelease: false
-          body_path: docs/release-notes-v1.1.0-cypress-github.md
+          generate_release_notes: true
           tag_name: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
