@@ -114,7 +114,6 @@ export function closeModal(modal) {
   }
 }
 
-/** Close the topmost open modal from the given list (first match wins). */
 export function closeTopModal(modals) {
   for (const modal of modals) {
     if (isModalOpen(modal)) {

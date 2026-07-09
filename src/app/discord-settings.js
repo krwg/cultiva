@@ -93,7 +93,6 @@ async function checkDiscordStatus() {
   }
 }
 
-/** Hide Discord settings in browser builds without initializing RPC. */
 export function prepareDiscordSettingsSection() {
   const isElectron = typeof window.discord !== 'undefined';
   const discordSection = document.querySelector('[data-section="discord"]');
@@ -105,7 +104,6 @@ export function prepareDiscordSettingsSection() {
   }
 }
 
-/** Full Discord settings wiring — runs once on first visit to the Discord tab. */
 export function ensureDiscordSettingsInitialized() {
   if (initialized || typeof window.discord === 'undefined') {
     return;
@@ -169,7 +167,6 @@ export function ensureDiscordSettingsInitialized() {
   window.checkDiscordStatus = checkDiscordStatus;
 }
 
-/** Defer Discord RPC polling until the browser is idle (desktop only). */
 export function scheduleDiscordWarmup() {
   if (typeof window.discord === 'undefined') {
     return;

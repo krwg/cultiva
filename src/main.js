@@ -667,10 +667,6 @@ function initAvatarPicker() {
   modal.querySelector('.modal-overlay')?.addEventListener('click', () => closeModal(modal));
 }
 
-/* ============================================ */
-/* AUTH UI LOGIC                                */
-/* ============================================ */
-
 const authModal = document.getElementById('auth-modal');
 const authTrigger = document.getElementById('auth-trigger');
 const signOutBtn = document.getElementById('sign-out-btn');
@@ -792,10 +788,6 @@ async function handleAuthSubmit(e, type) {
   }
 }
 
-/* ============================================ */
-/* EVENTS INIT                                  */
-/* ============================================ */
-
 function initEvents() {
   document.getElementById('open-add-modal')?.addEventListener('click', () => openModal(addModal));
 
@@ -901,10 +893,6 @@ function initEvents() {
   document.getElementById('register-form')?.addEventListener('submit', (e) => handleAuthSubmit(e, 'register'));
 }
 
-/* ============================================ */
-/* FOCUS MODE                                   */
-/* ============================================ */
-
 function toggleFocusMode(enabled) {
   settings.focusMode = enabled;
   document.body.classList.toggle('focus-mode', enabled);
@@ -929,10 +917,6 @@ function scheduleDeferredOnboarding() {
 }
 
 window.showNotification = showNotification;
-
-/* ============================================ */
-/* INITIALIZATION                               */
-/* ============================================ */
 
 const loadingTimeout = setTimeout(() => {
   if (loadingScreen && !loadingScreen.classList.contains('hidden')) {

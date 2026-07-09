@@ -147,7 +147,6 @@ async function fetchReleaseInfo() {
   }
 }
 
-/** Lazy-init updates UI when the user opens Settings → Updates. */
 export function updateUpdatesSection() {
   const versionDisplay = document.getElementById('current-version-display');
   const codenameDisplay = document.getElementById('current-codename-display');

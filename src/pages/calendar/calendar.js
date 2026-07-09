@@ -531,10 +531,6 @@ function renderDayEvent(event) {
   slot.appendChild(eventEl);
 }
 
-/* ============================================ */
-/* EVENT PANEL                                  */
-/* ============================================ */
-
 function initColorSelector() {
   const selector = document.getElementById('event-color-selector');
   if (!selector) { return; }
@@ -632,10 +628,6 @@ async function saveEvent() {
   renderCurrentView();
 }
 
-/* ============================================ */
-/* VIEW SWITCHING & NAVIGATION                  */
-/* ============================================ */
-
 function switchView(view) {
   log('switchView:', view);
   currentView = view;
@@ -675,10 +667,6 @@ function goNext() {
   else { currentDate.setDate(currentDate.getDate() + 1); selectedDate = new Date(currentDate); }
   renderCurrentView();
 }
-
-/* ============================================ */
-/* I18N & INIT                                  */
-/* ============================================ */
 
 function updateTranslations() {
   currentLang = localStorage.getItem('cultiva-lang') || 'en';
@@ -728,10 +716,6 @@ window.addEventListener('storage', (e) => {
 });
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncTheme);
-
-/* ============================================ */
-/* INIT                                         */
-/* ============================================ */
 
 async function init() {
   log('Calendar initializing...');
