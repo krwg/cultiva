@@ -3,7 +3,7 @@ import { auth } from '../modules/auth.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { resolveThemeBodyId } from '../core/theme-config.js';
 
-export const settings = {
+export const DEFAULT_SETTINGS = {
   lang: 'en',
   theme: 'auto',
   showTrophies: false,
@@ -22,6 +22,8 @@ export const settings = {
   autoBackupEnabled: true,
   streakGraceEnabled: true
 };
+
+export const settings = { ...DEFAULT_SETTINGS };
 
 const _preInitSettings = localStorage.getItem('cultiva-settings');
 if (_preInitSettings) {

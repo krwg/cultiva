@@ -9,6 +9,8 @@ import { openModal, closeModal } from './modals.js';
 import { habits } from '../modules/habits.js';
 import { buildIcalDocument, downloadIcalFile } from '../core/ical-export.js';
 import { showAlertDialog, showConfirmDialog } from './dialogs.js';
+import { pluginManager } from '../core/plugin-manager.js';
+import { DEFAULT_SETTINGS } from './renderer-bootstrap.js';
 
 let ctx = null;
 let pendingImport = null;
@@ -22,6 +24,48 @@ function requireCtx() {
     throw new Error('[backup-ui] not configured');
   }
   return ctx;
+}
+
+async function resetAllAppData() {
+  const c = requireCtx();
+  let installed = [];
+  try {
+    const raw = await storage.get('cultiva-installed-plugins');
+    installed = Array.isArray(raw) ? raw.map((x) => String(x).trim()).filter(Boolean) : [];
+  } catch (e) {
+    console.warn('[Reset] Could not read installed plugins:', e);
+  }
+
+  try {
+    await pluginManager.disableAllPlugins();
+  } catch (e) {
+    console.warn('[Reset] disableAllPlugins failed:', e);
+  }
+
+  if (window.electron?.uninstallPlugin) {
+    for (const pluginId of installed) {
+      try {
+        await window.electron.uninstallPlugin(pluginId);
+      } catch (e) {
+        console.warn('[Reset] Plugin uninstall failed:', pluginId, e);
+      }
+    }
+  }
+
+  await storage.clearAll();
+
+  Object.keys(c.settings).forEach((key) => {
+    delete c.settings[key];
+  });
+  Object.assign(c.settings, DEFAULT_SETTINGS);
+
+  await storage.set('cultiva-settings', { ...DEFAULT_SETTINGS });
+  await storage.set('cultiva-installed-plugins', []);
+  await storage.set('cultiva-disabled-plugins', []);
+
+  if (typeof window.renderPluginHeaderItems === 'function') {
+    window.renderPluginHeaderItems();
+  }
 }
 
 export function exportData() {
@@ -167,7 +211,7 @@ export function bindBackupUiEvents() {
       tone: 'danger'
     });
     if (secondConfirm) {
-      await storage.saveHabits([]);
+      await resetAllAppData();
       renderGarden();
       showNotification(t.resetDone);
       await runAutoBackup(true);

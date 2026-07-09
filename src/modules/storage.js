@@ -72,10 +72,36 @@ export function migrateHabitRecord(habit) {
   return migrateHabit(habit);
 }
 
+export function habitBelongsToUser(habit, userId) {
+  const uid = userId ?? null;
+  if (uid === null) {
+    return habit.userId === null || habit.userId === undefined;
+  }
+  return habit.userId === uid;
+}
+
+function clearLocalCultivaKeys() {
+  try {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('cultiva-') || key.startsWith('cultiva_'))) {
+        keys.push(key);
+      }
+    }
+    for (const key of keys) {
+      localStorage.removeItem(key);
+    }
+  } catch (e) {
+    console.warn('[Storage] localStorage sweep failed:', e);
+  }
+}
+
 async function _persistHabitsUpsert(myHabits) {
   const dbInstance = await db.open();
-  const uid = myHabits.length > 0 ? myHabits[0].userId : (_currentUserId ?? null);
-  const existing = await db.getByIndex('habits', 'userId', uid);
+  const uid = _currentUserId ?? null;
+  const allInDb = await db.getAll('habits');
+  const existing = allInDb.filter((h) => habitBelongsToUser(h, uid));
 
   await new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('habits', 'readwrite');
@@ -219,12 +245,7 @@ export const storage = {
       const allHabits = await db.getAll('habits');
       console.log('[Storage] Raw habits from DB:', allHabits.length);
 
-      _habitsCache = allHabits.filter((h) => {
-        if (_currentUserId === null) {
-          return h.userId === null || h.userId === undefined;
-        }
-        return h.userId === _currentUserId;
-      });
+      _habitsCache = allHabits.filter((h) => habitBelongsToUser(h, _currentUserId));
 
       const settingsRows = await db.getAll('settings');
       _settingsCache = {};
@@ -372,8 +393,7 @@ export const storage = {
       console.error('[Storage] Clear failed:', e);
     }
 
-    localStorage.removeItem('cultiva-habits');
-    localStorage.removeItem('cultiva-settings');
+    clearLocalCultivaKeys();
     console.log('[Storage] All data cleared');
   }
 };
