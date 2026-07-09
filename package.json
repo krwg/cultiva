@@ -5,7 +5,10 @@
   "homepage": "https://github.com/krwg/Cultiva",
   "main": "electron/main.cjs",
   "type": "module",
-  "author": "krwg",
+  "author": {
+    "name": "krwg",
+    "email": "shevotsukov@icloud.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -63,7 +66,7 @@
           ]
         }
       ],
-      "icon": "build/icon.ico",
+      "icon": "build/icon.png",
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "sign": null,
       "signAndEditExecutable": false,
@@ -75,9 +78,9 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Cultiva",
-      "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
-      "installerHeaderIcon": "build/icon.ico",
+      "installerIcon": "build/icon.png",
+      "uninstallerIcon": "build/icon.png",
+      "installerHeaderIcon": "build/icon.png",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false,
       "license": "LICENSE",
@@ -85,6 +88,56 @@
     },
     "portable": {
       "artifactName": "${productName}-Portable-${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.productivity",
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
+      "identity": null,
+      "gatekeeperAssess": false,
+      "hardenedRuntime": false
+    },
+    "dmg": {
+      "artifactName": "${productName}-${version}-mac-${arch}.dmg",
+      "title": "${productName} ${version}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icons",
+      "category": "Utility",
+      "maintainer": "krwg <shevotsukov@icloud.com>",
+      "artifactName": "${productName}-${version}-linux-${arch}.${ext}",
+      "synopsis": "Grow your habits. Grow yourself.",
+      "description": "Offline-first habit garden with plugins, calendar, and local backups."
     }
   },
   "devDependencies": {
