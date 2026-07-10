@@ -1,7 +1,8 @@
 # Cultiva Plugin Author Guide
 
 > **Audience:** developers publishing plugins in **[cultiva-plugins](https://github.com/krwg/cultiva-plugins)** and anyone extending the **desktop (Electron)** app.  
-> **Runtime model:** the Cultiva client **downloads** manifests and files over HTTPS and installs them under the user profile (`userData/cultiva-plugins`). The `plugins/` folder in the **Cultiva** or **CultivaPlugins** repo is for **development & publishing only** — the running app does **not** read your local repo path at runtime.
+> **Requires:** Cultiva **≥ 1.7.0 · Linden** for registry 3.x plugins (sha256, `data.read`, manifest settings UI).  
+> **Runtime model:** the Cultiva client **downloads** manifests and files over HTTPS and installs them under the user profile (`userData/cultiva-plugins`). Plugin source in **cultiva-plugins** is for **development & publishing only** — the running app does **not** read your local repo path at runtime.
 
 ---
 
@@ -24,7 +25,7 @@
 
 ```mermaid
 flowchart LR
-  subgraph Store["CultivaPlugins (GitHub)"]
+  subgraph Store["cultiva-plugins (GitHub)"]
     R[registry.json]
     M[manifest.json + index.js + styles]
   end
@@ -51,7 +52,7 @@ flowchart LR
 
 ## 2. Store repository layout
 
-Each plugin is a **top-level folder** in the CultivaPlugins repo:
+Each plugin is a **top-level folder** in the cultiva-plugins repo:
 
 ```
 your-plugin-id/
@@ -72,12 +73,12 @@ The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`m
 | `name` | **yes** | Human-readable name (Settings → Plugins). |
 | `version` | **yes** | SemVer string; must match the version you advertise in `registry.json`. |
 | `description` | **yes** | Short summary for the store UI. |
-| `icon` | **yes** | Emoji or short string shown in the list (can be empty `""` if you prefer text-only). |
+| `icon` | **yes** | Short string for legacy UI (use `""` — catalog shows letter placeholders). |
 | `entry` | **yes** | Entry script filename (default `index.js` if omitted in older docs). |
 | `styles` | no | Array of CSS paths **relative to the plugin folder**; injected into the **main** window `<head>`. |
 | `permissions` | recommended | Explicit capabilities used by your plugin: `network`, `storage`, `ui`. |
 | `data` | no | Array of bundled static files (for example JSON dictionaries) accessible via `context.data.read(path)`. |
-| `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Use **`0.4.0`** if you depend on [**main-window UI**](#6-main-window-ui-bridge-cultiva--040). |
+| `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Official registry plugins use **`1.7.0`**. Use **`0.4.0`** minimum if you depend on [**main-window UI**](#6-main-window-ui-bridge-cultiva--040). |
 
 **Minimal example**
 
@@ -87,12 +88,12 @@ The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`m
   "name": "Example",
   "version": "1.0.0",
   "description": "Demonstrates header + sheet.",
-  "icon": "✦",
+  "icon": "",
   "entry": "index.js",
   "styles": ["styles.css"],
   "permissions": ["storage", "ui"],
   "data": ["cities-ru.json"],
-  "minAppVersion": "0.4.0"
+  "minAppVersion": "1.7.0"
 }
 ```
 
@@ -249,7 +250,7 @@ Users install or update from **Settings → Plugins**; the client re-downloads f
 - [ ] Final line: `return new YourPlugin(context, hooks);`  
 - [ ] No `window.electron` or direct main-DOM access — use **`openMainSheet`**, **`updateMainHeader`**, garden relay.  
 - [ ] Styles listed in `manifest.styles` if you ship CSS.  
-- [ ] **`minAppVersion`** reflects the lowest Cultiva build you tested (**`0.4.0`** if you use the main-window bridge).  
+- [ ] **`minAppVersion`** reflects the lowest Cultiva build you tested (**`1.7.0`** for registry 3.x).  
 - [ ] `registry.json` **`baseUrl`** points at **raw** GitHub paths for your folder.  
 
 ### Common issues
@@ -268,10 +269,12 @@ Users install or update from **Settings → Plugins**; the client re-downloads f
 
 | Resource | URL |
 |----------|-----|
-| Cultiva (desktop) | https://github.com/krwg/Cultiva |
-| cultiva-plugins (store) | https://github.com/krwg/cultiva-plugins |
-| Latest Cultiva release | https://github.com/krwg/Cultiva/releases/latest |
+| Cultiva (desktop) | https://github.com/krwg/cultiva |
+| cultiva-plugins (registry) | https://github.com/krwg/cultiva-plugins |
+| Plugin catalog (Pages) | https://krwg.github.io/cultiva-plugins/ |
+| Latest Cultiva release | https://github.com/krwg/cultiva/releases/latest |
+| Author typings | `docs/cultiva-plugin.d.ts` in this repo |
 
 ---
 
-*This guide tracks the **0.4.0** plugin surface. When in doubt, inspect `src/core/plugin-sandbox-host.js` and `src/core/plugin-manager.js` in the Cultiva repo for the authoritative protocol.*
+*This guide tracks the **1.7.0 · Linden** plugin surface. When in doubt, inspect `src/core/plugin-sandbox-host.js`, `src/core/plugin-manager.js`, and `src/core/plugin-rpc.js` in the Cultiva repo for the authoritative protocol.*

@@ -1,44 +1,49 @@
 # GitHub Wiki — publish workflow
 
-Markdown source for the **Cultiva** GitHub Wiki can be maintained locally in `wiki/` (gitignored) or edited on GitHub.
-
 **Live wiki:** https://github.com/krwg/cultiva/wiki
+
+Markdown source for the Cultiva GitHub Wiki is maintained in **`docs/wiki/`** in this repository (version-controlled). Publish to GitHub Wiki when pages change materially.
 
 ---
 
-## Clone & edit
+## Publish to GitHub Wiki
 
 ```bash
 git clone https://github.com/krwg/cultiva.wiki.git
 cd cultiva.wiki
-# edit Home.md, Plugins.md, …
-git add -A && git commit -m "docs(wiki): …" && git push
+
+# Copy updated pages from your cultiva checkout:
+cp /path/to/cultiva/docs/wiki/*.md .
+
+git add -A
+git commit -m "docs(wiki): sync from main @ $(date +%Y-%m-%d)"
+git push
 ```
 
 Wiki uses **`.md`** files; links use `Page-Name` (spaces → hyphens).
 
 ---
 
-## Page map
+## Page map (`docs/wiki/`)
 
 | File | Topic |
 |------|--------|
-| `Home.md` | Landing |
-| `Getting-Started.md` | Install, backup |
-| `Features.md` | 1.7 feature overview |
-| `Habits.md` | Habit mechanics |
-| `Themes-and-Backgrounds.md` | Appearance |
-| `Plugins.md` | Plugin user guide |
-| `FAQ.md` | Common questions |
-| `Troubleshooting.md` | Debug guide |
-| `Architecture.md` | Developer overview |
-| `Cultiva-Plugins-Guide.md` | Author reference |
-| `Roadmap.md` | Milestones |
-| `Contributing.md` | How to contribute |
-| `Desktop-Build.md` | Build from source |
-| `Privacy-and-Security.md` | Data & sandbox |
-| `_Sidebar.md` | Navigation |
-| `_Footer.md` | Footer links |
+| [Home.md](wiki/Home.md) | Landing |
+| [Getting-Started.md](wiki/Getting-Started.md) | Install, backup, first run |
+| [Features.md](wiki/Features.md) | 1.7.0 Linden overview |
+| [Habits.md](wiki/Habits.md) | Growth stages, streaks, grace day |
+| [Themes-and-Backgrounds.md](wiki/Themes-and-Backgrounds.md) | 18 themes, 13 ambient layers |
+| [Plugins.md](wiki/Plugins.md) | Install and use extensions |
+| [FAQ.md](wiki/FAQ.md) | Common questions |
+| [Troubleshooting.md](wiki/Troubleshooting.md) | Data, plugins, builds |
+| [Architecture.md](wiki/Architecture.md) | Developer overview |
+| [Cultiva-Plugins-Guide.md](wiki/Cultiva-Plugins-Guide.md) | Author quick reference |
+| [Roadmap.md](wiki/Roadmap.md) | Shipped in 1.7, what's next |
+| [Contributing.md](wiki/Contributing.md) | How to contribute |
+| [Desktop-Build.md](wiki/Desktop-Build.md) | Build from source |
+| [Privacy-and-Security.md](wiki/Privacy-and-Security.md) | Data & sandbox |
+| [_Sidebar.md](wiki/_Sidebar.md) | Navigation |
+| [_Footer.md](wiki/_Footer.md) | Footer links |
 
 ---
 
@@ -46,14 +51,15 @@ Wiki uses **`.md`** files; links use `Page-Name` (spaces → hyphens).
 
 **Live:** https://github.com/krwg/cultiva-plugins/wiki
 
-Includes catalog, registry spec, publishing guide, and **[Plugin Hardening](https://github.com/krwg/cultiva-plugins/wiki/Plugin-Hardening)** tracker (audit + issues #2–#10).
-
-```bash
-git clone https://github.com/krwg/cultiva-plugins.wiki.git
-```
+Source: `docs/wiki/` in [krwg/cultiva-plugins](https://github.com/krwg/cultiva-plugins). See that repo's [docs/WIKI.md](https://github.com/krwg/cultiva-plugins/blob/main/docs/WIKI.md).
 
 ---
 
-## Sync from repo docs
+## Sync checklist
 
-When `docs/PLUGIN_AUTHOR_GUIDE.md` changes materially, copy or summarize into `Cultiva-Plugins-Guide.md` on the wiki so users without the repo still see current API docs.
+When you change any of these in the main repo, update the matching wiki page:
+
+- `README.md` → Home, Getting-Started
+- `CHANGELOG.md` / release notes → Features, Roadmap
+- `docs/PLUGIN_AUTHOR_GUIDE.md` → Cultiva-Plugins-Guide
+- `registry.json` (plugins repo) → Plugins wiki + cultiva-plugins Catalog

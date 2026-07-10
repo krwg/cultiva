@@ -46,10 +46,13 @@ npm run build
 | Path | Purpose |
 |------|---------|
 | `src/main.js` | Garden page entry (wires controllers) |
-| `src/app/` | UI controllers |
-| `src/core/` | Plugin system, i18n, themes |
-| `src/modules/` | Habits, storage, auth |
-| `electron/` | Main process, IPC, backup |
+| `src/app/` | UI controllers (garden, settings, backup, plugins, onboarding, …) |
+| `src/core/` | Plugin sandbox/RPC, i18n, themes, ambient-bg, shell-chrome |
+| `src/modules/` | Habits, storage (IndexedDB), auth |
+| `src/pages/calendar/` | Calendar Vite entry |
+| `electron/` | Main process, IPC, auto-updater |
+| `docs/wiki/` | GitHub Wiki source (publish per `docs/WIKI.md`) |
+| `docs/PLUGIN_AUTHOR_GUIDE.md` | Plugin author reference |
 
 ## License
 

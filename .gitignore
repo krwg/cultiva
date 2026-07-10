@@ -93,8 +93,8 @@ CODE-STANDARDS.md
 plugins/
 plugins
 
-# === LOCAL WIKI (Markdown for GitHub Wiki — see docs/WIKI.md) ===
-wiki/
+# === LOCAL WIKI clone (gitignored) — version-controlled source is docs/wiki/ ===
+/wiki/
 
 # === LOCAL GITHUB ISSUE DRAFTS (copy into GitHub Issues) ===
 issues/

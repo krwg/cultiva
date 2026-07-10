@@ -5,32 +5,40 @@
 
 **A gamified habit tracker where consistency isn’t tracked — it’s grown.**
 
-[![Release](https://img.shields.io/github/v/release/krwg/Cultiva?style=flat-square&color=34c759&label=latest)](https://github.com/krwg/Cultiva/releases/latest)
-[![License](https://img.shields.io/github/license/krwg/Cultiva?style=flat-square&color=af52de)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0071e3?style=flat-square&logo=windows&logoColor=white)](https://github.com/krwg/Cultiva/releases/latest)
-[![Stars](https://img.shields.io/github/stars/krwg/Cultiva?style=flat-square&color=ffcc00)](https://github.com/krwg/Cultiva/stargazers)
+[![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=flat-square&color=34c759&label=1.7.0%20Linden)](https://github.com/krwg/cultiva/releases/latest)
+[![License](https://img.shields.io/github/license/krwg/cultiva?style=flat-square&color=af52de)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Win%20%7C%20macOS%20%7C%20Linux-34c759?style=flat-square)](https://github.com/krwg/cultiva/releases/latest)
+[![Stars](https://img.shields.io/github/stars/krwg/cultiva?style=flat-square&color=ffcc00)](https://github.com/krwg/cultiva/stargazers)
 [![Discord](https://img.shields.io/badge/discord-rich%20presence-5865F2?style=flat-square&logo=discord&logoColor=white)](#discord-rich-presence)
+
+[Landing](https://krwg.github.io/cultiva/) · [Wiki](https://github.com/krwg/cultiva/wiki) · [Plugins](https://krwg.github.io/cultiva-plugins/)
 
 </div>
 
 ---
 
-Cultiva is an **offline-first desktop habit tracker** built around a simple idea: habits don’t get checked off — they **grow**. Each habit you plant evolves from a seed into something lasting, reflecting the time and consistency you put into it.
+Cultiva is an **offline-first desktop habit tracker**. Each habit you plant grows from a seed into a legacy tree — with plugins, calendar, themes, and **zero cloud lock-in**.
 
-**No subscriptions. No cloud. No noise.** Just you and your garden.
+**No subscriptions. No accounts. No telemetry.** Just you and your garden.
 
 ---
 
 ## Download
 
-**[→ Latest release](https://github.com/krwg/Cultiva/releases/latest)** · **[Release notes (1.1.0 · Cypress)](docs/release-notes-v1.1.0-cypress-github.md)** · [0.4.1](docs/RELEASE_0.4.1.md) · [0.4.0](docs/RELEASE_0.4.0.md)
+**[→ Latest release (1.7.0 · Linden)](https://github.com/krwg/cultiva/releases/latest)**
 
-| Format | Best for |
-|--------|----------|
-| **Installer** (`.exe`) | Daily use — shortcuts, uninstall entry, in-app updates when published on GitHub Releases |
-| **Portable** (`.exe`) | USB or “no install” workflows |
+| Platform | Artifact | Notes |
+|----------|----------|--------|
+| **Windows** | `Cultiva-Setup-1.7.0.exe` | NSIS installer — shortcuts, uninstall entry |
+| **Windows** | `Cultiva-Portable-1.7.0.exe` | No install required |
+| **macOS Intel** | `Cultiva-1.7.0-mac-x64.dmg` | Also `.zip` |
+| **macOS Apple Silicon** | `Cultiva-1.7.0-mac-arm64.dmg` | Also `.zip` |
+| **Linux** | `Cultiva-1.7.0-linux-x86_64.AppImage` | Single file, no root |
+| **Linux** | `Cultiva-1.7.0-linux-amd64.deb` | Debian / Ubuntu |
 
-> First launch may take a moment while local storage (IndexedDB) initializes.
+**Release notes:** [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · [1.1.0 Cypress](docs/release-notes-v1.1.0-cypress-github.md)
+
+> **Upgrading from 1.1.0:** your garden is preserved. Export a backup under **Settings → Data** before updating, just in case.
 
 ---
 
@@ -39,10 +47,28 @@ Cultiva is an **offline-first desktop habit tracker** built around a simple idea
 Plant a habit. Show up. Watch it grow.
 
 ```
-Seed → Sprout → Plant → Tree → Legacy (365+ days)
+Seed → Sprout → Sapling → Tree → Legacy (365+ days)
 ```
 
-Each stage is a **visual milestone**, not just a counter. After **365 days**, the habit becomes a **Legacy** tree — a permanent trophy in your garden.
+Each stage is a **visual milestone**. After **365 days**, the habit becomes a **Legacy** tree — a permanent trophy in your garden.
+
+---
+
+## Highlights in 1.7.0 Linden
+
+| | |
+|---|---|
+| **First-run wizard** | Language, theme, timezone, first habit, optional auto-backup |
+| **Habit templates** | Read, Exercise, Meditate, Water, Journal |
+| **Streak grace day** | One forgiven skip per calendar month (optional) |
+| **Statistics** | Weekly and monthly completion trends in Settings |
+| **Data export** | JSON, ZIP, iCal (`.ics`) for habits and calendar events |
+| **Auto-backup** | 7 rotating snapshots in the app data folder |
+| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) |
+| **F1 help** | Contextual shortcuts — English and Russian |
+| **18 themes** | Including **Linden** and **Cypress** |
+| **13 ambient backgrounds** | Plus custom photo — shared with calendar |
+| **Cross-platform** | Windows, macOS (Intel + ARM), Linux builds in CI |
 
 ---
 
@@ -50,34 +76,33 @@ Each stage is a **visual milestone**, not just a counter. After **365 days**, th
 
 | | |
 |---|---|
-| **Visual growth** | Habits progress through tangible stages, not only streak numbers |
-| **Legacy trees** | 365+ days unlock a lasting trophy in the garden |
-| **Focus mode** | Minimal UI when you need fewer distractions |
-| **Themes** | System **Auto**, built-in **Light / Dark**, and curated palettes grouped by light vs dark appearance (including Orchard, Honeycrisp, Inkwell, Sequoia) |
-| **Ambient backgrounds** | Aurora, Rainfall, Starlight, Snowfall, Fireflies, Petal Drift, Silicon Mist, Ember Glow, Breeze Glass — plus an optional **custom photo** stored locally |
-| **Shared look** | Theme and background apply to **both** the garden (home) and the **calendar** page |
-| **GitHub-style calendar** | Month / week / day views, optional regional holidays |
-| **Plugins** | Sandboxed extensions from the community registry ([CultivaPlugins](https://github.com/krwg/CultivaPlugins)) |
-| **Discord Rich Presence** | Optional status line while you tend your garden |
-| **Auto-updates** | `electron-updater` against GitHub Releases (when `latest.yml` is published with your build) |
-| **Offline-first** | No account required for local use; no telemetry |
-| **i18n** | English and Russian in the UI, structured for more locales |
+| **Offline-first** | IndexedDB on your device — no sync server |
+| **Visual growth** | Five plant stages tied to consistency |
+| **Calendar** | Month / week / day views, regional holidays, shared themes |
+| **Plugins** | Sandboxed header and garden widgets ([catalog](https://krwg.github.io/cultiva-plugins/)) |
+| **Discord Rich Presence** | Optional status while you tend your garden |
+| **Auto-updates** | `electron-updater` against GitHub Releases |
+| **i18n** | **285** EN/RU string pairs in 1.7.0 |
+| **Accessibility** | Focus traps, landmarks, `prefers-reduced-motion` for ambient layers |
 
 ---
 
-## Plugins
+## Official plugins
 
-Browse, install, and manage plugins under **Settings → Plugins**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** and registry **[3.0.2](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
-| Plugin | Description |
-|--------|-------------|
-| **Weather** | Temperature, “feels like”, humidity, wind — powered by Open-Meteo (no API key) |
-| **Clock** | Live clock with format options |
-| **Radio** | Ambient streams (e.g. lofi, jazz) |
+| Plugin | Version | Surface |
+|--------|---------|---------|
+| Weather | 2.3.0 | Header + garden |
+| Time | 2.2.0 | Header |
+| Radio | 2.1.0 | Header |
+| Pomodoro | 1.2.0 | Header |
+| Quote of the Day | 1.2.0 | Garden |
+| Streak Celebrator | 1.0.0 | Hook + toast |
 
-**Authors:** see [`docs/PLUGIN_AUTHOR_GUIDE.md`](docs/PLUGIN_AUTHOR_GUIDE.md) in this repo for the manifest, sandbox API, and a release checklist. The public registry and boilerplate live in [**CultivaPlugins**](https://github.com/krwg/CultivaPlugins).
+**Authors:** [`docs/PLUGIN_AUTHOR_GUIDE.md`](docs/PLUGIN_AUTHOR_GUIDE.md) · [cultiva-plugins](https://github.com/krwg/cultiva-plugins)
 
-**Wiki (GitHub):** Markdown source for the project wiki lives in **`wiki/`** (gitignored by default). See [`docs/WIKI.md`](docs/WIKI.md) for how to publish those pages to GitHub Wiki.
+**Wiki source:** Markdown for the GitHub Wiki lives in [`docs/wiki/`](docs/wiki/) — see [`docs/WIKI.md`](docs/WIKI.md) to publish.
 
 ---
 
@@ -85,56 +110,54 @@ Browse, install, and manage plugins under **Settings → Plugins**.
 
 | Layer | Technology |
 |-------|------------|
-| Runtime | Electron 30 |
+| Runtime | Electron **40** |
 | UI | Vanilla JavaScript (ES modules), CSS variables |
-| Build | Vite 5 (multi-page: home + calendar) |
+| Build | Vite **6** (multi-page: garden + calendar) |
 | Data | IndexedDB with localStorage bridge where needed |
+| Tests | Vitest **3** (8 files, 28 tests) |
 | Updates | `electron-updater` + GitHub Releases |
-| Packaging | `electron-builder` (NSIS + portable on Windows) |
+| Packaging | `electron-builder` **26** — NSIS, portable, dmg, zip, AppImage, deb |
 
 ---
 
 ## Development
 
 ```bash
-git clone https://github.com/krwg/Cultiva.git
-cd Cultiva
-npm install
+git clone https://github.com/krwg/cultiva.git
+cd cultiva
+npm ci
 
-# Web dev server (Vite)
-npm run dev
+npm run dev              # Vite dev server
+npm run electron:dev:watch   # Electron + hot reload (recommended)
 
-# Electron with dev server (recommended)
-npm run electron:dev:watch
-
-# Production web build → dist/
-npm run build
-
-# Packaged Windows app → release/
-npm run electron:build
+npm run lint
+npm test
+npm run build            # → dist/
+npm run electron:build   # → release/ (current host OS)
 ```
+
+Unsigned local builds: `CSC_IDENTITY_AUTO_DISCOVERY=false` (set automatically in `electron:build` script).
 
 ---
 
 ## Contributing
 
-**GitHub language:** issues, pull requests, commit messages, and **English** Markdown in this repository should be written in **English** so everyone can review and search them. In-app strings stay multilingual via `src/core/i18n.js`.
+Issues, PRs, and commit messages in **English**. In-app strings: `src/core/i18n.js` (en + ru minimum).
 
-- **Bug** → [open an issue](https://github.com/krwg/Cultiva/issues/new) with repro steps and logs if possible.  
-- **Idea** → issue or [Discussions](https://github.com/krwg/Cultiva/discussions).  
-- **Code** → fork, branch from `main`, open a PR with a clear summary.  
-- **Plugins** → contribute to [CultivaPlugins](https://github.com/krwg/CultivaPlugins) (registry + guides).
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SUPPORT.md](SUPPORT.md) — where to ask vs open an issue
+- [SECURITY.md](SECURITY.md) — private disclosure for vulnerabilities
 
 ---
 
 ## Discord Rich Presence
 
-When Discord is running on the same machine, Cultiva can show a simple presence line (garden state, etc.). Toggle it under **Settings → Discord**.
+When Discord is running locally, Cultiva can show a simple presence line. Toggle under **Settings → Discord**.
 
 ---
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · GPL-3.0 · **1.7.0 · Linden**
+Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **1.7.0 · Linden**
 
 </div>

@@ -8,11 +8,12 @@ How to get help with **Cultiva** without flooding the issue tracker.
 
 | Resource | Best for |
 |----------|----------|
+| [README](README.md) | Overview, download, features |
+| [Release notes (1.7.0 · Linden)](docs/release-notes-v1.7.0-linden-github.md) | What's new, install matrix |
 | [Wiki — Getting Started](https://github.com/krwg/cultiva/wiki/Getting-Started) | Install, first launch, backups |
 | [Wiki — FAQ](https://github.com/krwg/cultiva/wiki/FAQ) | Common questions |
 | [Wiki — Troubleshooting](https://github.com/krwg/cultiva/wiki/Troubleshooting) | Plugins, data, build problems |
 | [Wiki — Plugins](https://github.com/krwg/cultiva/wiki/Plugins) | Install and use extensions |
-| [README](README.md) | Overview, download, features |
 
 **Plugins registry:** [cultiva-plugins wiki](https://github.com/krwg/cultiva-plugins/wiki) · [Plugin Hardening status](https://github.com/krwg/cultiva-plugins/wiki/Plugin-Hardening)
 
