@@ -1,45 +1,67 @@
 const DB_NAME = 'cultiva_v2_db';
 const DB_VERSION = 5;
 
+let _dbConn = null;
+let _dbPromise = null;
+
 export const db = {
   async open() {
-    return new Promise((resolve, reject) => {
+    if (_dbConn) {
+      return _dbConn;
+    }
+    if (_dbPromise) {
+      return _dbPromise;
+    }
+
+    _dbPromise = new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
-      request.onerror = (e) => reject(e.target.error);
+      request.onerror = (e) => {
+        _dbPromise = null;
+        reject(e.target.error);
+      };
 
       request.onupgradeneeded = (e) => {
-        const db = e.target.result;
+        const database = e.target.result;
         const oldVersion = e.oldVersion || 0;
 
-        if (!db.objectStoreNames.contains('habits')) {
-          const store = db.createObjectStore('habits', { keyPath: 'id' });
+        if (!database.objectStoreNames.contains('habits')) {
+          const store = database.createObjectStore('habits', { keyPath: 'id' });
           store.createIndex('userId', 'userId', { unique: false });
           store.createIndex('updatedAt', 'updatedAt', { unique: false });
         } else if (oldVersion < 5) {
-          const tx = db.transaction('habits', 'readwrite');
+          const tx = database.transaction('habits', 'readwrite');
           const habitsStore = tx.objectStore('habits');
           if (!habitsStore.indexNames.contains('userId')) { habitsStore.createIndex('userId', 'userId', { unique: false }); }
           if (!habitsStore.indexNames.contains('updatedAt')) { habitsStore.createIndex('updatedAt', 'updatedAt', { unique: false }); }
         }
 
-        if (!db.objectStoreNames.contains('settings')) { db.createObjectStore('settings', { keyPath: 'key' }); }
-        if (!db.objectStoreNames.contains('users')) { db.createObjectStore('users', { keyPath: 'email' }); }
-        if (!db.objectStoreNames.contains('sessions')) { db.createObjectStore('sessions', { keyPath: 'key' }); }
+        if (!database.objectStoreNames.contains('settings')) { database.createObjectStore('settings', { keyPath: 'key' }); }
+        if (!database.objectStoreNames.contains('users')) { database.createObjectStore('users', { keyPath: 'email' }); }
+        if (!database.objectStoreNames.contains('sessions')) { database.createObjectStore('sessions', { keyPath: 'key' }); }
 
         console.log(`[DB] Upgraded from v${oldVersion} to v${DB_VERSION} safely`);
       };
 
-      request.onsuccess = (e) => resolve(e.target.result);
+      request.onsuccess = (e) => {
+        _dbConn = e.target.result;
+        _dbConn.onclose = () => {
+          _dbConn = null;
+          _dbPromise = null;
+        };
+        resolve(_dbConn);
+      };
     });
+
+    return _dbPromise;
   },
 
   async delete(storeName, key) {
     if (key === undefined || key === null) {
       return Promise.resolve();
     }
-    const db = await this.open();
+    const conn = await this.open();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
+      const tx = conn.transaction(storeName, 'readwrite');
       const request = tx.objectStore(storeName).delete(key);
       request.onsuccess = () => resolve();
       request.onerror = (e) => reject(e.target.error);
@@ -47,9 +69,9 @@ export const db = {
   },
 
   async put(storeName, data) {
-    const db = await this.open();
+    const conn = await this.open();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
+      const tx = conn.transaction(storeName, 'readwrite');
       const request = tx.objectStore(storeName).put(data);
       request.onsuccess = () => resolve();
       request.onerror = (e) => reject(e.target.error);
@@ -57,9 +79,9 @@ export const db = {
   },
 
   async getAll(storeName) {
-    const db = await this.open();
+    const conn = await this.open();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
+      const tx = conn.transaction(storeName, 'readonly');
       const request = tx.objectStore(storeName).getAll();
       request.onsuccess = () => resolve(request.result || []);
       request.onerror = (e) => reject(e.target.error);
@@ -68,9 +90,9 @@ export const db = {
 
   async get(storeName, key) {
     if (!key) { return null; }
-    const db = await this.open();
+    const conn = await this.open();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
+      const tx = conn.transaction(storeName, 'readonly');
       const request = tx.objectStore(storeName).get(key);
       request.onsuccess = () => resolve(request.result || null);
       request.onerror = (e) => reject(e.target.error);
@@ -78,9 +100,9 @@ export const db = {
   },
 
   async getByIndex(storeName, indexName, value) {
-    const db = await this.open();
+    const conn = await this.open();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
+      const tx = conn.transaction(storeName, 'readonly');
       const store = tx.objectStore(storeName);
 
       if (!store.indexNames.contains(indexName)) {
@@ -105,9 +127,9 @@ export const db = {
   },
 
   async clear(storeName) {
-    const db = await this.open();
+    const conn = await this.open();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
+      const tx = conn.transaction(storeName, 'readwrite');
       const request = tx.objectStore(storeName).clear();
       request.onsuccess = () => resolve();
       request.onerror = (e) => reject(e.target.error);
@@ -117,9 +139,9 @@ export const db = {
   async deleteByIndex(storeName, indexName, value) {
     if (value === null || value === undefined) { return Promise.resolve(); }
 
-    const db = await this.open();
+    const conn = await this.open();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
+      const tx = conn.transaction(storeName, 'readwrite');
       const store = tx.objectStore(storeName);
 
       if (!store.indexNames.contains(indexName)) {

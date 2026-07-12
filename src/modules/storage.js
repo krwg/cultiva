@@ -19,6 +19,8 @@ let _isInitialized = false;
 let _initPromise = null;
 let _currentUserId = null;
 let _authProbe = () => !!_currentUserId;
+let _deletedHabitIds = new Set();
+let _habitsLsTimer = null;
 
 let _habitsWriteScheduled = false;
 let _habitsWriteWaiters = [];
@@ -57,14 +59,50 @@ async function _flushHabitsToDisk() {
 
   try {
     await _persistHabitsUpsert(myHabits);
-    localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
+    _scheduleHabitsLocalStorageMirror(myHabits);
     console.log('[Storage] Saved', myHabits.length, 'habits to IndexedDB');
     waiters.forEach((w) => w.resolve());
   } catch (e) {
     console.error('[Storage] IndexedDB save failed, using localStorage only:', e);
-    localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
+    try {
+      localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
+    } catch {
+      void 0;
+    }
     waiters.forEach((w) => w.reject(e));
   }
+}
+
+function _scheduleHabitsLocalStorageMirror(habits) {
+  if (_habitsLsTimer) {
+    clearTimeout(_habitsLsTimer);
+  }
+  _habitsLsTimer = setTimeout(() => {
+    _habitsLsTimer = null;
+    try {
+      localStorage.setItem('cultiva-habits', JSON.stringify(habits));
+    } catch {
+      void 0;
+    }
+  }, 2500);
+}
+
+function _flushHabitsLocalStorageNow() {
+  if (_habitsLsTimer) {
+    clearTimeout(_habitsLsTimer);
+    _habitsLsTimer = null;
+  }
+  try {
+    localStorage.setItem('cultiva-habits', JSON.stringify(_habitsCache));
+  } catch {
+    void 0;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    _flushHabitsLocalStorageNow();
+  });
 }
 
 function _queueSettingsWrite() {
@@ -256,20 +294,15 @@ function clearLocalCultivaKeys() {
 
 async function _persistHabitsUpsert(myHabits) {
   const dbInstance = await db.open();
-  const uid = _currentUserId ?? null;
-  const allInDb = await db.getAll('habits');
-  const existing = allInDb.filter((h) => habitBelongsToUser(h, uid));
-
   await new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('habits', 'readwrite');
     const store = tx.objectStore('habits');
-    const newIds = new Set(myHabits.map((h) => h.id));
 
-    for (const h of existing) {
-      if (!newIds.has(h.id)) {
-        store.delete(h.id);
-      }
+    for (const id of _deletedHabitIds) {
+      store.delete(id);
     }
+    _deletedHabitIds.clear();
+
     for (const habit of myHabits) {
       store.put(habit);
     }
@@ -567,6 +600,14 @@ export const storage = {
         updatedAt: Date.now()
       };
     });
+
+    const prevIds = new Set(_habitsCache.map((h) => h.id));
+    const nextIds = new Set(myHabits.map((h) => h.id));
+    for (const id of prevIds) {
+      if (!nextIds.has(id)) {
+        _deletedHabitIds.add(id);
+      }
+    }
 
     _habitsCache = myHabits;
 
