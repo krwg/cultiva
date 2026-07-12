@@ -17,3 +17,12 @@ export function applyAmbientIntensity(percent) {
   const clamped = Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 100;
   document.documentElement.style.setProperty('--ambient-intensity', String(clamped / 100));
 }
+
+export function applyLowPowerMode(enabled, savedIntensity = 100) {
+  document.documentElement.dataset.lowPower = enabled ? '1' : '';
+  if (enabled) {
+    applyAmbientIntensity(35);
+  } else {
+    applyAmbientIntensity(savedIntensity);
+  }
+}

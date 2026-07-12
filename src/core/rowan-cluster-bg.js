@@ -267,18 +267,38 @@ export function mountRowanCluster(container) {
     raf = requestAnimationFrame(loop);
   }
 
-  container._rowanStop = () => {
+  container._rowanPause = () => {
     if (raf) {
       cancelAnimationFrame(raf);
       raf = 0;
     }
+  };
+
+  container._rowanResume = () => {
+    if (!raf && !prefersReducedMotion()) {
+      raf = requestAnimationFrame(loop);
+    }
+  };
+
+  container._rowanStop = () => {
+    container._rowanPause();
     ro?.disconnect();
     window.removeEventListener('resize', resize);
     container.innerHTML = '';
     container._rowanStop = null;
+    container._rowanPause = null;
+    container._rowanResume = null;
   };
 
   return container._rowanStop;
+}
+
+export function pauseRowanCluster(container) {
+  container?._rowanPause?.();
+}
+
+export function resumeRowanCluster(container) {
+  container?._rowanResume?.();
 }
 
 export function stopRowanCluster(container) {

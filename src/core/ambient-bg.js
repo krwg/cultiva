@@ -1,4 +1,4 @@
-import { mountRowanCluster, stopRowanCluster } from './rowan-cluster-bg.js';
+import { mountRowanCluster, stopRowanCluster, pauseRowanCluster, resumeRowanCluster } from './rowan-cluster-bg.js';
 import { loadAmbientCss } from './theme-css-loader.js';
 import { AMBIENT_BG_LAYER_IDS, LS_CUSTOM_BG_DATA, getWithBgClassList } from './theme-config.js';
 import {
@@ -8,6 +8,26 @@ import {
 } from './plugin-contributions.js';
 
 const MAX_CUSTOM_BYTES = 1_400_000;
+const _particleHtmlCache = new Map();
+
+function isLowPower() {
+  return typeof document !== 'undefined'
+    && document.documentElement?.dataset?.lowPower === '1';
+}
+
+function particleCount(base) {
+  return isLowPower() ? Math.max(4, Math.floor(base * 0.4)) : base;
+}
+
+function mountParticleLayer(container, cacheKey, build) {
+  const cached = _particleHtmlCache.get(cacheKey);
+  if (cached) {
+    container.innerHTML = cached;
+    return;
+  }
+  build(container);
+  _particleHtmlCache.set(cacheKey, container.innerHTML);
+}
 
 function stripAmbientClasses(body) {
   body.classList.remove('with-ambient-bg', ...getWithBgClassList(), ...getPluginBackgroundBodyClasses());
@@ -33,6 +53,22 @@ export function readCustomBackgroundDataUrl() {
     return localStorage.getItem(LS_CUSTOM_BG_DATA) || '';
   } catch {
     return '';
+  }
+}
+
+export function pauseAmbientRuntime(doc = document) {
+  doc.body.classList.add('ambient-paused');
+  const rowan = doc.getElementById('bg-rowan-cluster');
+  if (rowan) {
+    pauseRowanCluster(rowan);
+  }
+}
+
+export function resumeAmbientRuntime(doc = document) {
+  doc.body.classList.remove('ambient-paused');
+  const rowan = doc.getElementById('bg-rowan-cluster');
+  if (rowan && rowan.style.display !== 'none') {
+    resumeRowanCluster(rowan);
   }
 }
 
@@ -85,6 +121,12 @@ export function applyAmbientBackground(doc, body, bg) {
   if (bg === 'sunbeam') { generateSunbeams(container); }
   if (bg === 'linden-bloom') { generateLindenLeaves(container); }
   if (bg === 'rowan-cluster') { mountRowanCluster(container); }
+
+  if (body.classList.contains('ambient-paused')) {
+    if (bg === 'rowan-cluster') {
+      pauseRowanCluster(container);
+    }
+  }
 }
 
 export function saveCustomBackgroundFromFile(file) {
@@ -121,144 +163,176 @@ export function clearCustomBackground() {
 }
 
 function generateRaindrops(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 50; i++) {
-    const drop = document.createElement('div');
-    drop.className = 'rain-drop';
-    drop.style.left = `${Math.random() * 100}%`;
-    drop.style.animationDelay = `${Math.random() * 2}s`;
-    drop.style.animationDuration = `${1 + Math.random() * 1}s`;
-    container.appendChild(drop);
-  }
+  const key = `rainfall:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(50); i++) {
+      const drop = document.createElement('div');
+      drop.className = 'rain-drop';
+      drop.style.left = `${Math.random() * 100}%`;
+      drop.style.animationDelay = `${Math.random() * 2}s`;
+      drop.style.animationDuration = `${1 + Math.random() * 1}s`;
+      el.appendChild(drop);
+    }
+  });
 }
 
 function generateStars(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 100; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.top = `${Math.random() * 100}%`;
-    star.style.animationDelay = `${Math.random() * 3}s`;
-    star.style.animationDuration = `${2 + Math.random() * 4}s`;
-    container.appendChild(star);
-  }
+  const key = `starlight:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(100); i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.animationDelay = `${Math.random() * 3}s`;
+      star.style.animationDuration = `${2 + Math.random() * 4}s`;
+      el.appendChild(star);
+    }
+  });
 }
 
 function generateSnowflakes(container) {
-  container.innerHTML = '';
+  const key = `snowfall:${isLowPower() ? 'low' : 'full'}`;
   const snowflakes = ['❄️', '❅', '❆', '✻', '✼', '❉'];
-  for (let i = 0; i < 40; i++) {
-    const flake = document.createElement('div');
-    flake.className = 'snowflake';
-    flake.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
-    flake.style.left = `${Math.random() * 100}%`;
-    flake.style.fontSize = `${0.8 + Math.random() * 1.5}em`;
-    flake.style.animationDelay = `${Math.random() * 5}s`;
-    flake.style.animationDuration = `${5 + Math.random() * 7}s`;
-    container.appendChild(flake);
-  }
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(40); i++) {
+      const flake = document.createElement('div');
+      flake.className = 'snowflake';
+      flake.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+      flake.style.left = `${Math.random() * 100}%`;
+      flake.style.fontSize = `${0.8 + Math.random() * 1.5}em`;
+      flake.style.animationDelay = `${Math.random() * 5}s`;
+      flake.style.animationDuration = `${5 + Math.random() * 7}s`;
+      el.appendChild(flake);
+    }
+  });
 }
 
 function generateFireflies(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 25; i++) {
-    const fly = document.createElement('div');
-    fly.className = 'firefly';
-    fly.style.left = `${Math.random() * 100}%`;
-    fly.style.top = `${20 + Math.random() * 60}%`;
-    fly.style.animationDelay = `${Math.random() * 8}s`;
-    fly.style.animationDuration = `${6 + Math.random() * 10}s`;
-    container.appendChild(fly);
-  }
+  const key = `fireflies:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(25); i++) {
+      const fly = document.createElement('div');
+      fly.className = 'firefly';
+      fly.style.left = `${Math.random() * 100}%`;
+      fly.style.top = `${20 + Math.random() * 60}%`;
+      fly.style.animationDelay = `${Math.random() * 8}s`;
+      fly.style.animationDuration = `${6 + Math.random() * 10}s`;
+      el.appendChild(fly);
+    }
+  });
 }
 
 function generatePetals(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 36; i++) {
-    const p = document.createElement('div');
-    p.className = 'petal';
-    p.style.left = `${Math.random() * 100}%`;
-    p.style.animationDelay = `${Math.random() * 12}s`;
-    p.style.animationDuration = `${14 + Math.random() * 12}s`;
-    p.style.setProperty('--drift', `${(Math.random() - 0.5) * 80}px`);
-    container.appendChild(p);
-  }
+  const key = `petal:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(36); i++) {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.style.left = `${Math.random() * 100}%`;
+      p.style.animationDelay = `${Math.random() * 12}s`;
+      p.style.animationDuration = `${14 + Math.random() * 12}s`;
+      p.style.setProperty('--drift', `${(Math.random() - 0.5) * 80}px`);
+      el.appendChild(p);
+    }
+  });
 }
 
 function generateEmbers(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 40; i++) {
-    const em = document.createElement('div');
-    em.className = 'ember';
-    em.style.left = `${Math.random() * 100}%`;
-    em.style.animationDelay = `${Math.random() * 6}s`;
-    em.style.animationDuration = `${4 + Math.random() * 8}s`;
-    container.appendChild(em);
-  }
+  const key = `ember:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(40); i++) {
+      const em = document.createElement('div');
+      em.className = 'ember';
+      em.style.left = `${Math.random() * 100}%`;
+      em.style.animationDelay = `${Math.random() * 6}s`;
+      em.style.animationDuration = `${4 + Math.random() * 8}s`;
+      el.appendChild(em);
+    }
+  });
 }
 
 function generateBreeze(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 28; i++) {
-    const b = document.createElement('div');
-    b.className = 'breeze-line';
-    b.style.left = `${Math.random() * 100}%`;
-    b.style.top = `${Math.random() * 100}%`;
-    b.style.animationDelay = `${Math.random() * 8}s`;
-    b.style.animationDuration = `${10 + Math.random() * 14}s`;
-    b.style.transform = `rotate(${-15 + Math.random() * 30}deg)`;
-    container.appendChild(b);
-  }
+  const key = `breeze:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(28); i++) {
+      const b = document.createElement('div');
+      b.className = 'breeze-line';
+      b.style.left = `${Math.random() * 100}%`;
+      b.style.top = `${Math.random() * 100}%`;
+      b.style.animationDelay = `${Math.random() * 8}s`;
+      b.style.animationDuration = `${10 + Math.random() * 14}s`;
+      b.style.transform = `rotate(${-15 + Math.random() * 30}deg)`;
+      el.appendChild(b);
+    }
+  });
 }
 
 function generateCypressNeedles(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 48; i++) {
-    const n = document.createElement('div');
-    n.className = 'cypress-needle';
-    n.style.left = `${Math.random() * 100}%`;
-    n.style.animationDelay = `${Math.random() * 14}s`;
-    n.style.animationDuration = `${12 + Math.random() * 16}s`;
-    n.style.setProperty('--sway', `${(Math.random() - 0.5) * 60}px`);
-    container.appendChild(n);
-  }
+  const key = `cypress:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(48); i++) {
+      const n = document.createElement('div');
+      n.className = 'cypress-needle';
+      n.style.left = `${Math.random() * 100}%`;
+      n.style.animationDelay = `${Math.random() * 14}s`;
+      n.style.animationDuration = `${12 + Math.random() * 16}s`;
+      n.style.setProperty('--sway', `${(Math.random() - 0.5) * 60}px`);
+      el.appendChild(n);
+    }
+  });
 }
 
 function generateDew(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 55; i++) {
-    const d = document.createElement('div');
-    d.className = 'dew-drop';
-    d.style.left = `${Math.random() * 100}%`;
-    d.style.top = `${Math.random() * 100}%`;
-    d.style.animationDelay = `${Math.random() * 6}s`;
-    d.style.animationDuration = `${3 + Math.random() * 5}s`;
-    container.appendChild(d);
-  }
+  const key = `dew:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(55); i++) {
+      const d = document.createElement('div');
+      d.className = 'dew-drop';
+      d.style.left = `${Math.random() * 100}%`;
+      d.style.top = `${Math.random() * 100}%`;
+      d.style.animationDelay = `${Math.random() * 6}s`;
+      d.style.animationDuration = `${3 + Math.random() * 5}s`;
+      el.appendChild(d);
+    }
+  });
 }
 
 function generateSunbeams(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 6; i++) {
-    const beam = document.createElement('div');
-    beam.className = 'sunbeam-ray';
-    beam.style.left = `${10 + i * 14}%`;
-    beam.style.animationDelay = `${i * 1.2}s`;
-    container.appendChild(beam);
-  }
+  mountParticleLayer(container, 'sunbeam', (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < 6; i++) {
+      const beam = document.createElement('div');
+      beam.className = 'sunbeam-ray';
+      beam.style.left = `${10 + i * 14}%`;
+      beam.style.animationDelay = `${i * 1.2}s`;
+      el.appendChild(beam);
+    }
+  });
 }
 
 function generateLindenLeaves(container) {
-  container.innerHTML = '';
-  for (let i = 0; i < 42; i++) {
-    const leaf = document.createElement('div');
-    leaf.className = 'linden-leaf';
-    leaf.style.left = `${Math.random() * 100}%`;
-    leaf.style.animationDelay = `${Math.random() * 14}s`;
-    leaf.style.animationDuration = `${16 + Math.random() * 14}s`;
-    leaf.style.setProperty('--drift', `${(Math.random() - 0.5) * 90}px`);
-    leaf.style.setProperty('--spin', `${120 + Math.random() * 220}deg`);
-    container.appendChild(leaf);
-  }
+  const key = `linden:${isLowPower() ? 'low' : 'full'}`;
+  mountParticleLayer(container, key, (el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < particleCount(42); i++) {
+      const leaf = document.createElement('div');
+      leaf.className = 'linden-leaf';
+      leaf.style.left = `${Math.random() * 100}%`;
+      leaf.style.animationDelay = `${Math.random() * 14}s`;
+      leaf.style.animationDuration = `${16 + Math.random() * 14}s`;
+      leaf.style.setProperty('--drift', `${(Math.random() - 0.5) * 90}px`);
+      leaf.style.setProperty('--spin', `${120 + Math.random() * 220}deg`);
+      el.appendChild(leaf);
+    }
+  });
 }

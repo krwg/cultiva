@@ -4,7 +4,7 @@ import { syncNativeShellChrome } from '../core/shell-chrome.js';
 import { storage } from '../modules/storage.js';
 import { settings, ensureAppReady } from './renderer-bootstrap.js';
 import { applyTranslations } from './i18n-dom.js';
-import { applyAccentColor, applyAmbientIntensity } from '../core/customization.js';
+import { applyAccentColor, applyAmbientIntensity, applyLowPowerMode } from '../core/customization.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { bindHabitTemplates } from './habit-templates-ui.js';
 import { refreshStorageBackendControls } from './storage-settings-ui.js';
@@ -96,6 +96,9 @@ export async function loadSettings() {
         if (!Number.isNaN(ai)) {
           settings.ambientIntensity = Math.max(0, Math.min(100, ai));
         }
+      }
+      if (typeof saved.lowPowerMode === 'boolean') {
+        settings.lowPowerMode = saved.lowPowerMode;
       }
       if (typeof saved.firstRunComplete === 'boolean') {
         settings.firstRunComplete = saved.firstRunComplete;
@@ -237,7 +240,10 @@ export function applySettings() {
   updateNotificationsDesktopBanner();
 
   applyAccentColor(settings.accentColor);
-  applyAmbientIntensity(settings.ambientIntensity);
+  applyLowPowerMode(settings.lowPowerMode, settings.ambientIntensity);
+  if (!settings.lowPowerMode) {
+    applyAmbientIntensity(settings.ambientIntensity);
+  }
 
   const accentInput = document.getElementById('accent-color-input');
   if (accentInput && settings.accentColor) {
@@ -246,6 +252,11 @@ export function applySettings() {
   const intensitySlider = document.getElementById('ambient-intensity');
   if (intensitySlider) {
     intensitySlider.value = String(settings.ambientIntensity ?? 100);
+    intensitySlider.disabled = settings.lowPowerMode;
+  }
+  const lowPowerToggle = document.getElementById('toggle-low-power');
+  if (lowPowerToggle) {
+    lowPowerToggle.checked = settings.lowPowerMode === true;
   }
 
   c.renderHeaderAvatar();

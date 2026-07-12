@@ -110,6 +110,20 @@ function createMainWindow({
 
   setMainWindow(mainWindow);
 
+  mainWindow.webContents.setBackgroundThrottling(true);
+
+  const emitWindowVisibility = (visible) => {
+    if (mainWindow.isDestroyed()) {
+      return;
+    }
+    mainWindow.webContents.send('window-visibility', visible);
+  };
+
+  mainWindow.on('hide', () => emitWindowVisibility(false));
+  mainWindow.on('show', () => emitWindowVisibility(true));
+  mainWindow.on('minimize', () => emitWindowVisibility(false));
+  mainWindow.on('restore', () => emitWindowVisibility(true));
+
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https:') || url.startsWith('http:')) {
       shell.openExternal(url);
@@ -179,6 +193,7 @@ function createMainWindow({
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
+    discord.initDiscordRPC();
     discord.onMainWindowReadyShow();
     setupAutoUpdater();
   });
