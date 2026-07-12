@@ -42,7 +42,6 @@ app.whenReady().then(() => {
     app.setAppUserModelId(pkg.build && pkg.build.appId ? pkg.build.appId : 'com.cultiva.app');
   }
   mainWindowMod.attachSessionContentSecurityPolicy({ isDev, session });
-  discord.initDiscordRPC();
   setupPluginIPC();
   installAppMenu({ Menu, app, shell, getMainWindow, isDev });
   openMainWindow();
