@@ -5,6 +5,7 @@ import { settings } from '../app/renderer-bootstrap.js';
 import { pluginHasPermission } from './plugin-rpc.js';
 import { readThemeCssColor } from './shell-chrome.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
+import { buildPluginHabitsSnapshot } from './plugin-habits-api.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
 
@@ -365,6 +366,10 @@ function _mountPluginMainSheet(pluginId, html) {
   document.addEventListener('keydown', onKey);
 }
 
+function _purgeOrphanPluginSandboxes() {
+  document.querySelectorAll('iframe[title^="plugin-sandbox-"]').forEach((el) => el.remove());
+}
+
 function _wireSandboxHost(host, pluginId, manifest) {
   host.setHandler('onRpc', async (method, args) => {
     const prefix = `plugin_${manifest.id}_`;
@@ -424,6 +429,12 @@ function _wireSandboxHost(host, pluginId, manifest) {
       }
       const key = String(args[0] || 'text-primary').replace(/^--/, '');
       return readThemeCssColor(`--${key}`);
+    }
+    if (method === 'app.getHabits') {
+      if (!pluginHasPermission(manifest, 'habits.read')) {
+        throw new Error('habits.read permission denied');
+      }
+      return buildPluginHabitsSnapshot();
     }
   });
 
@@ -1122,6 +1133,7 @@ export const pluginManager = {
     if (!enabled) {
       disabledSet.add(pluginId);
       await this._disableLoadedPlugin(pluginId);
+      _purgeOrphanPluginSandboxes();
     } else {
       disabledSet.delete(pluginId);
       if (!plugins.has(pluginId)) {
@@ -1141,10 +1153,13 @@ export const pluginManager = {
   },
 
   async disableAllPlugins() {
-    const ids = await getInstalledPluginIdsNormalized();
-    for (const id of ids) {
+    const installed = await getInstalledPluginIdsNormalized();
+    const loaded = Array.from(plugins.keys());
+    const unique = [...new Set([...installed, ...loaded])];
+    for (const id of unique) {
       await this._disableLoadedPlugin(id);
     }
+    _purgeOrphanPluginSandboxes();
     Object.values(pluginHooks).forEach((list) => list.splice(0, list.length));
     _isInitialized = false;
     _initPromise = null;

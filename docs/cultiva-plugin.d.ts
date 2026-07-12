@@ -7,7 +7,7 @@ export interface CultivaPluginManifest {
   icon?: string;
   entry?: string;
   styles?: string[];
-  permissions?: Array<'network' | 'storage' | 'ui'>;
+  permissions?: Array<'network' | 'storage' | 'ui' | 'habits.read'>;
   data?: string[];
   minAppVersion?: string;
   settings?: CultivaPluginSettingField[];
@@ -58,10 +58,32 @@ export interface CultivaPluginHooks {
   on(event: 'onSettingsChange', callback: (settings: unknown) => void | Promise<void>): void;
 }
 
+export interface CultivaPluginHabitSnapshot {
+  id: string;
+  name: string;
+  category: string;
+  trackType: 'binary' | 'quantity';
+  progress: number;
+  currentStreak: number;
+  bestStreak: number;
+  lastCompleted: string | null;
+  completedToday: boolean;
+  target: number;
+  unit: string;
+  todayProgress: number;
+}
+
+export interface CultivaPluginApp {
+  getLocale(): Promise<string>;
+  getThemeColor(cssVar: string): Promise<string>;
+  getHabits(): Promise<CultivaPluginHabitSnapshot[]>;
+}
+
 export interface CultivaPluginContext {
   manifest: CultivaPluginManifest;
   storage: CultivaPluginStorage;
   data: CultivaPluginData;
+  app: CultivaPluginApp;
   ui: CultivaPluginUi;
 }
 
