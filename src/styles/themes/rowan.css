@@ -60,6 +60,10 @@ body.theme-rowan .plugin-btn-get,
 
 body.theme-rowan .plugin-btn-get:hover,
 
+body.theme-rowan .plugin-btn-settings,
+
+body.theme-rowan .plugin-btn-settings:hover,
+
 body.theme-rowan .plugin-btn-uninstall:hover,
 
 body.theme-rowan .event-btn-primary,
@@ -96,6 +100,17 @@ body.theme-rowan .plugin-btn-get {
 
 body.theme-rowan .plugin-btn-get:hover {
     background: #4a4a4a;
+}
+
+body.theme-rowan .plugin-btn-settings {
+    color: var(--text-secondary);
+    border: 1px solid var(--border-medium);
+    background: var(--bg-tertiary);
+}
+
+body.theme-rowan .plugin-btn-settings:hover {
+    background: var(--bg-quaternary);
+    color: var(--text-primary);
 }
 
 body.theme-rowan .btn-primary {

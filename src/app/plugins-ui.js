@@ -125,6 +125,16 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVe
   nameEl.className = 'plugin-name';
   nameEl.textContent = meta.name;
 
+  if (meta.tagline) {
+    const taglineEl = document.createElement('div');
+    taglineEl.className = 'plugin-tagline';
+    taglineEl.textContent = meta.tagline;
+    info.appendChild(nameEl);
+    info.appendChild(taglineEl);
+  } else {
+    info.appendChild(nameEl);
+  }
+
   const descEl = document.createElement('div');
   descEl.className = 'plugin-description';
   const baseDesc = meta.description;
@@ -133,7 +143,6 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVe
     ? `${baseDesc ? `${baseDesc} — ` : ''}${failReason || t.pluginNotLoadedHint || 'Not loaded.'}`
     : baseDesc;
 
-  info.appendChild(nameEl);
   info.appendChild(descEl);
   top.appendChild(iconWrap);
   top.appendChild(info);

@@ -820,7 +820,46 @@ async function handleAuthSubmit(e, type) {
   }
 }
 
+function readReminderTimeFromForm() {
+  const hour = document.getElementById('habit-reminder-hour')?.value || '09';
+  const minute = document.getElementById('habit-reminder-minute')?.value || '00';
+  return `${hour}:${minute}`;
+}
+
+function initHabitReminderControls() {
+  const hourSel = document.getElementById('habit-reminder-hour');
+  const minSel = document.getElementById('habit-reminder-minute');
+  const enabled = document.getElementById('habit-reminder-enabled');
+  const wrap = document.getElementById('habit-reminder-time-wrap');
+  if (!hourSel || !minSel) {
+    return;
+  }
+
+  if (!hourSel.options.length) {
+    hourSel.innerHTML = Array.from({ length: 24 }, (_, i) => {
+      const value = String(i).padStart(2, '0');
+      return `<option value="${value}">${value}</option>`;
+    }).join('');
+  }
+  if (!minSel.options.length) {
+    minSel.innerHTML = Array.from({ length: 60 }, (_, i) => {
+      const value = String(i).padStart(2, '0');
+      return `<option value="${value}">${value}</option>`;
+    }).join('');
+  }
+
+  hourSel.value = '09';
+  minSel.value = '00';
+
+  const syncVisibility = () => {
+    wrap?.classList.toggle('is-disabled', !enabled?.checked);
+  };
+  enabled?.addEventListener('change', syncVisibility);
+  syncVisibility();
+}
+
 function initEvents() {
+  initHabitReminderControls();
   document.getElementById('open-add-modal')?.addEventListener('click', () => openModal(addModal));
 
   document.querySelectorAll('.modal-close, .modal-overlay').forEach(btn => {
@@ -925,7 +964,7 @@ function initEvents() {
           unit: trackType === 'quantity' ? document.getElementById('habit-unit')?.value.trim() || '' : '',
           schedule: readScheduleFromForm(),
           reminderEnabled: document.getElementById('habit-reminder-enabled')?.checked === true,
-          reminderTime: document.getElementById('habit-reminder-time')?.value || '09:00'
+          reminderTime: readReminderTimeFromForm()
         });
         habitForm.reset();
         if (targetContainer) { targetContainer.classList.remove('visible'); }

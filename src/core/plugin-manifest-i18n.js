@@ -12,11 +12,12 @@ function pickLocaleBlock(source, lang) {
 
 export function resolvePluginCatalogMeta(source, lang) {
   if (!source || typeof source !== 'object') {
-    return { name: '', description: '' };
+    return { name: '', tagline: '', description: '' };
   }
   const block = pickLocaleBlock(source.i18n, lang);
   return {
     name: block?.name || source.name || '',
+    tagline: block?.tagline || source.tagline || '',
     description: block?.description || source.description || ''
   };
 }
