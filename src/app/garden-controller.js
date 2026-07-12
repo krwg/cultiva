@@ -214,8 +214,8 @@ export function renderGarden() {
   if (c.gardenEl) {
     c.gardenEl.setAttribute('role', 'list');
     c.gardenEl.setAttribute('aria-label', t.gardenListLabel || 'Habits');
-    clearGardenHabitNodes(c.gardenEl);
     if (active.length === 0) {
+      clearGardenHabitNodes(c.gardenEl);
       const inSearchMode = c.habitSearchQuery.trim().length > 0;
       const emptyMsg = inSearchMode
         ? (t.emptyStateSearchHint || t.searchEmpty || 'No habits match your search')
@@ -223,6 +223,7 @@ export function renderGarden() {
       c.gardenEl.innerHTML = `<div class="empty-state"><p>${emptyMsg}</p>${inSearchMode ? '' : `<button class="btn-primary" id="add-first" style="width:auto;padding:10px 20px;margin-top:16px" data-i18n="plantFirst">${t.plantFirst}</button>`}</div>`;
       document.getElementById('add-first')?.addEventListener('click', () => openModal(c.addModal));
     } else {
+      c.gardenEl.querySelector('.empty-state')?.remove();
       syncHabitCards(c.gardenEl, active, false);
     }
   }
