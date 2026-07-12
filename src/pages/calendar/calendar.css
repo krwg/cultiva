@@ -103,13 +103,13 @@
 
 .month-day.today {
     background: var(--accent-red);
-    color: white;
+    color: var(--on-light, white);
     font-weight: 500;
 }
 
 .month-day.selected {
     background: var(--accent-blue);
-    color: white;
+    color: var(--on-light, white);
 }
 
 .month-day.other-month {
@@ -432,7 +432,7 @@
     outline: none;
     border-color: var(--accent-blue);
     background: var(--bg-primary);
-    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-blue) 18%, transparent);
 }
 
 .event-time-row {
@@ -614,17 +614,17 @@ body.with-ambient-bg .calendar-body {
   right: 4px;
   width: 8px;
   height: 8px;
-  background: linear-gradient(135deg, #ff9500, #ffcc00);
+  background: linear-gradient(135deg, var(--accent-orange), color-mix(in srgb, var(--accent-orange) 55%, var(--accent-blue)));
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(255, 149, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent-orange) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bg-primary) 35%, transparent);
   z-index: 2;
 }
 
 .month-day.today.has-holiday::before,
 .month-day.selected.has-holiday::before {
-  background: linear-gradient(135deg, #ffffff, #ffe0b0);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, var(--bg-primary), color-mix(in srgb, var(--accent-orange) 45%, var(--bg-primary)));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--bg-primary) 80%, transparent);
 }
 
 .month-events {
@@ -678,13 +678,29 @@ body.with-ambient-bg .calendar-body {
 .holiday-banner {
     margin-top: 8px;
     padding: 6px 16px;
-    background: linear-gradient(135deg, rgba(255, 149, 0, 0.15), rgba(255, 204, 0, 0.1));
+    background: color-mix(in srgb, var(--accent-orange) 16%, var(--bg-tertiary));
     border-radius: 20px;
     font-size: 14px;
     font-weight: 500;
-    color: #ff9500;
+    color: var(--accent-orange);
     display: inline-block;
-    border: 1px solid rgba(255, 149, 0, 0.3);
+    border: 1px solid color-mix(in srgb, var(--accent-orange) 32%, var(--border-light));
+}
+
+body.calendar-page.with-ambient-bg {
+    background: transparent;
+}
+
+body.calendar-page.with-ambient-bg .app-header,
+body.calendar-page.with-ambient-bg .app-footer {
+    background: color-mix(in srgb, var(--bg-primary) 72%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+body.calendar-page.with-ambient-bg > [class^="bg-"],
+body.calendar-page.with-ambient-bg > [id^="bg-"] {
+    opacity: calc(0.35 + 0.65 * var(--ambient-intensity, 1));
 }
 
 body.calendar-page {

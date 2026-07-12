@@ -51,6 +51,8 @@ body.theme-birch .dropdown-item.primary,
 body.theme-birch .dropdown-item.primary:hover,
 body.theme-birch .dynamic-notification-btn,
 body.theme-birch .day.today,
+body.theme-birch .month-day.today,
+body.theme-birch .week-day.today,
 body.theme-birch .status-badge.online,
 body.theme-birch .btn-danger:hover,
 body.theme-birch .btn-danger-outline:hover,
@@ -130,4 +132,25 @@ body.theme-birch .dropdown-item.primary:hover {
 
 body.theme-birch .accent-color-row input[type="color"] {
     background: var(--bg-tertiary);
+}
+
+body.theme-birch .month-day.selected {
+    background: var(--accent-blue);
+    color: var(--on-light);
+}
+
+body.theme-birch .view-btn.active {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+body.theme-birch .calendar-grid,
+body.theme-birch .event-panel {
+    background: var(--bg-primary);
+    border-color: var(--border-light);
+}
+
+body.theme-birch .btn-calendar:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
 }

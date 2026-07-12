@@ -166,7 +166,7 @@ export function setPluginHeaderBadge(pluginId, badge) {
   if (!el) {
     return false;
   }
-  const text = badge == null || badge === '' ? '' : String(badge);
+  const text = badge === null || badge === '' ? '' : String(badge);
   el.textContent = text;
   el.style.display = text ? 'inline-flex' : 'none';
   return true;

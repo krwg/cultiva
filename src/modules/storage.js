@@ -19,7 +19,7 @@ let _isInitialized = false;
 let _initPromise = null;
 let _currentUserId = null;
 let _authProbe = () => !!_currentUserId;
-let _deletedHabitIds = new Set();
+const _deletedHabitIds = new Set();
 let _habitsLsTimer = null;
 
 let _habitsWriteScheduled = false;

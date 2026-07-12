@@ -13,6 +13,6 @@ describe('plugin RPC allowlist', () => {
 
 describe('plugin install flow guards', () => {
   it('documents desktop-only install requirement', () => {
-    expect(typeof window === 'undefined' || window.electron == null).toBe(true);
+    expect(typeof window === 'undefined' || window.electron === null).toBe(true);
   });
 });

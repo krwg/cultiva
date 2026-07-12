@@ -256,6 +256,7 @@ export default {
     ambientSoundNone: 'Нет',
     pluginInstalledButton: 'Установлено',
     pluginNotLoadedHint: 'Плагин не запущен. Попробуйте «Повторить» или переустановку.',
+    pluginRetryOk: 'Плагин запущен.',
     pluginInstallDesktopOnly: 'Плагины устанавливаются только в десктопной версии Cultiva.',
     uninstall: 'Удалить',
     pluginSettings: 'Настройки плагина',

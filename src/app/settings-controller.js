@@ -1,5 +1,5 @@
 import { getThemeBodyClassList, resolveThemeBodyId } from '../core/theme-config.js';
-import { loadThemeCss, loadAmbientCss } from '../core/theme-css-loader.js';
+import { loadThemeCss } from '../core/theme-css-loader.js';
 import { syncNativeShellChrome } from '../core/shell-chrome.js';
 import { storage } from '../modules/storage.js';
 import { settings, ensureAppReady } from './renderer-bootstrap.js';
@@ -16,6 +16,7 @@ import {
   resolveContributionLabel
 } from '../core/plugin-contributions.js';
 import { playPluginAmbientSound } from '../core/plugin-sounds.js';
+import { notifyAppearanceChanged } from '../core/appearance-sync.js';
 import { BRANDING } from '../core/branding.js';
 import { initHabitFormIcons, initSettingsSidebarIcons } from '../core/ui-icons.js';
 
@@ -295,6 +296,7 @@ export function applySettings() {
   _lastSavedBg = currentBg;
 
   console.log('[Settings] Applied theme:', appliedTheme);
+  notifyAppearanceChanged();
 }
 
 function appendPluginThemeOptions(optgroup, items) {

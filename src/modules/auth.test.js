@@ -6,13 +6,13 @@ vi.mock('./db.js', () => {
   return {
     db: {
       get: vi.fn(async (store, key) => {
-        if (store === 'users') return users.get(key) || null;
-        if (store === 'sessions') return sessions.get(key) || null;
+        if (store === 'users') { return users.get(key) || null; }
+        if (store === 'sessions') { return sessions.get(key) || null; }
         return null;
       }),
       put: vi.fn(async (store, val) => {
-        if (store === 'users') users.set(val.email, val);
-        if (store === 'sessions') sessions.set(val.id || 'cultiva_current_session', val);
+        if (store === 'users') { users.set(val.email, val); }
+        if (store === 'sessions') { sessions.set(val.id || 'cultiva_current_session', val); }
       }),
       delete: vi.fn(async () => {}),
       _users: users,
@@ -38,7 +38,7 @@ describe('auth password hashing', () => {
         deriveBits: vi.fn(async () => new Uint8Array(32).fill(7))
       },
       getRandomValues: (arr) => {
-        for (let i = 0; i < arr.length; i++) arr[i] = i;
+        for (let i = 0; i < arr.length; i++) { arr[i] = i; }
         return arr;
       }
     });

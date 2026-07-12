@@ -1,14 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="calendar" data-styles-root="../../styles/">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cultiva | Calendar</title>
 <link rel="stylesheet" href="../../styles/shell.css">
 <link rel="stylesheet" href="calendar.css">
+    <script>
+    (function () {
+      function readTheme() {
+        var direct = localStorage.getItem('cultiva-theme');
+        if (direct !== null && String(direct).trim()) { return String(direct).trim(); }
+        try {
+          var raw = localStorage.getItem('cultiva-settings');
+          if (raw) {
+            var p = JSON.parse(raw);
+            if (p && typeof p.theme === 'string' && p.theme.trim()) { return p.theme.trim(); }
+            if (p && p['cultiva-settings'] && typeof p['cultiva-settings'].theme === 'string') {
+              return p['cultiva-settings'].theme.trim();
+            }
+          }
+        } catch (e) { void e; }
+        return 'auto';
+      }
+      function resolveTheme(t) {
+        if (t && String(t).indexOf('plugin-') === 0) { return t; }
+        if (!t || t === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return t;
+      }
+      var themeId = resolveTheme(readTheme());
+      document.documentElement.dataset.cultivaTheme = themeId;
+      var link = document.createElement('link');
+      link.id = 'cultiva-theme-css';
+      link.rel = 'stylesheet';
+      link.href = '../../styles/themes/' + themeId + '.css';
+      document.head.appendChild(link);
+    })();
+    </script>
     <link rel="icon" type="image/png" sizes="32x32" href="../../images/favicon.ico">
 </head>
 <body class="calendar-page">
+<script>
+(function () {
+  function readTheme() {
+    var direct = localStorage.getItem('cultiva-theme');
+    if (direct !== null && String(direct).trim()) { return String(direct).trim(); }
+    try {
+      var raw = localStorage.getItem('cultiva-settings');
+      if (raw) {
+        var p = JSON.parse(raw);
+        if (p && typeof p.theme === 'string' && p.theme.trim()) { return p.theme.trim(); }
+        if (p && p['cultiva-settings'] && typeof p['cultiva-settings'].theme === 'string') {
+          return p['cultiva-settings'].theme.trim();
+        }
+      }
+    } catch (e) { void e; }
+    return 'auto';
+  }
+  function resolveTheme(t) {
+    if (t && String(t).indexOf('plugin-') === 0) { return t; }
+    if (!t || t === 'auto') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return t;
+  }
+  document.body.classList.add('theme-' + resolveTheme(readTheme()));
+})();
+</script>
 
     <header class="app-header calendar-header">
         <div class="header-content calendar-nav">

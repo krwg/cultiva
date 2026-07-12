@@ -257,6 +257,7 @@ export default {
     ambientSoundNone: 'None',
     pluginInstalledButton: 'Installed',
     pluginNotLoadedHint: 'Not loaded in this session (use the Cultiva desktop app, or uninstall and reinstall).',
+    pluginRetryOk: 'Plugin loaded.',
     pluginInstallDesktopOnly: 'Installing plugins requires the Cultiva desktop app (Electron), not the browser dev preview.',
     uninstall: 'Uninstall',
     pluginSettings: 'Plugin Settings',

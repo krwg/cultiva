@@ -15,6 +15,7 @@ import {
   pauseAmbientRuntime,
   resumeAmbientRuntime
 } from './core/ambient-bg.js';
+import { notifyAppearanceChanged } from './core/appearance-sync.js';
 import { settings, ensureAppReady } from './app/renderer-bootstrap.js';
 import {
   configureModals,
@@ -242,6 +243,7 @@ function applyBackground(bg) {
     choice = 'none';
   }
   applyAmbientBackground(document, document.body, choice);
+  notifyAppearanceChanged();
 }
 
 let savedBg = localStorage.getItem('cultiva-background') || 'none';

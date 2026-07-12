@@ -4,10 +4,8 @@ import { habits } from '../../modules/habits.js';
 import { BRANDING } from '../../core/branding.js';
 import { getHolidaysForRegion, getHolidayForDate } from '../../core/holidays.js';
 import { getCultivaTimezone } from '../../core/timezone.js';
-import { getThemeBodyClassList, resolveThemeBodyId, LS_CUSTOM_BG_DATA } from '../../core/theme-config.js';
-import { getPluginThemeBodyClasses } from '../../core/plugin-contributions.js';
-import { applyAmbientBackground, readCustomBackgroundDataUrl } from '../../core/ambient-bg.js';
-import { loadThemeCss, loadAmbientCss } from '../../core/theme-css-loader.js';
+import { LS_CUSTOM_BG_DATA } from '../../core/theme-config.js';
+import { createAppearanceSync } from '../../core/appearance-sync.js';
 import { pluginManager } from '../../core/plugin-manager.js';
 import { showAlertDialog, showConfirmDialog } from '../../app/dialogs.js';
 import { bindElectronPageLinks } from '../../app/electron-nav.js';
@@ -42,9 +40,9 @@ let holidayRegion = 'us';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
-let lastAppliedThemeId = '';
-let lastAppliedBgId = '';
 let renderGeneration = 0;
+
+const appearance = createAppearanceSync(document);
 
 function log(...args) { if (DEBUG) { console.log('[Calendar]', ...args); } }
 function error(...args) { console.error('[Calendar]', ...args); }
@@ -54,33 +52,6 @@ function loadHolidays() {
   holidayRegion = region;
   currentHolidays = getHolidaysForRegion(region);
   log('Holidays loaded for region:', region, 'count:', Object.keys(currentHolidays).length);
-}
-
-function syncTheme() {
-  const theme = localStorage.getItem('cultiva-theme') || 'auto';
-  const appliedTheme = resolveThemeBodyId(theme);
-  if (appliedTheme === lastAppliedThemeId) {
-    return;
-  }
-  lastAppliedThemeId = appliedTheme;
-  document.body.classList.remove(...getThemeBodyClassList(), ...getPluginThemeBodyClasses());
-  document.body.classList.add(`theme-${appliedTheme}`);
-  void loadThemeCss(appliedTheme);
-  log('Theme synced:', appliedTheme);
-}
-
-function syncBackground() {
-  let bg = localStorage.getItem('cultiva-background') || 'none';
-  if (bg === 'custom' && !readCustomBackgroundDataUrl()) {
-    bg = 'none';
-  }
-  if (bg === lastAppliedBgId) {
-    return;
-  }
-  lastAppliedBgId = bg;
-  applyAmbientBackground(document, document.body, bg);
-  void loadAmbientCss(bg);
-  log('Background synced:', bg);
 }
 
 function getTodayInTZ() {
@@ -781,7 +752,7 @@ function applyI18n() {
 
 let renderTimeout;
 window.addEventListener('storage', (e) => {
-  const relevantKeys = ['cultiva_calendar_events', 'cultiva-habits', 'cultiva-lang', 'cultiva-theme', 'cultiva-background', LS_CUSTOM_BG_DATA, 'cultiva-timezone', 'cultiva-holiday-region'];
+  const relevantKeys = ['cultiva_calendar_events', 'cultiva-habits', 'cultiva-lang', 'cultiva-settings', 'cultiva-theme', 'cultiva-background', LS_CUSTOM_BG_DATA, 'cultiva-timezone', 'cultiva-holiday-region'];
   if (!e.key || !relevantKeys.includes(e.key)) { return; }
 
   clearTimeout(renderTimeout);
@@ -791,8 +762,10 @@ window.addEventListener('storage', (e) => {
       applyI18n();
       needsRender = true;
     }
-    if (e.key === 'cultiva-theme') { syncTheme(); }
-    if (e.key === 'cultiva-background' || e.key === LS_CUSTOM_BG_DATA) { syncBackground(); }
+    if (e.key === 'cultiva-settings' || e.key === 'cultiva-theme' || e.key === 'cultiva-background' || e.key === LS_CUSTOM_BG_DATA) {
+      appearance.resetCache();
+      appearance.syncAll(true);
+    }
     if (e.key === 'cultiva_calendar_events') {
       loadEvents();
       needsRender = true;
@@ -818,19 +791,8 @@ window.addEventListener('storage', (e) => {
   }, 200);
 });
 
-window.addEventListener('focus', () => {
-  void refreshCalendarFromStorage();
-});
-
-window.addEventListener('pageshow', (event) => {
-  if (event.persisted) {
-    void refreshCalendarFromStorage();
-  }
-});
-
 async function refreshCalendarFromStorage() {
-  syncTheme();
-  syncBackground();
+  appearance.syncAll(true);
   updateTranslations();
   try {
     if (storage.isReady()) {
@@ -842,14 +804,6 @@ async function refreshCalendarFromStorage() {
   invalidateHabitIndex();
   renderCurrentView();
 }
-
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-  const theme = localStorage.getItem('cultiva-theme') || 'auto';
-  if (theme === 'auto') {
-    lastAppliedThemeId = '';
-    syncTheme();
-  }
-});
 
 async function init() {
   log('Calendar initializing...');
@@ -890,8 +844,11 @@ async function init() {
   loadHolidays();
   loadEvents();
   initColorSelector();
-  syncTheme();
-  syncBackground();
+  await appearance.syncAll(true, { storage });
+  appearance.bindAutoSync({
+    storage,
+    onAfterSync: () => { void refreshCalendarFromStorage(); }
+  });
 
   const todayDate = getTodayInTZ();
   currentDate = todayDate;

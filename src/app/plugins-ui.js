@@ -211,9 +211,20 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVe
     btnRetry.textContent = t.retry || 'Retry';
     btnRetry.style.display = p.loaded ? 'none' : 'inline-flex';
     btnRetry.addEventListener('click', async () => {
-      await pluginManager.loadPlugin(p.id);
+      btnRetry.disabled = true;
+      const ok = await pluginManager.reloadPlugin(p.id);
       await renderPluginsSection();
       renderPluginHeaderItems();
+      btnRetry.disabled = false;
+      if (typeof window.showNotification === 'function') {
+        if (ok) {
+          window.showNotification('', t.pluginRetryOk || 'Plugin loaded.');
+        } else {
+          const detail = pluginManager.getPluginFailure(p.id);
+          const lead = detail ? `${p.name || p.id}: ${detail}` : (t.pluginNotLoadedHint || 'Plugin not loaded');
+          window.showNotification('', lead);
+        }
+      }
     });
     actions.appendChild(btnRetry);
 

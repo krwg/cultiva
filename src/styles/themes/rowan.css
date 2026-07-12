@@ -43,6 +43,8 @@ body.theme-rowan .dropdown-item.primary:hover,
 body.theme-rowan .dynamic-notification-btn,
 
 body.theme-rowan .day.today,
+body.theme-rowan .month-day.today,
+body.theme-rowan .week-day.today,
 
 body.theme-rowan .status-badge.online,
 
@@ -132,4 +134,35 @@ body.theme-rowan .dropdown-item.primary:hover {
 
 body.theme-rowan .accent-color-row input[type="color"] {
     background: var(--bg-tertiary);
+}
+
+body.theme-rowan .month-day.selected {
+    background: var(--accent-blue);
+    color: var(--on-light);
+}
+
+body.theme-rowan .view-btn.active {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+body.theme-rowan .calendar-grid,
+body.theme-rowan .event-panel {
+    background: var(--bg-secondary);
+    border-color: var(--border-light);
+}
+
+body.theme-rowan .btn-calendar {
+    color: var(--text-secondary);
+}
+
+body.theme-rowan .btn-calendar:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+body.theme-rowan .event-btn-primary,
+body.theme-rowan .event-btn-primary:hover {
+    background: var(--accent-blue);
+    color: var(--on-light);
 }

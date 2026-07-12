@@ -232,6 +232,20 @@ function _syncHookList(hookName, pluginId) {
   list.push(pluginId);
 }
 
+function _removePluginFromHookLists(pluginId) {
+  for (const list of Object.values(pluginHooks)) {
+    const idx = list.indexOf(pluginId);
+    if (idx !== -1) {
+      list.splice(idx, 1);
+    }
+  }
+}
+
+function _purgePluginSandboxIframe(pluginId) {
+  const seg = _escapeSelectorSegment(pluginId);
+  document.querySelector(`iframe[title="plugin-sandbox-${seg}"]`)?.remove();
+}
+
 function _escapeSelectorSegment(id) {
   if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
     return CSS.escape(id);
@@ -810,12 +824,7 @@ export const pluginManager = {
     plugin.gardenWidget = null;
     plugins.delete(pluginId);
     unregisterPluginContributions(pluginId);
-    for (const list of Object.values(pluginHooks)) {
-      const idx = list.indexOf(pluginId);
-      if (idx !== -1) {
-        list.splice(idx, 1);
-      }
-    }
+    _removePluginFromHookLists(pluginId);
   },
 
   async init() {
@@ -913,9 +922,32 @@ export const pluginManager = {
     document.getElementById(`cultiva-plugin-style-${pluginId}`)?.remove();
   },
 
+  async _teardownPluginLoadState(pluginId) {
+    if (plugins.has(pluginId)) {
+      await this._disableLoadedPlugin(pluginId);
+      return;
+    }
+    _removePluginFromHookLists(pluginId);
+    _purgePluginSandboxIframe(pluginId);
+    this._removePluginRuntimeSurfaces(pluginId);
+    this._removePluginStyles(pluginId);
+  },
+
+  async reloadPlugin(pluginId) {
+    await this._teardownPluginLoadState(pluginId);
+    const ok = await this.loadPlugin(pluginId);
+    if (ok) {
+      failedPlugins.delete(pluginId);
+    } else {
+      failedPlugins.set(pluginId, takePluginLoadFailure() || 'Unknown load error');
+    }
+    return ok;
+  },
+
   async loadPlugin(pluginId) {
     notePluginLoadFailure(null);
     try {
+      await this._teardownPluginLoadState(pluginId);
       console.log('[PluginManager] Loading plugin from disk:', pluginId);
 
       if (!window.electron?.readPluginFile) {
@@ -978,6 +1010,9 @@ export const pluginManager = {
         console.error('[PluginManager] Sandbox failed:', pluginId, e);
         sandboxHost.destroy();
         plugins.delete(pluginId);
+        _removePluginFromHookLists(pluginId);
+        this._removePluginRuntimeSurfaces(pluginId);
+        this._removePluginStyles(pluginId);
         notePluginLoadFailure(e && e.message ? e.message : String(e));
         return false;
       }
@@ -1026,6 +1061,7 @@ export const pluginManager = {
       }
 
       console.log('[PluginManager] Loaded plugin:', manifest.name, 'v' + manifest.version);
+      failedPlugins.delete(pluginId);
 
       if (typeof window.renderPluginHeaderItems === 'function') {
         setTimeout(() => window.renderPluginHeaderItems(), 100);
@@ -1034,6 +1070,7 @@ export const pluginManager = {
       return true;
     } catch (e) {
       console.error('[PluginManager] Failed to load plugin:', pluginId, e);
+      await this._teardownPluginLoadState(pluginId);
       notePluginLoadFailure(e && e.message ? e.message : String(e));
       return false;
     }
