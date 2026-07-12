@@ -2957,6 +2957,16 @@ body.theme-linden .accent-color-row input[type="color"] {
     font-family: var(--font-mono);
 }
 
+.plugin-update-badge {
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+.plugin-btn-update {
+    color: var(--accent-blue);
+    border-color: color-mix(in srgb, var(--accent-blue) 35%, var(--border-light));
+}
+
 .plugin-author {
     display: flex;
     align-items: center;

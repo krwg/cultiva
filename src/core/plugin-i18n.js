@@ -35,6 +35,35 @@ const PLUGIN_SETTINGS = {
   },
   quote: {
     favorites: { en: 'Favorite quotes', ru: 'Избранные цитаты' }
+  },
+  radio: {
+    station: { en: 'Default station', ru: 'Станция по умолчанию' },
+    volume: { en: 'Volume', ru: 'Громкость' },
+    sleepMinutes: { en: 'Sleep timer', ru: 'Таймер сна' },
+    'volume.0.25': { en: '25%', ru: '25%' },
+    'volume.0.35': { en: '35%', ru: '35%' },
+    'volume.0.45': { en: '45%', ru: '45%' },
+    'volume.0.55': { en: '55%', ru: '55%' },
+    'volume.0.65': { en: '65%', ru: '65%' },
+    'volume.0.75': { en: '75%', ru: '75%' },
+    'sleepMinutes.0': { en: 'Off', ru: 'Выкл' },
+    'sleepMinutes.15': { en: '15 min', ru: '15 мин' },
+    'sleepMinutes.30': { en: '30 min', ru: '30 мин' },
+    'sleepMinutes.60': { en: '60 min', ru: '60 мин' }
+  },
+  time: {
+    format: { en: 'Time Format', ru: 'Формат времени' },
+    color: { en: 'Color', ru: 'Цвет' },
+    'format.HH:MM:SS': { en: '23:59:59', ru: '23:59:59' },
+    'format.HH:MM': { en: '23:59', ru: '23:59' },
+    'format.hh:MM:SS A': { en: '11:59:59 PM', ru: '11:59:59 PM' },
+    'color.default': { en: 'Default', ru: 'По умолчанию' },
+    'color.green': { en: 'Green', ru: 'Зелёный' },
+    'color.blue': { en: 'Blue', ru: 'Синий' },
+    'color.purple': { en: 'Purple', ru: 'Фиолетовый' },
+    'color.orange': { en: 'Orange', ru: 'Оранжевый' },
+    'color.graphite': { en: 'Graphite', ru: 'Графит' },
+    'color.rainbow': { en: 'Rainbow', ru: 'Радуга' }
   }
 };
 

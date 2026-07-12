@@ -12,6 +12,25 @@ function stripUtf8Bom(s) {
   return String(s ?? '').replace(/^\uFEFF/, '');
 }
 
+function parseVersionParts(version) {
+  return String(version ?? '')
+    .split('.')
+    .map((part) => parseInt(part, 10) || 0);
+}
+
+export function isNewerPluginVersion(registryVersion, installedVersion) {
+  const a = parseVersionParts(registryVersion);
+  const b = parseVersionParts(installedVersion);
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    const diff = (a[i] || 0) - (b[i] || 0);
+    if (diff !== 0) {
+      return diff > 0;
+    }
+  }
+  return false;
+}
+
 async function fetchPluginHttpText(url) {
   const w = typeof window !== 'undefined' ? window : null;
   let text = '';
@@ -968,6 +987,27 @@ export const pluginManager = {
     if (typeof window.renderPluginHeaderItems === 'function') {
       window.renderPluginHeaderItems();
     }
+  },
+
+  async getAvailablePluginUpdates() {
+    const list = await this.getAvailablePlugins();
+    const installed = this.getInstalledPlugins();
+    const updates = [];
+    for (const reg of list) {
+      if (!reg.installed) {
+        continue;
+      }
+      const local = installed.find((p) => p.id === reg.id);
+      if (local?.version && reg.version && isNewerPluginVersion(reg.version, local.version)) {
+        updates.push({
+          id: reg.id,
+          name: reg.name || reg.id,
+          installedVersion: local.version,
+          registryVersion: reg.version
+        });
+      }
+    }
+    return updates;
   },
 
   async getAvailablePlugins() {

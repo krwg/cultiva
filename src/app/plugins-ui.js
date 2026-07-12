@@ -1,6 +1,6 @@
 import { TRANSLATIONS } from '../core/i18n.js';
 import { getPluginCatalogStrings, getPluginSettingLabel, getPluginSettingOptionLabel } from '../core/plugin-i18n.js';
-import { pluginManager } from '../core/plugin-manager.js';
+import { pluginManager, isNewerPluginVersion } from '../core/plugin-manager.js';
 import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
 import { saveSettings } from './settings-controller.js';
@@ -10,6 +10,37 @@ import { installFocusTrap, releaseFocusTrap } from './modals.js';
 
 function tStrings() {
   return TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+}
+
+let pluginUpdatesToastShown = false;
+
+export async function checkPluginUpdatesToast() {
+  await notifyPluginUpdatesIfAny();
+}
+
+async function notifyPluginUpdatesIfAny() {
+  if (pluginUpdatesToastShown || !settings.pluginsEnabled) {
+    return;
+  }
+  try {
+    const updates = await pluginManager.getAvailablePluginUpdates();
+    if (!updates.length) {
+      return;
+    }
+    pluginUpdatesToastShown = true;
+    const t = tStrings();
+    showNotification('', t.pluginUpdatesToast || 'Plugin updates available in Settings → Plugins');
+  } catch {
+    void 0;
+  }
+}
+
+function registryUpdateVersion(registryPlugins, pluginId, installedVersion) {
+  const reg = registryPlugins.find((row) => row.id === pluginId);
+  if (!reg?.version || !installedVersion) {
+    return null;
+  }
+  return isNewerPluginVersion(reg.version, installedVersion) ? reg.version : null;
 }
 
 export async function renderPluginsSection() {
@@ -34,8 +65,18 @@ export async function renderPluginsSection() {
     });
   }
 
-  await loadInstalledPlugins();
+  let registryPlugins = [];
+  if (settings.pluginsEnabled) {
+    try {
+      registryPlugins = await pluginManager.getAvailablePlugins();
+    } catch {
+      registryPlugins = [];
+    }
+  }
+
+  await loadInstalledPlugins(registryPlugins);
   await loadAvailablePlugins();
+  void notifyPluginUpdatesIfAny();
 }
 
 function localizedPluginMeta(pluginId, fallbackName, fallbackDesc) {
@@ -46,7 +87,7 @@ function localizedPluginMeta(pluginId, fallbackName, fallbackDesc) {
   };
 }
 
-function createPluginCardMain(p, pluginData, t, { showSettings = false } = {}) {
+function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVersion = null } = {}) {
   const meta = localizedPluginMeta(p.id, p.name, p.description);
   const main = document.createElement('div');
   main.className = 'plugin-card-main';
@@ -76,6 +117,12 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false } = {}) {
   ver.className = 'plugin-version';
   ver.textContent = p.version ? `v${p.version}` : '';
   versionRow.appendChild(ver);
+  if (updateVersion) {
+    const upd = document.createElement('span');
+    upd.className = 'plugin-update-badge';
+    upd.textContent = `${t.pluginUpdateAvailable || 'Update available'} · v${updateVersion}`;
+    versionRow.appendChild(upd);
+  }
 
   info.appendChild(nameEl);
   info.appendChild(descEl);
@@ -86,6 +133,14 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false } = {}) {
 
   if (showSettings) {
     const fields = Array.isArray(pluginData?.manifest?.settings) ? pluginData.manifest.settings : [];
+    if (updateVersion && typeof window !== 'undefined' && window.installPlugin) {
+      const btnUpdate = document.createElement('button');
+      btnUpdate.type = 'button';
+      btnUpdate.className = 'plugin-btn plugin-btn-update';
+      btnUpdate.textContent = t.pluginUpdateBtn || 'Update';
+      btnUpdate.addEventListener('click', () => window.installPlugin(p.id));
+      actions.appendChild(btnUpdate);
+    }
     if (fields.length) {
       const btnSettings = document.createElement('button');
       btnSettings.type = 'button';
@@ -142,7 +197,7 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false } = {}) {
   return main;
 }
 
-async function loadInstalledPlugins() {
+async function loadInstalledPlugins(registryPlugins = []) {
   const container = document.getElementById('installed-plugins-list');
   if (!container) {
     return;
@@ -170,7 +225,8 @@ async function loadInstalledPlugins() {
     }
 
     const pluginData = pluginManager.plugins.get(p.id);
-    card.appendChild(createPluginCardMain(p, pluginData, t, { showSettings: true }));
+    const updateVersion = registryUpdateVersion(registryPlugins, p.id, p.version);
+    card.appendChild(createPluginCardMain(p, pluginData, t, { showSettings: true, updateVersion }));
     container.appendChild(card);
   }
 }
@@ -446,10 +502,11 @@ window.openPluginSettings = async (pluginId) => {
         next[field.key] = el.value;
       }
     });
-    await storage.set(prefix + 'settings', next);
+    const merged = { ...current, ...next };
+    await storage.set(prefix + 'settings', merged);
     close();
     showNotification('', t.pluginSettingsSaved || 'Plugin settings saved');
-    const payload = { ...settings, pluginId, pluginSettings: next };
+    const payload = { ...settings, pluginId, pluginSettings: merged };
     const hookFired = pluginManager.invokePluginHook(pluginId, 'onSettingsChange', [payload]);
     if (!hookFired && pluginData.sandbox) {
       try {

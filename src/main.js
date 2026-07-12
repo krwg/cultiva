@@ -4,7 +4,7 @@ import './styles/main.css';
 import { BRANDING } from './core/branding.js';
 import { storage } from './modules/storage.js';
 import { habits } from './modules/habits.js';
-import { renderPluginHeaderItems } from './app/plugins-ui.js';
+import { renderPluginHeaderItems, checkPluginUpdatesToast } from './app/plugins-ui.js';
 import { initNativeNotificationsScheduler } from './core/native-notifications.js';
 import { getCultivaTimezone } from './core/timezone.js';
 import {
@@ -971,6 +971,9 @@ async function init() {
     updateProfileSection();
 
     renderPluginHeaderItems();
+    if (settings.pluginsEnabled) {
+      void checkPluginUpdatesToast();
+    }
 
     initNativeNotificationsScheduler(() => settings);
 
