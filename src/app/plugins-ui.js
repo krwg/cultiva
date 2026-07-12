@@ -5,7 +5,7 @@ import {
   resolvePluginSettingLabel,
   resolvePluginSettingOptionLabel
 } from '../core/plugin-manifest-i18n.js';
-import { pluginManager, isNewerPluginVersion, pluginShowsGetButton } from '../core/plugin-manager.js';
+import { pluginManager, isNewerPluginVersion, pluginShowsGetButton, getCachedRegistryPlugin } from '../core/plugin-manager.js';
 import { isPluginVersionCompatible } from './settings-controller.js';
 import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
@@ -86,7 +86,9 @@ export async function renderPluginsSection() {
 }
 
 function localizedPluginMeta(pluginId, fallbackName, fallbackDesc, registryPlugins = []) {
-  const registryEntry = registryPlugins.find((row) => row.id === pluginId);
+  const registryEntry =
+    registryPlugins.find((row) => row.id === pluginId)
+    || getCachedRegistryPlugin(pluginId);
   if (registryEntry) {
     const meta = resolvePluginCatalogMeta(registryEntry, settings.lang);
     if (meta.name) {
@@ -95,14 +97,18 @@ function localizedPluginMeta(pluginId, fallbackName, fallbackDesc, registryPlugi
   }
   const pluginData = pluginManager.plugins.get(pluginId);
   if (pluginData?.manifest) {
-    const meta = resolvePluginCatalogMeta(pluginData.manifest, settings.lang);
+    const merged = registryEntry
+      ? { ...pluginData.manifest, i18n: registryEntry.i18n || pluginData.manifest.i18n }
+      : pluginData.manifest;
+    const meta = resolvePluginCatalogMeta(merged, settings.lang);
     if (meta.name) {
       return meta;
     }
   }
   return {
     name: fallbackName || '',
-    description: fallbackDesc || ''
+    description: fallbackDesc || '',
+    tagline: ''
   };
 }
 
@@ -364,6 +370,7 @@ async function loadAvailablePlugins(registryPlugins = []) {
       const stub = { id: p.id, name: meta.name, description: meta.description, version: p.version, loaded: true, enabled: true };
       const main = createPluginCardMain(stub, null, t, {
         showSettings: false,
+        registryPlugins: plugins,
         browseMeta: {
           minAppVersion: p.minAppVersion,
           author: p.author
@@ -459,7 +466,7 @@ window.openPluginSettings = async (pluginId) => {
   if (!current || typeof current !== 'object') {
     current = {};
   }
-  const localized = localizedPluginMeta(pluginId, pluginData.manifest.name, pluginData.manifest.description);
+  const localized = localizedPluginMeta(pluginId, pluginData.manifest.name, pluginData.manifest.description, []);
   const wrap = document.createElement('div');
   wrap.className = 'plugin-settings-modal';
   wrap.setAttribute('role', 'dialog');
@@ -487,6 +494,41 @@ window.openPluginSettings = async (pluginId) => {
     row.appendChild(label);
 
     const val = current[field.key] !== undefined ? current[field.key] : field.default;
+    if (field.type === 'journal') {
+      const journalRaw = await storage.get(prefix + (field.storageKey || 'journal'));
+      const entries = Array.isArray(journalRaw) ? journalRaw : [];
+      const list = document.createElement('div');
+      list.className = 'plugin-journal-list';
+      if (!entries.length) {
+        const empty = document.createElement('p');
+        empty.className = 'plugin-favorites-empty';
+        empty.textContent = resolvePluginSettingEmptyMessage(
+          field,
+          settings.lang,
+          t.pluginJournalEmpty || 'No reflections saved yet.'
+        );
+        list.appendChild(empty);
+      } else {
+        for (const entry of entries) {
+          const block = document.createElement('div');
+          block.className = 'plugin-journal-item';
+          const meta = document.createElement('div');
+          meta.className = 'plugin-journal-meta';
+          const habitLabel = entry.habitName || entry.habitId || '—';
+          const dateLabel = entry.date || '';
+          meta.textContent = `${t.pluginJournalDate || 'Date'}: ${dateLabel} · ${t.pluginJournalHabit || 'Habit'}: ${habitLabel}`;
+          const textEl = document.createElement('div');
+          textEl.className = 'plugin-journal-text';
+          textEl.textContent = entry.text || '';
+          block.appendChild(meta);
+          block.appendChild(textEl);
+          list.appendChild(block);
+        }
+      }
+      row.appendChild(list);
+      form.appendChild(row);
+      continue;
+    }
     if (field.type === 'favorites') {
       const favRaw = await storage.get(prefix + 'favorites');
       const favs = Array.isArray(favRaw) ? favRaw : [];
@@ -593,8 +635,11 @@ window.openPluginSettings = async (pluginId) => {
   header.querySelector('.modal-close')?.addEventListener('click', close);
   btnCancel.addEventListener('click', close);
   btnSave.addEventListener('click', async () => {
-    const next = {};
+    const next = { ...current };
     fields.forEach((field) => {
+      if (field.type === 'journal' || field.type === 'favorites') {
+        return;
+      }
       const el = form.querySelector(`[name="${field.key}"]`);
       if (!el) {
         return;

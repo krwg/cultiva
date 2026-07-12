@@ -17,6 +17,15 @@ import {
 } from './plugin-contributions.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
+
+let cachedRegistryPlugins = null;
+
+export function getCachedRegistryPlugin(pluginId) {
+  if (!pluginId || !cachedRegistryPlugins) {
+    return null;
+  }
+  return cachedRegistryPlugins.find((p) => p.id === pluginId) ?? null;
+}
 const EVER_INSTALLED_KEY = 'cultiva-plugins-ever-installed';
 
 export function pluginShowsGetButton(pluginRow) {
@@ -1244,6 +1253,7 @@ export const pluginManager = {
         everInstalled: everInstalled.has(p.id)
       })));
 
+      cachedRegistryPlugins = rows;
       return rows;
     } catch (e) {
       console.error('[PluginManager] Failed to fetch registry:', e);
