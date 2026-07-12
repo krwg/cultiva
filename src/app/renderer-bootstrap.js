@@ -1,6 +1,5 @@
 import { storage } from '../modules/storage.js';
 import { auth } from '../modules/auth.js';
-import { auth } from '../modules/auth.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { resolveThemeBodyId } from '../core/theme-config.js';
 

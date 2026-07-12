@@ -88,6 +88,18 @@ describe('habits', () => {
     expect(bridged.bestStreak).toBe(3);
   });
 
+  it('hides paused and archived habits from the garden list', async () => {
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({ name: 'Meditate', trackType: 'binary' });
+    await habits.setPaused(h.id, true);
+    expect(habits.getGardenHabits()).toHaveLength(0);
+    await habits.setPaused(h.id, false);
+    await habits.setArchived(h.id, true);
+    expect(habits.getGardenHabits()).toHaveLength(0);
+    const all = habits.getAll();
+    expect(all.find((x) => x.id === h.id)?.archived).toBe(true);
+  });
+
   it('breaks streak across two missed days even with grace enabled', async () => {
     vi.stubGlobal('localStorage', createMemoryStorage({
       'cultiva-settings': JSON.stringify({ streakGraceEnabled: true })

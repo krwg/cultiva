@@ -31,7 +31,7 @@ export function filterHabits(list) {
 
 export function getFocusedHabit() {
   const c = requireCtx();
-  const all = filterHabits(habits.getAll().filter((h) => h.progress < LEGACY_THRESHOLD));
+  const all = filterHabits(habits.getGardenHabits());
   if (c.focusedHabitId) {
     const hit = all.find((h) => h.id === c.focusedHabitId);
     if (hit) {
@@ -43,7 +43,7 @@ export function getFocusedHabit() {
 
 export function moveFocusedHabit(delta) {
   const c = requireCtx();
-  const all = filterHabits(habits.getAll().filter((h) => h.progress < LEGACY_THRESHOLD));
+  const all = filterHabits(habits.getGardenHabits());
   if (!all.length) {
     return;
   }
@@ -202,7 +202,7 @@ function clearGardenHabitNodes(gardenEl) {
 export function renderGarden() {
   const c = requireCtx();
   const all = habits.getAll();
-  const active = filterHabits(all.filter(h => h.progress < LEGACY_THRESHOLD));
+  const active = filterHabits(habits.getGardenHabits());
   const trophies = all.filter(h => h.progress >= LEGACY_THRESHOLD);
   const t = TRANSLATIONS[c.settings.lang];
   if (!c.focusedHabitId && active[0]) {

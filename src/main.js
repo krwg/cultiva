@@ -1058,6 +1058,7 @@ async function init() {
 
     initContextMenu({
       t: () => TRANSLATIONS[settings.lang] || TRANSLATIONS.en,
+      getHabit: (id) => habits.getAll().find((x) => x.id === id),
       completeHabit: async (id) => {
         await toggleHabitWithHooks(id);
         renderGarden();
@@ -1072,6 +1073,36 @@ async function init() {
       },
       canLog: (id) => habits.getAll().find((x) => x.id === id)?.trackType === 'quantity',
       openStats: (id) => openStats(id),
+      pauseHabit: async (id) => {
+        await habits.setPaused(id, true);
+        renderGarden();
+        showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitPaused || 'Habit paused');
+      },
+      resumeHabit: async (id) => {
+        await habits.setPaused(id, false);
+        renderGarden();
+        showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitResumed || 'Habit resumed');
+      },
+      archiveHabit: async (id) => {
+        await habits.setArchived(id, true);
+        renderGarden();
+        showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitArchived || 'Habit archived');
+      },
+      restoreHabit: async (id) => {
+        await habits.setArchived(id, false);
+        renderGarden();
+        showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitRestored || 'Habit restored');
+      },
+      canMove: (id, delta) => {
+        const ordered = habits.getGardenHabits();
+        const idx = ordered.findIndex((h) => h.id === id);
+        return idx >= 0 && idx + delta >= 0 && idx + delta < ordered.length;
+      },
+      moveHabit: async (id, delta) => {
+        if (await habits.reorder(id, delta)) {
+          renderGarden();
+        }
+      },
       deleteHabit: async (id) => {
         const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
         const shouldRemove = await showConfirmDialog(t.confirmRemoveHabit, {

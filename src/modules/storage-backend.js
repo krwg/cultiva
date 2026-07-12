@@ -29,20 +29,13 @@ export function normalizeStorageBackendId(value) {
  * @param {{ isAuthenticated: boolean }} ctx
  * @returns {StorageBackendOption[]}
  */
-export function listStorageBackendOptions({ isAuthenticated }) {
+export function listStorageBackendOptions() {
   return [
     {
       id: STORAGE_BACKEND_IDS.LOCAL,
       labelKey: 'storageBackendLocal',
       descKey: 'storageBackendLocalDesc',
       available: true
-    },
-    {
-      id: STORAGE_BACKEND_IDS.ACCOUNT,
-      labelKey: 'storageBackendAccount',
-      descKey: 'storageBackendAccountDesc',
-      available: isAuthenticated,
-      unavailableKey: 'storageBackendAccountSignIn'
     }
   ];
 }

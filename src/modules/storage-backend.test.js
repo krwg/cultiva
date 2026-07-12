@@ -17,11 +17,10 @@ describe('storage-backend registry', () => {
     expect(normalizeStorageBackendId(undefined)).toBe(STORAGE_BACKEND_IDS.LOCAL);
   });
 
-  it('lists account backend as unavailable when signed out', () => {
-    const guest = listStorageBackendOptions({ isAuthenticated: false });
-    const signedIn = listStorageBackendOptions({ isAuthenticated: true });
-    expect(guest.find((o) => o.id === 'account')?.available).toBe(false);
-    expect(signedIn.find((o) => o.id === 'account')?.available).toBe(true);
+  it('lists only local backend (offline-first)', () => {
+    const options = listStorageBackendOptions();
+    expect(options).toHaveLength(1);
+    expect(options[0].id).toBe('local');
   });
 
   it('builds and validates snapshots', () => {

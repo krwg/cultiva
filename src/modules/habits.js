@@ -32,6 +32,16 @@ function daysBetween(aStr, bStr) {
 }
 
 export const habits = {
+  isGardenVisible(habit) {
+    return habit && !habit.paused && !habit.archived;
+  },
+
+  getGardenHabits() {
+    return this.getAll()
+      .filter((h) => h.progress < LEGACY_THRESHOLD && this.isGardenVisible(h))
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  },
+
   getAll() {
     return storage.getHabits();
   },
@@ -53,7 +63,7 @@ export const habits = {
 
   async _add(data) {
     const allHabits = this.getAll();
-    const active = allHabits.filter(h => h.progress < LEGACY_THRESHOLD);
+    const active = allHabits.filter((h) => h.progress < LEGACY_THRESHOLD && this.isGardenVisible(h));
     if (active.length >= MAX_ACTIVE_HABITS) {
       throw new Error('Garden is full');
     }
@@ -80,7 +90,8 @@ export const habits = {
       history: [],
       dailyProgress: {},
       treeName: null,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      sortOrder: Date.now()
     };
 
     allHabits.push(newHabit);
@@ -239,6 +250,54 @@ export const habits = {
   async _remove(id) {
     const allHabits = this.getAll().filter(h => h.id !== id);
     await storage.saveHabits(allHabits);
+  },
+
+  async setPaused(id, paused) {
+    const allHabits = this.getAll();
+    const habit = allHabits.find((h) => h.id === id);
+    if (!habit) {
+      return null;
+    }
+    habit.paused = !!paused;
+    if (habit.paused) {
+      habit.archived = false;
+    }
+    await storage.saveHabits(allHabits);
+    return habit;
+  },
+
+  async setArchived(id, archived) {
+    const allHabits = this.getAll();
+    const habit = allHabits.find((h) => h.id === id);
+    if (!habit) {
+      return null;
+    }
+    habit.archived = !!archived;
+    if (habit.archived) {
+      habit.paused = false;
+    }
+    await storage.saveHabits(allHabits);
+    return habit;
+  },
+
+  async reorder(id, delta) {
+    const ordered = this.getGardenHabits();
+    const idx = ordered.findIndex((h) => h.id === id);
+    const swapIdx = idx + delta;
+    if (idx < 0 || swapIdx < 0 || swapIdx >= ordered.length) {
+      return false;
+    }
+    const allHabits = this.getAll();
+    const current = allHabits.find((h) => h.id === ordered[idx].id);
+    const neighbor = allHabits.find((h) => h.id === ordered[swapIdx].id);
+    if (!current || !neighbor) {
+      return false;
+    }
+    const tmp = current.sortOrder;
+    current.sortOrder = neighbor.sortOrder;
+    neighbor.sortOrder = tmp;
+    await storage.saveHabits(allHabits);
+    return true;
   },
 
   getStage(progress) {

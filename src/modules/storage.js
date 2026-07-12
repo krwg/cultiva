@@ -195,6 +195,20 @@ function migrateHabit(habit) {
 
   delete migrated.streak;
 
+  if (migrated.paused !== true) {
+    migrated.paused = false;
+  }
+  if (migrated.archived !== true) {
+    migrated.archived = false;
+  }
+
+  const sortNum = Number(migrated.sortOrder);
+  if (!Number.isFinite(sortNum)) {
+    migrated.sortOrder = migrated.createdAt
+      ? new Date(migrated.createdAt).getTime()
+      : Date.now();
+  }
+
   migrated.updatedAt = Date.now();
 
   return migrated;

@@ -32,20 +32,21 @@ In scope:
 - Local data storage (IndexedDB, backups)
 - Auto-update mechanism
 
-### Storage backends (offline-first)
+### Storage (offline-first)
 
-Cultiva stores habits and app settings in **IndexedDB** on the device. Users can choose a storage backend in **Settings → Data**:
+Cultiva stores habits and app settings in **IndexedDB** on the device. There is **no cloud sync** — now or in the near term. Users can export JSON/ZIP backups from **Settings → Data**.
 
-| Backend | Behavior |
-|---------|----------|
-| **Local** (default) | All data stays on this device. No network access for habit storage. |
-| **Account** | Requires sign-in. Uses the same local IndexedDB profile today; prepares for future encrypted sync (phase 2 — not implemented yet). |
+| Topic | Behavior |
+|-------|----------|
+| **Default** | All data stays on this device |
+| **Sign-in profile** | Optional local account for profile metadata; habit data remains on-device |
+| **Backups** | User-initiated export/import only |
 
 **Threat model notes:**
 
-- Switching backends runs an export → import migration in-process; data is not sent over the network.
-- Account sign-in uses PBKDF2-hashed passwords stored locally (see `src/modules/auth.js`).
-- Future cloud sync must use end-to-end encryption and conflict resolution; see [CONTRIBUTING.md](CONTRIBUTING.md#data-sync-roadmap-phase-2).
+- Data does not leave the device unless the user exports a file
+- Account sign-in uses PBKDF2-hashed passwords stored locally (see `src/modules/auth.js`)
+- A pluggable storage adapter layer (`src/modules/storage-backend.js`) exists for future work; remote sync is not planned for upcoming releases
 
 Out of scope for current releases:
 
