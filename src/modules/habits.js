@@ -1,5 +1,5 @@
 import { storage } from './storage.js';
-import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS, STREAK_GRACE_DAYS_PER_MONTH } from '../core/config.js';
+import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS, STREAK_GRACE_DAYS_PER_MONTH, GARDEN_FULL_ERROR } from '../core/config.js';
 import { getTodayInTZ, getDateInTZ } from '../core/timezone.js';
 import {
   normalizeSchedule,
@@ -82,7 +82,7 @@ export const habits = {
     const allHabits = this.getAll();
     const active = allHabits.filter((h) => h.progress < LEGACY_THRESHOLD && this.isGardenVisible(h));
     if (active.length >= MAX_ACTIVE_HABITS) {
-      throw new Error('Garden is full');
+      throw new Error(GARDEN_FULL_ERROR);
     }
 
     const userId = storage.getCurrentUserId();

@@ -15,12 +15,13 @@ export function bindHabitTemplates(lang) {
     btn.dataset.templateId = tpl.id;
     const label = t.habitTemplates?.[tpl.id] || tpl.name;
     btn.textContent = label;
-    btn.addEventListener('click', () => applyHabitTemplate(tpl));
+    btn.addEventListener('click', () => applyHabitTemplate(tpl, lang));
     wrap.appendChild(btn);
   }
 }
 
-export function applyHabitTemplate(tpl) {
+export function applyHabitTemplate(tpl, lang = 'en') {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const nameEl = document.getElementById('habit-name');
   const descEl = document.getElementById('habit-desc');
   const catEl = document.getElementById('habit-category');
@@ -28,7 +29,7 @@ export function applyHabitTemplate(tpl) {
   const unitEl = document.getElementById('habit-unit');
   const targetContainer = document.getElementById('target-container');
   if (nameEl) {
-    nameEl.value = tpl.name;
+    nameEl.value = t.habitTemplates?.[tpl.id] || tpl.name;
   }
   if (descEl) {
     descEl.value = '';
@@ -47,7 +48,7 @@ export function applyHabitTemplate(tpl) {
       targetEl.value = String(tpl.target || 1);
     }
     if (unitEl) {
-      unitEl.value = tpl.unit || '';
+      unitEl.value = t.habitTemplateUnits?.[tpl.unit] || tpl.unit || '';
     }
   } else {
     binaryRadio.checked = true;

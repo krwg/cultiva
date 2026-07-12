@@ -122,4 +122,24 @@ export function applyTranslations(lang) {
       el.textContent = t.categories[cat];
     }
   });
+
+  const habitCategory = document.getElementById('habit-category');
+  if (habitCategory) {
+    Array.from(habitCategory.options).forEach((option) => {
+      const cat = option.dataset.i18nCat;
+      if (cat && t.categories && t.categories[cat]) {
+        option.textContent = t.categories[cat];
+      }
+    });
+  }
+
+  const holidaySelect = document.getElementById('holiday-select');
+  if (holidaySelect && t.holidays) {
+    Array.from(holidaySelect.options).forEach((option) => {
+      const key = option.dataset.i18nHoliday;
+      if (key && t.holidays[key]) {
+        option.textContent = t.holidays[key];
+      }
+    });
+  }
 }

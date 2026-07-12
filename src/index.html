@@ -108,30 +108,30 @@
                 <form id="habit-form">
                     <div class="form-group">
                         <label for="habit-name" data-i18n="habitName">Name</label>
-                        <input type="text" id="habit-name" placeholder="e.g., Read 20 pages" required maxlength="50">
+                        <input type="text" id="habit-name" data-i18n-placeholder="habitNamePlaceholder" placeholder="e.g., Read 20 pages" required maxlength="50">
                     </div>
                     <div class="form-group">
                         <label for="habit-desc" data-i18n="description">Description (optional)</label>
-                        <textarea id="habit-desc" placeholder="e.g., Read before bed" maxlength="150" rows="2"></textarea>
+                        <textarea id="habit-desc" data-i18n-placeholder="habitDescPlaceholder" placeholder="e.g., Read before bed" maxlength="150" rows="2"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="habit-category" data-i18n="category">Category</label>
                         <select id="habit-category" class="select-input">
-                            <option value="">None</option>
-                            <option value="health">Health</option>
-                            <option value="learning">Learning</option>
-                            <option value="work">Work</option>
-                            <option value="mindfulness">Mindfulness</option>
-                            <option value="creative">Creative</option>
-                            <option value="fitness">Fitness</option>
-                            <option value="social">Social</option>
-                            <option value="finance">Finance</option>
-                            <option value="hobby">Hobby</option>
-                            <option value="family">Family</option>
-                            <option value="career">Career</option>
-                            <option value="spiritual">Spiritual</option>
-                            <option value="environment">Environment</option>
-                            <option value="other">Other</option>
+                            <option value="" data-i18n-cat="none">None</option>
+                            <option value="health" data-i18n-cat="health">Health</option>
+                            <option value="learning" data-i18n-cat="learning">Learning</option>
+                            <option value="work" data-i18n-cat="work">Work</option>
+                            <option value="mindfulness" data-i18n-cat="mindfulness">Mindfulness</option>
+                            <option value="creative" data-i18n-cat="creative">Creative</option>
+                            <option value="fitness" data-i18n-cat="fitness">Fitness</option>
+                            <option value="social" data-i18n-cat="social">Social</option>
+                            <option value="finance" data-i18n-cat="finance">Finance</option>
+                            <option value="hobby" data-i18n-cat="hobby">Hobby</option>
+                            <option value="family" data-i18n-cat="family">Family</option>
+                            <option value="career" data-i18n-cat="career">Career</option>
+                            <option value="spiritual" data-i18n-cat="spiritual">Spiritual</option>
+                            <option value="environment" data-i18n-cat="environment">Environment</option>
+                            <option value="other" data-i18n-cat="other">Other</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -160,7 +160,7 @@
                         </div>
                         <div class="form-group">
                             <label for="habit-unit" data-i18n="unit">Unit</label>
-                            <input type="text" id="habit-unit" placeholder="pages" value="pages">
+                            <input type="text" id="habit-unit" data-i18n-placeholder="habitUnitPlaceholder" placeholder="pages" value="pages">
                         </div>
                     </div>
                     <div class="form-group">
@@ -442,6 +442,7 @@
                                         <option value="orchard" data-i18n="themeOrchard">Orchard</option>
                                         <option value="honeycrisp" data-i18n="themeHoneycrisp">Honeycrisp</option>
                                         <option value="linden" data-i18n="themeLinden">Linden</option>
+                                        <option value="birch" data-i18n="themeBirch">Birch</option>
                                         <option value="pink" data-i18n="themePink">Pink</option>
                                     </optgroup>
                                     <optgroup data-i18n-label="themeGroupDark" label="Dark appearance">
@@ -651,11 +652,11 @@
                                 <span class="setting-desc" data-i18n="holidayRegionDesc">Show public holidays for your country</span>
                             </div>
                             <select id="holiday-select" class="select-input select-small">
-                                <option value="us">🇺🇸 United States</option>
-                                <option value="ru">🇷🇺 Russia</option>
-                                <option value="de">🇩🇪 Germany</option>
-                                <option value="gb">🇬🇧 United Kingdom</option>
-                                <option value="fr">🇫🇷 France</option>
+                                <option value="us" data-i18n-holiday="us">United States</option>
+                                <option value="ru" data-i18n-holiday="ru">Russia</option>
+                                <option value="de" data-i18n-holiday="de">Germany</option>
+                                <option value="gb" data-i18n-holiday="gb">United Kingdom</option>
+                                <option value="fr" data-i18n-holiday="fr">France</option>
                             </select>
                         </div>
                         <div class="setting-item">

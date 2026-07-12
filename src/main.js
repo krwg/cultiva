@@ -45,6 +45,7 @@ import { AVATAR_BACKGROUNDS, AVATAR_EMOJIS, DEFAULT_AVATAR } from './core/avatar
 import { showAlertDialog, showConfirmDialog } from './app/dialogs.js';
 import { initTooltipManager } from './app/tooltip-manager.js';
 import { configureUpdatesUi, updateUpdatesSection } from './app/updates-ui.js';
+import { initHabitFormIcons, initSettingsSidebarIcons } from './core/ui-icons.js';
 import {
   configureDiscordSettings,
   prepareDiscordSettingsSection,
@@ -973,7 +974,11 @@ function initEvents() {
         renderGarden();
         showNotification(TRANSLATIONS[settings.lang].habitPlanted);
       } catch (err) {
-        showNotification(err.message || 'Could not add habit');
+        const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+        const msg = err?.message === 'Garden is full'
+          ? (t.gardenFull || err.message)
+          : (err?.message || t.habitAddFailed || 'Could not add habit');
+        showNotification(msg);
       }
     })();
   });
@@ -987,7 +992,8 @@ function initEvents() {
 
   authTrigger?.addEventListener('click', () => { openModal(authModal); closeUserMenu(); });
   signOutBtn?.addEventListener('click', async () => {
-    await auth.logout(); await updateAuthUI(); renderGarden(); closeUserMenu(); showNotification('Signed out');
+    const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+    await auth.logout(); await updateAuthUI(); renderGarden(); closeUserMenu(); showNotification(t.signedOutToast || t.signedOut);
   });
   authModal?.querySelector('.modal-close')?.addEventListener('click', () => closeModal(authModal));
   authModal?.querySelector('.modal-overlay')?.addEventListener('click', () => closeModal(authModal));
@@ -1055,6 +1061,8 @@ async function init() {
 
     applyBranding();
     applySettings();
+    initSettingsSidebarIcons();
+    initHabitFormIcons();
     renderGarden();
 
     initEvents();

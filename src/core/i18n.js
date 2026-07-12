@@ -56,6 +56,7 @@ export const TRANSLATIONS = {
     timeFormat: 'Time Format', timeFormatDesc: '12h or 24h clock',
     timezone: 'Timezone', timezoneDesc: 'Fix calendar & habit timestamps',
     categories: {
+      none: 'None',
       health: 'Health', learning: 'Learning', work: 'Work', mindfulness: 'Mindfulness',
       creative: 'Creative', fitness: 'Fitness', social: 'Social', finance: 'Finance',
       hobby: 'Hobby', family: 'Family', career: 'Career', spiritual: 'Spiritual',
@@ -135,6 +136,7 @@ export const TRANSLATIONS = {
     themeCypress: 'Cypress',
     themeLinden: 'Linden',
     themeRowan: 'Rowan',
+    themeBirch: 'Birch',
     themeAuto: 'Auto',
     themeLightBuiltin: 'Light',
     themeDarkBuiltin: 'Dark',
@@ -331,6 +333,21 @@ export const TRANSLATIONS = {
     habitTemplates: {
       read: 'Read', exercise: 'Exercise', meditate: 'Meditate', water: 'Drink water', journal: 'Journal'
     },
+    habitTemplateUnits: {
+      pages: 'pages', min: 'min', glasses: 'glasses'
+    },
+    habitNamePlaceholder: 'e.g., Read 20 pages',
+    habitDescPlaceholder: 'e.g., Read before bed',
+    habitUnitPlaceholder: 'pages',
+    gardenFull: 'Garden is full (12 habits max)',
+    habitAddFailed: 'Could not add habit',
+    holidays: {
+      us: 'United States', ru: 'Russia', de: 'Germany', gb: 'United Kingdom', fr: 'France'
+    },
+    pluginJournalEmpty: 'No reflections saved yet.',
+    pluginJournalHabit: 'Habit',
+    pluginJournalDate: 'Date',
+    signedOutToast: 'Signed out',
 
   },
   ru: {
@@ -390,6 +407,7 @@ export const TRANSLATIONS = {
     timeFormat: 'Формат времени', timeFormatDesc: '12-часовой или 24-часовой',
     timezone: 'Часовой пояс', timezoneDesc: 'Синхронизировать время привычек и календаря',
     categories: {
+      none: 'Без категории',
       health: 'Здоровье', learning: 'Обучение', work: 'Работа', mindfulness: 'Осознанность',
       creative: 'Творчество', fitness: 'Спорт', social: 'Общение', finance: 'Финансы',
       hobby: 'Хобби', family: 'Семья', career: 'Карьера', spiritual: 'Духовное',
@@ -469,6 +487,7 @@ export const TRANSLATIONS = {
     themeCypress: 'Кипарис',
     themeLinden: 'Липа',
     themeRowan: 'Рябина',
+    themeBirch: 'Белая рябина',
     themeAuto: 'Авто',
     themeLightBuiltin: 'Светлая',
     themeDarkBuiltin: 'Тёмная',
@@ -664,5 +683,20 @@ export const TRANSLATIONS = {
     habitTemplates: {
       read: 'Читать', exercise: 'Спорт', meditate: 'Медитация', water: 'Вода', journal: 'Дневник'
     },
+    habitTemplateUnits: {
+      pages: 'стр.', min: 'мин', glasses: 'стаканов'
+    },
+    habitNamePlaceholder: 'например, Читать 20 страниц',
+    habitDescPlaceholder: 'например, Читать перед сном',
+    habitUnitPlaceholder: 'стр.',
+    gardenFull: 'Сад заполнен (максимум 12 привычек)',
+    habitAddFailed: 'Не удалось добавить привычку',
+    holidays: {
+      us: 'США', ru: 'Россия', de: 'Германия', gb: 'Великобритания', fr: 'Франция'
+    },
+    pluginJournalEmpty: 'Сохранённых заметок пока нет.',
+    pluginJournalHabit: 'Привычка',
+    pluginJournalDate: 'Дата',
+    signedOutToast: 'Вы вышли из аккаунта',
   }
 };
