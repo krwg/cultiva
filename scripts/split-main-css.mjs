@@ -74,5 +74,11 @@ if (sharedAmbient.length) {
   writeFileSync(join(ambientDir, '_keyframes.css'), `${sharedAmbient.join('\n\n')}\n`);
 }
 
-writeFileSync(shellOut, `${ambientExtract.shell.trim()}\n`);
+const SHELL_PERF_FOOTER = `
+body.ambient-paused [id^="bg-"] * {
+    animation-play-state: paused !important;
+}
+`;
+
+writeFileSync(shellOut, `${ambientExtract.shell.trim()}\n${SHELL_PERF_FOOTER}`);
 console.log('[split-main-css] shell.css + public/styles/themes|ambient written');

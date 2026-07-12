@@ -3030,3 +3030,7 @@ body.calendar-page .app-footer {
     .stats-dashboard-cards { grid-template-columns: 1fr; }
     .stats-dashboard-row { grid-template-columns: 1fr; gap: 4px; }
 }
+
+body.ambient-paused [id^="bg-"] * {
+    animation-play-state: paused !important;
+}
