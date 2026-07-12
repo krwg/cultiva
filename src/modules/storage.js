@@ -127,8 +127,12 @@ async function _writeSettingNow(key, value) {
   }
 }
 
-export function setStorageAuthProbe(fn) {
+function _applyStorageAuthProbe(fn) {
   _authProbe = typeof fn === 'function' ? fn : () => !!_currentUserId;
+}
+
+export function setStorageAuthProbe(fn) {
+  _applyStorageAuthProbe(fn);
 }
 
 function _createActiveAdapter(backendId) {
@@ -466,6 +470,10 @@ export const storage = {
 
   getCurrentUserId() {
     return _currentUserId;
+  },
+
+  setStorageAuthProbe(fn) {
+    _applyStorageAuthProbe(fn);
   },
 
   getBackendId() {

@@ -66,7 +66,8 @@ function buildSandboxBootstrapDocument(pluginId) {
       manifest: manifest,
       storage: {
         get: function (key) { return rpc('storage.get', [key]); },
-        set: function (key, value) { return rpc('storage.set', [key, value]); }
+        set: function (key, value) { return rpc('storage.set', [key, value]); },
+        remove: function (key) { return rpc('storage.remove', [key]); }
       },
       data: {
         read: function (name) { return rpc('data.read', [name]); }
@@ -74,7 +75,11 @@ function buildSandboxBootstrapDocument(pluginId) {
       app: {
         getLocale: function () { return rpc('app.getLocale', []); },
         getThemeColor: function (name) { return rpc('app.getThemeColor', [name]); },
-        getHabits: function () { return rpc('app.getHabits', []); }
+        getHabits: function () { return rpc('app.getHabits', []); },
+        getVersion: function () { return rpc('app.getVersion', []); },
+        getToday: function () { return rpc('app.getToday', []); },
+        getTimezone: function () { return rpc('app.getTimezone', []); },
+        getSettings: function () { return rpc('app.getSettings', []); }
       },
       ui: {
         registerHeaderItem: function (config) {

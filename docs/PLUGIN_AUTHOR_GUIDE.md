@@ -76,8 +76,10 @@ The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`m
 | `icon` | **yes** | Short string for legacy UI (use `""` — catalog shows letter placeholders). |
 | `entry` | **yes** | Entry script filename (default `index.js` if omitted in older docs). |
 | `styles` | no | Array of CSS paths **relative to the plugin folder**; injected into the **main** window `<head>`. |
-| `permissions` | recommended | Explicit capabilities used by your plugin: `network`, `storage`, `ui`. See [SECURITY.md — Sandbox threat model](../SECURITY.md#sandbox-threat-model) for how permissions are enforced. |
+| `permissions` | recommended | `network`, `storage`, `ui`, `habits.read`, `settings.read` — see [Permissions](#permissions). |
 | `data` | no | Array of bundled static files (for example JSON dictionaries) accessible via `context.data.read(path)`. |
+| `settings` | no | Manifest-driven settings fields rendered by Cultiva (no per-plugin UI code in the app). |
+| `i18n` | no | Optional catalog strings in `registry.json` / manifest: `{ "ru": { "name", "description" } }`. Settings fields support their own `field.i18n`. |
 | `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Official registry plugins use **`1.7.0`**. Use **`0.4.0`** minimum if you depend on [**main-window UI**](#6-main-window-ui-bridge-cultiva--040). |
 
 **Minimal example**
@@ -122,7 +124,23 @@ You **must** end the file by **returning an instance** (typically `return new My
 
 The renderer builds an **`instanceProxy`** that forwards `INVOKE_INSTANCE` into the sandbox. Method names are collected from the **prototype chain** of your instance, so **ES `class` plugins** behave the same as plain objects.
 
-The header chip may call a **known modal method** on the proxy (e.g. `openWeatherModal`, `openSettingsModal`, `openRadioModal`, `openModal`) **or** fall back to the sandbox **`onClick`** handler from `registerHeaderItem`.
+The header chip calls the sandbox **`onClick`** handler from `registerHeaderItem` via `HEADER_ONCLICK`.
+
+Garden widgets can expose click targets with **`data-plugin-act="methodName"`** on buttons/links inside injected HTML. The host forwards the call to your instance method in the sandbox (legacy `data-quote-act` is still accepted for one release).
+
+---
+
+## Permissions
+
+| Permission | RPC / capability |
+|------------|------------------|
+| `storage` | `context.storage.get/set/remove` |
+| `ui` | `showNotification`, header/garden/sheet UI, `app.getLocale`, `app.getThemeColor`, `app.getVersion`, `app.getToday`, `app.getTimezone` |
+| `network` | `fetch()` inside the sandbox |
+| `habits.read` | `app.getHabits()` — read-only habit snapshots |
+| `settings.read` | `app.getSettings()` — public app settings subset (lang, theme, flags) |
+
+Cultiva **never** hardcodes plugin ids. Names, descriptions, and settings labels come from **`registry.json` / `manifest.json`** (`i18n` blocks).
 
 ---
 
@@ -134,10 +152,11 @@ Parsed `manifest.json` object.
 
 ### `context.storage`
 
-| Call | Semantics |
-|------|-----------|
-| `await context.storage.get(key)` | Per-plugin key/value (async). Keys are namespaced by the host. |
-| `await context.storage.set(key, value)` | Persist a JSON-serializable value. |
+| Call | Permission | Semantics |
+|------|------------|-----------|
+| `await context.storage.get(key)` | `storage` | Per-plugin key/value (async). Keys are namespaced by the host (`plugin_<id>_`). |
+| `await context.storage.set(key, value)` | `storage` | Persist a JSON-serializable value. |
+| `await context.storage.remove(key)` | `storage` | Clear a namespaced key. |
 
 ### `context.data`
 
@@ -145,14 +164,45 @@ Parsed `manifest.json` object.
 |------|-----------|
 | `await context.data.read(path)` | Reads a file listed in `manifest.data`. JSON files are parsed by the host before returning. |
 
-### `context.ui` — always available
+### `context.app`
+
+| Call | Permission | Returns |
+|------|------------|---------|
+| `await context.app.getLocale()` | `ui` | `'en'` \| `'ru'` |
+| `await context.app.getThemeColor('--text-primary')` | `ui` | Resolved CSS color from the active theme |
+| `await context.app.getVersion()` | `ui` | Cultiva semver string |
+| `await context.app.getToday()` | `ui` | `YYYY-MM-DD` in the user's Cultiva timezone |
+| `await context.app.getTimezone()` | `ui` | IANA zone or `'auto'` |
+| `await context.app.getSettings()` | `settings.read` | `{ lang, theme, holidayRegion, pluginsEnabled, focusMode, showTrophies, streakGraceEnabled }` |
+| `await context.app.getHabits()` | `habits.read` | Read-only array of habit snapshots |
+
+### `context.ui` — requires `ui` permission for notifications; registration is always available in sandbox
 
 | Method | Description |
 |--------|-------------|
-| **`registerHeaderItem({ label, icon, onClick? })`** | Registers a chip in the **main** window header. `onClick` runs **inside the sandbox** when the user activates the chip (unless a matching **instance method** handles the click first). |
-| **`registerGardenWidget({ position?, render, onTapMethod? })`** | Registers a garden widget. Inside **`render(relay)`**, set **`relay.innerHTML = '...'`** **or** call **`relay.appendChild(node)`** (the host serializes `outerHTML` to the main document). Optional **`onTapMethod`**: string name of an **instance method** invoked in the main window when the user clicks the injected block (e.g. `'openWeatherModal'`). |
+| **`registerHeaderItem({ label, icon, onClick? })`** | Registers a chip in the **main** window header. `onClick` runs **inside the sandbox** when the user activates the chip. |
+| **`registerGardenWidget({ position?, render, onTapMethod? })`** | Registers a garden widget. Inside **`render(relay)`**, set **`relay.innerHTML = '...'`** **or** call **`relay.appendChild(node)`**. Use **`data-plugin-act`** on interactive elements, or **`onTapMethod`** for whole-widget taps. |
 | **`updateGardenHtml(html)`** | After registration, pushes new inner HTML for the same garden wrapper. |
-| **`showNotification(icon, text)`** | Shows a toast in the main app (`icon` string first, then `text`). |
+| **`openMainSheet(html)`** / **`closeMainSheet()`** | Main-window sheet overlay. |
+| **`updateMainHeader({ label?, icon?, labelColor? })`** | Live header chip updates. |
+| **`showNotification(icon, text)`** | Toast in the main app. |
+
+### Settings UI & i18n
+
+Declare `settings` in `manifest.json`. Cultiva renders the form — **no plugin id checks in app code**.
+
+```json
+{
+  "key": "city",
+  "label": "City",
+  "type": "text",
+  "i18n": {
+    "ru": { "label": "Город" }
+  }
+}
+```
+
+For `type: "favorites"` lists, add `emptyMessage` under `i18n.<locale>`.
 
 ---
 

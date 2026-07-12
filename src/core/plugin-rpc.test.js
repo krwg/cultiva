@@ -7,6 +7,8 @@ describe('plugin-rpc', () => {
     expect(isAllowedPluginRpcMethod('storage.set')).toBe(true);
     expect(isAllowedPluginRpcMethod('ui.showNotification')).toBe(true);
     expect(isAllowedPluginRpcMethod('app.getHabits')).toBe(true);
+    expect(isAllowedPluginRpcMethod('app.getSettings')).toBe(true);
+    expect(isAllowedPluginRpcMethod('storage.remove')).toBe(true);
     expect(isAllowedPluginRpcMethod('network.fetch')).toBe(false);
   });
 

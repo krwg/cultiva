@@ -1,5 +1,10 @@
 import { TRANSLATIONS } from '../core/i18n.js';
-import { getPluginCatalogStrings, getPluginSettingLabel, getPluginSettingOptionLabel } from '../core/plugin-i18n.js';
+import {
+  resolvePluginCatalogMeta,
+  resolvePluginSettingEmptyMessage,
+  resolvePluginSettingLabel,
+  resolvePluginSettingOptionLabel
+} from '../core/plugin-manifest-i18n.js';
 import { pluginManager, isNewerPluginVersion } from '../core/plugin-manager.js';
 import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
@@ -75,20 +80,33 @@ export async function renderPluginsSection() {
   }
 
   await loadInstalledPlugins(registryPlugins);
-  await loadAvailablePlugins();
+  await loadAvailablePlugins(registryPlugins);
   void notifyPluginUpdatesIfAny();
 }
 
-function localizedPluginMeta(pluginId, fallbackName, fallbackDesc) {
-  const localized = getPluginCatalogStrings(pluginId, settings.lang);
+function localizedPluginMeta(pluginId, fallbackName, fallbackDesc, registryPlugins = []) {
+  const registryEntry = registryPlugins.find((row) => row.id === pluginId);
+  if (registryEntry) {
+    const meta = resolvePluginCatalogMeta(registryEntry, settings.lang);
+    if (meta.name) {
+      return meta;
+    }
+  }
+  const pluginData = pluginManager.plugins.get(pluginId);
+  if (pluginData?.manifest) {
+    const meta = resolvePluginCatalogMeta(pluginData.manifest, settings.lang);
+    if (meta.name) {
+      return meta;
+    }
+  }
   return {
-    name: localized?.name || fallbackName || '',
-    description: localized?.description || fallbackDesc || ''
+    name: fallbackName || '',
+    description: fallbackDesc || ''
   };
 }
 
-function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVersion = null } = {}) {
-  const meta = localizedPluginMeta(p.id, p.name, p.description);
+function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVersion = null, registryPlugins = [] } = {}) {
+  const meta = localizedPluginMeta(p.id, p.name, p.description, registryPlugins);
   const main = document.createElement('div');
   main.className = 'plugin-card-main';
 
@@ -226,12 +244,12 @@ async function loadInstalledPlugins(registryPlugins = []) {
 
     const pluginData = pluginManager.plugins.get(p.id);
     const updateVersion = registryUpdateVersion(registryPlugins, p.id, p.version);
-    card.appendChild(createPluginCardMain(p, pluginData, t, { showSettings: true, updateVersion }));
+    card.appendChild(createPluginCardMain(p, pluginData, t, { showSettings: true, updateVersion, registryPlugins }));
     container.appendChild(card);
   }
 }
 
-async function loadAvailablePlugins() {
+async function loadAvailablePlugins(registryPlugins = []) {
   const container = document.getElementById('available-plugins-list');
   if (!container) {
     return;
@@ -263,7 +281,7 @@ async function loadAvailablePlugins() {
       const card = document.createElement('div');
       card.className = 'plugin-card';
 
-      const meta = localizedPluginMeta(p.id, p.name, p.description);
+      const meta = resolvePluginCatalogMeta(p, settings.lang);
       const stub = { id: p.id, name: meta.name, description: meta.description, version: p.version, loaded: true, enabled: true };
       const main = createPluginCardMain(stub, null, t, { showSettings: false });
 
@@ -384,7 +402,7 @@ window.openPluginSettings = async (pluginId) => {
     row.className = 'plugin-settings-row';
     const label = document.createElement('span');
     label.className = 'plugin-settings-label';
-    label.textContent = getPluginSettingLabel(pluginId, field.key, settings.lang, field.label || field.key);
+    label.textContent = resolvePluginSettingLabel(field, settings.lang, field.label || field.key);
     row.appendChild(label);
 
     const val = current[field.key] !== undefined ? current[field.key] : field.default;
@@ -396,7 +414,11 @@ window.openPluginSettings = async (pluginId) => {
       if (!favs.length) {
         const empty = document.createElement('p');
         empty.className = 'plugin-favorites-empty';
-        empty.textContent = t.pluginFavoritesEmpty || 'No favorites yet. Tap the heart on today\'s quote.';
+        empty.textContent = resolvePluginSettingEmptyMessage(
+          field,
+          settings.lang,
+          t.pluginSettingsListEmpty || 'No items yet.'
+        );
         list.appendChild(empty);
       } else {
         for (const item of favs) {
@@ -436,7 +458,7 @@ window.openPluginSettings = async (pluginId) => {
       for (const opt of field.options) {
         const option = document.createElement('option');
         option.value = opt.value;
-        option.textContent = getPluginSettingOptionLabel(pluginId, field.key, opt.value, settings.lang, opt.label || opt.value);
+        option.textContent = resolvePluginSettingOptionLabel(field, opt.value, settings.lang, opt, opt.label || opt.value);
         if (String(val) === String(opt.value)) {
           option.selected = true;
         }
@@ -576,13 +598,10 @@ export function renderPluginHeaderItems() {
 
       item.onclick = () => {
         const hi = pluginData.headerItem;
-
-        if (hi.instance && hi.modalMethod && typeof hi.instance[hi.modalMethod] === 'function') {
-          hi.instance[hi.modalMethod]();
-        } else if (hi.onClick) {
+        if (hi.onClick) {
           hi.onClick();
         } else {
-          console.warn('[Click] No method found for', plugin.id);
+          console.warn('[Click] No handler found for', plugin.id);
         }
       };
 

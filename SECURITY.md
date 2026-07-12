@@ -74,7 +74,17 @@ Each plugin loads inside a hidden `sandbox="allow-scripts"` iframe backed by a `
 - Payloads must include `__cultivaPlugin: true` and a matching `targetPluginId`
 - RPC method names are allowlisted before execution
 
-Plugin authors should request only the permissions they need. See the permissions table in [PLUGIN_AUTHOR_GUIDE](docs/PLUGIN_AUTHOR_GUIDE.md#3-manifest-schema).
+Plugin authors should request only the permissions they need:
+
+| Permission | Capability |
+|------------|------------|
+| `storage` | Namespaced get/set/remove |
+| `ui` | Notifications, header/garden/sheet, locale/theme/version/date |
+| `network` | `fetch` in sandbox |
+| `habits.read` | Read-only habit snapshots |
+| `settings.read` | Public app settings subset |
+
+See the permissions table in [PLUGIN_AUTHOR_GUIDE](docs/PLUGIN_AUTHOR_GUIDE.md#permissions).
 
 ## License note
 

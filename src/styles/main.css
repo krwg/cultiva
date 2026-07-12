@@ -2907,21 +2907,6 @@ body.theme-linden .accent-color-row input[type="color"] {
     height: 100%;
 }
 
-.habit-card.garden-plugin-card--quote .card-title {
-    font-size: 14px;
-    font-weight: 500;
-    font-style: italic;
-    line-height: 1.45;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-}
-
-.habit-card.garden-plugin-card--quote .card-subtitle {
-    font-size: 12px;
-    color: var(--text-tertiary);
-}
-
 .plugin-icon {
     width: 44px;
     height: 44px;

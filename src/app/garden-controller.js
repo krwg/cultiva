@@ -268,8 +268,13 @@ export function openStats(id) {
 export function bindGardenCardEvents() {
   const c = requireCtx();
   const handleCardClick = async (e) => {
+    if (e.target.closest('[data-plugin-act], [data-quote-act], .quote-favorite-btn')) {
+      return;
+    }
     const card = e.target.closest('.habit-card');
-    if (!card) { return; }
+    if (!card || card.classList.contains('garden-plugin-card') || card.closest('.garden-plugin-widget')) {
+      return;
+    }
     const id = card.dataset.id;
     const t = TRANSLATIONS[c.settings.lang];
     c.setFocusedHabitId(id);

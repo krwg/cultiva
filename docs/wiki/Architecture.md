@@ -32,8 +32,18 @@ cultiva/
 
 ```
 registry.json → download manifest + files → sha256 check → userData/cultiva-plugins/
-→ PluginSandboxHost → plugin-manager → header / garden UI
+→ PluginSandboxHost (blob iframe) → plugin-manager RPC → header / garden / sheet UI
 ```
+
+**Mod architecture:** Cultiva contains no plugin business logic. Extensions ship from [cultiva-plugins](https://github.com/krwg/cultiva-plugins). The renderer exposes a permission-gated RPC surface (`src/core/plugin-rpc.js`, `src/core/plugin-api.js`).
+
+| Layer | File |
+|-------|------|
+| RPC allowlist | `src/core/plugin-rpc.js` |
+| RPC handlers | `src/core/plugin-api.js` |
+| Sandbox host | `src/core/plugin-sandbox-host.js` |
+| Manifest i18n | `src/core/plugin-manifest-i18n.js` |
+| Registry integrity | `src/core/plugin-registry-integrity.js` |
 
 ## Performance (1.7)
 

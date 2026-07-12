@@ -1135,10 +1135,10 @@ async function init() {
 }
 
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  setTimeout(() => { init(); hideLoading(); }, 100);
+  setTimeout(() => { void init(); }, 100);
 } else {
   window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => { init(); hideLoading(); }, 100);
+    setTimeout(() => { void init(); }, 100);
   });
 }
 

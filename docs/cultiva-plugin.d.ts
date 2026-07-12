@@ -7,23 +7,33 @@ export interface CultivaPluginManifest {
   icon?: string;
   entry?: string;
   styles?: string[];
-  permissions?: Array<'network' | 'storage' | 'ui' | 'habits.read'>;
+  permissions?: Array<'network' | 'storage' | 'ui' | 'habits.read' | 'settings.read'>;
   data?: string[];
   minAppVersion?: string;
+  i18n?: Record<string, { name?: string; description?: string }>;
   settings?: CultivaPluginSettingField[];
+}
+
+export interface CultivaPluginSettingFieldI18n {
+  label?: string;
+  emptyMessage?: string;
+  options?: Record<string, string>;
 }
 
 export interface CultivaPluginSettingField {
   key: string;
   label?: string;
-  type: 'text' | 'select' | 'boolean';
+  type: 'text' | 'select' | 'boolean' | 'favorites';
   default?: string | number | boolean;
+  emptyMessage?: string;
   options?: Array<{ value: string; label?: string }>;
+  i18n?: Record<string, CultivaPluginSettingFieldI18n>;
 }
 
 export interface CultivaPluginStorage {
   get(key: string): Promise<unknown>;
   set(key: string, value: unknown): Promise<void>;
+  remove(key: string): Promise<void>;
 }
 
 export interface CultivaPluginData {
@@ -47,6 +57,7 @@ export interface CultivaPluginUi {
   registerGardenWidget(config: CultivaPluginGardenConfig): void;
   updateGardenHtml(html: string): void;
   openMainSheet(html: string): void;
+  patchMainSheet?(selector: string, html: string): void;
   closeMainSheet(): void;
   updateMainHeader(opts: { label?: string; icon?: string; labelColor?: string | null }): void;
   showNotification(icon: string, text: string): Promise<void>;
@@ -73,10 +84,24 @@ export interface CultivaPluginHabitSnapshot {
   todayProgress: number;
 }
 
+export interface CultivaPluginPublicSettings {
+  lang: string;
+  theme: string;
+  holidayRegion: string;
+  pluginsEnabled: boolean;
+  focusMode: boolean;
+  showTrophies: boolean;
+  streakGraceEnabled: boolean;
+}
+
 export interface CultivaPluginApp {
   getLocale(): Promise<string>;
   getThemeColor(cssVar: string): Promise<string>;
   getHabits(): Promise<CultivaPluginHabitSnapshot[]>;
+  getVersion(): Promise<string>;
+  getToday(): Promise<string>;
+  getTimezone(): Promise<string>;
+  getSettings(): Promise<CultivaPluginPublicSettings>;
 }
 
 export interface CultivaPluginContext {

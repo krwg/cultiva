@@ -1,10 +1,15 @@
 export const PLUGIN_RPC_METHODS = new Set([
   'storage.get',
   'storage.set',
+  'storage.remove',
   'ui.showNotification',
   'data.read',
   'app.getLocale',
   'app.getThemeColor',
+  'app.getVersion',
+  'app.getToday',
+  'app.getTimezone',
+  'app.getSettings',
   'app.getHabits'
 ]);
 

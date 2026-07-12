@@ -2,10 +2,9 @@ import { storage } from '../modules/storage.js';
 import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
 import { settings } from '../app/renderer-bootstrap.js';
-import { pluginHasPermission } from './plugin-rpc.js';
-import { readThemeCssColor } from './shell-chrome.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
-import { buildPluginHabitsSnapshot } from './plugin-habits-api.js';
+import { invokePluginRpc } from './plugin-api.js';
+import { readThemeCssColor } from './shell-chrome.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
 
@@ -109,23 +108,24 @@ function takePluginLoadFailure() {
   return m;
 }
 
-function resolveHeaderModalMethod(instance) {
-  if (!instance) {
+function invokePluginInstanceMethod(pluginId, method, args = []) {
+  const plugin = plugins.get(pluginId);
+  if (!plugin?.sandbox) {
+    return false;
+  }
+  if (plugin.instance && typeof plugin.instance[method] === 'function') {
+    plugin.instance[method](...args);
+    return true;
+  }
+  plugin.sandbox.invokeInstanceMethod(method, args);
+  return true;
+}
+
+function resolveGardenAction(el) {
+  if (!el) {
     return null;
   }
-  if (typeof instance.openWeatherModal === 'function') {
-    return 'openWeatherModal';
-  }
-  if (typeof instance.openSettingsModal === 'function') {
-    return 'openSettingsModal';
-  }
-  if (typeof instance.openRadioModal === 'function') {
-    return 'openRadioModal';
-  }
-  if (typeof instance.openModal === 'function') {
-    return 'openModal';
-  }
-  return null;
+  return el.getAttribute('data-plugin-act') || el.getAttribute('data-quote-act');
 }
 
 const pluginHooks = {
@@ -373,69 +373,30 @@ function _purgeOrphanPluginSandboxes() {
 function _wireSandboxHost(host, pluginId, manifest) {
   host.setHandler('onRpc', async (method, args) => {
     const prefix = `plugin_${manifest.id}_`;
-    if (method === 'storage.get' || method === 'storage.set') {
-      if (!pluginHasPermission(manifest, 'storage')) {
-        throw new Error('Storage permission denied');
+    return invokePluginRpc(method, args, manifest, {
+      storage,
+      storagePrefix: prefix,
+      settings,
+      readThemeCssColor,
+      readPluginDataFile: async (relPath) => {
+        const rel = String(relPath || '').replace(/^[/\\]+/, '');
+        const allowed = Array.isArray(manifest.data)
+          ? manifest.data.map((d) => String(d).replace(/^[/\\]+/, ''))
+          : [];
+        if (!allowed.includes(rel)) {
+          throw new Error(`Data file not allowed: ${rel}`);
+        }
+        const raw = await window.electron.readPluginFile(`${pluginId}/${rel}`);
+        if (raw === null || raw === undefined || raw === '') {
+          throw new Error(`Data file missing: ${rel}`);
+        }
+        const text = stripUtf8Bom(raw).trim();
+        if (rel.endsWith('.json')) {
+          return JSON.parse(text);
+        }
+        return text;
       }
-    }
-    if (method === 'ui.showNotification') {
-      if (!pluginHasPermission(manifest, 'ui')) {
-        throw new Error('UI permission denied');
-      }
-    }
-    if (method === 'data.read') {
-      const rel = String(args[0] || '').replace(/^[/\\]+/, '');
-      const allowed = Array.isArray(manifest.data)
-        ? manifest.data.map((d) => String(d).replace(/^[/\\]+/, ''))
-        : [];
-      if (!allowed.includes(rel)) {
-        throw new Error(`Data file not allowed: ${rel}`);
-      }
-      const raw = await window.electron.readPluginFile(`${pluginId}/${rel}`);
-      if (raw === null || raw === undefined || raw === '') {
-        throw new Error(`Data file missing: ${rel}`);
-      }
-      const text = stripUtf8Bom(raw).trim();
-      if (rel.endsWith('.json')) {
-        return JSON.parse(text);
-      }
-      return text;
-    }
-    if (method === 'storage.get') {
-      return storage.get(prefix + args[0]);
-    }
-    if (method === 'storage.set') {
-      return storage.set(prefix + args[0], args[1]);
-    }
-    if (method === 'ui.showNotification') {
-      const icon = args[0] ?? '';
-      const text = args[1] ?? '';
-      if (typeof window.showNotification === 'function') {
-        window.showNotification(icon, text);
-      } else {
-        console.warn('[Plugin] showNotification not available');
-      }
-      return undefined;
-    }
-    if (method === 'app.getLocale') {
-      if (!pluginHasPermission(manifest, 'ui')) {
-        throw new Error('UI permission denied');
-      }
-      return settings.lang || 'en';
-    }
-    if (method === 'app.getThemeColor') {
-      if (!pluginHasPermission(manifest, 'ui')) {
-        throw new Error('UI permission denied');
-      }
-      const key = String(args[0] || 'text-primary').replace(/^--/, '');
-      return readThemeCssColor(`--${key}`);
-    }
-    if (method === 'app.getHabits') {
-      if (!pluginHasPermission(manifest, 'habits.read')) {
-        throw new Error('habits.read permission denied');
-      }
-      return buildPluginHabitsSnapshot();
-    }
+    });
   });
 
   host.setHandler('onHookRegister', (hookName) => {
@@ -477,22 +438,18 @@ function _wireSandboxHost(host, pluginId, manifest) {
     const position = plugin?.gardenWidget?.position || 'top';
     _insertGardenWidget(container, wrap, position);
     wrap.addEventListener('click', (e) => {
-      const actEl = e.target.closest('[data-quote-act]');
+      const actEl = e.target.closest('[data-plugin-act], [data-quote-act]');
       if (actEl) {
         e.stopPropagation();
-        const act = actEl.getAttribute('data-quote-act');
-        const p = plugins.get(pluginId);
-        if (p?.instance && typeof p.instance[act] === 'function') {
-          p.instance[act]();
+        const act = resolveGardenAction(actEl);
+        if (act) {
+          invokePluginInstanceMethod(pluginId, act);
         }
         return;
       }
       const method = typeof data.gardenClickMethod === 'string' ? data.gardenClickMethod : null;
       if (method) {
-        const p = plugins.get(pluginId);
-        if (p?.instance && typeof p.instance[method] === 'function') {
-          p.instance[method]();
-        }
+        invokePluginInstanceMethod(pluginId, method);
       }
     });
   });
@@ -774,7 +731,6 @@ export const pluginManager = {
       const pluginAfterLoad = plugins.get(pluginId);
       if (pluginAfterLoad?.headerItem) {
         pluginAfterLoad.headerItem.instance = instanceProxy;
-        pluginAfterLoad.headerItem.modalMethod = resolveHeaderModalMethod(instanceProxy);
       }
 
       try {
@@ -821,7 +777,6 @@ export const pluginManager = {
     }
 
     const instance = plugin.instance;
-    const modalMethod = resolveHeaderModalMethod(instance);
 
     plugin.headerItem = {
       id: `${pluginId}-header`,
@@ -829,7 +784,6 @@ export const pluginManager = {
       icon: typeof data.icon === 'string' ? data.icon : (plugin.manifest.icon || ''),
       labelColor: undefined,
       instance,
-      modalMethod,
       onClick: data.hasOnClick ? () => plugin.sandbox.invokeHeaderOnClick() : null
     };
 
