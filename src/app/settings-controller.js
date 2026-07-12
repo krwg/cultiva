@@ -166,6 +166,8 @@ export function applySettings() {
     }
   }
   applyTranslations(settings.lang);
+  initSettingsSidebarIcons();
+  initHabitFormIcons();
 
   document.body.classList.remove(...getThemeBodyClassList(), ...getPluginThemeBodyClasses());
 
@@ -251,6 +253,9 @@ export function applySettings() {
   localStorage.setItem('cultiva-lang', settings.lang);
   syncNativeShellChrome();
   refreshStorageBackendControls();
+  if (settings.pluginsEnabled) {
+    import('./plugins-ui.js').then((m) => m.renderPluginsSection());
+  }
   console.log('[Settings] Applied theme:', appliedTheme);
 }
 
