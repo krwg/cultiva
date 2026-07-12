@@ -50,9 +50,6 @@ export async function loadThemeCss(themeId) {
     return;
   }
   const id = THEME_BODY_IDS.includes(themeId) ? themeId : 'dark';
-  if (loadedThemes.has(id)) {
-    return;
-  }
   const prefix = baseHref();
   themeLinkEl = ensureLink('cultiva-theme-css', `${prefix}themes/${id}.css`);
   loadedThemes.add(id);
@@ -73,9 +70,6 @@ export async function loadAmbientCss(bgId) {
     return;
   }
   if (!AMBIENT_BG_LAYER_IDS.includes(bgId)) {
-    return;
-  }
-  if (loadedAmbients.has(bgId)) {
     return;
   }
   const prefix = baseHref();

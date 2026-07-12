@@ -1,8 +1,13 @@
 const path = require('path');
+const { CULTIVA_APP_URL, CULTIVA_CALENDAR_URL, shouldUseCultivaProtocol } = require('./cultiva-protocol.cjs');
 
 function openGarden(getMainWindow) {
   const win = getMainWindow();
   if (!win) {
+    return;
+  }
+  if (shouldUseCultivaProtocol(process.env.NODE_ENV === 'development')) {
+    win.loadURL(CULTIVA_APP_URL);
     return;
   }
   win.loadFile(path.join(__dirname, '../../dist/index.html'));
@@ -11,6 +16,10 @@ function openGarden(getMainWindow) {
 function openCalendar(getMainWindow) {
   const win = getMainWindow();
   if (!win) {
+    return;
+  }
+  if (shouldUseCultivaProtocol(process.env.NODE_ENV === 'development')) {
+    win.loadURL(CULTIVA_CALENDAR_URL);
     return;
   }
   win.loadFile(path.join(__dirname, '../../dist/pages/calendar/index.html'));

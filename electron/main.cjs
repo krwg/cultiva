@@ -12,6 +12,9 @@ const { registerCoreIpc } = require('./lib/ipc-main-handlers.cjs');
 const { registerBackupIpc } = require('./lib/backup.cjs');
 const { registerAutoBackupIpc } = require('./lib/zip-backup.cjs');
 const { installAppMenu } = require('./lib/app-menu.cjs');
+const { registerCultivaScheme, installCultivaProtocol, shouldUseCultivaProtocol } = require('./lib/cultiva-protocol.cjs');
+
+registerCultivaScheme();
 
 let mainWindow = null;
 const getMainWindow = () => mainWindow;
@@ -32,6 +35,9 @@ function openMainWindow() {
 }
 
 app.whenReady().then(() => {
+  if (shouldUseCultivaProtocol(isDev)) {
+    installCultivaProtocol();
+  }
   if (process.platform === 'win32') {
     app.setAppUserModelId(pkg.build && pkg.build.appId ? pkg.build.appId : 'com.cultiva.app');
   }

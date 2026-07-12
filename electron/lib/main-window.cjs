@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { CULTIVA_APP_URL, shouldUseCultivaProtocol } = require('./cultiva-protocol.cjs');
 
 function attachSessionContentSecurityPolicy({ isDev, session }) {
   if (attachSessionContentSecurityPolicy._done) {
@@ -8,7 +9,7 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
   attachSessionContentSecurityPolicy._done = true;
 
   const cspProduction =
-    "default-src 'self' file: data: blob:; " +
+    "default-src 'self' file: cultiva: data: blob:; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' file: blob: data:; " +
     "img-src 'self' data: blob: file: https:; " +
     "style-src 'self' 'unsafe-inline'; " +
@@ -167,6 +168,9 @@ function createMainWindow({
 
   if (isDev && process.env.VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else if (shouldUseCultivaProtocol(isDev)) {
+    console.log('[Electron] Loading:', CULTIVA_APP_URL);
+    mainWindow.loadURL(CULTIVA_APP_URL);
   } else {
     const indexPath = path.join(__dirname, '../../dist/index.html');
     console.log('[Electron] Loading:', indexPath);

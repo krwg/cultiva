@@ -1,4 +1,5 @@
 const { writeFile } = require('fs/promises');
+const { CULTIVA_APP_URL, CULTIVA_CALENDAR_URL, shouldUseCultivaProtocol } = require('./cultiva-protocol.cjs');
 
 function registerCoreIpc(ipcMain, {
   getMainWindow,
@@ -32,6 +33,16 @@ function registerCoreIpc(ipcMain, {
       return { success: false };
     }
 
+    const isDev = process.env.NODE_ENV === 'development';
+    if (shouldUseCultivaProtocol(isDev)) {
+      const normalized = String(page || '').replace(/^\/+/, '');
+      const target = normalized.includes('calendar')
+        ? CULTIVA_CALENDAR_URL
+        : CULTIVA_APP_URL;
+      mainWindow.loadURL(target);
+      return { success: true };
+    }
+
     const pagePath = path.join(__dirname, '../../dist', page);
     console.log('[Electron] Navigating to:', pagePath);
 
@@ -61,7 +72,9 @@ function registerCoreIpc(ipcMain, {
     });
 
     const calendarPath = path.join(__dirname, '../../dist/pages/calendar/index.html');
-    if (fs.existsSync(calendarPath)) {
+    if (shouldUseCultivaProtocol(process.env.NODE_ENV === 'development')) {
+      calendarWindow.loadURL(CULTIVA_CALENDAR_URL);
+    } else if (fs.existsSync(calendarPath)) {
       calendarWindow.loadFile(calendarPath);
     } else {
       console.error('[Electron] Calendar page not found:', calendarPath);
