@@ -1,4 +1,4 @@
-import { TRANSLATIONS } from '../../core/i18n.js';
+import { TRANSLATIONS, ensureI18nLocales } from '../../core/i18n.js';
 import { storage } from '../../modules/storage.js';
 import { habits } from '../../modules/habits.js';
 import { BRANDING } from '../../core/branding.js';
@@ -192,42 +192,75 @@ function deleteEvent(date, eventId) {
   return true;
 }
 
+let _habitEventsByDate = null;
+
+function invalidateHabitIndex() {
+  _habitEventsByDate = null;
+}
+
+function habitEventFromHabit(h) {
+  let stageEmoji = '🌱';
+  const progress = h.progress || 0;
+
+  if (progress >= 365) { stageEmoji = '🌟'; }
+  else if (progress >= 50) { stageEmoji = '🌳'; }
+  else if (progress >= 21) { stageEmoji = '🪴'; }
+  else if (progress >= 7) { stageEmoji = '🌿'; }
+
+  const color = CATEGORY_COLORS[h.category] || '#34C759';
+
+  return {
+    id: `habit-${h.id}`,
+    title: `${stageEmoji} ${h.name}`,
+    color,
+    isHabit: true,
+    habit: h
+  };
+}
+
+function ensureHabitIndex() {
+  if (_habitEventsByDate) {
+    return _habitEventsByDate;
+  }
+
+  const map = new Map();
+  const append = (dateStr, event) => {
+    if (!dateStr) { return; }
+    const bucket = map.get(dateStr);
+    if (bucket) {
+      bucket.push(event);
+    } else {
+      map.set(dateStr, [event]);
+    }
+  };
+
+  try {
+    for (const h of habits.getAll()) {
+      if (h.trackType === 'binary') {
+        if (h.lastCompleted) {
+          append(h.lastCompleted, habitEventFromHabit(h));
+        }
+        continue;
+      }
+      for (const dateStr of h.history || []) {
+        if (habits.quantityDayProgress(h, dateStr) >= habits.quantityTarget(h)) {
+          append(dateStr, habitEventFromHabit(h));
+        }
+      }
+    }
+  } catch (e) {
+    error('ensureHabitIndex failed:', e);
+  }
+
+  _habitEventsByDate = map;
+  return map;
+}
+
 function getHabitsForDate(date) {
   try {
-    const allHabits = habits.getAll();
     const dateStr = formatDateKey(date);
-
-    log('getHabitsForDate:', dateStr, 'total habits:', allHabits.length);
-
-    return allHabits.filter(h => {
-      if (h.trackType === 'binary') {
-        const completed = h.lastCompleted === dateStr;
-        if (completed) { log('Binary habit completed:', h.name, dateStr); }
-        return completed;
-      }
-      const progress = habits.quantityDayProgress(h, dateStr);
-      const completed = progress >= habits.quantityTarget(h);
-      if (completed) { log('Quantity habit completed:', h.name, progress, '/', h.target); }
-      return completed;
-    }).map(h => {
-      let stageEmoji = '🌱';
-      const progress = h.progress || 0;
-
-      if (progress >= 365) { stageEmoji = '🌟'; }
-      else if (progress >= 50) { stageEmoji = '🌳'; }
-      else if (progress >= 21) { stageEmoji = '🪴'; }
-      else if (progress >= 7) { stageEmoji = '🌿'; }
-
-      const color = CATEGORY_COLORS[h.category] || '#34C759';
-
-      return {
-        id: `habit-${h.id}`,
-        title: `${stageEmoji} ${h.name}`,
-        color: color,
-        isHabit: true,
-        habit: h
-      };
-    });
+    const index = ensureHabitIndex();
+    return index.get(dateStr) || [];
   } catch (e) {
     error('getHabitsForDate failed:', e);
     return [];
@@ -333,23 +366,44 @@ function renderWeekView() {
 function renderWeekHeader(startOfWeek) {
   const header = document.getElementById('week-header');
   if (!header) { return; }
-  header.innerHTML = '';
   const todayStr = getTodayStr();
+  const weekKey = formatDateKey(startOfWeek);
 
+  if (header.dataset.weekStart !== weekKey) {
+    header.dataset.weekStart = weekKey;
+    header.innerHTML = '';
+    for (let i = 0; i < 7; i++) {
+      const dayEl = document.createElement('div');
+      dayEl.className = 'week-day';
+      dayEl.innerHTML = '<div class="week-day-name"></div><div class="week-day-date"></div>';
+      dayEl.addEventListener('click', () => {
+        const dateStr = dayEl.dataset.date;
+        if (!dateStr) { return; }
+        const [y, m, d] = dateStr.split('-').map(Number);
+        selectedDate = new Date(y, m - 1, d);
+        switchView('day');
+      });
+      header.appendChild(dayEl);
+    }
+  }
+
+  const children = header.children;
   for (let i = 0; i < 7; i++) {
     const day = new Date(startOfWeek);
     day.setDate(startOfWeek.getDate() + i);
     const dateStr = formatDateKey(day);
-    const isToday = dateStr === todayStr;
-
-    const dayEl = document.createElement('div');
-    dayEl.className = `week-day ${isToday ? 'today' : ''}`;
-    dayEl.innerHTML = `
-      <div class="week-day-name">${day.toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { weekday: 'short' })}</div>
-      <div class="week-day-date">${day.getDate()}</div>
-    `;
-    dayEl.addEventListener('click', () => { selectedDate = new Date(day); switchView('day'); });
-    header.appendChild(dayEl);
+    const dayEl = children[i];
+    if (!dayEl) { continue; }
+    dayEl.dataset.date = dateStr;
+    dayEl.classList.toggle('today', dateStr === todayStr);
+    const nameEl = dayEl.querySelector('.week-day-name');
+    const dateEl = dayEl.querySelector('.week-day-date');
+    if (nameEl) {
+      nameEl.textContent = day.toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', { weekday: 'short' });
+    }
+    if (dateEl) {
+      dateEl.textContent = String(day.getDate());
+    }
   }
 }
 
@@ -779,6 +833,11 @@ async function init() {
 
   try {
     await storage.init();
+    invalidateHabitIndex();
+    const lang = localStorage.getItem('cultiva-lang') || 'en';
+    currentLang = lang;
+    await ensureI18nLocales(lang);
+    currentT = TRANSLATIONS[lang] || TRANSLATIONS.en;
     log('Storage initialized, habits count:', habits.getAll().length);
     let pluginsOn = true;
     try {
