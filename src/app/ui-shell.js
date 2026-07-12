@@ -42,8 +42,9 @@ export function showNotification(icon, text, subText = '', actionText = '', acti
   }
 
   setTimeout(() => notification.classList.add('visible'), 100);
+  const duration = actionCallback && actionText ? 6500 : 4000;
   setTimeout(() => {
     notification.classList.remove('visible');
     setTimeout(() => notification.remove(), 300);
-  }, 4000);
+  }, duration);
 }

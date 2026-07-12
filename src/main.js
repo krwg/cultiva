@@ -957,6 +957,7 @@ async function init() {
     renderGarden();
 
     initEvents();
+    window.addEventListener('cultiva-garden-refresh', () => renderGarden());
     initAvatarPicker();
     initSettingsNavigation();
     initProfileManagement();
@@ -1010,7 +1011,6 @@ async function init() {
         if (h) {
           await toggleHabitWithHooks(h.id);
           renderGarden();
-          showNotification(TRANSLATIONS[settings.lang].progressSaved);
         }
       },
       logQuantityHighlighted: () => {
@@ -1054,7 +1054,6 @@ async function init() {
       completeHabit: async (id) => {
         await toggleHabitWithHooks(id);
         renderGarden();
-        showNotification(TRANSLATIONS[settings.lang].progressSaved);
       },
       logHabit: (id) => {
         const h = habits.getAll().find((x) => x.id === id);

@@ -446,15 +446,25 @@ function _wireSandboxHost(host, pluginId, manifest) {
     const plugin = plugins.get(pluginId);
     const position = plugin?.gardenWidget?.position || 'top';
     _insertGardenWidget(container, wrap, position);
-    const method = typeof data.gardenClickMethod === 'string' ? data.gardenClickMethod : null;
-    if (method) {
-      wrap.addEventListener('click', () => {
+    wrap.addEventListener('click', (e) => {
+      const actEl = e.target.closest('[data-quote-act]');
+      if (actEl) {
+        e.stopPropagation();
+        const act = actEl.getAttribute('data-quote-act');
+        const p = plugins.get(pluginId);
+        if (p?.instance && typeof p.instance[act] === 'function') {
+          p.instance[act]();
+        }
+        return;
+      }
+      const method = typeof data.gardenClickMethod === 'string' ? data.gardenClickMethod : null;
+      if (method) {
         const p = plugins.get(pluginId);
         if (p?.instance && typeof p.instance[method] === 'function') {
           p.instance[method]();
         }
-      });
-    }
+      }
+    });
   });
 
   host.setHandler('onUiMainSheet', (data) => {

@@ -16,8 +16,8 @@ const PLUGIN_CATALOG = {
     ru: { name: 'Помодоро', description: 'Таймер фокуса с рабочими и короткими перерывами в шапке.' }
   },
   quote: {
-    en: { name: 'Daily Quote', description: 'A fresh motivational quote in the garden each day (500 EN quotes).' },
-    ru: { name: 'Цитата дня', description: 'Мотивационная цитата в саду каждый день (500 RU цитат).' }
+    en: { name: 'Daily Quote', description: 'A fresh motivational quote in the garden each day (1000 EN quotes, favorites).' },
+    ru: { name: 'Цитата дня', description: 'Мотивационная цитата в саду каждый день (1000 RU цитат, избранное).' }
   },
   streak: {
     en: { name: 'Streak Highlights', description: 'Celebrate habit streak milestones in the garden.' },
@@ -32,6 +32,9 @@ const PLUGIN_SETTINGS = {
     showInGarden: { en: 'Show in garden', ru: 'Показывать в саду' },
     'units.celsius': { en: 'Celsius (°C)', ru: 'Цельсий (°C)' },
     'units.fahrenheit': { en: 'Fahrenheit (°F)', ru: 'Фаренгейт (°F)' }
+  },
+  quote: {
+    favorites: { en: 'Favorite quotes', ru: 'Избранные цитаты' }
   }
 };
 

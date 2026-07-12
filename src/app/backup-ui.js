@@ -8,6 +8,7 @@ import { buildBackupPayload, runAutoBackup } from './auto-backup.js';
 import { openModal, closeModal } from './modals.js';
 import { habits } from '../modules/habits.js';
 import { buildIcalDocument, downloadIcalFile } from '../core/ical-export.js';
+import { buildHabitsCsv, downloadCsvFile } from '../core/csv-export.js';
 import { showAlertDialog, showConfirmDialog } from './dialogs.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { DEFAULT_SETTINGS } from './renderer-bootstrap.js';
@@ -115,6 +116,15 @@ export function exportIcal() {
   showNotification(t.exportedIcal || t.exported);
 }
 
+export function exportCsv() {
+  const c = requireCtx();
+  const t = TRANSLATIONS[c.settings.lang];
+  const csv = buildHabitsCsv(habits.getAll());
+  const name = `${BRANDING.BACKUP_PREFIX}-habits-${getTodayStr()}.csv`;
+  downloadCsvFile(csv, name);
+  showNotification(t.exportedCsv || t.exported);
+}
+
 function showImportPreview(data) {
   const c = requireCtx();
   const t = TRANSLATIONS[c.settings.lang];
@@ -180,6 +190,7 @@ export function bindBackupUiEvents() {
   document.getElementById('settings-export')?.addEventListener('click', exportData);
   document.getElementById('settings-export-zip')?.addEventListener('click', () => { exportZip(); });
   document.getElementById('settings-export-ical')?.addEventListener('click', exportIcal);
+  document.getElementById('settings-export-csv')?.addEventListener('click', exportCsv);
   document.getElementById('settings-import')?.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';

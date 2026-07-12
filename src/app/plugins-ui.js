@@ -332,6 +332,35 @@ window.openPluginSettings = async (pluginId) => {
     row.appendChild(label);
 
     const val = current[field.key] !== undefined ? current[field.key] : field.default;
+    if (field.type === 'favorites') {
+      const favRaw = await storage.get(prefix + 'favorites');
+      const favs = Array.isArray(favRaw) ? favRaw : [];
+      const list = document.createElement('div');
+      list.className = 'plugin-favorites-list';
+      if (!favs.length) {
+        const empty = document.createElement('p');
+        empty.className = 'plugin-favorites-empty';
+        empty.textContent = t.pluginFavoritesEmpty || 'No favorites yet. Tap the heart on today\'s quote.';
+        list.appendChild(empty);
+      } else {
+        for (const item of favs) {
+          const block = document.createElement('div');
+          block.className = 'plugin-favorites-item';
+          const textEl = document.createElement('div');
+          textEl.className = 'plugin-favorites-text';
+          textEl.textContent = `"${item.text || ''}"`;
+          const authorEl = document.createElement('div');
+          authorEl.className = 'plugin-favorites-author';
+          authorEl.textContent = `— ${item.author || ''}`;
+          block.appendChild(textEl);
+          block.appendChild(authorEl);
+          list.appendChild(block);
+        }
+      }
+      row.appendChild(list);
+      form.appendChild(row);
+      continue;
+    }
     if (field.type === 'boolean') {
       const toggle = document.createElement('label');
       toggle.className = 'plugin-enable-switch toggle-switch';

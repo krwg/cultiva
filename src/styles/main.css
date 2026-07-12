@@ -2912,6 +2912,9 @@ body.theme-linden .accent-color-row input[type="color"] {
     font-weight: 500;
     font-style: italic;
     line-height: 1.45;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
 }
 
 .habit-card.garden-plugin-card--quote .card-subtitle {

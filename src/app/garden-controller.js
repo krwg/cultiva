@@ -286,7 +286,6 @@ export function bindGardenCardEvents() {
           const node = document.querySelector(`.habit-card[data-id="${id}"]`);
           node?.querySelector('.plant-visual')?.classList.add('growing');
           setTimeout(() => node?.querySelector('.plant-visual')?.classList.remove('growing'), 250);
-          showNotification(TRANSLATIONS[c.settings.lang].progressSaved);
         });
         return;
       }
@@ -294,7 +293,6 @@ export function bindGardenCardEvents() {
       renderGarden();
       card.querySelector('.plant-visual')?.classList.add('growing');
       setTimeout(() => card.querySelector('.plant-visual')?.classList.remove('growing'), 250);
-      showNotification(TRANSLATIONS[c.settings.lang].progressSaved);
     } else if (e.target.closest('.btn-card-danger')) {
       e.stopPropagation();
       const shouldRemove = await showConfirmDialog(t.confirmRemoveHabit || 'Remove this habit?', {
