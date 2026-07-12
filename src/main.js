@@ -1,6 +1,6 @@
 import { auth } from './modules/auth.js';
 import { TRANSLATIONS } from './core/i18n.js';
-import './styles/main.css';
+import './styles/shell.css';
 import { BRANDING } from './core/branding.js';
 import { storage } from './modules/storage.js';
 import { habits } from './modules/habits.js';
@@ -11,7 +11,9 @@ import {
   applyAmbientBackground,
   saveCustomBackgroundFromFile,
   clearCustomBackground,
-  readCustomBackgroundDataUrl
+  readCustomBackgroundDataUrl,
+  pauseAmbientRuntime,
+  resumeAmbientRuntime
 } from './core/ambient-bg.js';
 import { settings, ensureAppReady } from './app/renderer-bootstrap.js';
 import {
@@ -33,7 +35,7 @@ import {
 } from './app/settings-controller.js';
 import { initHotkeys } from './app/hotkeys.js';
 import { initContextMenu } from './app/context-menu.js';
-import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
+import { applyAccentColor, applyAmbientIntensity, applyLowPowerMode } from './core/customization.js';
 import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats, moveFocusedHabit } from './app/garden-controller.js';
 import { syncTrayHabits } from './app/tray-sync.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
@@ -56,6 +58,7 @@ import {
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
 let habitSearchQuery = '';
+let habitSearchDebounce = null;
 let focusedHabitId = null;
 
 const gardenEl = document.getElementById('garden-container');
@@ -1101,7 +1104,25 @@ async function init() {
     const habitSearch = document.getElementById('habit-search');
     habitSearch?.addEventListener('input', (e) => {
       habitSearchQuery = e.target.value;
-      renderGarden();
+      if (habitSearchDebounce) {
+        clearTimeout(habitSearchDebounce);
+      }
+      habitSearchDebounce = setTimeout(() => {
+        habitSearchDebounce = null;
+        renderGarden();
+      }, 140);
+    });
+
+    document.getElementById('toggle-low-power')?.addEventListener('change', (e) => {
+      settings.lowPowerMode = e.target.checked;
+      applyLowPowerMode(settings.lowPowerMode, settings.ambientIntensity);
+      const intensitySlider = document.getElementById('ambient-intensity');
+      if (intensitySlider) {
+        intensitySlider.disabled = settings.lowPowerMode;
+      }
+      const bg = localStorage.getItem('cultiva-background') || 'none';
+      applyAmbientBackground(document, document.body, bg);
+      saveSettings();
     });
 
     document.getElementById('accent-color-input')?.addEventListener('input', (e) => {
@@ -1120,10 +1141,24 @@ async function init() {
     });
     document.getElementById('ambient-intensity')?.addEventListener('input', (e) => {
       settings.ambientIntensity = parseInt(e.target.value, 10);
-      applyAmbientIntensity(settings.ambientIntensity);
+      if (!settings.lowPowerMode) {
+        applyAmbientIntensity(settings.ambientIntensity);
+      }
       const bg = localStorage.getItem('cultiva-background') || 'none';
       applyAmbientBackground(document, document.body, bg);
       saveSettings();
+    });
+
+    const bindAmbientVisibility = (visible) => {
+      if (visible) {
+        resumeAmbientRuntime();
+      } else {
+        pauseAmbientRuntime();
+      }
+    };
+    window.electron?.onWindowVisibility?.(bindAmbientVisibility);
+    document.addEventListener('visibilitychange', () => {
+      bindAmbientVisibility(!document.hidden);
     });
 
     initHotkeys({
