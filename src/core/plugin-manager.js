@@ -874,6 +874,28 @@ export const pluginManager = {
     }
   },
 
+  refreshGardenWidgets() {
+    for (const [pluginId, plugin] of plugins) {
+      if (!plugin?.gardenWidget || plugin.enabled === false) {
+        continue;
+      }
+      const existing = document.getElementById(`${pluginId}-garden-widget`);
+      if (existing) {
+        continue;
+      }
+      if (plugin.sandbox && typeof plugin.sandbox.runGardenRender === 'function') {
+        plugin.sandbox.runGardenRender();
+        continue;
+      }
+      if (typeof plugin.gardenWidget.render === 'function') {
+        const container = document.getElementById('garden-container');
+        if (container) {
+          this.registerGardenWidget(pluginId, plugin.gardenWidget);
+        }
+      }
+    }
+  },
+
   async triggerHook(hookName, ...args) {
     const pluginIds = pluginHooks[hookName] || [];
     for (const pluginId of pluginIds) {

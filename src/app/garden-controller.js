@@ -7,6 +7,7 @@ import { getTodayStr } from './date-ui.js';
 import { toggleHabitWithHooks } from './habit-actions.js';
 import { openQuantityLogModal } from './modals.js';
 import { showNotification } from './ui-shell.js';
+import { pluginManager } from '../core/plugin-manager.js';
 import { glyphSearch } from '../core/glyph-s-search.js';
 import { showConfirmDialog } from './dialogs.js';
 
@@ -187,6 +188,17 @@ function syncHabitCards(container, habitList, isTrophy = false) {
   });
 }
 
+function clearGardenHabitNodes(gardenEl) {
+  if (!gardenEl) {
+    return;
+  }
+  Array.from(gardenEl.children).forEach((child) => {
+    if (!child.classList.contains('garden-plugin-widget')) {
+      child.remove();
+    }
+  });
+}
+
 export function renderGarden() {
   const c = requireCtx();
   const all = habits.getAll();
@@ -202,7 +214,7 @@ export function renderGarden() {
   if (c.gardenEl) {
     c.gardenEl.setAttribute('role', 'list');
     c.gardenEl.setAttribute('aria-label', t.gardenListLabel || 'Habits');
-    c.gardenEl.innerHTML = '';
+    clearGardenHabitNodes(c.gardenEl);
     if (active.length === 0) {
       const inSearchMode = c.habitSearchQuery.trim().length > 0;
       const emptyMsg = inSearchMode
@@ -224,6 +236,7 @@ export function renderGarden() {
   if (c.countEl) { c.countEl.textContent = `${active.length}/${MAX_ACTIVE_HABITS}`; }
   if (c.trophyCountEl) { c.trophyCountEl.textContent = trophies.length; }
   applyTranslations(c.settings.lang);
+  pluginManager.refreshGardenWidgets();
 }
 
 export function openStats(id) {

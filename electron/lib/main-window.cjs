@@ -41,13 +41,26 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
 }
 
 function resolveAppIconPath() {
-  const packaged = path.join(__dirname, '../app-icon.ico');
-  if (fs.existsSync(packaged)) {
-    return packaged;
+  const candidates = [
+    path.join(__dirname, '../app-icon.ico'),
+    path.join(__dirname, '../../build/icon.ico'),
+    path.join(__dirname, '../../dist/favicon.ico')
+  ];
+  try {
+    const { app } = require('electron');
+    if (app?.isPackaged && process.resourcesPath) {
+      candidates.unshift(
+        path.join(process.resourcesPath, 'app-icon.ico'),
+        path.join(process.resourcesPath, 'favicon.ico')
+      );
+    }
+  } catch {
+    void 0;
   }
-  const distIco = path.join(__dirname, '../../dist/favicon.ico');
-  if (fs.existsSync(distIco)) {
-    return distIco;
+  for (const candidate of candidates) {
+    if (candidate && fs.existsSync(candidate)) {
+      return candidate;
+    }
   }
   return undefined;
 }
