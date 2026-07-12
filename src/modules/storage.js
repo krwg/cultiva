@@ -22,7 +22,7 @@ let _authProbe = () => !!_currentUserId;
 let _habitsWriteScheduled = false;
 let _habitsWriteWaiters = [];
 
-let _dirtySettingKeys = new Set();
+const _dirtySettingKeys = new Set();
 let _settingsWriteScheduled = false;
 let _settingsWriteWaiters = [];
 
@@ -136,8 +136,8 @@ function _createActiveAdapter(backendId) {
     isAuthenticated: () => _authProbe(),
     readHabits: () => _habitsCache,
     readSettings: () => ({ ..._settingsCache }),
-    writeHabits: (habits) => storage.saveHabits(habits),
-    mergeSetting: (key, value) => storage.set(key, value)
+    writeHabits: (habits) => storage.saveHabits(habits, { immediate: true }),
+    mergeSetting: (key, value) => storage.set(key, value, { immediate: true })
   });
 }
 
@@ -536,7 +536,7 @@ export const storage = {
     await this._loadFromDB();
   },
 
-  async saveHabits(habits) {
+  async saveHabits(habits, { immediate = false } = {}) {
     console.log('[Storage] saveHabits called with', habits.length, 'habits');
 
     const validHabits = habits.filter((h) => {
@@ -554,6 +554,11 @@ export const storage = {
     });
 
     _habitsCache = myHabits;
+
+    if (immediate) {
+      await this._forceSaveHabits(_habitsCache);
+      return;
+    }
 
     return _queueHabitsWrite();
   },

@@ -124,7 +124,7 @@ describe('storage habit persistence', () => {
 
     const { storage } = await import('./storage.js');
     await storage.init();
-    await storage.saveHabits([{ id: 'keep', name: 'Keep', progress: 0 }]);
+    await storage.saveHabits([{ id: 'keep', name: 'Keep', progress: 0 }], { immediate: true });
     await storage.flushPendingWrites();
 
     expect(habitsStore.has('legacy')).toBe(false);

@@ -12,6 +12,7 @@ import { buildHabitsCsv, downloadCsvFile } from '../core/csv-export.js';
 import { showAlertDialog, showConfirmDialog } from './dialogs.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { DEFAULT_SETTINGS } from './renderer-bootstrap.js';
+import { applySettings } from './settings-controller.js';
 
 let ctx = null;
 let pendingImport = null;
@@ -60,9 +61,9 @@ async function resetAllAppData() {
   });
   Object.assign(c.settings, DEFAULT_SETTINGS);
 
-  await storage.set('cultiva-settings', { ...DEFAULT_SETTINGS });
-  await storage.set('cultiva-installed-plugins', []);
-  await storage.set('cultiva-disabled-plugins', []);
+  await storage.set('cultiva-settings', { ...DEFAULT_SETTINGS }, { immediate: true });
+  await storage.set('cultiva-installed-plugins', [], { immediate: true });
+  await storage.set('cultiva-disabled-plugins', [], { immediate: true });
 
   if (typeof window.renderPluginHeaderItems === 'function') {
     window.renderPluginHeaderItems();
@@ -125,6 +126,19 @@ export function exportCsv() {
   showNotification(t.exportedCsv || t.exported);
 }
 
+function normalizeImportPayload(data) {
+  if (!data || typeof data !== 'object') {
+    return null;
+  }
+  if (Array.isArray(data.habits)) {
+    return data;
+  }
+  if (data.backup && Array.isArray(data.backup.habits)) {
+    return data.backup;
+  }
+  return null;
+}
+
 function showImportPreview(data) {
   const c = requireCtx();
   const t = TRANSLATIONS[c.settings.lang];
@@ -155,35 +169,57 @@ function confirmImport() {
     return;
   }
   void (async () => {
-    await storage.saveHabits(pendingImport.habits);
-    pendingImport = null;
-    closeModal(document.getElementById('import-preview-modal'));
-    renderGarden();
-    showNotification(t.imported);
-    await runAutoBackup(true);
+    try {
+      await storage.saveHabits(pendingImport.habits, { immediate: true });
+      if (pendingImport.settings && typeof pendingImport.settings === 'object') {
+        const safe = { ...pendingImport.settings };
+        delete safe.storageBackend;
+        Object.assign(c.settings, safe);
+        await storage.set('cultiva-settings', c.settings, { immediate: true });
+        applySettings();
+      }
+      await storage.flushPendingWrites();
+      pendingImport = null;
+      closeModal(document.getElementById('import-preview-modal'));
+      renderGarden();
+      showNotification(t.imported);
+      await runAutoBackup(true);
+    } catch (err) {
+      console.error('[Import] Failed:', err);
+      showAlertDialog(err.message || String(err), { title: t.import || 'Import' });
+    }
   })();
 }
 
-export function importData(file) {
+export async function importData(file) {
   const c = requireCtx();
   const t = TRANSLATIONS[c.settings.lang];
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target.result);
-        if (data.habits && Array.isArray(data.habits)) {
-          resolve(data);
-        } else {
-          reject(new Error('Invalid format'));
-        }
-      } catch (err) {
-        reject(err);
+  const name = String(file.name || '').toLowerCase();
+
+  try {
+    let data = null;
+    if (name.endsWith('.zip')) {
+      if (!window.electron?.parseBackupZip) {
+        throw new Error(t.importZipDesktopOnly || 'ZIP import requires the Cultiva desktop app. Extract habits.json and import it as JSON.');
       }
-    };
-    reader.readAsText(file);
-  }).then((data) => { showImportPreview(data); })
-    .catch(err => showAlertDialog(err.message, { title: t.import || 'Import' }));
+      const buffer = await file.arrayBuffer();
+      const result = await window.electron.parseBackupZip(buffer);
+      if (!result?.success || !result.data) {
+        throw new Error(result?.error || 'Invalid ZIP backup');
+      }
+      data = normalizeImportPayload(result.data);
+    } else {
+      const text = await file.text();
+      data = normalizeImportPayload(JSON.parse(text));
+    }
+
+    if (!data?.habits || !Array.isArray(data.habits)) {
+      throw new Error(t.importInvalidFormat || 'Invalid format');
+    }
+    showImportPreview(data);
+  } catch (err) {
+    showAlertDialog(err.message || String(err), { title: t.import || 'Import' });
+  }
 }
 
 export function bindBackupUiEvents() {
@@ -194,7 +230,7 @@ export function bindBackupUiEvents() {
   document.getElementById('settings-import')?.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json';
+    input.accept = '.json,.zip';
     input.onchange = (e) => { if (e.target.files?.[0]) { importData(e.target.files[0]); } };
     input.click();
   });
