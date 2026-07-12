@@ -41,7 +41,7 @@ function hasSips() {
 }
 
 async function buildIcoFromPngs() {
-  const sizes = ['16x16', '32x32', '48x48', '256x256', '512x512'];
+  const sizes = ['16x16', '32x32', '48x48', '256x256'];
   const paths = sizes
     .map((s) => join(iconsDir, `${s}.png`))
     .filter((p) => existsSync(p));
@@ -50,6 +50,20 @@ async function buildIcoFromPngs() {
   }
   const { default: pngToIco } = await import('png-to-ico');
   const buf = await pngToIco(paths);
+  if (buf.length > 512000) {
+    console.warn('[sync-build-icon] ICO too large, retrying without 256px layer');
+    const small = ['16x16', '32x32', '48x48']
+      .map((s) => join(iconsDir, `${s}.png`))
+      .filter((p) => existsSync(p));
+    if (small.length >= 3) {
+      const compact = await pngToIco(small);
+      writeFileSync(destBuild, compact);
+      copyFileSync(destBuild, destElectron);
+      copyFileSync(destBuild, destPublicElectron);
+      console.log('[sync-build-icon] Compact ICO →', destBuild, `(${compact.length} bytes)`);
+      return true;
+    }
+  }
   writeFileSync(destBuild, buf);
   copyFileSync(destBuild, destElectron);
   copyFileSync(destBuild, destPublicElectron);
