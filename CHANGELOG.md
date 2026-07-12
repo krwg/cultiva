@@ -13,6 +13,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - **Rowan Cluster** ambient background — «Pulsing Cluster»: zigzag branch tremor, pinnate leaf flicker, pulsing berry clusters with radar rings and falling particles
 - `src/core/rowan-cluster-bg.js` canvas animation with `prefers-reduced-motion` static fallback
 
+### Fixed
+- **Rowan** theme contrast — black text on white/light accent surfaces; white body text on dark backgrounds
+
 ### Changed
 - Version bumped to **2.0.0** (Rowan); no GitHub Release yet
 - Calendar page gains `bg-linden-bloom` and `bg-rowan-cluster` layers
