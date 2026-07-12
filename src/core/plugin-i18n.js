@@ -25,6 +25,20 @@ const PLUGIN_CATALOG = {
   }
 };
 
+const PLUGIN_SETTINGS = {
+  weather: {
+    city: { en: 'City', ru: 'Город' },
+    units: { en: 'Units', ru: 'Единицы' },
+    showInGarden: { en: 'Show in garden', ru: 'Показывать в саду' },
+    'units.celsius': { en: 'Celsius (°C)', ru: 'Цельсий (°C)' },
+    'units.fahrenheit': { en: 'Fahrenheit (°F)', ru: 'Фаренгейт (°F)' }
+  }
+};
+
+function resolveLocale(lang) {
+  return lang === 'ru' ? 'ru' : 'en';
+}
+
 export function getPluginCatalogStrings(pluginId, lang) {
   const entry = PLUGIN_CATALOG[pluginId];
   if (!entry) {
@@ -32,4 +46,22 @@ export function getPluginCatalogStrings(pluginId, lang) {
   }
   const locale = lang === 'ru' ? 'ru' : 'en';
   return entry[locale] || entry.en;
+}
+
+export function getPluginSettingLabel(pluginId, fieldKey, lang, fallback) {
+  const entry = PLUGIN_SETTINGS[pluginId]?.[fieldKey];
+  if (!entry) {
+    return fallback;
+  }
+  const locale = resolveLocale(lang);
+  return entry[locale] || entry.en || fallback;
+}
+
+export function getPluginSettingOptionLabel(pluginId, fieldKey, optionValue, lang, fallback) {
+  const entry = PLUGIN_SETTINGS[pluginId]?.[`${fieldKey}.${optionValue}`];
+  if (!entry) {
+    return fallback;
+  }
+  const locale = resolveLocale(lang);
+  return entry[locale] || entry.en || fallback;
 }

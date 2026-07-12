@@ -1,5 +1,5 @@
 import { TRANSLATIONS } from '../core/i18n.js';
-import { getPluginCatalogStrings } from '../core/plugin-i18n.js';
+import { getPluginCatalogStrings, getPluginSettingLabel, getPluginSettingOptionLabel } from '../core/plugin-i18n.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
@@ -328,7 +328,7 @@ window.openPluginSettings = async (pluginId) => {
     row.className = 'plugin-settings-row';
     const label = document.createElement('span');
     label.className = 'plugin-settings-label';
-    label.textContent = field.label || field.key;
+    label.textContent = getPluginSettingLabel(pluginId, field.key, settings.lang, field.label || field.key);
     row.appendChild(label);
 
     const val = current[field.key] !== undefined ? current[field.key] : field.default;
@@ -351,7 +351,7 @@ window.openPluginSettings = async (pluginId) => {
       for (const opt of field.options) {
         const option = document.createElement('option');
         option.value = opt.value;
-        option.textContent = opt.label || opt.value;
+        option.textContent = getPluginSettingOptionLabel(pluginId, field.key, opt.value, settings.lang, opt.label || opt.value);
         if (String(val) === String(opt.value)) {
           option.selected = true;
         }
