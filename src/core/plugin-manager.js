@@ -6,6 +6,7 @@ import { settings } from '../app/renderer-bootstrap.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
 import { invokePluginRpc } from './plugin-api.js';
 import { readThemeCssColor } from './shell-chrome.js';
+import { cacheFetch } from './runtime-cache.js';
 import {
   applyManifestContributions,
   registerPluginBackground,
@@ -782,10 +783,17 @@ export const pluginManager = {
       console.warn('[PluginManager] Plugin load failures:', failedIds);
     }
 
-    await this.triggerHook('onAppStart');
-
     _isInitialized = true;
     console.log('[PluginManager] Initialized with', plugins.size, 'plugins');
+
+    const runDeferredHooks = async () => {
+      await this.triggerHook('onAppStart');
+    };
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      requestIdleCallback(() => { void runDeferredHooks(); }, { timeout: 3500 });
+    } else if (typeof window !== 'undefined') {
+      setTimeout(() => { void runDeferredHooks(); }, 600);
+    }
   },
 
   async _injectPluginStyles(pluginId, manifest) {
@@ -1237,24 +1245,26 @@ export const pluginManager = {
 
   async getAvailablePlugins() {
     try {
-      const registryText = await fetchPluginHttpText(REGISTRY_URL);
-      const registry = JSON.parse(stripUtf8Bom(registryText).trim());
-      const list = (Array.isArray(registry.plugins) ? registry.plugins : []).filter(
-        (p) => p && typeof p.id === 'string' && p.id.trim()
-      );
+      return await cacheFetch('plugin-registry', async () => {
+        const registryText = await fetchPluginHttpText(REGISTRY_URL);
+        const registry = JSON.parse(stripUtf8Bom(registryText).trim());
+        const list = (Array.isArray(registry.plugins) ? registry.plugins : []).filter(
+          (p) => p && typeof p.id === 'string' && p.id.trim()
+        );
 
-      const installed = await getInstalledPluginIdsNormalized();
-      const everInstalled = new Set(await getEverInstalledPluginIds());
+        const installed = await getInstalledPluginIdsNormalized();
+        const everInstalled = new Set(await getEverInstalledPluginIds());
 
-      const rows = await Promise.all(list.map(async (p) => ({
-        ...p,
-        installed: installed.includes(p.id),
-        downloaded: installed.includes(p.id) ? true : await this.isPluginDownloaded(p.id),
-        everInstalled: everInstalled.has(p.id)
-      })));
+        const rows = await Promise.all(list.map(async (p) => ({
+          ...p,
+          installed: installed.includes(p.id),
+          downloaded: installed.includes(p.id) ? true : await this.isPluginDownloaded(p.id),
+          everInstalled: everInstalled.has(p.id)
+        })));
 
-      cachedRegistryPlugins = rows;
-      return rows;
+        cachedRegistryPlugins = rows;
+        return rows;
+      });
     } catch (e) {
       console.error('[PluginManager] Failed to fetch registry:', e);
       throw e;
