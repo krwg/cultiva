@@ -188,11 +188,18 @@
                         <input type="number" id="habit-times-per-week" class="select-input" min="1" max="7" value="3">
                     </div>
                     <div class="form-group habit-reminder-row">
-                        <label class="onboarding-check">
-                            <input type="checkbox" id="habit-reminder-enabled">
-                            <span data-i18n="habitReminderEnable">Remind me at</span>
-                        </label>
-                        <input type="time" id="habit-reminder-time" class="select-input" value="09:00" style="max-width:140px;margin-top:8px;">
+                        <div class="habit-reminder-head">
+                            <label class="toggle-switch habit-reminder-toggle" for="habit-reminder-enabled">
+                                <input type="checkbox" id="habit-reminder-enabled">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="habit-reminder-label" data-i18n="habitReminderEnable">Remind me at</span>
+                        </div>
+                        <div class="habit-reminder-time-row" id="habit-reminder-time-wrap">
+                            <select id="habit-reminder-hour" class="select-input habit-reminder-select" aria-label="Hour"></select>
+                            <span class="habit-reminder-colon" aria-hidden="true">:</span>
+                            <select id="habit-reminder-minute" class="select-input habit-reminder-select" aria-label="Minute"></select>
+                        </div>
                     </div>
                     <button type="submit" class="btn-primary" style="margin-top:12px" data-i18n="plantSeed">Plant Seed</button>
                 </form>
@@ -435,7 +442,6 @@
                                         <option value="orchard" data-i18n="themeOrchard">Orchard</option>
                                         <option value="honeycrisp" data-i18n="themeHoneycrisp">Honeycrisp</option>
                                         <option value="linden" data-i18n="themeLinden">Linden</option>
-                                        <option value="rowan" data-i18n="themeRowan">Rowan</option>
                                         <option value="pink" data-i18n="themePink">Pink</option>
                                     </optgroup>
                                     <optgroup data-i18n-label="themeGroupDark" label="Dark appearance">
@@ -448,6 +454,7 @@
                                         <option value="inkwell" data-i18n="themeInkwell">Inkwell</option>
                                         <option value="sequoia" data-i18n="themeSequoia">Sequoia</option>
                                         <option value="cypress" data-i18n="themeCypress">Cypress</option>
+                                        <option value="rowan" data-i18n="themeRowan">Rowan</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -856,7 +863,7 @@
                             <div class="settings-divider"></div>
 
                             <div class="update-status-card" id="update-status-card">
-                                <div class="status-icon" id="update-status-icon">✓</div>
+                                <div class="status-icon ui-icon" id="update-status-icon" aria-hidden="true"></div>
                                 <div class="status-info">
                                     <div class="status-title" id="update-status-title" data-i18n="updatesUpToDate">Up to date</div>
                                     <div class="status-message" id="update-status-message" data-i18n="updatesLatestMessage">You have the latest version</div>
@@ -872,7 +879,7 @@
 
                             <div class="updates-actions">
                                 <button class="btn-primary" id="check-updates-btn">
-                                    <span class="btn-icon">🔄</span>
+                                    <span class="btn-icon ui-icon" id="check-updates-icon" aria-hidden="true"></span>
                                     <span data-i18n="checkUpdates">Check for Updates</span>
                                 </button>
                             </div>
