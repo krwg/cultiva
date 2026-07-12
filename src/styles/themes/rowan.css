@@ -56,6 +56,10 @@ body.theme-rowan .plugin-btn-install,
 
 body.theme-rowan .plugin-btn-install:hover,
 
+body.theme-rowan .plugin-btn-get,
+
+body.theme-rowan .plugin-btn-get:hover,
+
 body.theme-rowan .plugin-btn-uninstall:hover,
 
 body.theme-rowan .event-btn-primary,
@@ -74,6 +78,24 @@ body.theme-rowan .update-status-card.error .status-icon,
 
 body.theme-rowan .user-avatar {
     color: var(--on-light);
+}
+
+body.theme-rowan .plugin-btn-install {
+    background: #f0f0f0;
+    color: var(--on-light);
+}
+
+body.theme-rowan .plugin-btn-install:hover {
+    background: #ffffff;
+}
+
+body.theme-rowan .plugin-btn-get {
+    background: #3a3a3a;
+    color: #f4f4f4;
+}
+
+body.theme-rowan .plugin-btn-get:hover {
+    background: #4a4a4a;
 }
 
 body.theme-rowan .btn-primary {

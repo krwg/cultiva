@@ -8,6 +8,14 @@ import { applyAccentColor, applyAmbientIntensity } from '../core/customization.j
 import { pluginManager } from '../core/plugin-manager.js';
 import { bindHabitTemplates } from './habit-templates-ui.js';
 import { refreshStorageBackendControls } from './storage-settings-ui.js';
+import {
+  getPluginBackgrounds,
+  getPluginSounds,
+  getPluginThemeBodyClasses,
+  getPluginThemes
+} from '../core/plugin-contributions.js';
+import { playPluginAmbientSound } from '../core/plugin-sounds.js';
+import { BRANDING } from '../core/branding.js';
 
 let ctx = null;
 
@@ -159,7 +167,7 @@ export function applySettings() {
   }
   applyTranslations(settings.lang);
 
-  document.body.classList.remove(...getThemeBodyClassList());
+  document.body.classList.remove(...getThemeBodyClassList(), ...getPluginThemeBodyClasses());
 
   const appliedTheme = resolveThemeBodyId(settings.theme);
 
@@ -244,4 +252,80 @@ export function applySettings() {
   syncNativeShellChrome();
   refreshStorageBackendControls();
   console.log('[Settings] Applied theme:', appliedTheme);
+}
+
+function appendPluginThemeOptions(optgroup, items) {
+  if (!optgroup || !items.length) {
+    return;
+  }
+  for (const item of items) {
+    const option = document.createElement('option');
+    option.value = item.id;
+    option.textContent = item.label;
+    option.dataset.pluginGroup = '1';
+    optgroup.appendChild(option);
+  }
+}
+
+export function refreshAppearanceSelects() {
+  const themeSelect = document.getElementById('theme-select');
+  const bgSelect = document.getElementById('bg-select');
+  const soundSelect = document.getElementById('ambient-sound-select');
+
+  themeSelect?.querySelectorAll('option[data-plugin-group]').forEach((el) => el.remove());
+  bgSelect?.querySelectorAll('option[data-plugin-bg]').forEach((el) => el.remove());
+  soundSelect?.querySelectorAll('option[data-plugin-sound]').forEach((el) => el.remove());
+
+  const pluginThemes = getPluginThemes();
+  const lightThemes = pluginThemes.filter((row) => row.group === 'light');
+  const darkThemes = pluginThemes.filter((row) => row.group !== 'light');
+
+  if (themeSelect) {
+    const lightGroup = themeSelect.querySelector('optgroup[data-i18n-label="themeGroupLight"]');
+    const darkGroup = themeSelect.querySelector('optgroup[data-i18n-label="themeGroupDark"]');
+    appendPluginThemeOptions(lightGroup, lightThemes);
+    appendPluginThemeOptions(darkGroup, darkThemes);
+    if (settings.theme) {
+      themeSelect.value = settings.theme;
+    }
+  }
+
+  if (bgSelect) {
+    const customOption = bgSelect.querySelector('option[value="custom"]');
+    for (const bg of getPluginBackgrounds()) {
+      const option = document.createElement('option');
+      option.value = bg.id;
+      option.textContent = bg.label;
+      option.dataset.pluginBg = '1';
+      if (customOption) {
+        bgSelect.insertBefore(option, customOption);
+      } else {
+        bgSelect.appendChild(option);
+      }
+    }
+    const savedBg = localStorage.getItem('cultiva-background') || 'none';
+    if (savedBg) {
+      bgSelect.value = savedBg;
+    }
+  }
+
+  if (soundSelect) {
+    for (const sound of getPluginSounds()) {
+      const option = document.createElement('option');
+      option.value = sound.id;
+      option.textContent = sound.label;
+      option.dataset.pluginSound = '1';
+      soundSelect.appendChild(option);
+    }
+    const savedSound = localStorage.getItem('cultiva-ambient-sound') || 'none';
+    soundSelect.value = savedSound;
+    void playPluginAmbientSound(savedSound === 'none' ? '' : savedSound);
+  }
+}
+
+export function isPluginVersionCompatible(minAppVersion) {
+  if (!minAppVersion) {
+    return true;
+  }
+  return pluginManager.checkVersion(BRANDING.VERSION, minAppVersion);
 }

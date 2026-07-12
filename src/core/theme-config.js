@@ -32,6 +32,9 @@ export function getWithBgClassList() {
 }
 
 export function resolveThemeBodyId(themeSetting) {
+  if (themeSetting && String(themeSetting).startsWith('plugin-')) {
+    return themeSetting;
+  }
   if (!themeSetting || themeSetting === 'auto') {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }

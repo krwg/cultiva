@@ -6,8 +6,28 @@ import { settings } from '../app/renderer-bootstrap.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
 import { invokePluginRpc } from './plugin-api.js';
 import { readThemeCssColor } from './shell-chrome.js';
+import {
+  applyManifestContributions,
+  registerPluginBackground,
+  registerPluginSettingsNav,
+  registerPluginSound,
+  registerPluginTheme,
+  unregisterPluginContributions,
+  unregisterPluginSettingsNav
+} from './plugin-contributions.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
+const EVER_INSTALLED_KEY = 'cultiva-plugins-ever-installed';
+
+export function pluginShowsGetButton(pluginRow) {
+  if (!pluginRow || pluginRow.installed) {
+    return false;
+  }
+  if (pluginRow.everInstalled) {
+    return false;
+  }
+  return !pluginRow.downloaded;
+}
 
 function stripUtf8Bom(s) {
   return String(s ?? '').replace(/^\uFEFF/, '');
@@ -78,6 +98,38 @@ async function getInstalledPluginIdsNormalized() {
     return [];
   }
   return raw.map((x) => String(x).trim()).filter(Boolean);
+}
+
+async function getEverInstalledPluginIds() {
+  let raw = await storage.get(EVER_INSTALLED_KEY);
+  if (typeof raw === 'string') {
+    try {
+      raw = JSON.parse(raw);
+    } catch {
+      raw = null;
+    }
+  }
+  if (!Array.isArray(raw)) {
+    raw = [];
+  }
+  const ids = new Set(raw.map((x) => String(x).trim()).filter(Boolean));
+  const installed = await getInstalledPluginIdsNormalized();
+  for (const id of installed) {
+    ids.add(id);
+  }
+  return [...ids];
+}
+
+async function markEverInstalled(pluginId) {
+  const ids = new Set(await getEverInstalledPluginIds());
+  ids.add(String(pluginId).trim());
+  const next = [...ids].filter(Boolean);
+  await storage.set(EVER_INSTALLED_KEY, next);
+  try {
+    localStorage.setItem(EVER_INSTALLED_KEY, JSON.stringify(next));
+  } catch {
+    void 0;
+  }
 }
 
 async function getDisabledPluginIdsNormalized() {
@@ -372,6 +424,18 @@ function _purgeOrphanPluginSandboxes() {
   document.querySelectorAll('iframe[title^="plugin-sandbox-"]').forEach((el) => el.remove());
 }
 
+function pluginHasUiPermission(manifest) {
+  return Array.isArray(manifest?.permissions) && manifest.permissions.includes('ui');
+}
+
+async function _readPluginContributionFile(pluginId, relPath) {
+  if (!window.electron?.readPluginFile) {
+    return '';
+  }
+  const raw = await window.electron.readPluginFile(`${pluginId}/${relPath}`);
+  return raw || '';
+}
+
 function _wireSandboxHost(host, pluginId, manifest) {
   host.setHandler('onRpc', async (method, args) => {
     const prefix = `plugin_${manifest.id}_`;
@@ -507,6 +571,46 @@ function _wireSandboxHost(host, pluginId, manifest) {
     _closePluginMainSheet(pluginId);
   });
 
+  host.setHandler('onUiRegisterTheme', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    registerPluginTheme(pluginId, data?.config || {});
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiRegisterBackground', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    registerPluginBackground(pluginId, data?.config || {});
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiRegisterSound', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    registerPluginSound(pluginId, data?.config || {});
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiRegisterSettingsNav', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    registerPluginSettingsNav(pluginId, data?.config || {});
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiRemoveSettingsNav', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    unregisterPluginSettingsNav(pluginId, data?.navId);
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
   host.setHandler('onUiUpdateHeader', (data) => {
     const plugin = plugins.get(pluginId);
     if (plugin?.headerItem) {
@@ -564,11 +668,29 @@ function _wireSandboxHost(host, pluginId, manifest) {
 }
 
 export const pluginManager = {
+  async _refreshPluginContributionsUi() {
+    try {
+      const { refreshAppearanceSelects } = await import('../app/settings-controller.js');
+      refreshAppearanceSelects();
+    } catch (e) {
+      console.warn('[PluginManager] refreshAppearanceSelects failed:', e);
+    }
+    try {
+      const { refreshPluginSettingsNav } = await import('../app/plugin-settings-nav.js');
+      refreshPluginSettingsNav(typeof window.__cultivaActivateSettingsSection === 'function'
+        ? window.__cultivaActivateSettingsSection
+        : null);
+    } catch (e) {
+      console.warn('[PluginManager] refreshPluginSettingsNav failed:', e);
+    }
+  },
+
   _removePluginRuntimeSurfaces(pluginId) {
     _closePluginMainSheet(pluginId);
     document.querySelector(`.header-plugin-item[data-plugin-id="${_escapeSelectorSegment(pluginId)}"]`)?.remove();
     document.getElementById(`${pluginId}-garden-widget`)?.remove();
     this._removePluginStyles(pluginId);
+    unregisterPluginContributions(pluginId);
   },
 
   async _disableLoadedPlugin(pluginId) {
@@ -592,6 +714,7 @@ export const pluginManager = {
     plugin.headerItem = null;
     plugin.gardenWidget = null;
     plugins.delete(pluginId);
+    unregisterPluginContributions(pluginId);
     for (const list of Object.values(pluginHooks)) {
       const idx = list.indexOf(pluginId);
       if (idx !== -1) {
@@ -780,6 +903,13 @@ export const pluginManager = {
         console.warn('[PluginManager] Style inject failed:', pluginId, err);
       }
 
+      try {
+        await applyManifestContributions(pluginId, manifest, _readPluginContributionFile);
+        await this._refreshPluginContributionsUi();
+      } catch (err) {
+        console.warn('[PluginManager] Contributions failed:', pluginId, err);
+      }
+
       await new Promise((resolve) => setTimeout(resolve, 50));
 
       const plugin = plugins.get(pluginId);
@@ -953,13 +1083,7 @@ export const pluginManager = {
     return false;
   },
 
-  async installPlugin(pluginId) {
-    console.log('[PluginManager] Installing plugin:', pluginId);
-
-    if (!window.electron?.installPlugin) {
-      throw new Error('Plugin install is only available in the desktop app');
-    }
-
+  async _resolvePluginInstallBundle(pluginId) {
     const registryText = await fetchPluginHttpText(REGISTRY_URL);
     const registry = JSON.parse(stripUtf8Bom(registryText).trim());
     const pluginList = Array.isArray(registry.plugins) ? registry.plugins : [];
@@ -978,18 +1102,48 @@ export const pluginManager = {
     const files = buildPluginInstallFileList(manifest, base, sh);
     assertRegistrySha256ForFiles(files);
 
-    const success = await window.electron.installPlugin(pluginId, files);
-    if (!success) {
+    return { pluginInfo, manifest, files };
+  },
+
+  async isPluginDownloaded(pluginId) {
+    if (!window.electron?.isPluginDownloaded) {
       return false;
     }
+    try {
+      return Boolean(await window.electron.isPluginDownloaded(pluginId));
+    } catch {
+      return false;
+    }
+  },
+
+  async downloadPlugin(pluginId) {
+    console.log('[PluginManager] Downloading plugin:', pluginId);
+
+    if (!window.electron?.installPlugin) {
+      throw new Error('Plugin install is only available in the desktop app');
+    }
+
+    const { files } = await this._resolvePluginInstallBundle(pluginId);
+    const success = await window.electron.installPlugin(pluginId, files);
+    if (!success) {
+      throw new Error('Plugin download failed');
+    }
+    return true;
+  },
+
+  async activatePlugin(pluginId) {
+    console.log('[PluginManager] Activating plugin:', pluginId);
 
     const loadOk = await this.loadPlugin(pluginId);
     if (!loadOk) {
       const detail = takePluginLoadFailure();
-      try {
-        await window.electron.uninstallPlugin(pluginId);
-      } catch (e) {
-        console.warn('[PluginManager] Rollback uninstall failed:', e);
+      const installed = await getInstalledPluginIdsNormalized();
+      if (!installed.includes(pluginId)) {
+        try {
+          await window.electron.uninstallPlugin(pluginId);
+        } catch (e) {
+          console.warn('[PluginManager] Rollback uninstall failed:', e);
+        }
       }
       const detailSentence = detail ? ` (${detail})` : '';
       throw new Error(
@@ -1009,7 +1163,15 @@ export const pluginManager = {
       }
     }
 
+    await markEverInstalled(pluginId);
+
     return true;
+  },
+
+  async installPlugin(pluginId) {
+    console.log('[PluginManager] Installing plugin:', pluginId);
+    await this.downloadPlugin(pluginId);
+    return this.activatePlugin(pluginId);
   },
 
   async uninstallPlugin(pluginId) {
@@ -1035,6 +1197,8 @@ export const pluginManager = {
     }
 
     failedPlugins.delete(pluginId);
+
+    await this._refreshPluginContributionsUi();
 
     if (typeof window.renderPluginHeaderItems === 'function') {
       window.renderPluginHeaderItems();
@@ -1071,11 +1235,16 @@ export const pluginManager = {
       );
 
       const installed = await getInstalledPluginIdsNormalized();
+      const everInstalled = new Set(await getEverInstalledPluginIds());
 
-      return list.map((p) => ({
+      const rows = await Promise.all(list.map(async (p) => ({
         ...p,
-        installed: installed.includes(p.id)
-      }));
+        installed: installed.includes(p.id),
+        downloaded: installed.includes(p.id) ? true : await this.isPluginDownloaded(p.id),
+        everInstalled: everInstalled.has(p.id)
+      })));
+
+      return rows;
     } catch (e) {
       console.error('[PluginManager] Failed to fetch registry:', e);
       throw e;

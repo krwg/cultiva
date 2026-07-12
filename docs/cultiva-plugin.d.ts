@@ -7,11 +7,52 @@ export interface CultivaPluginManifest {
   icon?: string;
   entry?: string;
   styles?: string[];
-  permissions?: Array<'network' | 'storage' | 'ui' | 'habits.read' | 'settings.read'>;
+  permissions?: Array<'network' | 'storage' | 'ui' | 'habits.read' | 'habits.write' | 'settings.read'>;
   data?: string[];
   minAppVersion?: string;
+  storeFlow?: 'direct' | 'get';
+  contributes?: CultivaPluginContributes;
   i18n?: Record<string, { name?: string; description?: string }>;
   settings?: CultivaPluginSettingField[];
+}
+
+export interface CultivaPluginContributesTheme {
+  id: string;
+  name?: string;
+  label?: string;
+  group?: 'light' | 'dark';
+  css?: string;
+}
+
+export interface CultivaPluginContributesBackground {
+  id: string;
+  name?: string;
+  label?: string;
+  css?: string;
+}
+
+export interface CultivaPluginContributesSound {
+  id: string;
+  name?: string;
+  label?: string;
+  src: string;
+  loop?: boolean;
+  volume?: number;
+}
+
+export interface CultivaPluginContributesSettingsNav {
+  id: string;
+  label: string;
+  position?: string;
+  description?: string;
+  html?: string;
+}
+
+export interface CultivaPluginContributes {
+  themes?: CultivaPluginContributesTheme[];
+  backgrounds?: CultivaPluginContributesBackground[];
+  sounds?: CultivaPluginContributesSound[];
+  settingsNav?: CultivaPluginContributesSettingsNav[];
 }
 
 export interface CultivaPluginSettingFieldI18n {
@@ -55,12 +96,19 @@ export interface CultivaPluginGardenConfig {
 export interface CultivaPluginUi {
   registerHeaderItem(config: CultivaPluginHeaderConfig): void;
   registerGardenWidget(config: CultivaPluginGardenConfig): void;
+  registerCalendarWidget?(config: { html?: string; position?: 'top' | 'bottom' }): void;
   updateGardenHtml(html: string): void;
+  updateCalendarHtml?(html: string): void;
   openMainSheet(html: string): void;
   patchMainSheet?(selector: string, html: string): void;
   closeMainSheet(): void;
   updateMainHeader(opts: { label?: string; icon?: string; labelColor?: string | null }): void;
   showNotification(icon: string, text: string): Promise<void>;
+  registerTheme?(config: CultivaPluginContributesTheme): void;
+  registerBackground?(config: CultivaPluginContributesBackground): void;
+  registerSound?(config: CultivaPluginContributesSound): void;
+  registerSettingsNav?(config: CultivaPluginContributesSettingsNav): void;
+  removeSettingsNav?(navId: string): void;
 }
 
 export interface CultivaPluginHooks {
@@ -98,6 +146,8 @@ export interface CultivaPluginApp {
   getLocale(): Promise<string>;
   getThemeColor(cssVar: string): Promise<string>;
   getHabits(): Promise<CultivaPluginHabitSnapshot[]>;
+  getWeeklySummary?(): Promise<unknown>;
+  completeHabit?(habitId: string): Promise<unknown>;
   getVersion(): Promise<string>;
   getToday(): Promise<string>;
   getTimezone(): Promise<string>;
@@ -129,6 +179,7 @@ declare global {
     showNotification?: (icon: string, text: string) => void;
     renderPluginHeaderItems?: () => void;
     installPlugin?: (pluginId: string) => Promise<void>;
+    getPlugin?: (pluginId: string) => Promise<void>;
     uninstallPlugin?: (pluginId: string) => Promise<void>;
     openPluginSettings?: (pluginId: string) => void;
   }

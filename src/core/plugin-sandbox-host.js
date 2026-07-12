@@ -165,6 +165,21 @@ function buildSandboxBootstrapDocument(pluginId) {
         },
         updateCalendarHtml: function (html) {
           send({ type: 'CALENDAR_HTML', position: 'top', html: String(html) });
+        },
+        registerTheme: function (config) {
+          send({ type: 'UI_REGISTER_THEME', config: config || {} });
+        },
+        registerBackground: function (config) {
+          send({ type: 'UI_REGISTER_BACKGROUND', config: config || {} });
+        },
+        registerSound: function (config) {
+          send({ type: 'UI_REGISTER_SOUND', config: config || {} });
+        },
+        registerSettingsNav: function (config) {
+          send({ type: 'UI_REGISTER_SETTINGS_NAV', config: config || {} });
+        },
+        removeSettingsNav: function (navId) {
+          send({ type: 'UI_REMOVE_SETTINGS_NAV', navId: String(navId || '') });
         }
       }
     };
@@ -451,6 +466,41 @@ export class PluginSandboxHost {
     if (d.type === 'UI_UPDATE_HEADER') {
       if (this._handlers.onUiUpdateHeader) {
         this._handlers.onUiUpdateHeader(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_REGISTER_THEME') {
+      if (this._handlers.onUiRegisterTheme) {
+        this._handlers.onUiRegisterTheme(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_REGISTER_BACKGROUND') {
+      if (this._handlers.onUiRegisterBackground) {
+        this._handlers.onUiRegisterBackground(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_REGISTER_SOUND') {
+      if (this._handlers.onUiRegisterSound) {
+        this._handlers.onUiRegisterSound(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_REGISTER_SETTINGS_NAV') {
+      if (this._handlers.onUiRegisterSettingsNav) {
+        this._handlers.onUiRegisterSettingsNav(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_REMOVE_SETTINGS_NAV') {
+      if (this._handlers.onUiRemoveSettingsNav) {
+        this._handlers.onUiRemoveSettingsNav(d);
       }
       return;
     }

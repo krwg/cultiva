@@ -80,7 +80,9 @@ The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`m
 | `data` | no | Array of bundled static files (for example JSON dictionaries) accessible via `context.data.read(path)`. |
 | `settings` | no | Manifest-driven settings fields rendered by Cultiva (no per-plugin UI code in the app). |
 | `i18n` | no | Optional catalog strings in `registry.json` / manifest: `{ "ru": { "name", "description" } }`. Settings fields support their own `field.i18n`. |
-| `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Official registry plugins use **`1.7.0`**. Use **`0.4.0`** minimum if you depend on [**main-window UI**](#6-main-window-ui-bridge-cultiva--040). |
+| `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Examples: header-only widgets **`1.1.0`**, garden/hooks plugins **`1.7.0`**, habit write / analytics **`2.0.0`**. |
+| `storeFlow` | no | Registry-only: `direct` (one-tap Install) or `get` (App Store style Get → Install). New Cultiva 2.0 plugins default to `get`. |
+| `contributes` | no | Declarative themes, backgrounds, ambient sounds, and extra Settings sidebar sections — see [Contributions](#contributions-manifest--runtime). |
 
 **Minimal example**
 
@@ -255,6 +257,52 @@ Ship rules in **`manifest.styles`** for classes such as **`.cultiva-sheet-card`*
 
 ---
 
+## Contributions (manifest & runtime)
+
+Cultiva **2.0+** lets plugins extend appearance and Settings navigation without forking the app. Declare items in **`manifest.contributes`** or register at runtime via **`context.ui`** (requires **`ui`** permission). Core Settings sections cannot be removed — plugins may only add/reorder their own sidebar items.
+
+### Manifest `contributes`
+
+```json
+{
+  "contributes": {
+    "themes": [{ "id": "midnight", "label": "Midnight", "group": "dark", "css": "theme-midnight.css" }],
+    "backgrounds": [{ "id": "stars", "label": "Starry Night", "css": "bg-stars.css" }],
+    "sounds": [{ "id": "rain", "label": "Rain", "src": "rain.mp3", "loop": true }],
+    "settingsNav": [{ "id": "guide", "label": "Plugin guide", "position": "after:plugins", "html": "<p>Hello</p>" }]
+  }
+}
+```
+
+| Kind | Appears in | Notes |
+|------|------------|-------|
+| `themes` | Settings → Appearance → Theme | IDs are namespaced (`plugin-your-id-midnight`). Include CSS in `manifest.styles` or reference `css` file. |
+| `backgrounds` | Settings → Appearance → Background | CSS-only layers; use Cultiva tokens for contrast. |
+| `sounds` | Settings → Appearance → Ambient sound | Local audio from plugin folder; off by default. |
+| `settingsNav` | Settings sidebar | `position`: `before:about` or `after:appearance` (anchor must be a core section). |
+
+### Runtime registration
+
+```js
+context.ui.registerTheme({ id: 'glow', label: 'Glow', group: 'dark', css: 'theme-glow.css' });
+context.ui.registerBackground({ id: 'mist', label: 'Mist', css: 'bg-mist.css' });
+context.ui.registerSound({ id: 'wind', label: 'Wind', src: 'wind.mp3', loop: true, volume: 0.5 });
+context.ui.registerSettingsNav({ id: 'tips', label: 'Tips', position: 'before:about', html: '<p>…</p>' });
+context.ui.removeSettingsNav('your-plugin-id:tips'); // only your own items
+```
+
+Contributions are cleared automatically when a plugin is disabled or uninstalled.
+
+### Store catalog (registry)
+
+| Field | Purpose |
+|-------|---------|
+| `minAppVersion` | Shown as a badge in the in-app store (e.g. `1.1.0`, `1.7.0`, `2.0.0`). |
+| `storeFlow` | Deprecated in registry — Cultiva uses local **ever-installed** history: first time → **Get**, previously installed on device → **Install**. |
+| `i18n.en` / `i18n.ru` | Product descriptions in the catalog — write 1–2 full sentences; they are not truncated in Cultiva 2.0. |
+
+---
+
 ## 7. `hooks` API
 
 Subscribe with **`hooks.on(hookName, callback)`**. Available hook names are defined by the host; common examples include:
@@ -300,7 +348,7 @@ Users install or update from **Settings → Plugins**; the client re-downloads f
 - [ ] Final line: `return new YourPlugin(context, hooks);`  
 - [ ] No `window.electron` or direct main-DOM access — use **`openMainSheet`**, **`updateMainHeader`**, garden relay.  
 - [ ] Styles listed in `manifest.styles` if you ship CSS.  
-- [ ] **`minAppVersion`** reflects the lowest Cultiva build you tested (**`1.7.0`** for registry 3.x).  
+- [ ] **`minAppVersion`** reflects the lowest Cultiva build you tested (`1.1.0` header-only, `1.7.0` garden/hooks, `2.0.0` habit write).  
 - [ ] `registry.json` **`baseUrl`** points at **raw** GitHub paths for your folder.  
 
 ### Common issues

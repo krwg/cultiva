@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld('electron', {
   pluginHttpGet: (url) => ipcRenderer.invoke('plugin:http-get', url),
   installPlugin: (pluginId, files) => ipcRenderer.invoke('plugin:install', pluginId, files),
   uninstallPlugin: (pluginId) => ipcRenderer.invoke('plugin:uninstall', pluginId),
+  isPluginDownloaded: (pluginId) => ipcRenderer.invoke('plugin:is-downloaded', pluginId),
   getPluginResourcePath: (pluginId, resourcePath) => ipcRenderer.invoke('plugin:get-resource-path', pluginId, resourcePath),
   setTitleBarOverlay: (options) => ipcRenderer.invoke('shell:set-titlebar-overlay', options),
 });

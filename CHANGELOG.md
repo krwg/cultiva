@@ -6,9 +6,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [2.0.0] — Rowan (unreleased)
 
-**Codename:** Rowan · **Registry:** [cultiva-plugins 3.1.1](https://github.com/krwg/cultiva-plugins)
+**Codename:** Rowan · **Registry:** [cultiva-plugins 3.3.0](https://github.com/krwg/cultiva-plugins)
 
 ### Added
+- **Plugin contributions API** — plugins can register themes, backgrounds, ambient sounds, and Settings sidebar sections (`manifest.contributes` + `context.ui.registerTheme|registerBackground|registerSound|registerSettingsNav`)
+- **Plugin store UX** — full product descriptions, min Cultiva version badge, App Store **Get → Install** flow for new plugins
+- **Ambient sound** setting for plugin-contributed audio loops
+
+### Changed
+- Plugin store Get/Install follows **local install history** (`cultiva-plugins-ever-installed`), not plugin category
+- Plugin card layout and button contrast fixed (Rowan theme, install/get pills)
+- Removed redundant catalog plugins: streak, focus-session (registry 3.4.0)
 - **Rowan** theme — graphite black-and-white palette (`#0b0b0b` / `#f4f4f4`)
 - **Rowan Cluster** ambient background — «Pulsing Cluster»: zigzag branch tremor, pinnate leaf flicker, pulsing berry clusters with radar rings and falling particles
 - `src/core/rowan-cluster-bg.js` canvas animation with `prefers-reduced-motion` static fallback

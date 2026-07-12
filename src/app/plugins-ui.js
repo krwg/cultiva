@@ -5,7 +5,8 @@ import {
   resolvePluginSettingLabel,
   resolvePluginSettingOptionLabel
 } from '../core/plugin-manifest-i18n.js';
-import { pluginManager, isNewerPluginVersion } from '../core/plugin-manager.js';
+import { pluginManager, isNewerPluginVersion, pluginShowsGetButton } from '../core/plugin-manager.js';
+import { isPluginVersionCompatible } from './settings-controller.js';
 import { storage } from '../modules/storage.js';
 import { settings } from './renderer-bootstrap.js';
 import { saveSettings } from './settings-controller.js';
@@ -105,10 +106,13 @@ function localizedPluginMeta(pluginId, fallbackName, fallbackDesc, registryPlugi
   };
 }
 
-function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVersion = null, registryPlugins = [] } = {}) {
+function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVersion = null, registryPlugins = [], browseMeta = null } = {}) {
   const meta = localizedPluginMeta(p.id, p.name, p.description, registryPlugins);
   const main = document.createElement('div');
   main.className = 'plugin-card-main';
+
+  const top = document.createElement('div');
+  top.className = 'plugin-card-top';
 
   const iconWrap = document.createElement('div');
   iconWrap.className = 'plugin-icon';
@@ -129,6 +133,14 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVe
     ? `${baseDesc ? `${baseDesc} — ` : ''}${failReason || t.pluginNotLoadedHint || 'Not loaded.'}`
     : baseDesc;
 
+  info.appendChild(nameEl);
+  info.appendChild(descEl);
+  top.appendChild(iconWrap);
+  top.appendChild(info);
+
+  const footer = document.createElement('div');
+  footer.className = 'plugin-card-footer';
+
   const versionRow = document.createElement('div');
   versionRow.className = 'plugin-meta';
   const ver = document.createElement('span');
@@ -141,10 +153,18 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVe
     upd.textContent = `${t.pluginUpdateAvailable || 'Update available'} · v${updateVersion}`;
     versionRow.appendChild(upd);
   }
-
-  info.appendChild(nameEl);
-  info.appendChild(descEl);
-  info.appendChild(versionRow);
+  if (browseMeta?.minAppVersion) {
+    const minBadge = document.createElement('span');
+    minBadge.className = 'plugin-min-badge';
+    minBadge.textContent = `${t.pluginMinAppVersion || 'Requires Cultiva'} ${browseMeta.minAppVersion}+`;
+    versionRow.appendChild(minBadge);
+  }
+  if (browseMeta?.author) {
+    const author = document.createElement('span');
+    author.className = 'plugin-author';
+    author.textContent = String(browseMeta.author);
+    versionRow.appendChild(author);
+  }
 
   const actions = document.createElement('div');
   actions.className = 'plugin-actions';
@@ -209,10 +229,60 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVe
     actions.appendChild(toggleWrap);
   }
 
-  main.appendChild(iconWrap);
-  main.appendChild(info);
-  main.appendChild(actions);
+  footer.appendChild(versionRow);
+  footer.appendChild(actions);
+  main.appendChild(top);
+  main.appendChild(footer);
   return main;
+}
+
+function appendBrowseInstallButton(actions, p, t) {
+  const pid = p.id;
+  const canInstall = Boolean(typeof window !== 'undefined' && window.electron?.installPlugin);
+  const versionOk = isPluginVersionCompatible(p.minAppVersion);
+  const showGet = pluginShowsGetButton(p);
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+
+  if (p.installed) {
+    btn.className = 'plugin-btn plugin-btn-installed';
+    btn.disabled = true;
+    btn.textContent = t.pluginInstalledButton || 'Installed';
+    actions.appendChild(btn);
+    return;
+  }
+
+  if (!versionOk) {
+    btn.className = 'plugin-btn plugin-btn-installed';
+    btn.disabled = true;
+    btn.textContent = t.pluginRequiresUpdate || 'Update Cultiva';
+    btn.title = `${t.pluginMinAppVersion || 'Requires Cultiva'} ${p.minAppVersion || ''}`;
+    actions.appendChild(btn);
+    return;
+  }
+
+  if (!canInstall) {
+    btn.className = 'plugin-btn plugin-btn-installed';
+    btn.disabled = true;
+    btn.textContent = showGet && !p.downloaded ? (t.pluginGet || 'Get') : (t.install || 'Install');
+    btn.title = t.pluginInstallDesktopOnly || '';
+    actions.appendChild(btn);
+    return;
+  }
+
+  if (showGet && !p.downloaded) {
+    btn.className = 'plugin-btn plugin-btn-get';
+    btn.textContent = t.pluginGet || 'Get';
+    btn.addEventListener('click', () => window.getPlugin(pid));
+    actions.appendChild(btn);
+    return;
+  }
+
+  btn.className = 'plugin-btn plugin-btn-install';
+  btn.textContent = t.install || 'Install';
+  btn.addEventListener('click', () => window.installPlugin(pid));
+  actions.appendChild(btn);
 }
 
 async function loadInstalledPlugins(registryPlugins = []) {
@@ -283,34 +353,17 @@ async function loadAvailablePlugins(registryPlugins = []) {
 
       const meta = resolvePluginCatalogMeta(p, settings.lang);
       const stub = { id: p.id, name: meta.name, description: meta.description, version: p.version, loaded: true, enabled: true };
-      const main = createPluginCardMain(stub, null, t, { showSettings: false });
+      const main = createPluginCardMain(stub, null, t, {
+        showSettings: false,
+        browseMeta: {
+          minAppVersion: p.minAppVersion,
+          author: p.author
+        }
+      });
 
       const actions = main.querySelector('.plugin-actions');
       actions.replaceChildren();
-      const btnInstall = document.createElement('button');
-      btnInstall.type = 'button';
-      const pid = p.id;
-      const canInstall = Boolean(typeof window !== 'undefined' && window.electron?.installPlugin);
-      if (p.installed) {
-        btnInstall.className = 'plugin-btn plugin-btn-installed';
-        btnInstall.disabled = true;
-        btnInstall.textContent = t.pluginInstalledButton || 'Installed';
-      } else if (!canInstall) {
-        btnInstall.className = 'plugin-btn plugin-btn-installed';
-        btnInstall.disabled = true;
-        btnInstall.textContent = t.install;
-        btnInstall.title = t.pluginInstallDesktopOnly || '';
-      } else {
-        btnInstall.className = 'plugin-btn plugin-btn-install';
-        btnInstall.textContent = t.install;
-        btnInstall.addEventListener('click', () => window.installPlugin(pid));
-      }
-      actions.appendChild(btnInstall);
-
-      const author = document.createElement('span');
-      author.className = 'plugin-author';
-      author.textContent = p.author !== null && p.author !== undefined ? String(p.author) : '';
-      main.querySelector('.plugin-meta')?.appendChild(author);
+      appendBrowseInstallButton(actions, p, t);
 
       card.appendChild(main);
       container.appendChild(card);
@@ -326,15 +379,34 @@ async function loadAvailablePlugins(registryPlugins = []) {
   }
 }
 
-window.installPlugin = async (pluginId) => {
+window.getPlugin = async (pluginId) => {
+  const t = tStrings();
   try {
-    showNotification('', 'Installing plugin...');
-    await pluginManager.installPlugin(pluginId);
-    showNotification('', 'Plugin installed successfully!');
+    showNotification('', t.pluginGetProgress || 'Downloading plugin...');
+    await pluginManager.downloadPlugin(pluginId);
+    showNotification('', t.pluginGetSuccess || 'Plugin ready to install');
+    await renderPluginsSection();
+  } catch (e) {
+    showNotification('', `${t.pluginGetFailed || 'Failed to download plugin'}: ${e.message}`);
+  }
+};
+
+window.installPlugin = async (pluginId) => {
+  const t = tStrings();
+  try {
+    const row = (await pluginManager.getAvailablePlugins()).find((p) => p.id === pluginId);
+    if (row && pluginShowsGetButton(row) && row.downloaded && !row.installed) {
+      showNotification('', t.pluginActivateProgress || 'Installing plugin...');
+      await pluginManager.activatePlugin(pluginId);
+    } else {
+      showNotification('', t.pluginInstallProgress || 'Installing plugin...');
+      await pluginManager.installPlugin(pluginId);
+    }
+    showNotification('', t.pluginInstallSuccess || 'Plugin installed successfully!');
     await renderPluginsSection();
     renderPluginHeaderItems();
   } catch (e) {
-    showNotification('', `Failed to install plugin: ${e.message}`);
+    showNotification('', `${t.pluginInstallFailed || 'Failed to install plugin'}: ${e.message}`);
   }
 };
 

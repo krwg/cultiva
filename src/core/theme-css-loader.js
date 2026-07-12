@@ -1,4 +1,10 @@
 import { THEME_BODY_IDS, AMBIENT_BG_LAYER_IDS } from './theme-config.js';
+import {
+  injectPluginBackgroundCss,
+  injectPluginThemeCss,
+  isPluginBackgroundId,
+  isPluginThemeId
+} from './plugin-contributions.js';
 
 const loadedThemes = new Set();
 const loadedAmbients = new Set();
@@ -29,7 +35,20 @@ function ensureLink(id, href) {
   return el;
 }
 
+async function readPluginAsset(pluginId, relPath) {
+  if (!window.electron?.readPluginFile) {
+    return '';
+  }
+  const raw = await window.electron.readPluginFile(`${pluginId}/${relPath}`);
+  return raw || '';
+}
+
 export async function loadThemeCss(themeId) {
+  if (isPluginThemeId(themeId)) {
+    await injectPluginThemeCss(themeId, readPluginAsset);
+    loadedThemes.add(themeId);
+    return;
+  }
   const id = THEME_BODY_IDS.includes(themeId) ? themeId : 'dark';
   if (loadedThemes.has(id)) {
     return;
@@ -46,6 +65,11 @@ export async function loadAmbientCss(bgId) {
       ambientLinkEl = null;
     }
     loadedAmbients.clear();
+    return;
+  }
+  if (isPluginBackgroundId(bgId)) {
+    await injectPluginBackgroundCss(bgId, readPluginAsset);
+    loadedAmbients.add(bgId);
     return;
   }
   if (!AMBIENT_BG_LAYER_IDS.includes(bgId)) {

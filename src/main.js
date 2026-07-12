@@ -248,6 +248,19 @@ lastBgSelectValue = savedBg;
 if (bgSelect) { bgSelect.value = savedBg; }
 applyBackground(savedBg);
 
+const ambientSoundSelect = document.getElementById('ambient-sound-select');
+ambientSoundSelect?.addEventListener('change', (e) => {
+  const soundId = e.target.value || 'none';
+  try {
+    localStorage.setItem('cultiva-ambient-sound', soundId);
+  } catch {
+    void 0;
+  }
+  import('./core/plugin-sounds.js').then((m) => {
+    void m.playPluginAmbientSound(soundId === 'none' ? '' : soundId);
+  });
+});
+
 bgSelect?.addEventListener('change', (e) => {
   const bg = e.target.value;
   if (bg === 'custom' && !readCustomBackgroundDataUrl()) {
@@ -298,45 +311,58 @@ customBgClear?.addEventListener('click', () => {
 });
 
 function initSettingsNavigation() {
-  const sidebarItems = document.querySelectorAll('.settings-sidebar-item[data-section]');
+  const sidebar = document.querySelector('.settings-sidebar');
   const emptyState = document.getElementById('settings-empty');
 
-  if (!sidebarItems.length) { return; }
+  if (!sidebar) { return; }
 
-  sidebarItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const section = item.dataset.section;
+  function activateSettingsSection(item) {
+    const section = item.dataset.section;
 
-      if (item.classList.contains('settings-sidebar-disabled')) {
-        showNotification(currentT.comingSoon || 'Coming soon...');
+    if (item.classList.contains('settings-sidebar-disabled')) {
+      showNotification(currentT.comingSoon || 'Coming soon...');
+      return;
+    }
+
+    sidebar.querySelectorAll('.settings-sidebar-item').forEach((i) => i.classList.remove('active'));
+    item.classList.add('active');
+
+    if (emptyState) { emptyState.style.display = 'none'; }
+
+    document.querySelectorAll('.settings-section-content').forEach((content) => {
+      content.classList.remove('active');
+    });
+
+    const targetSection = document.getElementById(`section-${section}`);
+    if (targetSection) { targetSection.classList.add('active'); }
+
+    if (section === 'profile') { updateProfileSection(); }
+    if (section === 'plugins') {
+      import('./app/plugins-ui.js').then((m) => m.renderPluginsSection());
+    }
+    if (section === 'notifications') { updateNotificationsDesktopBanner(); }
+    if (section === 'statistics') {
+      import('./app/stats-dashboard-ui.js').then((m) => m.renderStatsDashboard(settings.lang));
+    }
+    if (section === 'discord') {
+      ensureDiscordSettingsInitialized();
+    }
+  }
+
+  window.__cultivaActivateSettingsSection = activateSettingsSection;
+
+  if (!sidebar.dataset.navBound) {
+    sidebar.dataset.navBound = '1';
+    sidebar.addEventListener('click', (e) => {
+      const item = e.target.closest('.settings-sidebar-item[data-section]');
+      if (!item) {
         return;
       }
-
-      sidebarItems.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-
-      if (emptyState) { emptyState.style.display = 'none'; }
-
-      document.querySelectorAll('.settings-section-content').forEach(content => {
-        content.classList.remove('active');
-      });
-
-      const targetSection = document.getElementById(`section-${section}`);
-      if (targetSection) { targetSection.classList.add('active'); }
-
-      if (section === 'profile') { updateProfileSection(); }
-      if (section === 'plugins') {
-        import('./app/plugins-ui.js').then((m) => m.renderPluginsSection());
-      }
-      if (section === 'notifications') { updateNotificationsDesktopBanner(); }
-      if (section === 'statistics') {
-        import('./app/stats-dashboard-ui.js').then((m) => m.renderStatsDashboard(settings.lang));
-      }
-      if (section === 'discord') {
-        ensureDiscordSettingsInitialized();
-      }
+      activateSettingsSection(item);
     });
-  });
+  }
+
+  import('./app/plugin-settings-nav.js').then((m) => m.refreshPluginSettingsNav(activateSettingsSection));
 
   document.getElementById('settings-open-avatar-picker')?.addEventListener('click', () => {
     closeModal(settingsModal);
@@ -351,7 +377,7 @@ function initSettingsNavigation() {
     setTimeout(() => {
       const firstItem = document.querySelector('.settings-sidebar-item[data-section="profile"]');
       if (firstItem) {
-        sidebarItems.forEach(i => i.classList.remove('active'));
+        sidebar.querySelectorAll('.settings-sidebar-item').forEach((i) => i.classList.remove('active'));
         firstItem.classList.add('active');
 
         document.querySelectorAll('.settings-section-content').forEach(c => c.classList.remove('active'));

@@ -1,11 +1,16 @@
 import { mountRowanCluster, stopRowanCluster } from './rowan-cluster-bg.js';
 import { loadAmbientCss } from './theme-css-loader.js';
 import { AMBIENT_BG_LAYER_IDS, LS_CUSTOM_BG_DATA, getWithBgClassList } from './theme-config.js';
+import {
+  getPluginBackgroundBodyClasses,
+  getPluginBackgrounds,
+  isPluginBackgroundId
+} from './plugin-contributions.js';
 
 const MAX_CUSTOM_BYTES = 1_400_000;
 
 function stripAmbientClasses(body) {
-  body.classList.remove('with-ambient-bg', ...getWithBgClassList());
+  body.classList.remove('with-ambient-bg', ...getWithBgClassList(), ...getPluginBackgroundBodyClasses());
 }
 
 function hideAllLayers(doc) {
@@ -49,6 +54,15 @@ export function applyAmbientBackground(doc, body, bg) {
     el.style.backgroundImage = `url(${JSON.stringify(url)})`;
     el.style.display = 'block';
     body.classList.add('with-bg-custom', 'with-ambient-bg');
+    return;
+  }
+
+  if (isPluginBackgroundId(bg)) {
+    void loadAmbientCss(bg);
+    const row = getPluginBackgrounds().find((item) => item.id === bg);
+    if (row) {
+      body.classList.add(row.bodyClass, 'with-ambient-bg');
+    }
     return;
   }
 

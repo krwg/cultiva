@@ -225,6 +225,18 @@ function setupPluginIPC() {
     }
   });
 
+  ipcMain.handle('plugin:is-downloaded', async (event, pluginId) => {
+    try {
+      if (!isSafePluginId(pluginId)) {
+        return false;
+      }
+      const manifestPath = path.join(PLUGIN_FILES_DIR, pluginId, 'manifest.json');
+      return fs.existsSync(manifestPath);
+    } catch {
+      return false;
+    }
+  });
+
   ipcMain.handle('plugin:uninstall', async (event, pluginId) => {
     try {
       if (!isSafePluginId(pluginId)) {
