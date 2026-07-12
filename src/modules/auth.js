@@ -166,6 +166,7 @@ export const auth = {
       console.warn('[Auth] Session cleanup failed:', e);
     }
     _currentUser = null;
+    await storage.ensureLocalBackendAfterLogout();
     await storage.setCurrentUser(null);
   },
 

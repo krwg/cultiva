@@ -1,4 +1,13 @@
 import { db } from './db.js';
+import {
+  STORAGE_BACKEND_IDS,
+  normalizeStorageBackendId,
+  buildStorageSnapshot,
+  createStorageAdapter,
+  migrateStorageBackend,
+  importStorageSnapshot,
+  validateStorageSnapshot
+} from './storage-backend.js';
 
 const SESSION_KEY = 'cultiva_current_session';
 const HABITS_IDB_MIGRATION_KEY = 'cultiva-habits-idb-migrated';
@@ -8,6 +17,21 @@ let _settingsCache = {};
 let _isInitialized = false;
 let _initPromise = null;
 let _currentUserId = null;
+let _authProbe = () => !!_currentUserId;
+
+export function setStorageAuthProbe(fn) {
+  _authProbe = typeof fn === 'function' ? fn : () => !!_currentUserId;
+}
+
+function _createActiveAdapter(backendId) {
+  return createStorageAdapter(backendId, {
+    isAuthenticated: () => _authProbe(),
+    readHabits: () => _habitsCache,
+    readSettings: () => ({ ..._settingsCache }),
+    writeHabits: (habits) => storage.saveHabits(habits),
+    mergeSetting: (key, value) => storage.set(key, value)
+  });
+}
 
 function validateHabit(habit) {
   if (!habit || typeof habit !== 'object') {
@@ -320,6 +344,58 @@ export const storage = {
 
   getCurrentUserId() {
     return _currentUserId;
+  },
+
+  getBackendId() {
+    const appSettings = _settingsCache['cultiva-settings'];
+    if (appSettings && typeof appSettings === 'object' && appSettings.storageBackend) {
+      return normalizeStorageBackendId(appSettings.storageBackend);
+    }
+    return STORAGE_BACKEND_IDS.LOCAL;
+  },
+
+  async setBackendId(nextId) {
+    const to = normalizeStorageBackendId(nextId);
+    const from = this.getBackendId();
+    if (from === to) {
+      return { changed: false };
+    }
+
+    const fromAdapter = _createActiveAdapter(from);
+    const toAdapter = _createActiveAdapter(to);
+    const result = await migrateStorageBackend(from, to, fromAdapter, toAdapter);
+
+    const appSettings = (await this.get('cultiva-settings')) || {};
+    appSettings.storageBackend = to;
+    await this.set('cultiva-settings', appSettings);
+
+    return result;
+  },
+
+  async exportSnapshot() {
+    return buildStorageSnapshot({
+      habits: _habitsCache,
+      settingsRows: _settingsCache,
+      backendId: this.getBackendId()
+    });
+  },
+
+  async importSnapshot(snapshot) {
+    if (!validateStorageSnapshot(snapshot)) {
+      throw new Error('STORAGE_SNAPSHOT_INVALID');
+    }
+    const adapter = _createActiveAdapter(this.getBackendId());
+    await importStorageSnapshot(snapshot, adapter);
+    await this._loadFromDB();
+  },
+
+  async ensureLocalBackendAfterLogout() {
+    if (this.getBackendId() !== STORAGE_BACKEND_IDS.ACCOUNT) {
+      return;
+    }
+    const appSettings = (await this.get('cultiva-settings')) || {};
+    appSettings.storageBackend = STORAGE_BACKEND_IDS.LOCAL;
+    await this.set('cultiva-settings', appSettings);
   },
 
   async setCurrentUser(userId) {

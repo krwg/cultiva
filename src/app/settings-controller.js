@@ -6,6 +6,7 @@ import { applyTranslations } from './i18n-dom.js';
 import { applyAccentColor, applyAmbientIntensity } from '../core/customization.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { bindHabitTemplates } from './habit-templates-ui.js';
+import { refreshStorageBackendControls } from './storage-settings-ui.js';
 
 let ctx = null;
 
@@ -94,6 +95,9 @@ export async function loadSettings() {
       }
       if (typeof saved.streakGraceEnabled === 'boolean') {
         settings.streakGraceEnabled = saved.streakGraceEnabled;
+      }
+      if (saved.storageBackend) {
+        settings.storageBackend = saved.storageBackend;
       }
     }
 
@@ -236,5 +240,6 @@ export function applySettings() {
   localStorage.setItem('cultiva-theme', settings.theme);
   localStorage.setItem('cultiva-lang', settings.lang);
   syncNativeShellChrome();
+  refreshStorageBackendControls();
   console.log('[Settings] Applied theme:', appliedTheme);
 }

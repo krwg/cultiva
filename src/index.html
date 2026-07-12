@@ -667,6 +667,18 @@
                     </div>
 
                     <div class="settings-section-content" id="section-data">
+                        <div class="settings-section-hero">
+                            <div class="settings-section-hero-title" data-i18n="storageBackendTitle">Storage</div>
+                            <p class="settings-section-hero-desc" data-i18n="storageBackendSectionDesc">Choose where Cultiva keeps your habits and settings. Local storage is the default; account sync prepares for cross-device backup in a future release.</p>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="storageBackendLabel">Storage backend</span>
+                                <span class="setting-desc" data-i18n="storageBackendLabelDesc">Device-only or signed-in account profile</span>
+                            </div>
+                            <select id="storage-backend-select" class="select-input select-small" aria-describedby="storage-backend-hint"></select>
+                        </div>
+                        <p class="setting-hint" id="storage-backend-hint" data-i18n="storageBackendLocalActive">Data stays on this device only.</p>
                         <div class="setting-item">
                             <div class="setting-info">
                                 <span class="setting-label" data-i18n="export">Export</span>

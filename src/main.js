@@ -36,6 +36,7 @@ import { initContextMenu } from './app/context-menu.js';
 import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
 import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats, moveFocusedHabit } from './app/garden-controller.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
+import { bindStorageBackendSettings, refreshStorageBackendControls } from './app/storage-settings-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
 import { getTodayStr } from './app/date-ui.js';
 import { initAutoBackup } from './app/auto-backup.js';
@@ -732,6 +733,8 @@ async function updateAuthUI() {
 
   renderHeaderAvatar();
   updateProfileSection();
+  settings.storageBackend = storage.getBackendId();
+  refreshStorageBackendControls();
 }
 
 function switchAuthTab(tab) {
@@ -880,6 +883,7 @@ function initEvents() {
 
   bindGardenCardEvents();
   bindBackupUiEvents();
+  bindStorageBackendSettings();
 
   document.getElementById('close-settings')?.addEventListener('click', () => closeModal(settingsModal));
   document.getElementById('close-stats')?.addEventListener('click', () => closeModal(statsModal));

@@ -1,5 +1,6 @@
 import { storage } from '../modules/storage.js';
 import { auth } from '../modules/auth.js';
+import { auth } from '../modules/auth.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { resolveThemeBodyId } from '../core/theme-config.js';
 
@@ -20,7 +21,8 @@ export const DEFAULT_SETTINGS = {
   ambientIntensity: 100,
   firstRunComplete: false,
   autoBackupEnabled: true,
-  streakGraceEnabled: true
+  streakGraceEnabled: true,
+  storageBackend: 'local'
 };
 
 export const settings = { ...DEFAULT_SETTINGS };
@@ -56,6 +58,7 @@ export async function ensureAppReady() {
 
   _appReady = (async () => {
     await storage.init();
+    storage.setStorageAuthProbe(() => auth.isAuthenticated());
     await auth.init();
     if (settings.pluginsEnabled) {
       await pluginManager.init();

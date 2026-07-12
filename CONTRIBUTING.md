@@ -54,6 +54,18 @@ npm run build
 | `docs/wiki/` | GitHub Wiki source (publish per `docs/WIKI.md`) |
 | `docs/PLUGIN_AUTHOR_GUIDE.md` | Plugin author reference |
 
+## Data sync roadmap (phase 2)
+
+Phase 1 (current): storage backend preference, pluggable adapter interface (`src/modules/storage-backend.js`), and in-app migration helpers. **Local-only remains the default**; upgrades preserve existing IndexedDB data.
+
+Phase 2 (planned, not implemented):
+
+- Encrypted remote sync for users on the **Account** backend
+- Conflict resolution (last-write-wins baseline, with room for per-habit merge)
+- Optional export/import to third-party storage providers
+
+Plugin data and calendar events may follow the same adapter pattern in later issues. See [#114](https://github.com/krwg/cultiva/issues/114) for the foundation issue.
+
 ## License
 
 - **Cultiva application**: GPL-3.0 (see [LICENSE](LICENSE))
