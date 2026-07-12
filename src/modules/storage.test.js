@@ -125,6 +125,7 @@ describe('storage habit persistence', () => {
     const { storage } = await import('./storage.js');
     await storage.init();
     await storage.saveHabits([{ id: 'keep', name: 'Keep', progress: 0 }]);
+    await storage.flushPendingWrites();
 
     expect(habitsStore.has('legacy')).toBe(false);
     expect(habitsStore.has('keep')).toBe(true);
@@ -146,5 +147,21 @@ describe('storage habit persistence', () => {
     expect(localStorage.getItem('cultiva-habits')).toBeNull();
     expect(localStorage.getItem('cultiva-installed-plugins')).toBeNull();
     expect(localStorage.getItem('cultiva_calendar_events')).toBeNull();
+  });
+
+  it('coalesces parallel saveHabits into a single flush', async () => {
+    const { storage } = await import('./storage.js');
+    await storage.init();
+
+    const p1 = storage.saveHabits([{ id: 'a', name: 'A', progress: 1 }]);
+    const p2 = storage.saveHabits([
+      { id: 'a', name: 'A', progress: 1 },
+      { id: 'b', name: 'B', progress: 2 }
+    ]);
+
+    await Promise.all([p1, p2]);
+
+    expect(storage.getHabits()).toHaveLength(2);
+    expect(habitsStore.size).toBe(2);
   });
 });

@@ -19,6 +19,114 @@ let _initPromise = null;
 let _currentUserId = null;
 let _authProbe = () => !!_currentUserId;
 
+let _habitsWriteScheduled = false;
+let _habitsWriteWaiters = [];
+
+let _dirtySettingKeys = new Set();
+let _settingsWriteScheduled = false;
+let _settingsWriteWaiters = [];
+
+function _scheduleWriteFlush(runFlush) {
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      void runFlush();
+    });
+  } else {
+    setTimeout(() => {
+      void runFlush();
+    }, 0);
+  }
+}
+
+function _queueHabitsWrite() {
+  if (!_habitsWriteScheduled) {
+    _habitsWriteScheduled = true;
+    _scheduleWriteFlush(_flushHabitsToDisk);
+  }
+  return new Promise((resolve, reject) => {
+    _habitsWriteWaiters.push({ resolve, reject });
+  });
+}
+
+async function _flushHabitsToDisk() {
+  const waiters = _habitsWriteWaiters;
+  _habitsWriteWaiters = [];
+  _habitsWriteScheduled = false;
+  const myHabits = _habitsCache;
+
+  try {
+    await _persistHabitsUpsert(myHabits);
+    localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
+    console.log('[Storage] Saved', myHabits.length, 'habits to IndexedDB');
+    waiters.forEach((w) => w.resolve());
+  } catch (e) {
+    console.error('[Storage] IndexedDB save failed, using localStorage only:', e);
+    localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
+    waiters.forEach((w) => w.reject(e));
+  }
+}
+
+function _queueSettingsWrite() {
+  if (!_settingsWriteScheduled) {
+    _settingsWriteScheduled = true;
+    _scheduleWriteFlush(_flushSettingsToDisk);
+  }
+  return new Promise((resolve, reject) => {
+    _settingsWriteWaiters.push({ resolve, reject });
+  });
+}
+
+async function _flushSettingsToDisk() {
+  const waiters = _settingsWriteWaiters;
+  _settingsWriteWaiters = [];
+  _settingsWriteScheduled = false;
+  const keys = [..._dirtySettingKeys];
+  _dirtySettingKeys.clear();
+
+  if (keys.length === 0) {
+    waiters.forEach((w) => w.resolve());
+    return;
+  }
+
+  try {
+    const dbInstance = await db.open();
+    await new Promise((resolve, reject) => {
+      const tx = dbInstance.transaction('settings', 'readwrite');
+      const store = tx.objectStore('settings');
+      for (const key of keys) {
+        store.put({ key, value: _settingsCache[key] });
+      }
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch (e) {
+    console.warn('[Storage] IDB settings batch write failed, using localStorage fallback');
+  }
+
+  try {
+    localStorage.setItem('cultiva-settings', JSON.stringify(_settingsCache));
+  } catch (e) {
+    console.error('[Storage] Failed to sync localStorage:', e);
+  }
+
+  waiters.forEach((w) => w.resolve());
+}
+
+async function _writeSettingNow(key, value) {
+  _settingsCache[key] = value;
+  _dirtySettingKeys.delete(key);
+  try {
+    await db.put('settings', { key, value });
+  } catch (e) {
+    console.warn('[Storage] IDB write failed, using localStorage fallback');
+  }
+  try {
+    localStorage.setItem('cultiva-settings', JSON.stringify(_settingsCache));
+  } catch (e) {
+    console.error('[Storage] Failed to sync localStorage:', e);
+  }
+}
+
 export function setStorageAuthProbe(fn) {
   _authProbe = typeof fn === 'function' ? fn : () => !!_currentUserId;
 }
@@ -386,7 +494,17 @@ export const storage = {
     }
     const adapter = _createActiveAdapter(this.getBackendId());
     await importStorageSnapshot(snapshot, adapter);
+    await this.flushPendingWrites();
     await this._loadFromDB();
+  },
+
+  async flushPendingWrites() {
+    if (_habitsWriteScheduled || _habitsWriteWaiters.length > 0) {
+      await _flushHabitsToDisk();
+    }
+    if (_settingsWriteScheduled || _dirtySettingKeys.size > 0) {
+      await _flushSettingsToDisk();
+    }
   },
 
   async ensureLocalBackendAfterLogout() {
@@ -423,34 +541,20 @@ export const storage = {
 
     _habitsCache = myHabits;
 
-    try {
-      await _persistHabitsUpsert(myHabits);
-      localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
-      console.log('[Storage] Saved', myHabits.length, 'habits to IndexedDB');
-    } catch (e) {
-      console.error('[Storage] IndexedDB save failed, using localStorage only:', e);
-      localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
-      _habitsCache = myHabits;
-    }
+    return _queueHabitsWrite();
   },
 
-  async set(key, value) {
+  async set(key, value, { immediate = false } = {}) {
     _settingsCache[key] = value;
-
-    try {
-      await db.put('settings', { key, value });
-    } catch (e) {
-      console.warn('[Storage] IDB write failed, using localStorage fallback');
+    if (immediate) {
+      return _writeSettingNow(key, value);
     }
-
-    try {
-      localStorage.setItem('cultiva-settings', JSON.stringify(_settingsCache));
-    } catch (e) {
-      console.error('[Storage] Failed to sync localStorage:', e);
-    }
+    _dirtySettingKeys.add(key);
+    return _queueSettingsWrite();
   },
 
   async clearAll() {
+    await this.flushPendingWrites();
     console.log('[Storage] Clearing all data...');
     _habitsCache = [];
     _settingsCache = {};
