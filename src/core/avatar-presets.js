@@ -36,14 +36,23 @@ export const AVATAR_BACKGROUNDS = Object.freeze([
   { id: 'pastel-5', css: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' },
   { id: 'gold-1', css: 'linear-gradient(135deg, #f5af19 0%, #f12711 100%)' },
   { id: 'gold-2', css: 'linear-gradient(135deg, #e6b980 0%, #eacda3 100%)' },
-  { id: 'slate-1', css: 'linear-gradient(135deg, #667db6 0%, #0082c8 50%, #667db6 100%)' }
+  { id: 'rowan-mist', css: 'linear-gradient(135deg, #f5f5f5 0%, #d9d9d9 50%, #ffffff 100%)' },
+  { id: 'rowan-ink', css: 'linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 50%, #0b0b0b 100%)' },
+  { id: 'berry-1', css: 'linear-gradient(135deg, #c62828 0%, #ff6f61 100%)' },
+  { id: 'berry-2', css: 'linear-gradient(135deg, #8e24aa 0%, #e040fb 100%)' },
+  { id: 'forest-1', css: 'linear-gradient(135deg, #1b5e20 0%, #66bb6a 100%)' },
+  { id: 'forest-2', css: 'linear-gradient(135deg, #004d40 0%, #26a69a 100%)' },
+  { id: 'sky-1', css: 'linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%)' },
+  { id: 'sky-2', css: 'linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%)' },
+  { id: 'mono-1', css: 'linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%)' },
+  { id: 'mono-2', css: 'linear-gradient(135deg, #bdbdbd 0%, #757575 100%)' }
 ]);
 
 export const AVATAR_EMOJIS = Object.freeze([
   '🌱', '🌿', '🍀', '😊', '😋', '😶‍🌫️', '🌴', '🌵', '🌾', '🤪', '🌸', '🌺', '🌷', '🥳', '🍄', '🍉', '🍋', '👻', '🍏', '🍑',
-  '🦊', '🐶', '🐼', '🐨', '🐯', '🐵', '🐝', '🐋',
-  '⚽', '🎮', '💻', '⌨️', '📷', '🎸', '🧑‍🚀', '🧘', '🧠', '💡', '⏰', '👾', '🚀', '🛸', '🌍', '🧊', '💍', '🎁',
-  '✨', '⭐', '🌟', '🌙', '☀️', '🌊', '⚡', '🔥', '💫', '🥇', '🍃', '☮️', '🕊️',
-  '😎', '🤠', '🧐', '🤓', '😴', '👽', '💀', '👻', '😈', '🤡', '👹', '🫢',
+  '🦊', '🐶', '🐼', '🐨', '🐯', '🐵', '🐝', '🐋', '🦉', '🐸', '🦋', '🐞', '🌻', '🪴', '🍒', '🫐', '🥝', '🍇', '🌰', '🪵',
+  '⚽', '🎮', '💻', '⌨️', '📷', '🎸', '🧑‍🚀', '🧘', '🧠', '💡', '⏰', '👾', '🚀', '🛸', '🌍', '🧊', '💍', '🎁', '📚', '✍️',
+  '✨', '⭐', '🌟', '🌙', '☀️', '🌊', '⚡', '🔥', '💫', '🥇', '🍃', '☮️', '🕊️', '🪶', '❄️', '🌈', '🎯', '🧩', '🎨', '🎧',
+  '😎', '🤠', '🧐', '🤓', '😴', '👽', '💀', '👻', '😈', '🤡', '👹', '🫢', '🫶', '🙌', '💪', '🧡', '🤍',
   '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '❤️‍🔥'
 ]);

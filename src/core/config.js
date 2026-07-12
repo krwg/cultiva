@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
   SETTINGS: 'cultiva-settings'
 };
 
-export const MAX_ACTIVE_HABITS = 9;
+export const MAX_ACTIVE_HABITS = 12;
+export const GARDEN_FULL_ERROR = 'Garden is full';
 export const LEGACY_THRESHOLD = 365;
 export const STREAK_GRACE_DAYS_PER_MONTH = 1;

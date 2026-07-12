@@ -1,0 +1,108 @@
+body.theme-birch {
+    --bg-primary: #ffffff;
+    --bg-secondary: #fafafa;
+    --bg-tertiary: #f2f2f2;
+    --bg-quaternary: #e8e8e8;
+    --text-primary: #0b0b0b;
+    --text-secondary: #484848;
+    --text-tertiary: #7a7a7a;
+    --border-light: #e0e0e0;
+    --border-medium: #c8c8c8;
+    --accent-blue: #0b0b0b;
+    --accent-blue-hover: #1a1a1a;
+    --accent-purple: #2a2a2a;
+    --accent-pink: #333333;
+    --accent-green: #3a3a3a;
+    --accent-red: #1a1a1a;
+    --on-light: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.12);
+    --calendar-0: #f5f5f5;
+    --calendar-1: #e0e0e0;
+    --calendar-2: #bdbdbd;
+    --calendar-3: #757575;
+    --calendar-4: #0b0b0b;
+}
+
+body.theme-birch .add-btn,
+body.theme-birch .add-btn:hover,
+body.theme-birch .btn-primary,
+body.theme-birch .btn-primary:hover,
+body.theme-birch .btn-card-primary:not(.completed),
+body.theme-birch .dropdown-item.primary,
+body.theme-birch .dropdown-item.primary:hover,
+body.theme-birch .dynamic-notification-btn,
+body.theme-birch .day.today,
+body.theme-birch .status-badge.online,
+body.theme-birch .btn-danger:hover,
+body.theme-birch .btn-danger-outline:hover,
+body.theme-birch .btn-card-danger:hover,
+body.theme-birch .plugin-btn-install,
+body.theme-birch .plugin-btn-install:hover,
+body.theme-birch .plugin-btn-get,
+body.theme-birch .plugin-btn-get:hover,
+body.theme-birch .plugin-btn-settings,
+body.theme-birch .plugin-btn-settings:hover,
+body.theme-birch .plugin-btn-uninstall:hover,
+body.theme-birch .event-btn-primary,
+body.theme-birch .event-btn-primary:hover,
+body.theme-birch .release-badge.latest,
+body.theme-birch .update-status-card.updating .status-icon,
+body.theme-birch .update-status-card.available .status-icon,
+body.theme-birch .update-status-card.downloaded .status-icon,
+body.theme-birch .update-status-card.error .status-icon,
+body.theme-birch .user-avatar {
+    color: var(--on-light);
+}
+
+body.theme-birch .plugin-btn-install {
+    background: #0b0b0b;
+    color: var(--on-light);
+}
+
+body.theme-birch .plugin-btn-install:hover {
+    background: #1a1a1a;
+}
+
+body.theme-birch .plugin-btn-get {
+    background: #e8e8e8;
+    color: #0b0b0b;
+}
+
+body.theme-birch .plugin-btn-get:hover {
+    background: #d8d8d8;
+}
+
+body.theme-birch .plugin-btn-settings {
+    color: var(--text-secondary);
+    border: 1px solid var(--border-medium);
+    background: var(--bg-tertiary);
+}
+
+body.theme-birch .plugin-btn-settings:hover {
+    background: var(--bg-quaternary);
+    color: var(--text-primary);
+}
+
+body.theme-birch .btn-primary {
+    background: #0b0b0b;
+}
+
+body.theme-birch .btn-primary:hover {
+    background: #1a1a1a;
+}
+
+body.theme-birch .user-btn[aria-expanded="true"] {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: var(--accent-blue);
+}
+
+body.theme-birch .dropdown-item.primary:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body.theme-birch .accent-color-row input[type="color"] {
+    background: var(--bg-tertiary);
+}

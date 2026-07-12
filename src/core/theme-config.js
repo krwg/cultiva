@@ -2,11 +2,11 @@
 export const THEME_BODY_IDS = [
   'light', 'dark', 'pink', 'moon', 'evergreen', 'blossom', 'ocean', 'sunset',
   'frost', 'cedar', 'dusk', 'meadow',
-  'orchard', 'honeycrisp', 'inkwell', 'sequoia', 'cypress', 'linden', 'rowan'
+  'orchard', 'honeycrisp', 'inkwell', 'sequoia', 'cypress', 'linden', 'rowan', 'birch'
 ];
 
 export const THEMES_LIGHT_GROUP = [
-  'light', 'blossom', 'frost', 'cedar', 'meadow', 'orchard', 'honeycrisp', 'linden'
+  'light', 'blossom', 'frost', 'cedar', 'meadow', 'orchard', 'honeycrisp', 'linden', 'birch'
 ];
 
 export const THEMES_DARK_GROUP = [
