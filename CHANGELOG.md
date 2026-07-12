@@ -4,6 +4,19 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.0.0] — Rowan (unreleased)
+
+**Codename:** Rowan · **Registry:** [cultiva-plugins 3.1.1](https://github.com/krwg/cultiva-plugins)
+
+### Added
+- **Rowan** theme — graphite black-and-white palette (`#0b0b0b` / `#f4f4f4`)
+- **Rowan Cluster** ambient background — «Pulsing Cluster»: zigzag branch tremor, pinnate leaf flicker, pulsing berry clusters with radar rings and falling particles
+- `src/core/rowan-cluster-bg.js` canvas animation with `prefers-reduced-motion` static fallback
+
+### Changed
+- Version bumped to **2.0.0** (Rowan); no GitHub Release yet
+- Calendar page gains `bg-linden-bloom` and `bg-rowan-cluster` layers
+
 ## [1.7.0] — Linden · 2026-07-09
 
 **Codename:** Linden · **Registry:** [cultiva-plugins 3.0.2](https://github.com/krwg/cultiva-plugins)

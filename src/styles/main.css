@@ -2591,6 +2591,57 @@ body.theme-linden .btn-primary:hover {
     background: var(--accent-blue-hover);
 }
 
+body.theme-rowan {
+    --bg-primary: #0b0b0b;
+    --bg-secondary: #111111;
+    --bg-tertiary: #1a1a1a;
+    --bg-quaternary: #242424;
+    --text-primary: #f4f4f4;
+    --text-secondary: #b8b8b8;
+    --text-tertiary: #7a7a7a;
+    --border-light: #2a2a2a;
+    --border-medium: #3a3a3a;
+    --accent-blue: #e8e8e8;
+    --accent-blue-hover: #ffffff;
+    --accent-purple: #c8c8c8;
+    --accent-pink: #d0d0d0;
+    --accent-green: #a8a8a8;
+    --accent-red: #f0f0f0;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.65);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.72);
+    --calendar-0: #141414;
+    --calendar-1: #2a2a2a;
+    --calendar-2: #454545;
+    --calendar-3: #6a6a6a;
+    --calendar-4: #d8d8d8;
+}
+
+body.theme-rowan .btn-primary {
+    background: #f0f0f0;
+    color: #0b0b0b;
+}
+
+body.theme-rowan .btn-primary:hover {
+    background: #ffffff;
+}
+
+.bg-rowan-cluster {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: #0b0b0b;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.bg-rowan-cluster .rowan-cluster-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .bg-linden-bloom {
     position: fixed;
     inset: 0;

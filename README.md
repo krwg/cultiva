@@ -6,6 +6,7 @@
 **A gamified habit tracker where consistency isn’t tracked — it’s grown.**
 
 [![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=flat-square&color=34c759&label=1.7.0%20Linden)](https://github.com/krwg/cultiva/releases/latest)
+[![Dev](https://img.shields.io/badge/dev-2.0.0%20Rowan-111111?style=flat-square&labelColor=0b0b0b&color=f4f4f4)](CHANGELOG.md)
 [![License](https://img.shields.io/github/license/krwg/cultiva?style=flat-square&color=af52de)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Win%20%7C%20macOS%20%7C%20Linux-34c759?style=flat-square)](https://github.com/krwg/cultiva/releases/latest)
 [![Stars](https://img.shields.io/github/stars/krwg/cultiva?style=flat-square&color=ffcc00)](https://github.com/krwg/cultiva/stargazers)
@@ -69,6 +70,13 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **18 themes** | Including **Linden** and **Cypress** |
 | **13 ambient backgrounds** | Plus custom photo — shared with calendar |
 | **Cross-platform** | Windows, macOS (Intel + ARM), Linux builds in CI |
+
+### In development — 2.0.0 Rowan (unreleased)
+
+| | |
+|---|---|
+| **Rowan theme** | Strict graphite black-and-white palette |
+| **Rowan Cluster background** | «Pulsing Cluster» — trembling branches, flickering pinnate leaves, pulsing berry probes with radar rings |
 
 ---
 

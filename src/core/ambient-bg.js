@@ -1,3 +1,4 @@
+import { mountRowanCluster, stopRowanCluster } from './rowan-cluster-bg.js';
 import { AMBIENT_BG_LAYER_IDS, LS_CUSTOM_BG_DATA, getWithBgClassList } from './theme-config.js';
 
 const MAX_CUSTOM_BYTES = 1_400_000;
@@ -10,6 +11,9 @@ function hideAllLayers(doc) {
   [...AMBIENT_BG_LAYER_IDS, 'custom'].forEach((id) => {
     const el = doc.getElementById(`bg-${id}`);
     if (el) {
+      if (id === 'rowan-cluster') {
+        stopRowanCluster(el);
+      }
       el.style.display = 'none';
       if (id === 'custom') {
         el.style.backgroundImage = 'none';
@@ -64,6 +68,7 @@ export function applyAmbientBackground(doc, body, bg) {
   if (bg === 'dew') { generateDew(container); }
   if (bg === 'sunbeam') { generateSunbeams(container); }
   if (bg === 'linden-bloom') { generateLindenLeaves(container); }
+  if (bg === 'rowan-cluster') { mountRowanCluster(container); }
 }
 
 export function saveCustomBackgroundFromFile(file) {

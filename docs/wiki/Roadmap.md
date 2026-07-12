@@ -1,5 +1,17 @@
 # Roadmap
 
+## Shipped in 2.0.0 · Rowan (unreleased)
+
+| Area | Delivered |
+|------|-----------|
+| Rowan theme | Graphite black-and-white palette (`#0b0b0b` / `#f4f4f4`) |
+| Rowan Cluster background | Canvas «Pulsing Cluster» — branch tremor, pinnate leaf flicker, pulsing berries with radar rings |
+| Calendar parity | `bg-linden-bloom` and `bg-rowan-cluster` layers on calendar page |
+
+No GitHub Release yet — version **2.0.0** tracked in `cultiva.release.json` and commits.
+
+---
+
 ## Shipped in 1.7.0 · Linden (2026-07-09)
 
 | Area | Delivered |
@@ -33,6 +45,7 @@ Community-driven via [Issues](https://github.com/krwg/cultiva/issues) and [Discu
 
 | Version | Codename |
 |---------|----------|
+| 2.0.0 | **Rowan** (unreleased) |
 | 1.7.0 | **Linden** |
 | 1.1.0 | Cypress |
 | 0.4.x | Coconut, Sequoia, … |
