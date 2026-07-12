@@ -111,9 +111,7 @@ function resolveHeaderModalMethod(instance) {
 const pluginHooks = {
   onHabitComplete: [],
   onAppStart: [],
-  onSettingsChange: [],
-  renderHeaderItem: [],
-  renderGardenWidget: []
+  onSettingsChange: []
 };
 
 let _initPromise = null;
@@ -430,7 +428,6 @@ function _wireSandboxHost(host, pluginId, manifest) {
       position: data.position || 'top',
       render() {}
     };
-    pluginManager.triggerHook('renderGardenWidget', plugin.gardenWidget);
   });
 
   host.setHandler('onGardenHtml', (data) => {
@@ -651,7 +648,6 @@ export const pluginManager = {
 
   _removePluginStyles(pluginId) {
     document.getElementById(`cultiva-plugin-style-${pluginId}`)?.remove();
-    document.getElementById('weather-plugin-styles')?.remove();
   },
 
   async loadPlugin(pluginId) {
@@ -797,8 +793,6 @@ export const pluginManager = {
       onClick: data.hasOnClick ? () => plugin.sandbox.invokeHeaderOnClick() : null
     };
 
-    this.triggerHook('renderHeaderItem', plugin.headerItem);
-
     if (typeof window.renderPluginHeaderItems === 'function') {
       setTimeout(() => window.renderPluginHeaderItems(), 50);
     }
@@ -823,8 +817,6 @@ export const pluginManager = {
       render: config.render,
       position: config.position || 'top'
     };
-
-    this.triggerHook('renderGardenWidget', plugin.gardenWidget);
 
     if (config.render && typeof config.render === 'function') {
       const container = document.getElementById('garden-container');
@@ -865,6 +857,19 @@ export const pluginManager = {
         }
       }
     }
+  },
+
+  invokePluginHook(pluginId, hookName, args = []) {
+    const plugin = plugins.get(pluginId);
+    if (plugin && plugin.enabled && plugin.sandbox && plugin.sandbox.hasHook(hookName)) {
+      try {
+        plugin.sandbox.invokeHook(hookName, args);
+        return true;
+      } catch (e) {
+        console.error('[PluginManager] Hook error:', pluginId, hookName, e);
+      }
+    }
+    return false;
   },
 
   async installPlugin(pluginId) {

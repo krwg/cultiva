@@ -420,7 +420,9 @@ window.openPluginSettings = async (pluginId) => {
     await storage.set(prefix + 'settings', next);
     close();
     showNotification('', t.pluginSettingsSaved || 'Plugin settings saved');
-    if (pluginData.sandbox) {
+    const payload = { ...settings, pluginId, pluginSettings: next };
+    const hookFired = pluginManager.invokePluginHook(pluginId, 'onSettingsChange', [payload]);
+    if (!hookFired && pluginData.sandbox) {
       try {
         await pluginData.sandbox.runLifecycle('onDisable');
         await pluginData.sandbox.runLifecycle('onEnable');
