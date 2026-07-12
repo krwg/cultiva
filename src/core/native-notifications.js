@@ -34,6 +34,9 @@ function countOpenHabits(todayStr) {
     if ((h.progress ?? 0) >= LEGACY_THRESHOLD) {
       continue;
     }
+    if (!habits.isDueToday(h, todayStr)) {
+      continue;
+    }
     const open =
       h.trackType === 'quantity'
         ? habits.quantityDayProgress(h, todayStr) < habits.quantityTarget(h)
@@ -46,6 +49,49 @@ function countOpenHabits(todayStr) {
     }
   }
   return { n, names };
+}
+
+function habitReminderKey(habitId, todayStr) {
+  return `cultiva-native-notify-habit-${habitId}-${todayStr}`;
+}
+
+async function maybeNotifyPerHabitReminders(settings) {
+  if (!settings.nativeNotifyEnabled) {
+    return;
+  }
+  const todayStr = todayKeyInTz();
+  const mins = nowMinutesInTz();
+  const t = tFor(settings);
+  for (const h of habits.getAll()) {
+    if (!h.reminderEnabled || !habits.isDueToday(h, todayStr)) {
+      continue;
+    }
+    const hm = parseHM(h.reminderTime || '09:00');
+    if (hm === null) {
+      continue;
+    }
+    if (Math.abs(mins - hm) > 5) {
+      continue;
+    }
+    const key = habitReminderKey(h.id, todayStr);
+    if (localStorage.getItem(key)) {
+      continue;
+    }
+    const open =
+      h.trackType === 'quantity'
+        ? habits.quantityDayProgress(h, todayStr) < habits.quantityTarget(h)
+        : h.lastCompleted !== todayStr;
+    if (!open) {
+      localStorage.setItem(key, '1');
+      continue;
+    }
+    const title = t.habitReminderTitle || 'Habit reminder';
+    const body = (t.habitReminderBody || 'Time for {name}').replace('{name}', h.name);
+    const r = await window.electron.showNativeNotification({ title, body });
+    if (r && r.ok) {
+      localStorage.setItem(key, '1');
+    }
+  }
 }
 
 function parseHM(startStr) {
@@ -158,7 +204,7 @@ export function initNativeNotificationsScheduler(getSettings) {
     if (!s || s.nativeNotifyEnabled === false) {
       return;
     }
-    Promise.all([maybeNotifyHabits(s), maybeNotifyCalendar(s)]).catch(() => {});
+    Promise.all([maybeNotifyHabits(s), maybeNotifyCalendar(s), maybeNotifyPerHabitReminders(s)]).catch(() => {});
   };
   const id = setInterval(tick, 60 * 1000);
   setTimeout(tick, 5000);

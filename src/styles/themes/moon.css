@@ -1,0 +1,48 @@
+body.theme-moon {
+  --bg-primary: #0f1426;
+  --bg-secondary: #1a1f3a;
+  --bg-tertiary: #252a4a;
+  --text-primary: #e6e6ff;
+  --text-secondary: #b3b3d9;
+  --text-tertiary: #8080b3;
+  --border-light: #33385c;
+  --border-medium: #4d527a;
+  --accent-blue: #7aa2ff;
+  --accent-blue-hover: #99baff;
+  --accent-purple: #b388ff;
+  --accent-pink: #ff88cc;
+  --accent-green: #7fffad;
+  --accent-red: #ff6b8b;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.6);
+  --calendar-0: #1a1f3a;
+  --calendar-1: #2a2f5a;
+  --calendar-2: #3a3f7a;
+  --calendar-3: #4a4f9a;
+  --calendar-4: #7aa2ff;
+}
+
+body.theme-moon .app-header,
+
+body.theme-moon .calendar-header,
+
+body.theme-moon .modal-sheet,
+
+body.theme-moon .habit-card,
+
+body.theme-moon .btn-secondary {
+  background: var(--bg-primary);
+  border-color: var(--border-light);
+}
+
+body.theme-moon .btn-primary {
+  background: var(--accent-blue);
+}
+
+body.theme-moon .btn-primary:hover {
+  background: var(--accent-purple);
+}
+
+body.theme-moon .accent-color-row input[type="color"],

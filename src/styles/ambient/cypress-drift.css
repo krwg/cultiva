@@ -1,0 +1,19 @@
+.bg-cypress-drift {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(180deg, #0a1210 0%, #152019 50%, #1a2820 100%);
+    overflow: hidden;
+}
+
+.bg-cypress-drift .cypress-needle {
+    position: absolute;
+    top: -4vh;
+    width: 3px;
+    height: 14px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3d6b52, #2a4a38);
+    opacity: 0.75;
+    animation: cypressFall linear infinite;
+    pointer-events: none;
+}

@@ -1,0 +1,98 @@
+body.theme-rowan {
+    --bg-primary: #0b0b0b;
+    --bg-secondary: #111111;
+    --bg-tertiary: #1a1a1a;
+    --bg-quaternary: #242424;
+    --text-primary: #f4f4f4;
+    --text-secondary: #b8b8b8;
+    --text-tertiary: #7a7a7a;
+    --border-light: #2a2a2a;
+    --border-medium: #3a3a3a;
+    --accent-blue: #e8e8e8;
+    --accent-blue-hover: #ffffff;
+    --accent-purple: #c8c8c8;
+    --accent-pink: #d0d0d0;
+    --accent-green: #d8d8d8;
+    --accent-red: #f0f0f0;
+    --on-light: #0b0b0b;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.65);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.72);
+    --calendar-0: #141414;
+    --calendar-1: #2a2a2a;
+    --calendar-2: #454545;
+    --calendar-3: #6a6a6a;
+    --calendar-4: #d8d8d8;
+}
+
+body.theme-rowan .add-btn,
+
+body.theme-rowan .add-btn:hover,
+
+body.theme-rowan .btn-primary,
+
+body.theme-rowan .btn-primary:hover,
+
+body.theme-rowan .btn-card-primary:not(.completed),
+
+body.theme-rowan .dropdown-item.primary,
+
+body.theme-rowan .dropdown-item.primary:hover,
+
+body.theme-rowan .dynamic-notification-btn,
+
+body.theme-rowan .day.today,
+
+body.theme-rowan .status-badge.online,
+
+body.theme-rowan .btn-danger:hover,
+
+body.theme-rowan .btn-danger-outline:hover,
+
+body.theme-rowan .btn-card-danger:hover,
+
+body.theme-rowan .plugin-btn-install,
+
+body.theme-rowan .plugin-btn-install:hover,
+
+body.theme-rowan .plugin-btn-uninstall:hover,
+
+body.theme-rowan .event-btn-primary,
+
+body.theme-rowan .event-btn-primary:hover,
+
+body.theme-rowan .release-badge.latest,
+
+body.theme-rowan .update-status-card.updating .status-icon,
+
+body.theme-rowan .update-status-card.available .status-icon,
+
+body.theme-rowan .update-status-card.downloaded .status-icon,
+
+body.theme-rowan .update-status-card.error .status-icon,
+
+body.theme-rowan .user-avatar {
+    color: var(--on-light);
+}
+
+body.theme-rowan .btn-primary {
+    background: #f0f0f0;
+}
+
+body.theme-rowan .btn-primary:hover {
+    background: #ffffff;
+}
+
+body.theme-rowan .user-btn[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-blue);
+}
+
+body.theme-rowan .dropdown-item.primary:hover {
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.12);
+}
+
+body.theme-rowan .accent-color-row input[type="color"] {
+    background: var(--bg-tertiary);
+}

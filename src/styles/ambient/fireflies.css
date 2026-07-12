@@ -1,0 +1,21 @@
+.bg-fireflies {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+    background: radial-gradient(circle at 50% 50%, #0d1f1a 0%, #05100c 100%);
+    overflow: hidden;
+}
+
+.bg-fireflies .firefly {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #a8ff60;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #7aff47, 0 0 30px #4caf50;
+    animation: fireflyFloat ease-in-out infinite;
+    opacity: 0;
+}

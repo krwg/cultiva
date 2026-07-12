@@ -16,6 +16,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 - **Rowan** theme contrast — black text on white/light accent surfaces; white body text on dark backgrounds
 
+### Added (2.0.0 backlog)
+- Habit schedule: daily, weekdays, N times per week (`habit-schedule.js`)
+- Per-habit native reminders at custom times
+- Calendar plugin rail (`onCalendarMount`, `registerCalendarWidget`)
+- Lazy-loaded theme and ambient CSS chunks (`shell.css` + `public/styles/themes|ambient`)
+- System tray quick-complete with hide-to-tray
+- Plugin RPC: `app.getWeeklySummary`, `app.completeHabit` (`habits.write`)
+- Tests: auth, hotkeys, modals, habit schedule, plugin RPC
+
 ### Changed
 - Version bumped to **2.0.0** (Rowan); no GitHub Release yet
 - Calendar page gains `bg-linden-bloom` and `bg-rowan-cluster` layers

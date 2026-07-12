@@ -1,0 +1,28 @@
+body.theme-inkwell {
+    --bg-primary: #1c1c1e;
+    --bg-secondary: #2c2c2e;
+    --bg-tertiary: #3a3a3c;
+    --bg-quaternary: #48484a;
+    --text-primary: #f2f2f7;
+    --text-secondary: #aeaeb2;
+    --text-tertiary: #8e8e93;
+    --border-light: #3a3a3c;
+    --border-medium: #545458;
+    --accent-blue: #0a84ff;
+    --accent-blue-hover: #409cff;
+    --accent-purple: #bf5af2;
+    --accent-pink: #ff375f;
+    --accent-green: #30d158;
+    --accent-red: #ff453a;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.5);
+    --calendar-0: #2c2c2e;
+    --calendar-1: #3a3a3c;
+    --calendar-2: #545458;
+    --calendar-3: #0a84ff;
+    --calendar-4: #64d2ff;
+}
+
+body.theme-inkwell .accent-color-row input[type="color"],

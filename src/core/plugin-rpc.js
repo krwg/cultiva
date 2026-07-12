@@ -10,7 +10,9 @@ export const PLUGIN_RPC_METHODS = new Set([
   'app.getToday',
   'app.getTimezone',
   'app.getSettings',
-  'app.getHabits'
+  'app.getHabits',
+  'app.getWeeklySummary',
+  'app.completeHabit'
 ]);
 
 export function isAllowedPluginRpcMethod(method) {

@@ -1,0 +1,6 @@
+body.theme-dark {
+    --bg-primary: #000000; --bg-secondary: #1c1c1e; --bg-tertiary: #2c2c2e;
+    --text-primary: #f5f5f7; --text-secondary: #98989d; --border-light: #38383a;
+}
+
+body.theme-dark .accent-color-row input[type="color"],

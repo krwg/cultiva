@@ -1,4 +1,5 @@
 import { mountRowanCluster, stopRowanCluster } from './rowan-cluster-bg.js';
+import { loadAmbientCss } from './theme-css-loader.js';
 import { AMBIENT_BG_LAYER_IDS, LS_CUSTOM_BG_DATA, getWithBgClassList } from './theme-config.js';
 
 const MAX_CUSTOM_BYTES = 1_400_000;
@@ -54,6 +55,7 @@ export function applyAmbientBackground(doc, body, bg) {
   const container = doc.getElementById(`bg-${bg}`);
   if (!container) { return; }
 
+  void loadAmbientCss(bg);
   container.style.display = 'block';
   body.classList.add(`with-bg-${bg}`, 'with-ambient-bg');
 

@@ -1,0 +1,22 @@
+.bg-ember {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+    background: radial-gradient(circle at 50% 100%, #3a1810 0%, #0c0606 55%);
+    overflow: hidden;
+}
+
+.bg-ember .ember {
+    position: absolute;
+    bottom: -2vh;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #ffb347;
+    box-shadow: 0 0 14px #ff6b2c, 0 0 28px rgba(255, 140, 60, 0.35);
+    animation: emberRise linear infinite;
+    pointer-events: none;
+}

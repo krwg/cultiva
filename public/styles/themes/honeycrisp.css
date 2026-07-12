@@ -1,0 +1,26 @@
+body.theme-honeycrisp {
+    --bg-primary: #fff9f0;
+    --bg-secondary: #fff2e0;
+    --bg-tertiary: #ffe8cc;
+    --bg-quaternary: #ffd9a8;
+    --text-primary: #2a1a08;
+    --text-secondary: #5c4020;
+    --text-tertiary: #8a6840;
+    --border-light: #e8c896;
+    --border-medium: #d4a86a;
+    --accent-blue: #e89b2a;
+    --accent-blue-hover: #d08010;
+    --accent-purple: #c47830;
+    --accent-pink: #e07050;
+    --accent-green: #6a9e5a;
+    --accent-red: #d94a3d;
+    --shadow-sm: 0 2px 8px rgba(232, 155, 42, 0.08);
+    --shadow-md: 0 4px 16px rgba(232, 155, 42, 0.12);
+    --shadow-lg: 0 8px 32px rgba(232, 155, 42, 0.14);
+    --shadow-xl: 0 12px 48px rgba(232, 155, 42, 0.18);
+    --calendar-0: #fff2e0;
+    --calendar-1: #ffe0b8;
+    --calendar-2: #ffc878;
+    --calendar-3: #f0a040;
+    --calendar-4: #d88820;
+}

@@ -1,0 +1,19 @@
+.bg-breeze {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+    background: linear-gradient(185deg, #eef6ff 0%, #e2ecf8 40%, #f4f9ff 100%);
+    overflow: hidden;
+}
+
+.bg-breeze .breeze-line {
+    position: absolute;
+    width: 1px;
+    height: 28vh;
+    background: linear-gradient(180deg, transparent, rgba(100, 150, 200, 0.12), transparent);
+    animation: breezeShift linear infinite;
+    pointer-events: none;
+}

@@ -5,6 +5,7 @@ const pkg = require('../package.json');
 const isDev = process.env.NODE_ENV === 'development';
 const { setupPluginIPC } = require('./plugin-ipc.cjs');
 const discord = require('./lib/discord-rpc.cjs');
+const trayMod = require('./lib/tray.cjs');
 const { setupAutoUpdater, registerUpdaterIpc } = require('./lib/auto-updater.cjs');
 const mainWindowMod = require('./lib/main-window.cjs');
 const { registerCoreIpc } = require('./lib/ipc-main-handlers.cjs');
@@ -49,10 +50,15 @@ app.whenReady().then(() => {
     dialog,
     safeStorage,
     Notification,
-    resolveAppIconPath: mainWindowMod.resolveAppIconPath
+    resolveAppIconPath: mainWindowMod.resolveAppIconPath,
+    trayMod
   });
   registerBackupIpc(ipcMain, { getMainWindow, dialog });
   registerAutoBackupIpc(ipcMain);
+  trayMod.initTray({
+    getMainWindow,
+    resolveAppIconPath: mainWindowMod.resolveAppIconPath
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -63,9 +69,13 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   discord.shutdownDiscordRPC();
-  if (process.platform !== 'darwin') {
-    app.quit();
+  if (process.platform === 'darwin') {
+    return;
   }
+  if (!app.isQuitting) {
+    return;
+  }
+  app.quit();
 });
 
 app.on('before-quit', () => {

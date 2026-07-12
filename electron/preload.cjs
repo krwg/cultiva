@@ -18,6 +18,8 @@ contextBridge.exposeInMainWorld('electron', {
   readPluginFile: (filePath) => ipcRenderer.invoke('plugin:read-file', filePath),
 
   showNativeNotification: (payload) => ipcRenderer.invoke('native-notification:show', payload),
+  syncTrayHabits: (habits) => ipcRenderer.invoke('tray:sync-habits', habits),
+  onTrayCompleteHabit: (callback) => ipcRenderer.on('tray:complete-habit', (_event, habitId) => callback(habitId)),
 
   pluginHttpGet: (url) => ipcRenderer.invoke('plugin:http-get', url),
   installPlugin: (pluginId, files) => ipcRenderer.invoke('plugin:install', pluginId, files),

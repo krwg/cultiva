@@ -1,0 +1,11 @@
+@keyframes lindenFall {
+    0% {
+        transform: translate3d(0, -8vh, 0) rotate(0deg);
+        opacity: 0;
+    }
+    8% { opacity: 0.85; }
+    100% {
+        transform: translate3d(var(--drift, 0px), 108vh, 0) rotate(var(--spin, 180deg));
+        opacity: 0.2;
+    }
+}

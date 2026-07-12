@@ -1,0 +1,34 @@
+body.theme-blossom {
+  --bg-primary: #fff5f7;
+  --bg-secondary: #ffe8ed;
+  --bg-tertiary: #ffd6e0;
+  --bg-quaternary: #ffc2d1;
+  --text-primary: #4a1525;
+  --text-secondary: #8a3a55;
+  --text-tertiary: #b36a85;
+  --border-light: #ffb3c6;
+  --border-medium: #ff8fa3;
+  --accent-blue: #e85d8a;
+  --accent-blue-hover: #f06a9a;
+  --accent-purple: #d44a7a;
+  --accent-pink: #ff85a2;
+  --accent-green: #7eb87a;
+  --accent-red: #e53935;
+  --shadow-sm: 0 2px 8px rgba(232, 93, 138, 0.08);
+  --shadow-md: 0 4px 16px rgba(232, 93, 138, 0.12);
+  --shadow-lg: 0 8px 32px rgba(232, 93, 138, 0.16);
+  --shadow-xl: 0 12px 48px rgba(232, 93, 138, 0.2);
+  --calendar-0: #ffe8ed;
+  --calendar-1: #ffc9d6;
+  --calendar-2: #ffa5bc;
+  --calendar-3: #ff7da0;
+  --calendar-4: #e85d8a;
+}
+
+body.theme-blossom .btn-primary {
+  background: var(--accent-pink);
+}
+
+body.theme-blossom .btn-primary:hover {
+  background: var(--accent-purple);
+}

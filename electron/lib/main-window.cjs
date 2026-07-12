@@ -202,6 +202,14 @@ function createMainWindow({
     console.error('[Electron] Render process gone:', details);
   });
 
+  mainWindow.on('close', (event) => {
+    const { app } = require('electron');
+    if (!app.isQuitting) {
+      event.preventDefault();
+      mainWindow.hide();
+    }
+  });
+
   mainWindow.on('closed', () => {
     discord.onMainWindowClosed();
     setMainWindow(null);

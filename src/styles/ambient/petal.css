@@ -1,0 +1,22 @@
+.bg-petal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+    background: linear-gradient(180deg, #fff5f8 0%, #ffe8f0 45%, #ffd6e8 100%);
+    overflow: hidden;
+}
+
+.bg-petal .petal {
+    position: absolute;
+    top: -5vh;
+    width: 10px;
+    height: 14px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.85), rgba(255, 228, 236, 0.5));
+    opacity: 0.85;
+    animation: petalFall linear infinite;
+    pointer-events: none;
+}

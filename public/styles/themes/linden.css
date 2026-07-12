@@ -1,0 +1,38 @@
+body.theme-linden {
+    --bg-primary: #f4f8ef;
+    --bg-secondary: #e8f0df;
+    --bg-tertiary: #d8e6cb;
+    --bg-quaternary: #c5d8b2;
+    --text-primary: #1f2e1a;
+    --text-secondary: #3f5536;
+    --text-tertiary: #6a7f5c;
+    --border-light: #c8d9b8;
+    --border-medium: #a8c092;
+    --accent-blue: #5f9f4f;
+    --accent-blue-hover: #4f8a42;
+    --accent-purple: #8ab06a;
+    --accent-pink: #d4b86a;
+    --accent-green: #4f8f3f;
+    --accent-red: #c45a4a;
+    --shadow-sm: 0 2px 8px rgba(47, 79, 35, 0.08);
+    --shadow-md: 0 4px 16px rgba(47, 79, 35, 0.12);
+    --shadow-lg: 0 8px 32px rgba(47, 79, 35, 0.16);
+    --shadow-xl: 0 12px 48px rgba(47, 79, 35, 0.2);
+    --calendar-0: #e8f0df;
+    --calendar-1: #cfe0bc;
+    --calendar-2: #a8c78e;
+    --calendar-3: #7cab62;
+    --calendar-4: #5f9f4f;
+}
+
+body.theme-linden .btn-primary {
+    background: var(--accent-blue);
+}
+
+body.theme-linden .btn-primary:hover {
+    background: var(--accent-blue-hover);
+}
+
+body.theme-linden .accent-color-row input[type="color"] {
+    background: var(--bg-tertiary);
+}

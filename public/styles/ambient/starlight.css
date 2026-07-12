@@ -1,0 +1,19 @@
+.bg-starlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -2;
+  background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a15 100%);
+  overflow: hidden;
+}
+
+.bg-starlight .star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: starTwinkle 3s ease-in-out infinite;
+}

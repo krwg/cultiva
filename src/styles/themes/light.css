@@ -1,0 +1,4 @@
+body.theme-light {
+    --bg-primary: #ffffff; --bg-secondary: #f5f5f7; --bg-tertiary: #efeff4;
+    --text-primary: #1d1d1f; --text-secondary: #6e6e73; --border-light: #d2d2d7;
+}

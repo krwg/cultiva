@@ -79,7 +79,9 @@ function buildSandboxBootstrapDocument(pluginId) {
         getVersion: function () { return rpc('app.getVersion', []); },
         getToday: function () { return rpc('app.getToday', []); },
         getTimezone: function () { return rpc('app.getTimezone', []); },
-        getSettings: function () { return rpc('app.getSettings', []); }
+        getSettings: function () { return rpc('app.getSettings', []); },
+        getWeeklySummary: function () { return rpc('app.getWeeklySummary', []); },
+        completeHabit: function (id) { return rpc('app.completeHabit', [id]); }
       },
       ui: {
         registerHeaderItem: function (config) {
@@ -151,6 +153,18 @@ function buildSandboxBootstrapDocument(pluginId) {
         },
         showNotification: function (icon, text) {
           return rpc('ui.showNotification', [icon != null ? icon : '\\uD83D\\uDD0C', text != null ? String(text) : '']);
+        },
+        registerCalendarWidget: function (config) {
+          var position = (config && config.position) || 'top';
+          send({
+            type: 'CALENDAR_HTML',
+            position: position,
+            html: config && config.html != null ? String(config.html) : ''
+          });
+          send({ type: 'CALENDAR_REGISTER', position: position });
+        },
+        updateCalendarHtml: function (html) {
+          send({ type: 'CALENDAR_HTML', position: 'top', html: String(html) });
         }
       }
     };
@@ -395,6 +409,20 @@ export class PluginSandboxHost {
     if (d.type === 'GARDEN_HTML') {
       if (this._handlers.onGardenHtml) {
         this._handlers.onGardenHtml(d);
+      }
+      return;
+    }
+
+    if (d.type === 'CALENDAR_REGISTER') {
+      if (this._handlers.onCalendarRegister) {
+        this._handlers.onCalendarRegister(d);
+      }
+      return;
+    }
+
+    if (d.type === 'CALENDAR_HTML') {
+      if (this._handlers.onCalendarHtml) {
+        this._handlers.onCalendarHtml(d);
       }
       return;
     }

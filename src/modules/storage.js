@@ -1,4 +1,5 @@
 import { db } from './db.js';
+import { normalizeSchedule } from '../core/habit-schedule.js';
 import {
   STORAGE_BACKEND_IDS,
   normalizeStorageBackendId,
@@ -211,6 +212,12 @@ function migrateHabit(habit) {
     migrated.sortOrder = migrated.createdAt
       ? new Date(migrated.createdAt).getTime()
       : Date.now();
+  }
+
+  migrated.schedule = normalizeSchedule(migrated.schedule);
+  migrated.reminderEnabled = migrated.reminderEnabled === true;
+  if (!migrated.reminderTime || typeof migrated.reminderTime !== 'string') {
+    migrated.reminderTime = '09:00';
   }
 
   migrated.updatedAt = Date.now();

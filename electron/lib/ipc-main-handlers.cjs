@@ -8,7 +8,8 @@ function registerCoreIpc(ipcMain, {
   dialog,
   safeStorage,
   Notification,
-  resolveAppIconPath
+  resolveAppIconPath,
+  trayMod
 }) {
   ipcMain.handle('save-file', async (event, data, fileName) => {
     const mainWindow = getMainWindow();
@@ -114,6 +115,17 @@ function registerCoreIpc(ipcMain, {
       const buf = Buffer.from(String(b64), 'base64');
       const data = safeStorage.decryptString(buf);
       return { ok: true, data };
+    } catch (e) {
+      return { ok: false, error: e && e.message ? e.message : String(e) };
+    }
+  });
+
+  ipcMain.handle('tray:sync-habits', (event, habitList) => {
+    try {
+      if (trayMod && typeof trayMod.updateTrayHabits === 'function') {
+        trayMod.updateTrayHabits(habitList);
+      }
+      return { ok: true };
     } catch (e) {
       return { ok: false, error: e && e.message ? e.message : String(e) };
     }

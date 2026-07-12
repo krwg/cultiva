@@ -1,0 +1,18 @@
+.bg-sunbeam {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(180deg, #1a2418 0%, #2a3820 55%, #1a2010 100%);
+    overflow: hidden;
+}
+
+.bg-sunbeam .sunbeam-ray {
+    position: absolute;
+    top: -10%;
+    width: 8%;
+    height: 120%;
+    background: linear-gradient(180deg, rgba(255,236,180,0.18), transparent 70%);
+    transform-origin: top center;
+    animation: sunbeamSway 18s ease-in-out infinite;
+    pointer-events: none;
+}

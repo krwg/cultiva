@@ -35,6 +35,7 @@ import { initHotkeys } from './app/hotkeys.js';
 import { initContextMenu } from './app/context-menu.js';
 import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
 import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats, moveFocusedHabit } from './app/garden-controller.js';
+import { syncTrayHabits } from './app/tray-sync.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
 import { bindStorageBackendSettings, refreshStorageBackendControls } from './app/storage-settings-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
@@ -834,6 +835,34 @@ function initEvents() {
     });
   });
 
+  const scheduleModeEl = document.getElementById('habit-schedule-mode');
+  const scheduleWeekdaysWrap = document.getElementById('schedule-weekdays-wrap');
+  const scheduleWeeklyWrap = document.getElementById('schedule-weekly-wrap');
+  const syncScheduleUi = () => {
+    const mode = scheduleModeEl?.value || 'daily';
+    if (scheduleWeekdaysWrap) {
+      scheduleWeekdaysWrap.style.display = mode === 'weekdays' ? '' : 'none';
+    }
+    if (scheduleWeeklyWrap) {
+      scheduleWeeklyWrap.style.display = mode === 'weekly' ? '' : 'none';
+    }
+  };
+  scheduleModeEl?.addEventListener('change', syncScheduleUi);
+  syncScheduleUi();
+
+  function readScheduleFromForm() {
+    const mode = scheduleModeEl?.value || 'daily';
+    const weekdays = [];
+    document.querySelectorAll('#schedule-weekdays input[type="checkbox"]:checked').forEach((el) => {
+      weekdays.push(parseInt(el.value, 10));
+    });
+    return {
+      mode,
+      weekdays,
+      timesPerWeek: parseInt(document.getElementById('habit-times-per-week')?.value, 10) || 3
+    };
+  }
+
   document.getElementById('quantity-log-save')?.addEventListener('click', () => {
     const t = TRANSLATIONS[settings.lang];
     const raw = quantityLogInput?.value;
@@ -867,7 +896,10 @@ function initEvents() {
           category: document.getElementById('habit-category')?.value || '',
           trackType,
           target: trackType === 'quantity' ? parseInt(document.getElementById('habit-target')?.value) || 1 : 1,
-          unit: trackType === 'quantity' ? document.getElementById('habit-unit')?.value.trim() || '' : ''
+          unit: trackType === 'quantity' ? document.getElementById('habit-unit')?.value.trim() || '' : '',
+          schedule: readScheduleFromForm(),
+          reminderEnabled: document.getElementById('habit-reminder-enabled')?.checked === true,
+          reminderTime: document.getElementById('habit-reminder-time')?.value || '09:00'
         });
         habitForm.reset();
         if (targetContainer) { targetContainer.classList.remove('visible'); }
@@ -961,7 +993,10 @@ async function init() {
     renderGarden();
 
     initEvents();
-    window.addEventListener('cultiva-garden-refresh', () => renderGarden());
+    window.addEventListener('cultiva-garden-refresh', () => {
+      renderGarden();
+      syncTrayHabits();
+    });
     initAvatarPicker();
     initSettingsNavigation();
     initProfileManagement();
@@ -980,6 +1015,15 @@ async function init() {
     }
 
     initNativeNotificationsScheduler(() => settings);
+
+    window.syncTrayHabits = syncTrayHabits;
+    syncTrayHabits();
+    window.electron?.onTrayCompleteHabit?.((habitId) => {
+      void toggleHabitWithHooks(habitId).then(() => {
+        renderGarden();
+        syncTrayHabits();
+      });
+    });
 
     const habitSearch = document.getElementById('habit-search');
     habitSearch?.addEventListener('input', (e) => {

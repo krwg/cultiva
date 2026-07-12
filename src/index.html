@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cultiva - Grow your habits, grow yourself">
     <title>Cultiva | Garden</title>
-    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/shell.css">
     <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon.ico">
 </head>
 <body>
@@ -162,6 +162,37 @@
                             <label for="habit-unit" data-i18n="unit">Unit</label>
                             <input type="text" id="habit-unit" placeholder="pages" value="pages">
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="habitSchedule">Schedule</label>
+                        <select id="habit-schedule-mode" class="select-input">
+                            <option value="daily" data-i18n="scheduleDaily">Every day</option>
+                            <option value="weekdays" data-i18n="scheduleWeekdays">Specific weekdays</option>
+                            <option value="weekly" data-i18n="scheduleWeekly">N times per week</option>
+                        </select>
+                    </div>
+                    <div id="schedule-weekdays-wrap" class="form-group" style="display:none;">
+                        <label data-i18n="schedulePickDays">Days</label>
+                        <div class="schedule-weekday-row" id="schedule-weekdays">
+                            <label><input type="checkbox" value="1" checked> <span data-i18n="dayMon">Mon</span></label>
+                            <label><input type="checkbox" value="2" checked> <span data-i18n="dayTue">Tue</span></label>
+                            <label><input type="checkbox" value="3" checked> <span data-i18n="dayWed">Wed</span></label>
+                            <label><input type="checkbox" value="4" checked> <span data-i18n="dayThu">Thu</span></label>
+                            <label><input type="checkbox" value="5" checked> <span data-i18n="dayFri">Fri</span></label>
+                            <label><input type="checkbox" value="6"> <span data-i18n="daySat">Sat</span></label>
+                            <label><input type="checkbox" value="0"> <span data-i18n="daySun">Sun</span></label>
+                        </div>
+                    </div>
+                    <div id="schedule-weekly-wrap" class="form-group" style="display:none;">
+                        <label for="habit-times-per-week" data-i18n="scheduleTimesPerWeek">Times per week</label>
+                        <input type="number" id="habit-times-per-week" class="select-input" min="1" max="7" value="3">
+                    </div>
+                    <div class="form-group habit-reminder-row">
+                        <label class="onboarding-check">
+                            <input type="checkbox" id="habit-reminder-enabled">
+                            <span data-i18n="habitReminderEnable">Remind me at</span>
+                        </label>
+                        <input type="time" id="habit-reminder-time" class="select-input" value="09:00" style="max-width:140px;margin-top:8px;">
                     </div>
                     <button type="submit" class="btn-primary" style="margin-top:12px" data-i18n="plantSeed">Plant Seed</button>
                 </form>

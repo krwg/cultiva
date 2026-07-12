@@ -1,0 +1,26 @@
+body.theme-meadow {
+    --bg-primary: #f0f7e6;
+    --bg-secondary: #e2f0d4;
+    --bg-tertiary: #c8e0b8;
+    --bg-quaternary: #aed09a;
+    --text-primary: #1a2a0e;
+    --text-secondary: #3a5a22;
+    --text-tertiary: #6a8a4a;
+    --border-light: #b0c898;
+    --border-medium: #8aa872;
+    --accent-blue: #5aae4a;
+    --accent-blue-hover: #4a8e3a;
+    --accent-purple: #8eb87a;
+    --accent-pink: #d4b8a0;
+    --accent-green: #6bb85a;
+    --accent-red: #c4705e;
+    --shadow-sm: 0 2px 8px rgba(90, 174, 74, 0.08);
+    --shadow-md: 0 4px 16px rgba(90, 174, 74, 0.12);
+    --shadow-lg: 0 8px 32px rgba(90, 174, 74, 0.16);
+    --shadow-xl: 0 12px 48px rgba(90, 174, 74, 0.2);
+    --calendar-0: #e2f0d4;
+    --calendar-1: #c4e0a8;
+    --calendar-2: #a0cc7a;
+    --calendar-3: #7ab84a;
+    --calendar-4: #5aa42a;
+}

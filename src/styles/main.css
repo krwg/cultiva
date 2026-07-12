@@ -3271,6 +3271,31 @@ body.theme-linden .accent-color-row input[type="color"] {
     border-top: 1px solid var(--border-light);
 }
 
+.schedule-weekday-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    font-size: 13px;
+}
+
+.schedule-weekday-row label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.calendar-plugin-rail {
+    margin-bottom: 16px;
+}
+
+.calendar-plugin-rail:empty {
+    display: none;
+}
+
+.habit-reminder-row {
+    margin-top: 8px;
+}
+
 .habit-templates {
     display: flex;
     flex-wrap: wrap;

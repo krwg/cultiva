@@ -1,0 +1,36 @@
+body.theme-evergreen {
+  --bg-primary: #0d2b1f;
+  --bg-secondary: #143829;
+  --bg-tertiary: #1a4d2e;
+  --bg-quaternary: #256a3e;
+  --text-primary: #e8f5e9;
+  --text-secondary: #a5d6a7;
+  --text-tertiary: #6a9c6e;
+  --border-light: #2a5c3a;
+  --border-medium: #3d7a4f;
+  --accent-blue: #4caf50;
+  --accent-blue-hover: #66bb6a;
+  --accent-purple: #81c784;
+  --accent-pink: #a5d6a7;
+  --accent-green: #2e7d32;
+  --accent-red: #e53935;
+  --shadow-sm: 0 2px 8px rgba(0, 30, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 40, 0, 0.25);
+  --shadow-lg: 0 8px 32px rgba(0, 50, 0, 0.3);
+  --shadow-xl: 0 12px 48px rgba(0, 60, 0, 0.35);
+  --calendar-0: #1a3a25;
+  --calendar-1: #2a5c35;
+  --calendar-2: #3d7a45;
+  --calendar-3: #5a9c55;
+  --calendar-4: #7bc06a;
+}
+
+body.theme-evergreen .btn-primary {
+  background: var(--accent-green);
+}
+
+body.theme-evergreen .btn-primary:hover {
+  background: var(--accent-blue);
+}
+
+body.theme-evergreen .accent-color-row input[type="color"],

@@ -1,0 +1,26 @@
+body.theme-orchard {
+    --bg-primary: #f4faf4;
+    --bg-secondary: #e8f4ea;
+    --bg-tertiary: #d4ead8;
+    --bg-quaternary: #bcdfc4;
+    --text-primary: #142818;
+    --text-secondary: #3a5c42;
+    --text-tertiary: #5e7a66;
+    --border-light: #a8d4b0;
+    --border-medium: #7aba88;
+    --accent-blue: #2f9d5c;
+    --accent-blue-hover: #248a4e;
+    --accent-purple: #5a8f6e;
+    --accent-pink: #c87a8e;
+    --accent-green: #34c759;
+    --accent-red: #e05a4a;
+    --shadow-sm: 0 2px 8px rgba(47, 157, 92, 0.06);
+    --shadow-md: 0 4px 16px rgba(47, 157, 92, 0.1);
+    --shadow-lg: 0 8px 32px rgba(47, 157, 92, 0.12);
+    --shadow-xl: 0 12px 48px rgba(47, 157, 92, 0.14);
+    --calendar-0: #e8f4ea;
+    --calendar-1: #c8e8d0;
+    --calendar-2: #9ed6ae;
+    --calendar-3: #6bc48a;
+    --calendar-4: #3aaf6c;
+}

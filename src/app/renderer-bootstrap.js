@@ -2,6 +2,7 @@ import { storage } from '../modules/storage.js';
 import { auth } from '../modules/auth.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { resolveThemeBodyId } from '../core/theme-config.js';
+import { loadThemeCss } from '../core/theme-css-loader.js';
 
 export const DEFAULT_SETTINGS = {
   lang: 'en',
@@ -46,6 +47,7 @@ if (_preInitSettings) {
   const t = settings.theme || 'auto';
   const resolved = resolveThemeBodyId(t);
   document.body.className = `theme-${resolved}`;
+  void loadThemeCss(resolved);
 })();
 
 let _appReady = null;

@@ -1,0 +1,28 @@
+body.theme-sequoia {
+    --bg-primary: #1a1410;
+    --bg-secondary: #241c16;
+    --bg-tertiary: #30261e;
+    --bg-quaternary: #3e3228;
+    --text-primary: #f5efe8;
+    --text-secondary: #c4b4a4;
+    --text-tertiary: #8a7868;
+    --border-light: #4a3c32;
+    --border-medium: #5e4c40;
+    --accent-blue: #c4956a;
+    --accent-blue-hover: #d4a87e;
+    --accent-purple: #a87850;
+    --accent-pink: #e89880;
+    --accent-green: #7cb87a;
+    --accent-red: #e06050;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.5);
+    --calendar-0: #241c16;
+    --calendar-1: #3a2e24;
+    --calendar-2: #5a4838;
+    --calendar-3: #8a7058;
+    --calendar-4: #c4956a;
+}
+
+body.theme-sequoia .accent-color-row input[type="color"],

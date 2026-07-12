@@ -1,0 +1,28 @@
+body.theme-dusk {
+    --bg-primary: #1a1423;
+    --bg-secondary: #231b30;
+    --bg-tertiary: #2d2440;
+    --bg-quaternary: #3a2d50;
+    --text-primary: #f0e6ff;
+    --text-secondary: #c4aee0;
+    --text-tertiary: #9a7ec0;
+    --border-light: #4a3a60;
+    --border-medium: #6a5090;
+    --accent-blue: #9b6dff;
+    --accent-blue-hover: #b088ff;
+    --accent-purple: #c069e0;
+    --accent-pink: #e080b0;
+    --accent-green: #6bcf97;
+    --accent-red: #e06b6b;
+    --shadow-sm: 0 2px 8px rgba(155, 109, 255, 0.1);
+    --shadow-md: 0 4px 16px rgba(155, 109, 255, 0.15);
+    --shadow-lg: 0 8px 32px rgba(155, 109, 255, 0.2);
+    --shadow-xl: 0 12px 48px rgba(155, 109, 255, 0.25);
+    --calendar-0: #231b30;
+    --calendar-1: #3a2a50;
+    --calendar-2: #5a3a7a;
+    --calendar-3: #7a4aa0;
+    --calendar-4: #9b6dff;
+}
+
+body.theme-dusk .accent-color-row input[type="color"],

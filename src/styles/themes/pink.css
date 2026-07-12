@@ -1,0 +1,46 @@
+body.theme-pink {
+  --bg-primary: #fff0f5;
+  --bg-secondary: #ffe4ec;
+  --bg-tertiary: #ffc0cb;
+  --text-primary: #4a001e;
+  --text-secondary: #7a2a4a;
+  --text-tertiary: #9a4a6a;
+  --border-light: #ffb3d1;
+  --border-medium: #ff80b3;
+  --accent-blue: #ff4d94;
+  --accent-blue-hover: #ff1a7a;
+  --accent-purple: #d63384;
+  --accent-pink: #ff69b4;
+  --accent-green: #ff85a2;
+  --accent-red: #ff3366;
+  --shadow-sm: 0 2px 8px rgba(255, 105, 180, 0.1);
+  --shadow-md: 0 4px 16px rgba(255, 105, 180, 0.15);
+  --shadow-lg: 0 8px 32px rgba(255, 105, 180, 0.2);
+  --shadow-xl: 0 12px 48px rgba(255, 105, 180, 0.25);
+  --calendar-0: #ffe4ec;
+  --calendar-1: #ffc0d9;
+  --calendar-2: #ff9bc3;
+  --calendar-3: #ff77ad;
+  --calendar-4: #ff4d94;
+}
+
+body.theme-pink .app-header,
+
+body.theme-pink .calendar-header,
+
+body.theme-pink .modal-sheet,
+
+body.theme-pink .habit-card,
+
+body.theme-pink .btn-secondary {
+  background: var(--bg-primary);
+  border-color: var(--border-light);
+}
+
+body.theme-pink .btn-primary {
+  background: var(--accent-pink);
+}
+
+body.theme-pink .btn-primary:hover {
+  background: var(--accent-purple);
+}

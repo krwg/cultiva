@@ -1,6 +1,15 @@
 import { storage } from './storage.js';
 import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS, STREAK_GRACE_DAYS_PER_MONTH } from '../core/config.js';
 import { getTodayInTZ, getDateInTZ } from '../core/timezone.js';
+import {
+  normalizeSchedule,
+  isDueToday as scheduleIsDueToday,
+  isScheduledDay,
+  scheduledDaysBetween,
+  completionsInWeek,
+  weekStartMonday,
+  datesInWeek
+} from '../core/habit-schedule.js';
 
 function isStreakGraceEnabled() {
   try {
@@ -34,6 +43,14 @@ function daysBetween(aStr, bStr) {
 export const habits = {
   isGardenVisible(habit) {
     return habit && !habit.paused && !habit.archived;
+  },
+
+  isDueToday(habit, todayStr = getTodayInTZ()) {
+    return this.isGardenVisible(habit) && scheduleIsDueToday(habit, todayStr);
+  },
+
+  normalizeSchedule(schedule) {
+    return normalizeSchedule(schedule);
   },
 
   getGardenHabits() {
@@ -91,7 +108,10 @@ export const habits = {
       dailyProgress: {},
       treeName: null,
       createdAt: new Date().toISOString(),
-      sortOrder: Date.now()
+      sortOrder: Date.now(),
+      schedule: normalizeSchedule(data.schedule),
+      reminderEnabled: !!data.reminderEnabled,
+      reminderTime: data.reminderTime || '09:00'
     };
 
     allHabits.push(newHabit);
@@ -164,20 +184,55 @@ export const habits = {
     const sortedHistory = [...new Set(history)].sort();
     const historySet = new Set(sortedHistory);
     const graceEnabled = isStreakGraceEnabled() && STREAK_GRACE_DAYS_PER_MONTH > 0;
+    const schedule = normalizeSchedule(habit.schedule);
+
+    if (schedule.mode === 'weekly') {
+      let currentStreak = 0;
+      let anchor = today;
+      for (let w = 0; w < 104; w++) {
+        const count = completionsInWeek(habit, anchor);
+        if (count >= schedule.timesPerWeek) {
+          currentStreak++;
+          const d = new Date(`${weekStartMonday(anchor)}T12:00:00`);
+          d.setDate(d.getDate() - 7);
+          anchor = d.toISOString().slice(0, 10);
+        } else if (anchor === today && count < schedule.timesPerWeek) {
+          break;
+        } else {
+          break;
+        }
+      }
+      habit.currentStreak = currentStreak;
+      habit.bestStreak = Math.max(habit.bestStreak || 0, currentStreak);
+      return;
+    }
 
     let currentStreak = 0;
-    const checkDate = new Date();
+    const checkDate = new Date(`${today}T12:00:00`);
     const graceMonthsUsed = new Set();
 
     while (true) {
       const dateStr = getDateInTZ(checkDate);
+      if (!isScheduledDay(habit, dateStr)) {
+        checkDate.setDate(checkDate.getDate() - 1);
+        if (daysBetween(dateStr, today) > 400) {
+          break;
+        }
+        continue;
+      }
       if (historySet.has(dateStr)) {
         currentStreak++;
         checkDate.setDate(checkDate.getDate() - 1);
       } else if (dateStr === today) {
         break;
       } else if (graceEnabled && !graceMonthsUsed.has(monthKey(dateStr))) {
-        const prevStr = getDateInTZ(addDays(checkDate, -1));
+        const prev = new Date(checkDate);
+        prev.setDate(prev.getDate() - 1);
+        let prevStr = getDateInTZ(prev);
+        while (!isScheduledDay(habit, prevStr) && daysBetween(prevStr, dateStr) < 14) {
+          prev.setDate(prev.getDate() - 1);
+          prevStr = getDateInTZ(prev);
+        }
         if (historySet.has(prevStr)) {
           graceMonthsUsed.add(monthKey(dateStr));
           checkDate.setDate(checkDate.getDate() - 1);
@@ -192,17 +247,42 @@ export const habits = {
     let bestStreak = 0;
     let tempStreak = 0;
     const bestGraceMonthsUsed = new Set();
+    const scheduledHistory = sortedHistory.filter((d) => isScheduledDay(habit, d));
 
-    for (let i = 0; i < sortedHistory.length; i++) {
-      const currentDate = sortedHistory[i];
+    for (let i = 0; i < scheduledHistory.length; i++) {
+      const currentDate = scheduledHistory[i];
 
       if (i === 0) {
         tempStreak = 1;
       } else {
-        const prevDate = sortedHistory[i - 1];
+        const prevDate = scheduledHistory[i - 1];
         const diffDays = daysBetween(prevDate, currentDate);
 
-        if (diffDays === 1) {
+        if (diffDays <= 7 && schedule.mode === 'weekdays') {
+          let scheduledBetween = 0;
+          const cur = new Date(`${prevDate}T12:00:00`);
+          const end = new Date(`${currentDate}T12:00:00`);
+          cur.setDate(cur.getDate() + 1);
+          while (cur < end) {
+            const ds = cur.toISOString().slice(0, 10);
+            if (isScheduledDay(habit, ds)) {
+              scheduledBetween += 1;
+            }
+            cur.setDate(cur.getDate() + 1);
+          }
+          if (scheduledBetween === 0) {
+            tempStreak++;
+          } else if (
+            graceEnabled
+            && scheduledBetween === 1
+            && !bestGraceMonthsUsed.has(monthKey(currentDate))
+          ) {
+            bestGraceMonthsUsed.add(monthKey(currentDate));
+            tempStreak++;
+          } else {
+            tempStreak = 1;
+          }
+        } else if (diffDays === 1) {
           tempStreak++;
         } else if (
           graceEnabled
@@ -219,8 +299,8 @@ export const habits = {
       bestStreak = Math.max(bestStreak, tempStreak);
     }
 
-    if (habit.lastCompleted !== today) {
-      const lastDate = sortedHistory[sortedHistory.length - 1];
+    if (habit.lastCompleted !== today && schedule.mode !== 'weekly') {
+      const lastDate = scheduledHistory[scheduledHistory.length - 1];
       if (lastDate) {
         const diffDays = daysBetween(lastDate, today);
         if (diffDays > 1 && !(graceEnabled && diffDays === 2)) {
@@ -315,7 +395,7 @@ export const habits = {
     const today = getTodayInTZ();
     const startDate = h.startDate || today;
 
-    const totalDays = Math.max(1, Math.floor((new Date(today) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1);
+    const totalDays = scheduledDaysBetween(startDate, today, h.schedule);
     const completedDays = h.history?.length || 0;
     const completionRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
 

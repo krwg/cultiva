@@ -1,0 +1,18 @@
+.bg-rainfall {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -2;
+  background: linear-gradient(180deg, #1a2a3a 0%, #0d1a2a 100%);
+  overflow: hidden;
+}
+
+.bg-rainfall .rain-drop {
+  position: absolute;
+  width: 2px;
+  height: 80px;
+  background: linear-gradient(180deg, transparent, rgba(100, 200, 255, 0.3), transparent);
+  animation: rainfallDrop 1.5s linear infinite;
+}

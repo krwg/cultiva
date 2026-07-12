@@ -1,0 +1,22 @@
+.bg-linden-bloom {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: radial-gradient(ellipse at 20% 10%, rgba(212, 232, 188, 0.9) 0%, transparent 45%),
+        radial-gradient(ellipse at 80% 20%, rgba(255, 244, 210, 0.75) 0%, transparent 40%),
+        linear-gradient(180deg, #edf5e4 0%, #dcebc8 45%, #cfe0b8 100%);
+    overflow: hidden;
+}
+
+.bg-linden-bloom .linden-leaf {
+    position: absolute;
+    top: -8vh;
+    width: 16px;
+    height: 20px;
+    border-radius: 0 70% 0 70%;
+    background: rgba(95, 159, 79, 0.72);
+    opacity: 0.85;
+    animation: lindenFall linear infinite;
+    pointer-events: none;
+    transform: rotate(18deg);
+}

@@ -2,6 +2,7 @@ import { BRANDING } from './branding.js';
 import { getTodayInTZ, getCultivaTimezone } from './timezone.js';
 import { buildPluginHabitsSnapshot } from './plugin-habits-api.js';
 import { pluginHasPermission } from './plugin-rpc.js';
+import { getWeeklySummary } from './habit-analytics.js';
 
 function requirePermission(manifest, permission) {
   if (!pluginHasPermission(manifest, permission)) {
@@ -27,7 +28,9 @@ export async function invokePluginRpc(method, args, manifest, deps) {
     storagePrefix,
     settings,
     readThemeCssColor,
-    readPluginDataFile
+    readPluginDataFile,
+    completeHabit,
+    readHabitsForAnalytics
   } = deps;
 
   if (method === 'storage.get' || method === 'storage.set' || method === 'storage.remove') {
@@ -45,6 +48,12 @@ export async function invokePluginRpc(method, args, manifest, deps) {
   }
   if (method === 'app.getHabits') {
     requirePermission(manifest, 'habits.read');
+  }
+  if (method === 'app.getWeeklySummary') {
+    requirePermission(manifest, 'habits.read');
+  }
+  if (method === 'app.completeHabit') {
+    requirePermission(manifest, 'habits.write');
   }
   if (method === 'data.read') {
     return readPluginDataFile(args[0]);
@@ -88,6 +97,17 @@ export async function invokePluginRpc(method, args, manifest, deps) {
   }
   if (method === 'app.getHabits') {
     return buildPluginHabitsSnapshot();
+  }
+  if (method === 'app.getWeeklySummary') {
+    const list = typeof readHabitsForAnalytics === 'function' ? readHabitsForAnalytics() : [];
+    return getWeeklySummary(list);
+  }
+  if (method === 'app.completeHabit') {
+    const habitId = String(args[0] || '');
+    if (!habitId || typeof completeHabit !== 'function') {
+      throw new Error('Invalid habit id');
+    }
+    return completeHabit(habitId);
   }
 
   throw new Error(`Unknown RPC method: ${method}`);

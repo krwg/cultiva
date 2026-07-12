@@ -1,0 +1,20 @@
+.bg-mist {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+    background: linear-gradient(125deg, #c4d4e4 0%, #e6eef8 42%, #d8e4f0 100%);
+    overflow: hidden;
+}
+
+.bg-mist::before {
+    content: '';
+    position: absolute;
+    inset: -25%;
+    background:
+        radial-gradient(ellipse at 28% 38%, rgba(255, 255, 255, 0.55) 0%, transparent 52%),
+        radial-gradient(ellipse at 72% 58%, rgba(180, 200, 220, 0.4) 0%, transparent 48%);
+    animation: mistDrift 32s ease-in-out infinite;
+}

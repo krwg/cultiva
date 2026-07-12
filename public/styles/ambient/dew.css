@@ -1,0 +1,17 @@
+.bg-dew {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(165deg, #1a2830 0%, #2a3d48 40%, #1e3038 100%);
+    overflow: hidden;
+}
+
+.bg-dew .dew-drop {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(160,210,230,0.35));
+    animation: dewPulse ease-in-out infinite;
+    pointer-events: none;
+}

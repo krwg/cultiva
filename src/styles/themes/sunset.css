@@ -1,0 +1,37 @@
+body.theme-sunset {
+  --bg-primary: #1a0b2e;
+  --bg-secondary: #2d1b3d;
+  --bg-tertiary: #4a254b;
+  --bg-quaternary: #6b3359;
+  --text-primary: #fff3e0;
+  --text-secondary: #ffcc80;
+  --text-tertiary: #ffa040;
+  --border-light: #5a2a5a;
+  --border-medium: #7a3a6a;
+  --accent-blue: #ff6b35;
+  --accent-blue-hover: #ff8a50;
+  --accent-purple: #f7931e;
+  --accent-pink: #ff2d55;
+  --accent-green: #ffd200;
+  --accent-red: #ff5f56;
+  --shadow-sm: 0 2px 8px rgba(255, 107, 53, 0.15);
+  --shadow-md: 0 4px 16px rgba(255, 107, 53, 0.2);
+  --shadow-lg: 0 8px 32px rgba(255, 107, 53, 0.25);
+  --shadow-xl: 0 12px 48px rgba(255, 107, 53, 0.3);
+  --calendar-0: #2d1b3d;
+  --calendar-1: #5a2a5a;
+  --calendar-2: #8a3a6a;
+  --calendar-3: #c55a5a;
+  --calendar-4: #ff6b35;
+}
+
+body.theme-sunset .btn-primary {
+  background: var(--accent-blue);
+}
+
+body.theme-sunset .btn-primary:hover {
+  background: var(--accent-purple);
+  color: #1a0b2e;
+}
+
+body.theme-sunset .accent-color-row input[type="color"],

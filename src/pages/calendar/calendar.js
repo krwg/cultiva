@@ -6,6 +6,8 @@ import { getHolidaysForRegion, getHolidayForDate } from '../../core/holidays.js'
 import { getCultivaTimezone } from '../../core/timezone.js';
 import { getThemeBodyClassList, resolveThemeBodyId, LS_CUSTOM_BG_DATA } from '../../core/theme-config.js';
 import { applyAmbientBackground, readCustomBackgroundDataUrl } from '../../core/ambient-bg.js';
+import { loadThemeCss, loadAmbientCss } from '../../core/theme-css-loader.js';
+import { pluginManager } from '../../core/plugin-manager.js';
 import { showAlertDialog, showConfirmDialog } from '../../app/dialogs.js';
 
 document.documentElement.dataset.page = 'calendar';
@@ -54,6 +56,7 @@ function syncTheme() {
   document.body.classList.remove(...getThemeBodyClassList());
   const appliedTheme = resolveThemeBodyId(theme);
   document.body.classList.add(`theme-${appliedTheme}`);
+  void loadThemeCss(appliedTheme);
   log('Theme synced:', appliedTheme);
 }
 
@@ -63,6 +66,7 @@ function syncBackground() {
     bg = 'none';
   }
   applyAmbientBackground(document, document.body, bg);
+  void loadAmbientCss(bg);
   log('Background synced:', bg);
 }
 
@@ -733,6 +737,19 @@ async function init() {
   try {
     await storage.init();
     log('Storage initialized, habits count:', habits.getAll().length);
+    let pluginsOn = true;
+    try {
+      const raw = localStorage.getItem('cultiva-settings');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        pluginsOn = parsed.pluginsEnabled !== false;
+      }
+    } catch {
+      pluginsOn = true;
+    }
+    if (pluginsOn && window.electron?.readPluginFile) {
+      await pluginManager.initCalendarPage();
+    }
   } catch (e) {
     error('Storage init failed:', e);
   }

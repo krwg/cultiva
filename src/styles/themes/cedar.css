@@ -1,0 +1,26 @@
+body.theme-cedar {
+    --bg-primary: #f5ebe0;
+    --bg-secondary: #ede0d4;
+    --bg-tertiary: #e3ccb2;
+    --bg-quaternary: #d4b896;
+    --text-primary: #2c1a0e;
+    --text-secondary: #5c3a22;
+    --text-tertiary: #8c6a4a;
+    --border-light: #c4a882;
+    --border-medium: #a88862;
+    --accent-blue: #8b5e3c;
+    --accent-blue-hover: #6b442a;
+    --accent-purple: #a67c52;
+    --accent-pink: #c4956a;
+    --accent-green: #7a9e6b;
+    --accent-red: #c46a5e;
+    --shadow-sm: 0 2px 8px rgba(139, 94, 60, 0.08);
+    --shadow-md: 0 4px 16px rgba(139, 94, 60, 0.12);
+    --shadow-lg: 0 8px 32px rgba(139, 94, 60, 0.16);
+    --shadow-xl: 0 12px 48px rgba(139, 94, 60, 0.2);
+    --calendar-0: #ede0d4;
+    --calendar-1: #dcc8ae;
+    --calendar-2: #c4a87c;
+    --calendar-3: #a8885a;
+    --calendar-4: #8b6a3c;
+}

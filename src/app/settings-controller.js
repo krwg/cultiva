@@ -1,4 +1,5 @@
 import { getThemeBodyClassList, resolveThemeBodyId } from '../core/theme-config.js';
+import { loadThemeCss, loadAmbientCss } from '../core/theme-css-loader.js';
 import { syncNativeShellChrome } from '../core/shell-chrome.js';
 import { storage } from '../modules/storage.js';
 import { settings, ensureAppReady } from './renderer-bootstrap.js';
@@ -163,6 +164,7 @@ export function applySettings() {
   const appliedTheme = resolveThemeBodyId(settings.theme);
 
   document.body.classList.add(`theme-${appliedTheme}`);
+  void loadThemeCss(appliedTheme);
 
   if (c.themeSelect) {
     c.themeSelect.value = settings.theme;

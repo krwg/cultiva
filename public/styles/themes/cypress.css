@@ -1,0 +1,28 @@
+body.theme-cypress {
+    --bg-primary: #0f1812;
+    --bg-secondary: #152019;
+    --bg-tertiary: #1c2a22;
+    --bg-quaternary: #24362b;
+    --text-primary: #e8f0ea;
+    --text-secondary: #a8bdb0;
+    --text-tertiary: #6d8578;
+    --border-light: #2a4034;
+    --border-medium: #3d5548;
+    --accent-blue: #5a9a72;
+    --accent-blue-hover: #6fb088;
+    --accent-purple: #4a8068;
+    --accent-pink: #c9a882;
+    --accent-green: #4ade80;
+    --accent-red: #e06050;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.5);
+    --calendar-0: #152019;
+    --calendar-1: #24362b;
+    --calendar-2: #3d5548;
+    --calendar-3: #5a9a72;
+    --calendar-4: #8fd4a8;
+}
+
+body.theme-cypress .accent-color-row input[type="color"],

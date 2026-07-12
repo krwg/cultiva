@@ -1,0 +1,26 @@
+body.theme-frost {
+    --bg-primary: #e8f0fe;
+    --bg-secondary: #dce6f5;
+    --bg-tertiary: #c5d5e8;
+    --bg-quaternary: #aec4dd;
+    --text-primary: #1a2b3c;
+    --text-secondary: #3a5a7a;
+    --text-tertiary: #6a8aa8;
+    --border-light: #b0c8e0;
+    --border-medium: #8aaccc;
+    --accent-blue: #4a90d9;
+    --accent-blue-hover: #357abd;
+    --accent-purple: #6b8cce;
+    --accent-pink: #c4a0d4;
+    --accent-green: #5bae7c;
+    --accent-red: #e0695e;
+    --shadow-sm: 0 2px 8px rgba(74, 144, 217, 0.08);
+    --shadow-md: 0 4px 16px rgba(74, 144, 217, 0.12);
+    --shadow-lg: 0 8px 32px rgba(74, 144, 217, 0.16);
+    --shadow-xl: 0 12px 48px rgba(74, 144, 217, 0.2);
+    --calendar-0: #dce6f5;
+    --calendar-1: #b0cce4;
+    --calendar-2: #7ab0d4;
+    --calendar-3: #4a94c4;
+    --calendar-4: #2a78b4;
+}

@@ -1,4 +1,5 @@
 import { storage } from '../modules/storage.js';
+import { habits } from '../modules/habits.js';
 import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
 import { settings } from '../app/renderer-bootstrap.js';
@@ -131,7 +132,8 @@ function resolveGardenAction(el) {
 const pluginHooks = {
   onHabitComplete: [],
   onAppStart: [],
-  onSettingsChange: []
+  onSettingsChange: [],
+  onCalendarMount: []
 };
 
 let _initPromise = null;
@@ -378,6 +380,18 @@ function _wireSandboxHost(host, pluginId, manifest) {
       storagePrefix: prefix,
       settings,
       readThemeCssColor,
+      readHabitsForAnalytics: () => habits.getAll(),
+      completeHabit: async (habitId) => {
+        const { toggleHabitWithHooks } = await import('../app/habit-actions.js');
+        const result = await toggleHabitWithHooks(habitId);
+        if (typeof window.renderGarden === 'function') {
+          window.renderGarden();
+        }
+        if (typeof window.syncTrayHabits === 'function') {
+          window.syncTrayHabits();
+        }
+        return result;
+      },
       readPluginDataFile: async (relPath) => {
         const rel = String(relPath || '').replace(/^[/\\]+/, '');
         const allowed = Array.isArray(manifest.data)
@@ -452,6 +466,33 @@ function _wireSandboxHost(host, pluginId, manifest) {
         invokePluginInstanceMethod(pluginId, method);
       }
     });
+  });
+
+  host.setHandler('onCalendarRegister', (data) => {
+    const plugin = plugins.get(pluginId);
+    if (!plugin) {
+      return;
+    }
+    plugin.calendarWidget = {
+      id: `${pluginId}-calendar-widget`,
+      position: data.position || 'top'
+    };
+  });
+
+  host.setHandler('onCalendarHtml', (data) => {
+    const container = document.getElementById('calendar-plugin-rail');
+    if (!container) {
+      return;
+    }
+    const oldWidget = document.getElementById(`${pluginId}-calendar-widget`);
+    if (oldWidget) {
+      oldWidget.remove();
+    }
+    const wrap = document.createElement('div');
+    wrap.id = `${pluginId}-calendar-widget`;
+    wrap.className = 'calendar-plugin-widget';
+    wrap.innerHTML = data.html;
+    container.prepend(wrap);
   });
 
   host.setHandler('onUiMainSheet', (data) => {
@@ -800,6 +841,11 @@ export const pluginManager = {
     });
   },
 
+  async initCalendarPage() {
+    await this.init();
+    await this.triggerHook('onCalendarMount');
+  },
+
   registerGardenWidget(pluginId, config) {
     const plugin = plugins.get(pluginId);
     if (!plugin) {
@@ -837,6 +883,25 @@ export const pluginManager = {
         }
       }
     }
+  },
+
+  registerCalendarWidget(pluginId, config) {
+    const container = document.getElementById('calendar-plugin-rail');
+    if (!container) {
+      return;
+    }
+    const plugin = plugins.get(pluginId);
+    if (plugin) {
+      plugin.calendarWidget = {
+        id: `${pluginId}-calendar-widget`,
+        position: config?.position || 'top'
+      };
+    }
+    const wrap = document.createElement('div');
+    wrap.id = `${pluginId}-calendar-widget`;
+    wrap.className = 'calendar-plugin-widget';
+    wrap.innerHTML = config?.html || '';
+    container.prepend(wrap);
   },
 
   refreshGardenWidgets() {
