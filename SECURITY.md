@@ -42,6 +42,24 @@ Out of scope:
 
 Plugins run in a sandboxed iframe with declared permissions. Only install plugins from the [official registry](https://github.com/krwg/cultiva-plugins) unless you trust the author.
 
+### Sandbox threat model
+
+Each plugin loads inside a hidden `sandbox="allow-scripts"` iframe backed by a `blob:` document (`src/core/plugin-sandbox-host.js`). The bootstrap page uses a strict Content-Security Policy and gates `fetch` behind the declared `network` permission.
+
+**Dynamic code (`unsafe-eval`).** Plugin entry scripts are executed via `new Function()` inside the sandbox. This is required for loading arbitrary extension code without a build step. Exposure is limited by:
+
+- No Node.js or Electron APIs in the iframe
+- RPC calls validated against an allowlist (`src/core/plugin-rpc.js`)
+- Declared `permissions` in `manifest.json` (see [PLUGIN_AUTHOR_GUIDE](docs/PLUGIN_AUTHOR_GUIDE.md))
+
+**`postMessage` and `targetOrigin`.** Sandbox ↔ host communication uses `postMessage(..., '*')` because blob-backed iframes do not share a stable origin string with the parent window. Mitigations:
+
+- The host accepts messages only when `event.source === iframe.contentWindow`
+- Payloads must include `__cultivaPlugin: true` and a matching `targetPluginId`
+- RPC method names are allowlisted before execution
+
+Plugin authors should request only the permissions they need. See the permissions table in [PLUGIN_AUTHOR_GUIDE](docs/PLUGIN_AUTHOR_GUIDE.md#3-manifest-schema).
+
 ## License note
 
 Cultiva application code is **GPL-3.0**. Official plugins in cultiva-plugins are **MIT**.

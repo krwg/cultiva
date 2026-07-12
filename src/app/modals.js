@@ -23,7 +23,7 @@ function getFocusableElements(modal) {
   });
 }
 
-function releaseFocusTrap() {
+export function releaseFocusTrap() {
   if (trapHandler && activeModal) {
     activeModal.removeEventListener('keydown', trapHandler);
   }
@@ -39,7 +39,7 @@ function releaseFocusTrap() {
   previousFocus = null;
 }
 
-function installFocusTrap(modal) {
+export function installFocusTrap(modal) {
   releaseFocusTrap();
   activeModal = modal;
   previousFocus = document.activeElement;

@@ -76,7 +76,7 @@ The app fetches **`registry.json`**, resolves **`baseUrl`**, then downloads **`m
 | `icon` | **yes** | Short string for legacy UI (use `""` — catalog shows letter placeholders). |
 | `entry` | **yes** | Entry script filename (default `index.js` if omitted in older docs). |
 | `styles` | no | Array of CSS paths **relative to the plugin folder**; injected into the **main** window `<head>`. |
-| `permissions` | recommended | Explicit capabilities used by your plugin: `network`, `storage`, `ui`. |
+| `permissions` | recommended | Explicit capabilities used by your plugin: `network`, `storage`, `ui`. See [SECURITY.md — Sandbox threat model](../SECURITY.md#sandbox-threat-model) for how permissions are enforced. |
 | `data` | no | Array of bundled static files (for example JSON dictionaries) accessible via `context.data.read(path)`. |
 | `minAppVersion` | **strongly recommended** | Lowest Cultiva version you tested. Official registry plugins use **`1.7.0`**. Use **`0.4.0`** minimum if you depend on [**main-window UI**](#6-main-window-ui-bridge-cultiva--040). |
 

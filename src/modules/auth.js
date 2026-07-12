@@ -49,6 +49,17 @@ async function readStoredCredentials(user) {
   return { passwordHash: user.passwordHash, salt: user.salt };
 }
 
+async function writeStoredCredentials(passwordHash, salt) {
+  const el = electronAuth();
+  if (el) {
+    const res = await el.encryptAuthSecret(JSON.stringify({ passwordHash, salt }));
+    if (res && res.ok) {
+      return { credentialsEnc: res.data };
+    }
+  }
+  return { passwordHash, salt };
+}
+
 async function migrateLegacyCredentialsToEncrypted(user) {
   if (!user || user.credentialsEnc || !user.passwordHash || !user.salt) {
     return;
@@ -99,6 +110,7 @@ export const auth = {
 
     const salt = generateSalt();
     const passwordHash = await hashPassword(password, salt);
+    const creds = await writeStoredCredentials(passwordHash, salt);
 
     const base = {
       email,
@@ -109,18 +121,7 @@ export const auth = {
       createdAt: new Date().toISOString()
     };
 
-    let user;
-    const el = electronAuth();
-    if (el) {
-      const res = await el.encryptAuthSecret(JSON.stringify({ passwordHash, salt }));
-      if (res && res.ok) {
-        user = { ...base, credentialsEnc: res.data };
-      }
-    }
-    if (!user) {
-      user = { ...base, passwordHash, salt };
-    }
-
+    const user = { ...base, ...creds };
     await db.put('users', user);
     return this.login({ email, password });
   },
@@ -176,17 +177,70 @@ export const auth = {
     return _currentUser ? this._sanitizeUser(_currentUser) : null;
   },
 
+  changePassword: async function(newPassword) {
+    if (!_currentUser) {
+      throw new Error('Not authenticated');
+    }
+    if (!newPassword || newPassword.length < 6) {
+      throw new Error('Password must be at least 6 characters');
+    }
+
+    const salt = generateSalt();
+    const passwordHash = await hashPassword(newPassword, salt);
+    const creds = await writeStoredCredentials(passwordHash, salt);
+
+    const updated = { ..._currentUser };
+    delete updated.passwordHash;
+    delete updated.salt;
+    delete updated.credentialsEnc;
+    Object.assign(updated, creds);
+
+    _currentUser = updated;
+    await db.put('users', _currentUser);
+    return this._sanitizeUser(_currentUser);
+  },
+
   updateProfile: async function(updates) {
     if (!_currentUser) {
       throw new Error('Not authenticated');
     }
+    if (updates.password) {
+      throw new Error('Use changePassword() for password updates');
+    }
+
+    const oldEmail = _currentUser.email;
+    const nextEmail = typeof updates.email === 'string' ? updates.email.trim() : oldEmail;
     const safe = { ...updates };
+    delete safe.email;
+    delete safe.password;
     delete safe.passwordHash;
     delete safe.salt;
     delete safe.credentialsEnc;
 
-    _currentUser = { ..._currentUser, ...safe };
-    await db.put('users', _currentUser);
+    if (nextEmail !== oldEmail) {
+      if (!nextEmail) {
+        throw new Error('Invalid email');
+      }
+      const existing = await db.get('users', nextEmail);
+      if (existing) {
+        throw new Error('Email already in use');
+      }
+
+      const migrated = { ..._currentUser, ...safe, email: nextEmail };
+      await db.put('users', migrated);
+      await db.delete('users', oldEmail);
+      _currentUser = migrated;
+
+      const session = await db.get('sessions', SESSION_KEY);
+      if (session) {
+        session.email = nextEmail;
+        await db.put('sessions', session);
+      }
+      await storage.setCurrentUser(nextEmail);
+    } else {
+      _currentUser = { ..._currentUser, ...safe };
+      await db.put('users', _currentUser);
+    }
 
     if (updates.avatar) {
       const currentSettings = (await storage.get('cultiva-settings')) || {};

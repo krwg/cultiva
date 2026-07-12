@@ -687,6 +687,12 @@ function applyI18n() {
     const key = el.dataset.i18nPlaceholder;
     if (currentT[key]) { el.placeholder = currentT[key]; }
   });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+    const key = el.dataset.i18nAria;
+    if (currentT[key]) {
+      el.setAttribute('aria-label', currentT[key]);
+    }
+  });
 
   const weekdayOrder = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
   document.querySelectorAll('.weekday[data-i18n]').forEach((el, index) => {
@@ -779,6 +785,31 @@ async function init() {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.getElementById('event-panel')?.classList.contains('active')) { closeEventPanel(); }
+    const tag = e.target && e.target.tagName;
+    const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable;
+    if (typing) {
+      return;
+    }
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === 'ArrowRight') {
+      e.preventDefault();
+      goNext();
+      return;
+    }
+    if (mod && e.key === 'ArrowLeft') {
+      e.preventDefault();
+      goPrevious();
+      return;
+    }
+    if (mod && e.key.toLowerCase() === 't') {
+      e.preventDefault();
+      goToToday();
+      return;
+    }
+    if (mod && e.shiftKey && e.key.toLowerCase() === 'n') {
+      e.preventDefault();
+      openEventPanel(selectedDate);
+    }
   });
   document.getElementById('event-panel')?.addEventListener('click', (e) => {
     if (e.target === document.getElementById('event-panel')) { closeEventPanel(); }

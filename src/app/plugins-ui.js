@@ -6,6 +6,7 @@ import { settings } from './renderer-bootstrap.js';
 import { saveSettings } from './settings-controller.js';
 import { showNotification } from './ui-shell.js';
 import { showConfirmDialog } from './dialogs.js';
+import { installFocusTrap, releaseFocusTrap } from './modals.js';
 
 function tStrings() {
   return TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
@@ -390,8 +391,12 @@ window.openPluginSettings = async (pluginId) => {
   sheet.appendChild(footer);
   wrap.appendChild(sheet);
   document.body.appendChild(wrap);
+  installFocusTrap(wrap);
 
-  const close = () => wrap.remove();
+  const close = () => {
+    releaseFocusTrap();
+    wrap.remove();
+  };
   wrap.addEventListener('click', (e) => {
     if (e.target === wrap) {
       close();

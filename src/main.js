@@ -34,9 +34,10 @@ import {
 import { initHotkeys } from './app/hotkeys.js';
 import { initContextMenu } from './app/context-menu.js';
 import { applyAccentColor, applyAmbientIntensity } from './core/customization.js';
-import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats } from './app/garden-controller.js';
+import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats, moveFocusedHabit } from './app/garden-controller.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
+import { getTodayStr } from './app/date-ui.js';
 import { initAutoBackup } from './app/auto-backup.js';
 import { AVATAR_BACKGROUNDS, AVATAR_EMOJIS, DEFAULT_AVATAR } from './core/avatar-presets.js';
 import { showAlertDialog, showConfirmDialog } from './app/dialogs.js';
@@ -480,8 +481,9 @@ function initProfileManagement() {
 
     try {
       const updates = { name: displayName, email: email, dob: dob || null };
-      if (newPassword) { updates.password = newPassword; }
-
+      if (newPassword) {
+        await auth.changePassword(newPassword);
+      }
       await auth.updateProfile(updates);
       await updateAuthUI();
       updateProfileSection();
@@ -1014,9 +1016,14 @@ async function init() {
       logQuantityHighlighted: () => {
         const h = getFocusedHabit();
         if (h?.trackType === 'quantity') {
-          openQuantityLogModal(h);
+          const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+          const cur = habits.quantityDayProgress(h, getTodayStr());
+          openQuantityLogModal(h, cur, t);
         }
       },
+      moveFocusedHabit,
+      toggleFocusMode: () => toggleFocusMode(!settings.focusMode),
+      reloadGarden: () => renderGarden(),
       openHelp: async () => {
         const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
         const settingsOpen = isModalOpen(settingsModal);
@@ -1052,7 +1059,9 @@ async function init() {
       logHabit: (id) => {
         const h = habits.getAll().find((x) => x.id === id);
         if (h) {
-          openQuantityLogModal(h);
+          const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+          const cur = habits.quantityDayProgress(h, getTodayStr());
+          openQuantityLogModal(h, cur, t);
         }
       },
       canLog: (id) => habits.getAll().find((x) => x.id === id)?.trackType === 'quantity',

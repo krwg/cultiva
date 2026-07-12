@@ -40,6 +40,22 @@ export function getFocusedHabit() {
   return all[0] || null;
 }
 
+export function moveFocusedHabit(delta) {
+  const c = requireCtx();
+  const all = filterHabits(habits.getAll().filter((h) => h.progress < LEGACY_THRESHOLD));
+  if (!all.length) {
+    return;
+  }
+  let idx = all.findIndex((h) => h.id === c.focusedHabitId);
+  if (idx < 0) {
+    idx = 0;
+  }
+  idx = (idx + delta + all.length) % all.length;
+  c.setFocusedHabitId(all[idx].id);
+  renderGarden();
+  document.querySelector(`.habit-card[data-id="${all[idx].id}"]`)?.focus();
+}
+
 function stageLabel(stage, t) {
   const map = {
     Seed: t.seed,
@@ -76,6 +92,10 @@ function createHabitCard(habit, isTrophy = false) {
   card.className = 'habit-card';
   card.dataset.id = habit.id;
   card.dataset.category = habit.category || 'none';
+  if (!isTrophy) {
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('tabindex', '-1');
+  }
   card.innerHTML = `
         <div class="card-header">
             <div class="plant-visual">${stage.emoji}</div>
@@ -159,7 +179,10 @@ function syncHabitCards(container, habitList, isTrophy = false) {
     }
 
     if (!isTrophy) {
-      card.classList.toggle('habit-card--focus', habit.id === c.focusedHabitId);
+      const isFocused = habit.id === c.focusedHabitId;
+      card.classList.toggle('habit-card--focus', isFocused);
+      card.setAttribute('tabindex', isFocused ? '0' : '-1');
+      card.setAttribute('aria-label', habit.treeName || habit.name);
     }
   });
 }
@@ -177,6 +200,8 @@ export function renderGarden() {
   }
 
   if (c.gardenEl) {
+    c.gardenEl.setAttribute('role', 'list');
+    c.gardenEl.setAttribute('aria-label', t.gardenListLabel || 'Habits');
     c.gardenEl.innerHTML = '';
     if (active.length === 0) {
       const inSearchMode = c.habitSearchQuery.trim().length > 0;

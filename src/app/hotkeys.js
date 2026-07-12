@@ -17,7 +17,7 @@ export function initHotkeys(h) {
     const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable;
     const mod = e.ctrlKey || e.metaKey;
 
-    if (mod && e.key.toLowerCase() === 'n') {
+    if (mod && e.key.toLowerCase() === 'n' && !e.shiftKey) {
       e.preventDefault();
       h.openAddModal();
       return;
@@ -27,9 +27,23 @@ export function initHotkeys(h) {
       h.openSettings();
       return;
     }
-    if (mod && e.key.toLowerCase() === 'f') {
+    if (mod && e.key.toLowerCase() === 'f' && !e.shiftKey) {
       e.preventDefault();
       h.focusSearch();
+      return;
+    }
+    if (mod && e.key.toLowerCase() === 'f' && e.shiftKey) {
+      e.preventDefault();
+      if (typeof h.toggleFocusMode === 'function') {
+        h.toggleFocusMode();
+      }
+      return;
+    }
+    if (mod && e.key.toLowerCase() === 'r') {
+      e.preventDefault();
+      if (typeof h.reloadGarden === 'function') {
+        h.reloadGarden();
+      }
       return;
     }
     if (typing) {
@@ -43,6 +57,13 @@ export function initHotkeys(h) {
     if (mod && e.key.toLowerCase() === 'l') {
       e.preventDefault();
       h.logQuantityHighlighted();
+      return;
+    }
+    if (!mod && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      if (typeof h.moveFocusedHabit === 'function') {
+        e.preventDefault();
+        h.moveFocusedHabit(e.key === 'ArrowDown' ? 1 : -1);
+      }
     }
   });
 }
