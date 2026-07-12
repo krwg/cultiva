@@ -7,7 +7,8 @@ Quick reference for plugin authors. **Full spec:** [PLUGIN_AUTHOR_GUIDE.md](http
 ## Requirements
 
 - Cultiva **≥ 2.0.0** for registry **3.3.0** (appearance contributions, calendar rail, `habits.write`)
-- Cultiva **≥ 1.7.0** for basic registry **3.x** plugins (sha256, `data.read`, manifest settings UI)
+- Cultiva **≥ 2.0.0 · Rowan** (PLE1) for contributions API, themes, and expanded plugin RPC
+- Cultiva **≥ 1.7.0** still works for basic registry **3.x** plugins (sha256, `data.read`, manifest settings UI)
 - Plugin published in [cultiva-plugins](https://github.com/krwg/cultiva-plugins)
 - `minAppVersion` in manifest — see examples below
 
