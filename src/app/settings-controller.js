@@ -16,6 +16,7 @@ import {
 } from '../core/plugin-contributions.js';
 import { playPluginAmbientSound } from '../core/plugin-sounds.js';
 import { BRANDING } from '../core/branding.js';
+import { initHabitFormIcons, initSettingsSidebarIcons } from '../core/ui-icons.js';
 
 let ctx = null;
 
