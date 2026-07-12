@@ -3,6 +3,7 @@ import { auth } from '../modules/auth.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { resolveThemeBodyId } from '../core/theme-config.js';
 import { loadThemeCss } from '../core/theme-css-loader.js';
+import { ensureI18nLocales } from '../core/i18n.js';
 
 export const DEFAULT_SETTINGS = {
   lang: 'en',
@@ -19,6 +20,7 @@ export const DEFAULT_SETTINGS = {
   nativeNotifyCalendarLeadMinutes: 30,
   accentColor: '',
   ambientIntensity: 100,
+  lowPowerMode: false,
   firstRunComplete: false,
   autoBackupEnabled: true,
   streakGraceEnabled: true,
@@ -60,6 +62,7 @@ export async function ensureAppReady() {
   _appReady = (async () => {
     await storage.init();
     storage.setStorageAuthProbe(() => auth.isAuthenticated());
+    await ensureI18nLocales(settings.lang);
     await auth.init();
     if (settings.pluginsEnabled) {
       await pluginManager.init();

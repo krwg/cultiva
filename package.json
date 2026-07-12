@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prebuild": "node scripts/sync-version.mjs && node scripts/sync-build-icon.mjs && node scripts/split-main-css.mjs",
+    "prebuild": "node scripts/sync-version.mjs && node scripts/sync-build-icon.mjs && node scripts/split-main-css.mjs && node scripts/split-i18n.mjs",
     "preversion": "node scripts/sync-version.mjs",
     "lint": "eslint src/ electron/",
     "test": "vitest run",
