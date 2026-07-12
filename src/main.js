@@ -38,6 +38,7 @@ import { initContextMenu } from './app/context-menu.js';
 import { applyAccentColor, applyAmbientIntensity, applyLowPowerMode } from './core/customization.js';
 import { configureGardenController, renderGarden, getFocusedHabit, bindGardenCardEvents, openStats, moveFocusedHabit } from './app/garden-controller.js';
 import { syncTrayHabits } from './app/tray-sync.js';
+import { bindElectronPageLinks } from './app/electron-nav.js';
 import { configureBackupUi, bindBackupUiEvents } from './app/backup-ui.js';
 import { bindStorageBackendSettings, refreshStorageBackendControls } from './app/storage-settings-ui.js';
 import { toggleHabitWithHooks } from './app/habit-actions.js';
@@ -1067,6 +1068,17 @@ async function init() {
     initSettingsSidebarIcons();
     initHabitFormIcons();
     renderGarden();
+    bindElectronPageLinks();
+
+    window.addEventListener('pageshow', (event) => {
+      if (!event.persisted || !storage.isReady()) {
+        return;
+      }
+      void storage.reloadHabits().then(() => {
+        renderGarden();
+        syncTrayHabits();
+      });
+    });
 
     initEvents();
     window.addEventListener('cultiva-garden-refresh', () => {

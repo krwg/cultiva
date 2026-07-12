@@ -1,5 +1,6 @@
 const { writeFile } = require('fs/promises');
 const { CULTIVA_APP_URL, CULTIVA_CALENDAR_URL, shouldUseCultivaProtocol } = require('./cultiva-protocol.cjs');
+const { attachCultivaNavigation } = require('./cultiva-navigation.cjs');
 
 function registerCoreIpc(ipcMain, {
   getMainWindow,
@@ -80,7 +81,10 @@ function registerCoreIpc(ipcMain, {
     } else {
       console.error('[Electron] Calendar page not found:', calendarPath);
       calendarWindow.close();
+      return;
     }
+
+    attachCultivaNavigation(calendarWindow, { isDev: process.env.NODE_ENV === 'development' });
   });
 
   ipcMain.handle('get-app-path', () => {

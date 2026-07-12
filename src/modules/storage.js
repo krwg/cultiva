@@ -430,6 +430,15 @@ export const storage = {
     return _isInitialized;
   },
 
+  async reloadHabits() {
+    if (!_isInitialized) {
+      return this.init();
+    }
+    await this.flushPendingWrites();
+    await this._loadFromDB();
+    return _habitsCache;
+  },
+
   async _loadFromDB() {
     try {
       const allHabits = await db.getAll('habits');

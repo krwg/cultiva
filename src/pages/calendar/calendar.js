@@ -10,6 +10,7 @@ import { applyAmbientBackground, readCustomBackgroundDataUrl } from '../../core/
 import { loadThemeCss, loadAmbientCss } from '../../core/theme-css-loader.js';
 import { pluginManager } from '../../core/plugin-manager.js';
 import { showAlertDialog, showConfirmDialog } from '../../app/dialogs.js';
+import { bindElectronPageLinks } from '../../app/electron-nav.js';
 
 document.documentElement.dataset.page = 'calendar';
 
@@ -780,7 +781,7 @@ function applyI18n() {
 
 let renderTimeout;
 window.addEventListener('storage', (e) => {
-  const relevantKeys = ['cultiva_calendar_events', 'cultiva-lang', 'cultiva-theme', 'cultiva-background', LS_CUSTOM_BG_DATA, 'cultiva-timezone', 'cultiva-holiday-region'];
+  const relevantKeys = ['cultiva_calendar_events', 'cultiva-habits', 'cultiva-lang', 'cultiva-theme', 'cultiva-background', LS_CUSTOM_BG_DATA, 'cultiva-timezone', 'cultiva-holiday-region'];
   if (!e.key || !relevantKeys.includes(e.key)) { return; }
 
   clearTimeout(renderTimeout);
@@ -795,6 +796,13 @@ window.addEventListener('storage', (e) => {
     if (e.key === 'cultiva_calendar_events') {
       loadEvents();
       needsRender = true;
+    }
+    if (e.key === 'cultiva-habits') {
+      void storage.reloadHabits().then(() => {
+        invalidateHabitIndex();
+        renderCurrentView();
+      });
+      return;
     }
     if (e.key === 'cultiva-timezone') {
       goToToday();
@@ -811,10 +819,29 @@ window.addEventListener('storage', (e) => {
 });
 
 window.addEventListener('focus', () => {
+  void refreshCalendarFromStorage();
+});
+
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    void refreshCalendarFromStorage();
+  }
+});
+
+async function refreshCalendarFromStorage() {
   syncTheme();
   syncBackground();
   updateTranslations();
-});
+  try {
+    if (storage.isReady()) {
+      await storage.reloadHabits();
+    }
+  } catch (e) {
+    error('refreshCalendarFromStorage failed:', e);
+  }
+  invalidateHabitIndex();
+  renderCurrentView();
+}
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
   const theme = localStorage.getItem('cultiva-theme') || 'auto';
@@ -939,6 +966,7 @@ async function init() {
 
   renderMonthView();
   applyI18n();
+  bindElectronPageLinks();
   log('Calendar initialized with', habits.getAll().length, 'habits');
 }
 

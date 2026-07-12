@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { CULTIVA_APP_URL, shouldUseCultivaProtocol } = require('./cultiva-protocol.cjs');
+const { attachCultivaNavigation } = require('./cultiva-navigation.cjs');
 
 function attachSessionContentSecurityPolicy({ isDev, session }) {
   if (attachSessionContentSecurityPolicy._done) {
@@ -132,43 +133,11 @@ function createMainWindow({
     return { action: 'allow' };
   });
 
+  attachCultivaNavigation(mainWindow, { isDev });
+
   if (isDev) {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
-
-  mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
-    try {
-      const parsedUrl = new URL(navigationUrl);
-
-      if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
-        event.preventDefault();
-        shell.openExternal(navigationUrl);
-        return;
-      }
-
-      if (parsedUrl.protocol === 'file:') {
-        const requestedPath = decodeURIComponent(parsedUrl.pathname);
-
-        if (fs.existsSync(requestedPath)) {
-          return;
-        }
-
-        const distPath = path.join(__dirname, '../../dist');
-        const relativePath = requestedPath.replace(/^.*[\\/]dist[\\/]?/, '');
-        const alternativePath = path.join(distPath, relativePath);
-
-        if (fs.existsSync(alternativePath)) {
-          event.preventDefault();
-          mainWindow.loadFile(alternativePath);
-          return;
-        }
-
-        console.warn('[Electron] File not found:', requestedPath);
-      }
-    } catch (error) {
-      console.error('[Electron] Navigation error:', error);
-    }
-  });
 
   mainWindow.webContents.on('did-navigate', (event, url) => {
     console.log('[Electron] Navigated to:', url);
