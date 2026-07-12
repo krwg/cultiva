@@ -12,13 +12,17 @@ import {
   getPluginBackgrounds,
   getPluginSounds,
   getPluginThemeBodyClasses,
-  getPluginThemes
+  getPluginThemes,
+  resolveContributionLabel
 } from '../core/plugin-contributions.js';
 import { playPluginAmbientSound } from '../core/plugin-sounds.js';
 import { BRANDING } from '../core/branding.js';
 import { initHabitFormIcons, initSettingsSidebarIcons } from '../core/ui-icons.js';
 
 let ctx = null;
+let _lastSavedLang = null;
+let _lastSavedFocus = null;
+let _lastSavedBg = null;
 
 export function configureSettingsController(c) {
   ctx = c;
@@ -147,12 +151,22 @@ export function updateNotificationsDesktopBanner() {
 
 export function saveSettings() {
   const c = requireCtx();
+  const prevLang = _lastSavedLang ?? settings.lang;
+  const prevFocus = _lastSavedFocus ?? settings.focusMode;
   storage.set('cultiva-settings', settings);
   c.setLangAndT(settings.lang);
   applySettings();
   c.renderGarden();
   bindHabitTemplates(settings.lang);
   pluginManager.triggerHook('onSettingsChange', settings);
+  if (prevLang !== settings.lang) {
+    void pluginManager.triggerHook('onLanguageChange', settings.lang);
+    _lastSavedLang = settings.lang;
+  }
+  if (prevFocus !== settings.focusMode) {
+    void pluginManager.triggerHook('onFocusModeChange', settings.focusMode);
+    _lastSavedFocus = settings.focusMode;
+  }
 }
 
 export function handleHolidayChange(e) {
@@ -178,7 +192,12 @@ export function applySettings() {
   const appliedTheme = resolveThemeBodyId(settings.theme);
 
   document.body.classList.add(`theme-${appliedTheme}`);
-  void loadThemeCss(appliedTheme);
+  void loadThemeCss(appliedTheme).then(async () => {
+    await pluginManager.triggerHook('onThemeApplied', {
+      theme: settings.theme,
+      resolved: appliedTheme
+    });
+  });
 
   if (c.themeSelect) {
     c.themeSelect.value = settings.theme;
@@ -268,6 +287,13 @@ export function applySettings() {
   if (settings.pluginsEnabled) {
     import('./plugins-ui.js').then((m) => m.renderPluginsSection());
   }
+
+  const currentBg = localStorage.getItem('cultiva-background') || 'none';
+  if (_lastSavedBg !== null && _lastSavedBg !== currentBg) {
+    void pluginManager.triggerHook('onBackgroundApplied', currentBg);
+  }
+  _lastSavedBg = currentBg;
+
   console.log('[Settings] Applied theme:', appliedTheme);
 }
 
@@ -278,7 +304,7 @@ function appendPluginThemeOptions(optgroup, items) {
   for (const item of items) {
     const option = document.createElement('option');
     option.value = item.id;
-    option.textContent = item.label;
+    option.textContent = resolveContributionLabel(item, settings.lang);
     option.dataset.pluginGroup = '1';
     optgroup.appendChild(option);
   }
@@ -312,7 +338,7 @@ export function refreshAppearanceSelects() {
     for (const bg of getPluginBackgrounds()) {
       const option = document.createElement('option');
       option.value = bg.id;
-      option.textContent = bg.label;
+      option.textContent = resolveContributionLabel(bg, settings.lang);
       option.dataset.pluginBg = '1';
       if (customOption) {
         bgSelect.insertBefore(option, customOption);
@@ -330,7 +356,7 @@ export function refreshAppearanceSelects() {
     for (const sound of getPluginSounds()) {
       const option = document.createElement('option');
       option.value = sound.id;
-      option.textContent = sound.label;
+      option.textContent = resolveContributionLabel(sound, settings.lang);
       option.dataset.pluginSound = '1';
       soundSelect.appendChild(option);
     }

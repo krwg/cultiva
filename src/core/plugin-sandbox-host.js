@@ -67,7 +67,8 @@ function buildSandboxBootstrapDocument(pluginId) {
       storage: {
         get: function (key) { return rpc('storage.get', [key]); },
         set: function (key, value) { return rpc('storage.set', [key, value]); },
-        remove: function (key) { return rpc('storage.remove', [key]); }
+        remove: function (key) { return rpc('storage.remove', [key]); },
+        listKeys: function () { return rpc('storage.listKeys', []); }
       },
       data: {
         read: function (name) { return rpc('data.read', [name]); }
@@ -75,13 +76,51 @@ function buildSandboxBootstrapDocument(pluginId) {
       app: {
         getLocale: function () { return rpc('app.getLocale', []); },
         getThemeColor: function (name) { return rpc('app.getThemeColor', [name]); },
+        getThemeTokens: function () { return rpc('app.getThemeTokens', []); },
+        getThemeTokenKeys: function () { return rpc('app.getThemeTokenKeys', []); },
+        getBuiltinThemes: function () { return rpc('app.getBuiltinThemes', []); },
+        getPluginThemes: function () { return rpc('app.getPluginThemes', []); },
+        getPluginBackgrounds: function () { return rpc('app.getPluginBackgrounds', []); },
+        getPluginSounds: function () { return rpc('app.getPluginSounds', []); },
         getHabits: function () { return rpc('app.getHabits', []); },
         getVersion: function () { return rpc('app.getVersion', []); },
         getToday: function () { return rpc('app.getToday', []); },
         getTimezone: function () { return rpc('app.getTimezone', []); },
         getSettings: function () { return rpc('app.getSettings', []); },
         getWeeklySummary: function () { return rpc('app.getWeeklySummary', []); },
-        completeHabit: function (id) { return rpc('app.completeHabit', [id]); }
+        completeHabit: function (id) { return rpc('app.completeHabit', [id]); },
+        setTheme: function (themeId) { return rpc('app.setTheme', [themeId]); },
+        setBackground: function (bgId) { return rpc('app.setBackground', [bgId]); },
+        previewTheme: function (themeId) { return rpc('app.previewTheme', [themeId]); },
+        clearThemePreview: function () { return rpc('app.clearThemePreview', []); },
+        applyAppearancePreset: function (presetId) { return rpc('app.applyAppearancePreset', [presetId]); },
+        getPlatform: function () { return rpc('app.getPlatform', []); },
+        isDesktop: function () { return rpc('app.isDesktop', []); },
+        getPluginId: function () { return rpc('app.getPluginId', []); },
+        getManifestSummary: function () { return rpc('app.getManifestSummary', []); },
+        compareVersions: function (a, b) { return rpc('app.compareVersions', [a, b]); },
+        getCodename: function () { return rpc('app.getCodename', []); },
+        getAccentColor: function () { return rpc('app.getAccentColor', []); },
+        setAccentColor: function (hex) { return rpc('app.setAccentColor', [hex]); },
+        getBackgroundId: function () { return rpc('app.getBackgroundId', []); },
+        setAmbientSound: function (id) { return rpc('app.setAmbientSound', [id]); },
+        setLang: function (lang) { return rpc('app.setLang', [lang]); },
+        getFocusMode: function () { return rpc('app.getFocusMode', []); },
+        setFocusMode: function (on) { return rpc('app.setFocusMode', [on]); },
+        getLowPowerMode: function () { return rpc('app.getLowPowerMode', []); },
+        getShowTrophies: function () { return rpc('app.getShowTrophies', []); },
+        setShowTrophies: function (on) { return rpc('app.setShowTrophies', [on]); },
+        getHolidayRegion: function () { return rpc('app.getHolidayRegion', []); },
+        setHolidayRegion: function (region) { return rpc('app.setHolidayRegion', [region]); },
+        openSettings: function (section) { return rpc('app.openSettings', [section]); },
+        openCalendar: function () { return rpc('app.openCalendar', []); },
+        reloadGarden: function () { return rpc('app.reloadGarden', []); },
+        syncTray: function () { return rpc('app.syncTray', []); },
+        getBuiltinBackgrounds: function () { return rpc('app.getBuiltinBackgrounds', []); },
+        getAppearancePresets: function () { return rpc('app.getAppearancePresets', []); },
+        getHabit: function (id) { return rpc('app.getHabit', [id]); },
+        getHabitsCompletedToday: function () { return rpc('app.getHabitsCompletedToday', []); },
+        logQuantity: function (id, value) { return rpc('app.logQuantity', [id, value]); }
       },
       ui: {
         registerHeaderItem: function (config) {
@@ -169,17 +208,47 @@ function buildSandboxBootstrapDocument(pluginId) {
         registerTheme: function (config) {
           send({ type: 'UI_REGISTER_THEME', config: config || {} });
         },
+        unregisterTheme: function (themeId) {
+          send({ type: 'UI_UNREGISTER_THEME', themeId: String(themeId || '') });
+        },
         registerBackground: function (config) {
           send({ type: 'UI_REGISTER_BACKGROUND', config: config || {} });
         },
+        unregisterBackground: function (backgroundId) {
+          send({ type: 'UI_UNREGISTER_BACKGROUND', backgroundId: String(backgroundId || '') });
+        },
         registerSound: function (config) {
           send({ type: 'UI_REGISTER_SOUND', config: config || {} });
+        },
+        unregisterSound: function (soundId) {
+          send({ type: 'UI_UNREGISTER_SOUND', soundId: String(soundId || '') });
+        },
+        registerFont: function (config) {
+          send({ type: 'UI_REGISTER_FONT', config: config || {} });
+        },
+        registerAppearancePreset: function (config) {
+          send({ type: 'UI_REGISTER_APPEARANCE_PRESET', config: config || {} });
         },
         registerSettingsNav: function (config) {
           send({ type: 'UI_REGISTER_SETTINGS_NAV', config: config || {} });
         },
         removeSettingsNav: function (navId) {
           send({ type: 'UI_REMOVE_SETTINGS_NAV', navId: String(navId || '') });
+        },
+        confirm: function (message, options) {
+          return rpc('ui.confirm', [message, options || {}]);
+        },
+        alert: function (message, options) {
+          return rpc('ui.alert', [message, options || {}]);
+        },
+        openExternal: function (url) {
+          return rpc('ui.openExternal', [url]);
+        },
+        setHeaderBadge: function (badge) {
+          send({ type: 'UI_SET_HEADER_BADGE', badge: badge == null ? '' : String(badge) });
+        },
+        focusHabit: function (habitId) {
+          send({ type: 'UI_FOCUS_HABIT', habitId: String(habitId || '') });
         }
       }
     };
@@ -487,6 +556,55 @@ export class PluginSandboxHost {
     if (d.type === 'UI_REGISTER_SOUND') {
       if (this._handlers.onUiRegisterSound) {
         this._handlers.onUiRegisterSound(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_UNREGISTER_THEME') {
+      if (this._handlers.onUiUnregisterTheme) {
+        this._handlers.onUiUnregisterTheme(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_UNREGISTER_BACKGROUND') {
+      if (this._handlers.onUiUnregisterBackground) {
+        this._handlers.onUiUnregisterBackground(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_UNREGISTER_SOUND') {
+      if (this._handlers.onUiUnregisterSound) {
+        this._handlers.onUiUnregisterSound(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_REGISTER_FONT') {
+      if (this._handlers.onUiRegisterFont) {
+        this._handlers.onUiRegisterFont(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_REGISTER_APPEARANCE_PRESET') {
+      if (this._handlers.onUiRegisterAppearancePreset) {
+        this._handlers.onUiRegisterAppearancePreset(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_FOCUS_HABIT') {
+      if (this._handlers.onUiFocusHabit) {
+        this._handlers.onUiFocusHabit(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_SET_HEADER_BADGE') {
+      if (this._handlers.onUiSetHeaderBadge) {
+        this._handlers.onUiSetHeaderBadge(d);
       }
       return;
     }

@@ -1,7 +1,7 @@
 # Cultiva Plugin Author Guide
 
 > **Audience:** developers publishing plugins in **[cultiva-plugins](https://github.com/krwg/cultiva-plugins)** and anyone extending the **desktop (Electron)** app.  
-> **Requires:** Cultiva **≥ 1.7.0 · Linden** for registry 3.x plugins (sha256, `data.read`, manifest settings UI).  
+> **Requires:** Cultiva **≥ 1.7.0 · Linden** for registry 3.x plugins (sha256, `data.read`, manifest settings UI). **Appearance contributions** and the expanded **`context.app` / `context.ui` surface** below require **≥ 2.0.0 · Rowan**.  
 > **Runtime model:** the Cultiva client **downloads** manifests and files over HTTPS and installs them under the user profile (`userData/cultiva-plugins`). Plugin source in **cultiva-plugins** is for **development & publishing only** — the running app does **not** read your local repo path at runtime.
 
 ---
@@ -136,11 +136,13 @@ Garden widgets can expose click targets with **`data-plugin-act="methodName"`** 
 
 | Permission | RPC / capability |
 |------------|------------------|
-| `storage` | `context.storage.get/set/remove` |
-| `ui` | `showNotification`, header/garden/sheet UI, `app.getLocale`, `app.getThemeColor`, `app.getVersion`, `app.getToday`, `app.getTimezone` |
-| `network` | `fetch()` inside the sandbox |
-| `habits.read` | `app.getHabits()` — read-only habit snapshots |
+| `storage` | `context.storage.get/set/remove/listKeys` |
+| `ui` | `showNotification`, `confirm`, `alert`, header/garden/sheet UI, theme read APIs (`getThemeColor`, `getThemeTokens`, …), `previewTheme`, `setHeaderBadge`, `focusHabit` |
+| `network` | `fetch()` inside the sandbox; `ui.openExternal(url)` |
+| `habits.read` | `app.getHabits`, `getHabit`, `getHabitsCompletedToday`, `getWeeklySummary` |
+| `habits.write` | `app.completeHabit`, `app.logQuantity` |
 | `settings.read` | `app.getSettings()` — public app settings subset (lang, theme, flags) |
+| `settings.write` | `setTheme`, `setBackground`, `applyAppearancePreset`, `setLang`, `setFocusMode`, `setAccentColor`, `setAmbientSound`, `setHolidayRegion`, `setShowTrophies` |
 
 Cultiva **never** hardcodes plugin ids. Names, descriptions, and settings labels come from **`registry.json` / `manifest.json`** (`i18n` blocks).
 
@@ -159,6 +161,7 @@ Parsed `manifest.json` object.
 | `await context.storage.get(key)` | `storage` | Per-plugin key/value (async). Keys are namespaced by the host (`plugin_<id>_`). |
 | `await context.storage.set(key, value)` | `storage` | Persist a JSON-serializable value. |
 | `await context.storage.remove(key)` | `storage` | Clear a namespaced key. |
+| `await context.storage.listKeys()` | `storage` | List keys for this plugin (without the `plugin_<id>_` prefix). |
 
 ### `context.data`
 
@@ -172,11 +175,51 @@ Parsed `manifest.json` object.
 |------|------------|---------|
 | `await context.app.getLocale()` | `ui` | `'en'` \| `'ru'` |
 | `await context.app.getThemeColor('--text-primary')` | `ui` | Resolved CSS color from the active theme |
+| `await context.app.getThemeTokens()` | `ui` | Map of active theme CSS variables (`--bg-primary`, …) |
+| `await context.app.getThemeTokenKeys()` | `ui` | List of supported theme token names |
+| `await context.app.getBuiltinThemes()` | `ui` | Built-in theme ids usable with `extends` (`birch`, `rowan`, `light`, `dark`, …) |
+| `await context.app.getPluginThemes()` | `ui` | Installed plugin themes (id, label, group) |
+| `await context.app.getPluginBackgrounds()` | `ui` | Installed plugin backgrounds |
+| `await context.app.getPluginSounds()` | `ui` | Installed plugin ambient sounds |
 | `await context.app.getVersion()` | `ui` | Cultiva semver string |
+| `await context.app.getCodename()` | `ui` | Release codename (e.g. `Rowan`) |
+| `await context.app.getPlatform()` | `ui` | `'win32'` \| `'darwin'` \| `'linux'` \| `'web'` |
+| `await context.app.isDesktop()` | `ui` | `true` in Electron |
+| `await context.app.getPluginId()` | `ui` | Current plugin id |
+| `await context.app.getManifestSummary()` | `ui` | Sanitized manifest (`id`, `name`, `version`, `minAppVersion`, `permissions`) |
+| `await context.app.compareVersions(a, b)` | `ui` | `-1` \| `0` \| `1` semver compare |
 | `await context.app.getToday()` | `ui` | `YYYY-MM-DD` in the user's Cultiva timezone |
 | `await context.app.getTimezone()` | `ui` | IANA zone or `'auto'` |
 | `await context.app.getSettings()` | `settings.read` | `{ lang, theme, holidayRegion, pluginsEnabled, focusMode, showTrophies, streakGraceEnabled }` |
+| `await context.app.getAccentColor()` | `ui` | User accent hex or `''` |
+| `await context.app.setAccentColor(hex)` | `settings.write` | Set accent color |
+| `await context.app.getBackgroundId()` | `ui` | Active background id |
+| `await context.app.setAmbientSound(id)` | `settings.write` | Switch ambient sound (`none` or plugin/built-in id) |
+| `await context.app.setLang('en' \| 'ru')` | `settings.write` | Switch UI language |
+| `await context.app.getFocusMode()` | `ui` | Focus mode on/off |
+| `await context.app.setFocusMode(on)` | `settings.write` | Toggle focus mode |
+| `await context.app.getLowPowerMode()` | `ui` | Low-power preset on/off |
+| `await context.app.getShowTrophies()` | `ui` | Trophy display on/off |
+| `await context.app.setShowTrophies(on)` | `settings.write` | Toggle trophy display |
+| `await context.app.getHolidayRegion()` | `ui` | Holiday region code |
+| `await context.app.setHolidayRegion(region)` | `settings.write` | Set holiday region |
+| `await context.app.openSettings(section?)` | `ui` | Open Settings modal (`appearance`, `plugins`, …) |
+| `await context.app.openCalendar()` | `ui` | Open calendar window/page |
+| `await context.app.reloadGarden()` | `ui` | Re-render habit garden |
+| `await context.app.syncTray()` | `ui` | Refresh system tray habit list (desktop) |
+| `await context.app.getBuiltinBackgrounds()` | `ui` | Built-in background ids |
+| `await context.app.getAppearancePresets()` | `ui` | Registered appearance presets |
+| `await context.app.setTheme(themeId)` | `settings.write` | Switch theme (built-in or `plugin-…` id); persists settings |
+| `await context.app.setBackground(bgId)` | `settings.write` | Switch background (`none`, built-in, or `plugin-…`) |
+| `await context.app.previewTheme(themeId)` | `ui` | Temporarily apply a theme without saving |
+| `await context.app.clearThemePreview()` | `ui` | Revert the last `previewTheme` call |
+| `await context.app.applyAppearancePreset(presetId)` | `settings.write` | Apply a bundled preset (theme + background + sound) |
 | `await context.app.getHabits()` | `habits.read` | Read-only array of habit snapshots |
+| `await context.app.getHabit(id)` | `habits.read` | Single habit snapshot or `null` |
+| `await context.app.getHabitsCompletedToday()` | `habits.read` | Habits completed today |
+| `await context.app.getWeeklySummary()` | `habits.read` | Weekly completion analytics |
+| `await context.app.completeHabit(id)` | `habits.write` | Mark habit done for today |
+| `await context.app.logQuantity(id, value)` | `habits.write` | Log quantity progress |
 
 ### `context.ui` — requires `ui` permission for notifications; registration is always available in sandbox
 
@@ -188,6 +231,11 @@ Parsed `manifest.json` object.
 | **`openMainSheet(html)`** / **`closeMainSheet()`** | Main-window sheet overlay. |
 | **`updateMainHeader({ label?, icon?, labelColor? })`** | Live header chip updates. |
 | **`showNotification(icon, text)`** | Toast in the main app. |
+| **`confirm(message, options?)`** | Native-styled confirm dialog; returns `boolean`. |
+| **`alert(message, options?)`** | Native-styled alert dialog. |
+| **`openExternal(url)`** | Open `https://…` in the system browser (`network` permission). |
+| **`setHeaderBadge(text)`** | Small badge on your header chip (e.g. `3` or `!`). |
+| **`focusHabit(habitId)`** | Scroll to and focus a habit card in the garden. |
 
 ### Settings UI & i18n
 
@@ -266,9 +314,19 @@ Cultiva **2.0+** lets plugins extend appearance and Settings navigation without 
 ```json
 {
   "contributes": {
-    "themes": [{ "id": "midnight", "label": "Midnight", "group": "dark", "css": "theme-midnight.css" }],
-    "backgrounds": [{ "id": "stars", "label": "Starry Night", "css": "bg-stars.css" }],
+    "themes": [{
+      "id": "snow-ink",
+      "label": "Snow Ink",
+      "group": "light",
+      "extends": "birch",
+      "monochrome": true,
+      "variables": { "--bg-secondary": "#ffffff" },
+      "i18n": { "ru": { "label": "Снежные чернила" } }
+    }],
+    "backgrounds": [{ "id": "stars", "label": "Starry Night", "css": "bg-stars.css", "html": "<div class='star-layer'></div>" }],
     "sounds": [{ "id": "rain", "label": "Rain", "src": "rain.mp3", "loop": true }],
+    "fonts": [{ "id": "display", "family": "Plugin Display", "src": "display.woff2" }],
+    "appearancePresets": [{ "id": "bw-calm", "label": "B&W Calm", "theme": "plugin-your-id-snow-ink", "background": "none", "accentColor": null }],
     "settingsNav": [{ "id": "guide", "label": "Plugin guide", "position": "after:plugins", "html": "<p>Hello</p>" }]
   }
 }
@@ -276,19 +334,55 @@ Cultiva **2.0+** lets plugins extend appearance and Settings navigation without 
 
 | Kind | Appears in | Notes |
 |------|------------|-------|
-| `themes` | Settings → Appearance → Theme | IDs are namespaced (`plugin-your-id-midnight`). Include CSS in `manifest.styles` or reference `css` file. |
-| `backgrounds` | Settings → Appearance → Background | CSS-only layers; use Cultiva tokens for contrast. |
+| `themes` | Settings → Appearance → Theme | IDs are namespaced (`plugin-your-id-midnight`). Use `css` file, inline `cssText`, or **`extends` + `variables`** to inherit a built-in palette (recommended). Set `monochrome: true` for auto B&W button overrides. |
+| `backgrounds` | Settings → Appearance → Background | CSS layers; optional `html` markup is mounted into a dedicated `#bg-plugin-…` layer. |
 | `sounds` | Settings → Appearance → Ambient sound | Local audio from plugin folder; off by default. |
+| `fonts` | (global) | Injects `@font-face` from plugin folder via `getPluginResourcePath`. |
+| `appearancePresets` | (runtime) | Bundled theme/background/sound combos; apply with `context.app.applyAppearancePreset(id)`. |
 | `settingsNav` | Settings sidebar | `position`: `before:about` or `after:appearance` (anchor must be a core section). |
 
 ### Runtime registration
 
 ```js
-context.ui.registerTheme({ id: 'glow', label: 'Glow', group: 'dark', css: 'theme-glow.css' });
-context.ui.registerBackground({ id: 'mist', label: 'Mist', css: 'bg-mist.css' });
+// Extend built-in Birch (White Rowan) — appears in theme dropdown
+context.ui.registerTheme({
+  id: 'snow-ink',
+  label: 'Snow Ink',
+  group: 'light',
+  extends: 'birch',
+  monochrome: true,
+  variables: { '--bg-tertiary': '#fafafa' },
+  i18n: { ru: { label: 'Снежные чернила' } }
+});
+
+context.ui.registerBackground({ id: 'mist', label: 'Mist', css: 'bg-mist.css', html: '<div class="mist"></div>' });
 context.ui.registerSound({ id: 'wind', label: 'Wind', src: 'wind.mp3', loop: true, volume: 0.5 });
+context.ui.registerFont({ id: 'display', family: 'Plugin Display', src: 'display.woff2' });
+context.ui.registerAppearancePreset({
+  id: 'bw-calm',
+  label: 'B&W Calm',
+  theme: 'plugin-your-plugin-id-snow-ink',
+  background: 'none',
+  accentColor: null
+});
 context.ui.registerSettingsNav({ id: 'tips', label: 'Tips', position: 'before:about', html: '<p>…</p>' });
+
+context.ui.unregisterTheme('snow-ink');
+context.ui.unregisterBackground('mist');
+context.ui.unregisterSound('wind');
 context.ui.removeSettingsNav('your-plugin-id:tips'); // only your own items
+```
+
+### Theme hooks
+
+```js
+hooks.on('onThemeApplied', ({ theme, resolved }) => {
+  // theme = settings value; resolved = body class id after auto/light/dark resolve
+});
+
+hooks.on('onBackgroundApplied', (backgroundId) => { /* … */ });
+hooks.on('onLanguageChange', (lang) => { /* 'en' | 'ru' */ });
+hooks.on('onFocusModeChange', (enabled) => { /* boolean */ });
 ```
 
 Contributions are cleared automatically when a plugin is disabled or uninstalled.
@@ -310,6 +404,10 @@ Subscribe with **`hooks.on(hookName, callback)`**. Available hook names are defi
 - `onAppStart`
 - `onHabitComplete`
 - `onSettingsChange`
+- `onThemeApplied` — `{ theme, resolved }` after theme CSS is loaded
+- `onBackgroundApplied` — background id after user or plugin change
+- `onLanguageChange` — `'en'` \| `'ru'`
+- `onFocusModeChange` — boolean
 
 The sandbox registers interest via postMessage; the host invokes **`INVOKE_HOOK`** when events fire.
 
@@ -325,7 +423,7 @@ The sandbox registers interest via postMessage; the host invokes **`INVOKE_HOOK`
 | **CSS only via `manifest.styles`** | Keeps styling auditable and scoped to trusted file list. |
 | **Escape user-controlled strings** in HTML you inject | Treat sheet HTML like any templated UI — encode or sanitize text. |
 
-The host maintains a **CSP** and RPC **allowlist** (`storage.get` / `storage.set` / `ui.showNotification`). Do not rely on undocumented RPC channels.
+The host maintains a **CSP** and RPC **allowlist** (see `src/core/plugin-rpc.js`). Do not rely on undocumented RPC channels.
 
 ---
 
@@ -360,6 +458,8 @@ Users install or update from **Settings → Plugins**; the client re-downloads f
 | Garden empty | Use **`relay.innerHTML`** or **`appendChild`** on the relay; ensure **`registerGardenWidget`** ran. |
 | `openWeatherModal` not called from garden | Pass **`onTapMethod: 'openWeatherModal'`** (or your method name) in **`registerGardenWidget`**. |
 | Portable / Windows icon errors (app repo) | Ensure `prebuild` runs **`sync-build-icon.mjs`** so **`build/icon.ico`** includes **256×256**. |
+| Install fails on Cultiva 1.7 with a 2.0 plugin | User sees a short message: *«Плагину нужна Cultiva 2.0.0+. Обновите приложение.»* — set **`minAppVersion`** honestly in manifest + registry. |
+| Theme not in dropdown after install | Use **`extends` + `variables`** on a built-in theme (`birch`, `rowan`, …); ensure theme CSS is in **`manifest.styles`** or `contributes.themes[].css`. |
 
 ---
 
@@ -375,4 +475,4 @@ Users install or update from **Settings → Plugins**; the client re-downloads f
 
 ---
 
-*This guide tracks the **1.7.0 · Linden** plugin surface. When in doubt, inspect `src/core/plugin-sandbox-host.js`, `src/core/plugin-manager.js`, and `src/core/plugin-rpc.js` in the Cultiva repo for the authoritative protocol.*
+*This guide tracks the **2.0.0 · Rowan** plugin surface. When in doubt, inspect `src/core/plugin-sandbox-host.js`, `src/core/plugin-manager.js`, and `src/core/plugin-rpc.js` in the Cultiva repo for the authoritative protocol.*

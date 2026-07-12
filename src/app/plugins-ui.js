@@ -422,7 +422,7 @@ window.installPlugin = async (pluginId) => {
     await renderPluginsSection();
     renderPluginHeaderItems();
   } catch (e) {
-    showNotification('', `${t.pluginInstallFailed || 'Failed to install plugin'}: ${e.message}`);
+    showNotification('', e.message || t.pluginInstallFailed || 'Failed to install plugin');
   }
 };
 
@@ -721,6 +721,10 @@ export function renderPluginHeaderItems() {
       }
       item.appendChild(iconSpan);
       item.appendChild(labelSpan);
+      const badgeSpan = document.createElement('span');
+      badgeSpan.className = 'header-plugin-badge';
+      badgeSpan.setAttribute('aria-hidden', 'true');
+      item.appendChild(badgeSpan);
 
       item.onclick = () => {
         const hi = pluginData.headerItem;

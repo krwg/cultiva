@@ -55,9 +55,15 @@ mkdirSync(themesDir, { recursive: true });
 mkdirSync(ambientDir, { recursive: true });
 
 for (const id of THEME_BODY_IDS) {
+  const outPath = join(themesDir, `${id}.css`);
   const chunks = themeExtract.blocks.filter((b) => b.includes(`body.theme-${id}`));
   if (chunks.length) {
-    writeFileSync(join(themesDir, `${id}.css`), `${chunks.join('\n\n')}\n`);
+    writeFileSync(outPath, `${chunks.join('\n\n')}\n`);
+    continue;
+  }
+  const standalone = join(root, 'src/styles/themes', `${id}.css`);
+  if (existsSync(standalone)) {
+    writeFileSync(outPath, readFileSync(standalone, 'utf8'));
   }
 }
 

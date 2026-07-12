@@ -30,15 +30,15 @@ Wiki uses **`.md`** files; links use `Page-Name` (spaces → hyphens).
 |------|--------|
 | [Home.md](wiki/Home.md) | Landing |
 | [Getting-Started.md](wiki/Getting-Started.md) | Install, backup, first run |
-| [Features.md](wiki/Features.md) | 1.7.0 Linden overview |
+| [Features.md](wiki/Features.md) | 2.0.0 Rowan overview |
 | [Habits.md](wiki/Habits.md) | Growth stages, streaks, grace day |
-| [Themes-and-Backgrounds.md](wiki/Themes-and-Backgrounds.md) | 18 themes, 13 ambient layers |
+| [Themes-and-Backgrounds.md](wiki/Themes-and-Backgrounds.md) | 19 themes, 14 ambient layers |
 | [Plugins.md](wiki/Plugins.md) | Install and use extensions |
 | [FAQ.md](wiki/FAQ.md) | Common questions |
 | [Troubleshooting.md](wiki/Troubleshooting.md) | Data, plugins, builds |
 | [Architecture.md](wiki/Architecture.md) | Developer overview |
 | [Cultiva-Plugins-Guide.md](wiki/Cultiva-Plugins-Guide.md) | Author quick reference |
-| [Roadmap.md](wiki/Roadmap.md) | Shipped in 1.7, what's next |
+| [Roadmap.md](wiki/Roadmap.md) | Shipped in 2.0, what's next |
 | [Contributing.md](wiki/Contributing.md) | How to contribute |
 | [Desktop-Build.md](wiki/Desktop-Build.md) | Build from source |
 | [Privacy-and-Security.md](wiki/Privacy-and-Security.md) | Data & sandbox |

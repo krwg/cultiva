@@ -4,9 +4,11 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [2.0.0] — Rowan (unreleased)
+## [2.0.0] — Rowan · 2026-07-13
 
 **Codename:** Rowan · **Registry:** [cultiva-plugins 3.3.0](https://github.com/krwg/cultiva-plugins)
+
+[Landing](https://krwg.github.io/cultiva/) · [Full release notes](docs/release-notes-v2.0.0-rowan-github.md) · [GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.0.0)
 
 ### Added
 - **Plugin contributions API** — plugins can register themes, backgrounds, ambient sounds, and Settings sidebar sections (`manifest.contributes` + `context.ui.registerTheme|registerBackground|registerSound|registerSettingsNav`)
@@ -34,7 +36,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Tests: auth, hotkeys, modals, habit schedule, plugin RPC
 
 ### Changed
-- Version bumped to **2.0.0** (Rowan); no GitHub Release yet
 - Calendar page gains `bg-linden-bloom` and `bg-rowan-cluster` layers
 
 ## [1.7.0] — Linden · 2026-07-09
@@ -103,5 +104,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 See [GitHub Releases](https://github.com/krwg/cultiva/releases) for older tags.
 
+[2.0.0]: https://github.com/krwg/cultiva/releases/tag/2.0.0
 [1.7.0]: https://github.com/krwg/cultiva/releases/tag/1.7.0
 [1.1.0]: https://github.com/krwg/cultiva/releases/tag/v1.1.0

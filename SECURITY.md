@@ -4,7 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| 1.7.x   | Yes       |
+| 2.0.x   | Yes       |
+| 1.7.x   | Best effort |
 | 1.1.x   | Best effort |
 | < 1.1   | No        |
 

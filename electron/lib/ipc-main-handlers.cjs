@@ -10,7 +10,8 @@ function registerCoreIpc(ipcMain, {
   safeStorage,
   Notification,
   resolveAppIconPath,
-  trayMod
+  trayMod,
+  shell
 }) {
   ipcMain.handle('save-file', async (event, data, fileName) => {
     const mainWindow = getMainWindow();
@@ -160,6 +161,18 @@ function registerCoreIpc(ipcMain, {
     } catch (e) {
       return { ok: false, error: e && e.message ? e.message : String(e) };
     }
+  });
+
+  ipcMain.handle('shell:open-external', async (event, url) => {
+    const target = String(url || '').trim();
+    if (!/^https?:\/\//i.test(target)) {
+      return { ok: false, error: 'Invalid URL' };
+    }
+    if (!shell?.openExternal) {
+      return { ok: false, error: 'Unavailable' };
+    }
+    await shell.openExternal(target);
+    return { ok: true };
   });
 }
 

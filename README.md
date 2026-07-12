@@ -5,8 +5,7 @@
 
 **A gamified habit tracker where consistency isn’t tracked — it’s grown.**
 
-[![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=flat-square&color=34c759&label=1.7.0%20Linden)](https://github.com/krwg/cultiva/releases/latest)
-[![Dev](https://img.shields.io/badge/dev-2.0.0%20Rowan-111111?style=flat-square&labelColor=0b0b0b&color=f4f4f4)](CHANGELOG.md)
+[![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=flat-square&labelColor=0b0b0b&color=f4f4f4&label=2.0.0%20Rowan)](https://github.com/krwg/cultiva/releases/latest)
 [![License](https://img.shields.io/github/license/krwg/cultiva?style=flat-square&color=af52de)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Win%20%7C%20macOS%20%7C%20Linux-34c759?style=flat-square)](https://github.com/krwg/cultiva/releases/latest)
 [![Stars](https://img.shields.io/github/stars/krwg/cultiva?style=flat-square&color=ffcc00)](https://github.com/krwg/cultiva/stargazers)
@@ -26,20 +25,20 @@ Cultiva is an **offline-first desktop habit tracker**. Each habit you plant grow
 
 ## Download
 
-**[→ Latest release (1.7.0 · Linden)](https://github.com/krwg/cultiva/releases/latest)**
+**[→ Latest release (2.0.0 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
-| **Windows** | `Cultiva-Setup-1.7.0.exe` | NSIS installer — shortcuts, uninstall entry |
-| **Windows** | `Cultiva-Portable-1.7.0.exe` | No install required |
-| **macOS Intel** | `Cultiva-1.7.0-mac-x64.dmg` | Also `.zip` |
-| **macOS Apple Silicon** | `Cultiva-1.7.0-mac-arm64.dmg` | Also `.zip` |
-| **Linux** | `Cultiva-1.7.0-linux-x86_64.AppImage` | Single file, no root |
-| **Linux** | `Cultiva-1.7.0-linux-amd64.deb` | Debian / Ubuntu |
+| **Windows** | `Cultiva-Setup-2.0.0.exe` | NSIS installer — shortcuts, uninstall entry |
+| **Windows** | `Cultiva-Portable-2.0.0.exe` | No install required |
+| **macOS Intel** | `Cultiva-2.0.0-mac-x64.dmg` | Also `.zip` |
+| **macOS Apple Silicon** | `Cultiva-2.0.0-mac-arm64.dmg` | Also `.zip` |
+| **Linux** | `Cultiva-2.0.0-linux-x86_64.AppImage` | Single file, no root |
+| **Linux** | `Cultiva-2.0.0-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · [1.1.0 Cypress](docs/release-notes-v1.1.0-cypress-github.md)
+**Release notes:** [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · [1.1.0 Cypress](docs/release-notes-v1.1.0-cypress-github.md)
 
-> **Upgrading from 1.1.0:** your garden is preserved. Export a backup under **Settings → Data** before updating, just in case.
+> **Upgrading:** your garden is preserved. Export a backup under **Settings → Data** before updating, just in case.
 
 ---
 
@@ -55,28 +54,24 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ---
 
-## Highlights in 1.7.0 Linden
+## Highlights in 2.0.0 Rowan
 
 | | |
 |---|---|
+| **Rowan theme** | Strict graphite black-and-white palette |
+| **Rowan Cluster background** | «Pulsing Cluster» — trembling branches, flickering pinnate leaves, pulsing berry probes with radar rings |
+| **Plugin contributions** | Themes, backgrounds, ambient sounds, Settings nav from plugins |
+| **Habit schedules** | Daily, weekdays, N times per week; per-habit reminders |
 | **First-run wizard** | Language, theme, timezone, first habit, optional auto-backup |
-| **Habit templates** | Read, Exercise, Meditate, Water, Journal |
 | **Streak grace day** | One forgiven skip per calendar month (optional) |
 | **Statistics** | Weekly and monthly completion trends in Settings |
 | **Data export** | JSON, ZIP, iCal (`.ics`) for habits and calendar events |
 | **Auto-backup** | 7 rotating snapshots in the app data folder |
 | **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) |
 | **F1 help** | Contextual shortcuts — English and Russian |
-| **18 themes** | Including **Linden** and **Cypress** |
-| **13 ambient backgrounds** | Plus custom photo — shared with calendar |
+| **19 themes** | Including **Rowan**, **Linden**, and **Cypress** |
+| **14 ambient backgrounds** | Plus custom photo — shared with calendar |
 | **Cross-platform** | Windows, macOS (Intel + ARM), Linux builds in CI |
-
-### In development — 2.0.0 Rowan (unreleased)
-
-| | |
-|---|---|
-| **Rowan theme** | Strict graphite black-and-white palette |
-| **Rowan Cluster background** | «Pulsing Cluster» — trembling branches, flickering pinnate leaves, pulsing berry probes with radar rings |
 
 ---
 
@@ -90,14 +85,14 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **Plugins** | Sandboxed header and garden widgets ([catalog](https://krwg.github.io/cultiva-plugins/)) |
 | **Discord Rich Presence** | Optional status while you tend your garden |
 | **Auto-updates** | `electron-updater` against GitHub Releases |
-| **i18n** | **285** EN/RU string pairs in 1.7.0 |
+| **i18n** | **~348** EN/RU string pairs |
 | **Accessibility** | Focus traps, landmarks, `prefers-reduced-motion` for ambient layers |
 
 ---
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** and registry **[3.1.1](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** and registry **[3.3.0](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
@@ -119,10 +114,11 @@ Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0**
 | Layer | Technology |
 |-------|------------|
 | Runtime | Electron **40** |
+| Engines | **CoreV6** · **GrowthKit3** · **IDB3** · **PLE1** |
 | UI | Vanilla JavaScript (ES modules), CSS variables |
 | Build | Vite **6** (multi-page: garden + calendar) |
 | Data | IndexedDB with localStorage bridge where needed |
-| Tests | Vitest **3** (8 files, 28 tests) |
+| Tests | Vitest **3** (19 files, 62 tests) |
 | Updates | `electron-updater` + GitHub Releases |
 | Packaging | `electron-builder` **26** — NSIS, portable, dmg, zip, AppImage, deb |
 
@@ -166,6 +162,6 @@ When Discord is running locally, Cultiva can show a simple presence line. Toggle
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **1.7.0 · Linden**
+Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.0.0 · Rowan**
 
 </div>

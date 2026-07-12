@@ -1,6 +1,8 @@
 # Architecture
 
-High-level map for **Cultiva 1.7.0** contributors.
+High-level map for **Cultiva 2.0.0** contributors.
+
+**Engines:** **CoreV6** (core) · **GrowthKit3** (habits) · **IDB3** (storage) · **PLE1** (Plugin Engine 1)
 
 ---
 
@@ -44,23 +46,26 @@ registry.json → download manifest + files → sha256 check → userData/cultiv
 | Sandbox host | `src/core/plugin-sandbox-host.js` |
 | Manifest i18n | `src/core/plugin-manifest-i18n.js` |
 | Registry integrity | `src/core/plugin-registry-integrity.js` |
+| Contributions | `src/core/plugin-contributions.js` |
 
-## Performance (1.7)
+## Performance
 
 - Lazy `import()` for plugins UI, stats, onboarding, Discord, updates
+- Lazy-loaded theme and ambient CSS chunks
 - Garden renders patch single cards on toggle
 - Ambient backgrounds in separate chunk
 
 ## Tests
 
 ```bash
-npm test   # Vitest — storage, habits, plugin RPC, iCal, analytics, …
+npm test   # Vitest — 19 files, 62 tests (storage, habits, plugin RPC, iCal, analytics, …)
 ```
 
 ## Key files
 
 | Concern | File |
 |---------|------|
+| Branding / engines | `src/core/branding.js` |
 | Habits logic | `src/modules/habits.js` |
 | Persistence | `src/modules/storage.js` |
 | Sandbox | `src/core/plugin-sandbox-host.js` |

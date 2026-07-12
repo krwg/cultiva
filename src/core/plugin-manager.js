@@ -4,17 +4,33 @@ import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
 import { settings } from '../app/renderer-bootstrap.js';
 import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
+import {
+  applyAppearancePreset,
+  applyBackgroundById,
+  applyThemeById,
+  clearThemePreview,
+  previewThemeById
+} from './plugin-appearance-bridge.js';
+import { getSanitizedManifest, setPluginHeaderBadge, focusPluginHabit } from './plugin-app-bridge.js';
+import { getTranslations } from './i18n.js';
+import { formatPluginInstallError } from './plugin-errors.js';
 import { invokePluginRpc } from './plugin-api.js';
 import { readThemeCssColor } from './shell-chrome.js';
 import { cacheFetch } from './runtime-cache.js';
 import {
   applyManifestContributions,
   registerPluginBackground,
+  registerPluginFont,
+  registerPluginAppearancePreset,
   registerPluginSettingsNav,
   registerPluginSound,
   registerPluginTheme,
+  unregisterPluginBackground,
   unregisterPluginContributions,
-  unregisterPluginSettingsNav
+  unregisterPluginSettingsNav,
+  unregisterPluginSound,
+  unregisterPluginTheme,
+  injectPluginFontCss
 } from './plugin-contributions.js';
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
@@ -195,7 +211,11 @@ const pluginHooks = {
   onHabitComplete: [],
   onAppStart: [],
   onSettingsChange: [],
-  onCalendarMount: []
+  onCalendarMount: [],
+  onThemeApplied: [],
+  onBackgroundApplied: [],
+  onLanguageChange: [],
+  onFocusModeChange: []
 };
 
 let _initPromise = null;
@@ -483,7 +503,15 @@ function _wireSandboxHost(host, pluginId, manifest) {
           return JSON.parse(text);
         }
         return text;
-      }
+      },
+      applyTheme: (themeId) => applyThemeById(themeId, { persist: true }),
+      applyBackground: (bgId) => applyBackgroundById(bgId, { persist: true }),
+      previewTheme: (themeId) => previewThemeById(themeId),
+      clearThemePreview: () => clearThemePreview(),
+      applyAppearancePreset: (presetId) => applyAppearancePreset(presetId),
+      compareVersions: (a, b) => pluginManager.checkVersion(a, b),
+      pluginId: manifest.id,
+      manifestSummary: getSanitizedManifest(manifest)
     });
   });
 
@@ -585,7 +613,17 @@ function _wireSandboxHost(host, pluginId, manifest) {
     if (!pluginHasUiPermission(manifest)) {
       return;
     }
-    registerPluginTheme(pluginId, data?.config || {});
+    const id = registerPluginTheme(pluginId, data?.config || {});
+    const { injectPluginThemeCss } = await import('./plugin-contributions.js');
+    await injectPluginThemeCss(id, async (pid, rel) => window.electron?.readPluginFile(`${pid}/${rel}`));
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiUnregisterTheme', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    unregisterPluginTheme(pluginId, data?.themeId);
     await pluginManager._refreshPluginContributionsUi();
   });
 
@@ -593,7 +631,17 @@ function _wireSandboxHost(host, pluginId, manifest) {
     if (!pluginHasUiPermission(manifest)) {
       return;
     }
-    registerPluginBackground(pluginId, data?.config || {});
+    const id = registerPluginBackground(pluginId, data?.config || {});
+    const { injectPluginBackgroundCss } = await import('./plugin-contributions.js');
+    await injectPluginBackgroundCss(id, async (pid, rel) => window.electron?.readPluginFile(`${pid}/${rel}`));
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiUnregisterBackground', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    unregisterPluginBackground(pluginId, data?.backgroundId);
     await pluginManager._refreshPluginContributionsUi();
   });
 
@@ -603,6 +651,43 @@ function _wireSandboxHost(host, pluginId, manifest) {
     }
     registerPluginSound(pluginId, data?.config || {});
     await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiUnregisterSound', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    unregisterPluginSound(pluginId, data?.soundId);
+    await pluginManager._refreshPluginContributionsUi();
+  });
+
+  host.setHandler('onUiRegisterFont', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    registerPluginFont(pluginId, data?.config || {});
+    await injectPluginFontCss(pluginId);
+  });
+
+  host.setHandler('onUiRegisterAppearancePreset', async (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    registerPluginAppearancePreset(pluginId, data?.config || {});
+  });
+
+  host.setHandler('onUiSetHeaderBadge', (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    setPluginHeaderBadge(pluginId, data?.badge);
+  });
+
+  host.setHandler('onUiFocusHabit', (data) => {
+    if (!pluginHasUiPermission(manifest)) {
+      return;
+    }
+    focusPluginHabit(data?.habitId);
   });
 
   host.setHandler('onUiRegisterSettingsNav', async (data) => {
@@ -1163,10 +1248,8 @@ export const pluginManager = {
         }
       }
       const detailSentence = detail ? ` (${detail})` : '';
-      throw new Error(
-        `Plugin files were saved but the plugin did not start.${detailSentence} ` +
-        'Use the desktop app (Electron) for install, or check DevTools console for sandbox errors.'
-      );
+      const friendly = formatPluginInstallError(detail, getTranslations(settings.lang));
+      throw new Error(friendly);
     }
 
     const installed = await getInstalledPluginIdsNormalized();

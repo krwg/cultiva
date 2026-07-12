@@ -56,7 +56,8 @@ app.whenReady().then(() => {
     safeStorage,
     Notification,
     resolveAppIconPath: mainWindowMod.resolveAppIconPath,
-    trayMod
+    trayMod,
+    shell
   });
   registerBackupIpc(ipcMain, { getMainWindow, dialog });
   registerAutoBackupIpc(ipcMain);

@@ -4,7 +4,8 @@ import { AMBIENT_BG_LAYER_IDS, LS_CUSTOM_BG_DATA, getWithBgClassList } from './t
 import {
   getPluginBackgroundBodyClasses,
   getPluginBackgrounds,
-  isPluginBackgroundId
+  isPluginBackgroundId,
+  mountPluginBackgroundHtml
 } from './plugin-contributions.js';
 
 const MAX_CUSTOM_BYTES = 1_400_000;
@@ -44,6 +45,12 @@ function hideAllLayers(doc) {
       if (id === 'custom') {
         el.style.backgroundImage = 'none';
       }
+    }
+  });
+  getPluginBackgrounds().forEach((bg) => {
+    const el = doc.getElementById(`bg-${bg.id}`);
+    if (el) {
+      el.style.display = 'none';
     }
   });
 }
@@ -98,6 +105,7 @@ export function applyAmbientBackground(doc, body, bg) {
     const row = getPluginBackgrounds().find((item) => item.id === bg);
     if (row) {
       body.classList.add(row.bodyClass, 'with-ambient-bg');
+      mountPluginBackgroundHtml(bg);
     }
     return;
   }

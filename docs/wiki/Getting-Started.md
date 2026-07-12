@@ -12,7 +12,7 @@
 
 | OS | File |
 |----|------|
-| Windows | `Cultiva-Setup-1.7.0.exe` or portable `.exe` |
+| Windows | `Cultiva-Setup-2.0.0.exe` or portable `.exe` |
 | macOS | `.dmg` for your chip (x64 or arm64) |
 | Linux | `.AppImage` or `.deb` |
 
@@ -39,17 +39,17 @@ You can replay parts of setup later in **Settings**.
 
 ## Upgrading
 
-From **1.1.0 Cypress** or older: your garden is preserved. Export a backup before upgrading as a precaution.
+From an older release: your garden is preserved. Export a backup before upgrading as a precaution.
 
 ## Plugins
 
-Requires Cultiva **≥ 1.7.0**:
+Requires Cultiva **≥ 2.0.0**:
 
 1. **Settings → Plugins → Browse**
 2. Tap **Install** on any catalog entry
 3. Header widgets appear in the top bar; garden widgets in the home view
 
-Registry: [cultiva-plugins 3.0.2](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)
+Registry: [cultiva-plugins 3.3.0](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)
 
 ## Next steps
 

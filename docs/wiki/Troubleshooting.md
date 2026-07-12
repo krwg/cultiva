@@ -10,7 +10,7 @@
 
 | Problem | Try |
 |---------|-----|
-| Habit came back after delete | Update to **1.7.0+**; export backup first |
+| Habit came back after delete | Update to **2.0.0+**; export backup first |
 | Reset didn't stick | Same — fixed in 1.7 storage layer |
 | Import failed | Check preview; ensure JSON/ZIP from Cultiva export |
 | Lost data | Check `userData/backups/` if auto-backup was on |
@@ -20,7 +20,7 @@
 | Problem | Try |
 |---------|-----|
 | sha256 mismatch | Registry updated — refresh catalog; don't use stale fork URL |
-| Weather won't install | Cultiva 1.7.0+ required; check network for first fetch |
+| Weather won't install | Cultiva 2.0.0+ required; check network for first fetch |
 | Plugin enabled but invisible | Re-enable plugins globally; restart app |
 | Header chip dead | Disable/re-enable plugin in Settings |
 

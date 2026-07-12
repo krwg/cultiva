@@ -4,7 +4,7 @@ Thank you for considering a contribution. Cultiva is an offline-first Electron h
 
 ## Before you start
 
-- Read the [README](README.md) and [CHANGELOG](CHANGELOG.md)
+- Read the [README](README.md) and [CHANGELOG](CHANGELOG.md) — current release **2.0.0 · Rowan**
 - Plugin authors: see [docs/PLUGIN_AUTHOR_GUIDE.md](docs/PLUGIN_AUTHOR_GUIDE.md) and [cultiva-plugins](https://github.com/krwg/cultiva-plugins)
 - Security issues: see [SECURITY.md](SECURITY.md) — **never** file public issues for vulnerabilities
 

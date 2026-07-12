@@ -1,14 +1,19 @@
 # Roadmap
 
-## Shipped in 2.0.0 · Rowan (unreleased)
+## Shipped in 2.0.0 · Rowan (2026-07-13)
 
 | Area | Delivered |
 |------|-----------|
 | Rowan theme | Graphite black-and-white palette (`#0b0b0b` / `#f4f4f4`) |
 | Rowan Cluster background | Canvas «Pulsing Cluster» — branch tremor, pinnate leaf flicker, pulsing berries with radar rings |
+| Plugin contributions | Themes, backgrounds, ambient sounds, Settings nav from plugins |
+| Habit schedules & reminders | Daily, weekdays, N/week; native per-habit reminders |
+| Calendar plugin rail | `onCalendarMount`, `registerCalendarWidget` |
 | Calendar parity | `bg-linden-bloom` and `bg-rowan-cluster` layers on calendar page |
+| System tray | Quick-complete with hide-to-tray |
+| Tests & i18n | 19 Vitest files, 62 tests; ~348 EN/RU string pairs |
 
-No GitHub Release yet — version **2.0.0** tracked in `cultiva.release.json` and commits.
+Full notes: [release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.0.0-rowan-github.md)
 
 ---
 
@@ -29,7 +34,7 @@ Full checklist was tracked in local roadmap through Tier 4 (issues #53–#57 clo
 
 ---
 
-## Near-term (post-1.7)
+## Near-term (post-2.0)
 
 Community-driven via [Issues](https://github.com/krwg/cultiva/issues) and [Discussions](https://github.com/krwg/cultiva/discussions). Examples under consideration:
 
@@ -45,7 +50,7 @@ Community-driven via [Issues](https://github.com/krwg/cultiva/issues) and [Discu
 
 | Version | Codename |
 |---------|----------|
-| 2.0.0 | **Rowan** (unreleased) |
+| 2.0.0 | **Rowan** |
 | 1.7.0 | **Linden** |
 | 1.1.0 | Cypress |
 | 0.4.x | Coconut, Sequoia, … |
@@ -56,4 +61,4 @@ Codenames are theme-inspired tree and plant names.
 
 ## Plugins ecosystem
 
-Registry **3.0.2** — see [cultiva-plugins Roadmap](https://github.com/krwg/cultiva-plugins/wiki/Home) and [Plugin Hardening](https://github.com/krwg/cultiva-plugins/wiki/Plugin-Hardening).
+Registry **3.3.0** — see [cultiva-plugins Roadmap](https://github.com/krwg/cultiva-plugins/wiki/Home) and [Plugin Hardening](https://github.com/krwg/cultiva-plugins/wiki/Plugin-Hardening).

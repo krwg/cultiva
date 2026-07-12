@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld('electron', {
   isPluginDownloaded: (pluginId) => ipcRenderer.invoke('plugin:is-downloaded', pluginId),
   getPluginResourcePath: (pluginId, resourcePath) => ipcRenderer.invoke('plugin:get-resource-path', pluginId, resourcePath),
   setTitleBarOverlay: (options) => ipcRenderer.invoke('shell:set-titlebar-overlay', options),
+  openExternal: (url) => ipcRenderer.invoke('shell:open-external', url),
   onWindowVisibility: (callback) => ipcRenderer.on('window-visibility', (_event, visible) => callback(visible)),
 });
 
