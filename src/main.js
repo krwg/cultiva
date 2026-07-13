@@ -49,7 +49,7 @@ import { AVATAR_BACKGROUNDS, AVATAR_EMOJIS, DEFAULT_AVATAR } from './core/avatar
 import { showAlertDialog, showConfirmDialog } from './app/dialogs.js';
 import { initTooltipManager } from './app/tooltip-manager.js';
 import { configureUpdatesUi, updateUpdatesSection } from './app/updates-ui.js';
-import { initHabitFormIcons, initSettingsSidebarIcons } from './core/ui-icons.js';
+import { initHabitFormIcons, initSettingsEmptyIcon, initSettingsSidebarIcons } from './core/ui-icons.js';
 import {
   configureDiscordSettings,
   prepareDiscordSettingsSection,
@@ -978,7 +978,7 @@ function initEvents() {
         document.querySelector('input[name="track-type"][value="binary"]').checked = true;
         closeModal(addModal);
         renderGarden();
-        showNotification(TRANSLATIONS[settings.lang].habitPlanted);
+        showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitPlanted);
       } catch (err) {
         const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
         const msg = err?.message === 'Garden is full'
@@ -1068,6 +1068,7 @@ async function init() {
     applyBranding();
     applySettings();
     initSettingsSidebarIcons();
+    initSettingsEmptyIcon();
     initHabitFormIcons();
     renderGarden();
     bindElectronPageLinks();

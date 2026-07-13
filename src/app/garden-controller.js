@@ -84,7 +84,7 @@ function createHabitCard(habit, isTrophy = false) {
     progressBar = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
   }
 
-  const t = TRANSLATIONS[c.settings.lang];
+  const t = TRANSLATIONS[c.settings.lang] || TRANSLATIONS.en;
   const categoryName = habit.category ? (t.categories?.[habit.category] || habit.category) : '';
   const categoryBadge = categoryName ? `<span class="category-badge" data-i18n-category="${habit.category}">${categoryName}</span>` : '';
   const streakText = habit.currentStreak > 0 ? ` • 🔥 ${habit.currentStreak}` : '';
@@ -204,7 +204,7 @@ export function renderGarden() {
   const all = habits.getAll();
   const active = filterHabits(habits.getGardenHabits());
   const trophies = all.filter(h => h.progress >= LEGACY_THRESHOLD);
-  const t = TRANSLATIONS[c.settings.lang];
+  const t = TRANSLATIONS[c.settings.lang] || TRANSLATIONS.en;
   if (!c.focusedHabitId && active[0]) {
     c.setFocusedHabitId(active[0].id);
   } else if (c.focusedHabitId && !active.some((h) => h.id === c.focusedHabitId)) {
@@ -245,7 +245,7 @@ export function openStats(id) {
   const s = habits.getStats(id);
   if (!s) { return; }
   document.getElementById('stats-title').textContent = s.name;
-  const t = TRANSLATIONS[c.settings.lang];
+  const t = TRANSLATIONS[c.settings.lang] || TRANSLATIONS.en;
   document.getElementById('stats-content').innerHTML = `
         <div class="stat-card"><div class="stat-label">${t.currentStreak}</div><div class="stat-value">${s.currentStreak}</div><div class="stat-subvalue">${t.days}</div></div>
         <div class="stat-card"><div class="stat-label">${t.bestStreak}</div><div class="stat-value">${s.bestStreak}</div><div class="stat-subvalue">${t.days}</div></div>
@@ -277,7 +277,7 @@ export function bindGardenCardEvents() {
       return;
     }
     const id = card.dataset.id;
-    const t = TRANSLATIONS[c.settings.lang];
+    const t = TRANSLATIONS[c.settings.lang] || TRANSLATIONS.en;
     c.setFocusedHabitId(id);
     if (e.target.closest('.btn-card-primary')) {
       e.stopPropagation();
@@ -293,7 +293,7 @@ export function bindGardenCardEvents() {
 
       if (h.trackType === 'quantity') {
         const cur = habits.quantityDayProgress(h, today);
-        const t = TRANSLATIONS[c.settings.lang];
+        const t = TRANSLATIONS[c.settings.lang] || TRANSLATIONS.en;
         openQuantityLogModal(h, cur, t).then(async (parsed) => {
           if (parsed === null) { return; }
           if (!Number.isFinite(parsed) || parsed < 0) {
@@ -315,15 +315,15 @@ export function bindGardenCardEvents() {
     } else if (e.target.closest('.btn-card-danger')) {
       e.stopPropagation();
       const shouldRemove = await showConfirmDialog(t.confirmRemoveHabit || 'Remove this habit?', {
-        title: TRANSLATIONS[c.settings.lang].delete || 'Delete',
-        confirmText: TRANSLATIONS[c.settings.lang].delete || 'Delete',
-        cancelText: TRANSLATIONS[c.settings.lang].cancel || 'Cancel',
+        title: t.delete || 'Delete',
+        confirmText: t.delete || 'Delete',
+        cancelText: t.cancel || 'Cancel',
         tone: 'danger'
       });
       if (shouldRemove) {
         await habits.remove(id);
         renderGarden();
-        showNotification(TRANSLATIONS[c.settings.lang].removed);
+        showNotification((TRANSLATIONS[c.settings.lang] || TRANSLATIONS.en).removed);
       }
     } else { openStats(id); }
   };
