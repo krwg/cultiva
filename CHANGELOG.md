@@ -4,6 +4,24 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.0.1] — Rowan · 2026-07-14
+
+**Codename:** Rowan · Patch release — macOS QA bugfixes
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.0.1)
+
+### Fixed
+- **i18n** — English locale failed to load (`enStatic.default`); fixes `undefined` on first-habit button and habit-planted toast
+- **Settings** — Russian (and other lazy locales) apply immediately when changed in Settings
+- **Rowan Cluster** — canvas animation resumes after background mount; deferred start when layout is not ready
+- **Onboarding** — Skip button no longer shows macOS yellow focus ring
+- **Settings** — gear icon in empty “Select section” placeholder
+- **macOS** — ghost transparent window after close-to-tray; dock icon hides/shows with tray lifecycle
+- **Auto-updater** — removed broken generic feed URL; `quitAndInstall` now sets `app.isQuitting` for reliable restart (1.7.0 → 2.0.0+ upgrades)
+
+### Added
+- **macOS DMG** — branded `background.tiff` and `VolumeIcon.icns` for installer drag-and-drop window
+
 ## [2.0.0] — Rowan · 2026-07-13
 
 **Codename:** Rowan · **Registry:** [cultiva-plugins 3.3.0](https://github.com/krwg/cultiva-plugins)
