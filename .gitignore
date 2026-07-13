@@ -14,7 +14,6 @@ out/
 !build/icon.icns
 !build/background.tiff
 !build/VolumeIcon.icns
-!build/dmg-source/
 !build/icons/
 
 # === ELECTRON BUILDER ===
