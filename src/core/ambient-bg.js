@@ -128,11 +128,12 @@ export function applyAmbientBackground(doc, body, bg) {
   if (bg === 'dew') { generateDew(container); }
   if (bg === 'sunbeam') { generateSunbeams(container); }
   if (bg === 'linden-bloom') { generateLindenLeaves(container); }
-  if (bg === 'rowan-cluster') { mountRowanCluster(container); }
-
-  if (body.classList.contains('ambient-paused')) {
-    if (bg === 'rowan-cluster') {
+  if (bg === 'rowan-cluster') {
+    mountRowanCluster(container);
+    if (body.classList.contains('ambient-paused')) {
       pauseRowanCluster(container);
+    } else {
+      resumeRowanCluster(container);
     }
   }
 }

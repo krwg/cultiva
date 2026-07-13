@@ -260,11 +260,24 @@ export function mountRowanCluster(container) {
   ro?.observe(container);
   window.addEventListener('resize', resize);
 
-  if (prefersReducedMotion()) {
-    drawFrame(0);
-    staticDrawn = true;
+  const startLoop = () => {
+    if (prefersReducedMotion()) {
+      drawFrame(0);
+      staticDrawn = true;
+      return;
+    }
+    if (!raf) {
+      raf = requestAnimationFrame(loop);
+    }
+  };
+
+  if (w > 0 && h > 0) {
+    startLoop();
   } else {
-    raf = requestAnimationFrame(loop);
+    requestAnimationFrame(() => {
+      resize();
+      startLoop();
+    });
   }
 
   container._rowanPause = () => {
