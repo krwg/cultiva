@@ -1,6 +1,21 @@
 const { app, dialog } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
+let updateDownloaded = false;
+
+function requestQuitAndInstall() {
+  app.isQuitting = true;
+  setImmediate(() => {
+    try {
+      autoUpdater.quitAndInstall(false, true);
+    } catch (e) {
+      console.warn('[Updater] quitAndInstall failed, relaunching:', e);
+      app.relaunch();
+      app.exit(0);
+    }
+  });
+}
+
 function setupAutoUpdater(getMainWindow) {
   if (!app.isPackaged) {
     console.log('[Updater] Skipped (development / unpackaged)');
@@ -12,16 +27,12 @@ function setupAutoUpdater(getMainWindow) {
   }
 
   autoUpdater.logger = console;
+  autoUpdater.autoDownload = true;
+  autoUpdater.allowPrerelease = false;
 
   if (autoUpdater.logger && autoUpdater.logger.transports && autoUpdater.logger.transports.file) {
     autoUpdater.logger.transports.file.level = 'info';
   }
-
-  autoUpdater.setFeedURL({
-    provider: 'generic',
-    url: 'https://github.com/krwg/Cultiva/releases/latest/download/'
-  });
-  autoUpdater.allowPrerelease = true;
 
   autoUpdater.on('checking-for-update', () => {
     console.log('[Updater] Checking for updates...');
@@ -49,9 +60,9 @@ function setupAutoUpdater(getMainWindow) {
 
   autoUpdater.on('error', (err) => {
     const msg = err && err.message ? err.message : String(err);
-    const isMissingFeed = /404/.test(msg) && (/latest\.yml|RELEASES|blockmap/i.test(msg) || /Not Found/i.test(msg));
+    const isMissingFeed = /404/.test(msg) && (/latest\.yml|latest-mac\.yml|RELEASES|blockmap/i.test(msg) || /Not Found/i.test(msg));
     if (isMissingFeed) {
-      console.warn('[Updater] No update metadata on GitHub latest release (publish a Windows build with electron-builder to attach latest.yml).');
+      console.warn('[Updater] No update metadata on GitHub release.');
       return;
     }
     console.error('[Updater] Error:', msg);
@@ -71,6 +82,7 @@ function setupAutoUpdater(getMainWindow) {
   });
 
   autoUpdater.on('update-downloaded', (info) => {
+    updateDownloaded = true;
     console.log('[Updater] Update downloaded:', info.version);
     const mainWindow = getMainWindow();
     if (mainWindow && mainWindow.webContents) {
@@ -84,7 +96,7 @@ function setupAutoUpdater(getMainWindow) {
       buttons: ['Restart', 'Later']
     }).then(({ response }) => {
       if (response === 0) {
-        autoUpdater.quitAndInstall();
+        requestQuitAndInstall();
       }
     });
   });
@@ -109,18 +121,13 @@ function registerUpdaterIpc(ipcMain) {
   });
 
   ipcMain.on('restart-app', () => {
-    if (app.isPackaged) {
-      try {
-        autoUpdater.quitAndInstall();
-      } catch (e) {
-        console.warn('[Updater] quitAndInstall:', e);
-        app.relaunch();
-        app.exit(0);
-      }
-    } else {
-      app.relaunch();
-      app.exit(0);
+    if (app.isPackaged && updateDownloaded) {
+      requestQuitAndInstall();
+      return;
     }
+    app.isQuitting = true;
+    app.relaunch();
+    app.exit(0);
   });
 }
 

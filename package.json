@@ -1,8 +1,8 @@
 {
   "name": "cultiva",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Grow your habits. Grow yourself.",
-  "homepage": "https://github.com/krwg/Cultiva",
+  "homepage": "https://github.com/krwg/cultiva",
   "main": "electron/main.cjs",
   "type": "module",
   "author": {
@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prebuild": "node scripts/sync-version.mjs && node scripts/sync-build-icon.mjs && node scripts/split-main-css.mjs && node scripts/split-i18n.mjs",
+    "prebuild": "node scripts/sync-version.mjs && node scripts/sync-build-icon.mjs && node scripts/sync-dmg-assets.mjs && node scripts/split-main-css.mjs && node scripts/split-i18n.mjs",
     "preversion": "node scripts/sync-version.mjs",
     "lint": "eslint src/ electron/",
     "test": "vitest run",
@@ -32,7 +32,7 @@
     "publish": {
       "provider": "github",
       "owner": "krwg",
-      "repo": "Cultiva",
+      "repo": "cultiva",
       "releaseType": "release"
     },
     "directories": {
@@ -117,7 +117,18 @@
     },
     "dmg": {
       "artifactName": "${productName}-${version}-mac-${arch}.dmg",
-      "title": "${productName} ${version}"
+      "title": "${productName} ${version}",
+      "background": "build/background.tiff",
+      "icon": "build/VolumeIcon.icns",
+      "iconSize": 80,
+      "window": {
+        "width": 658,
+        "height": 498
+      },
+      "contents": [
+        { "x": 180, "y": 220, "type": "file" },
+        { "x": 478, "y": 220, "type": "link", "path": "/Applications" }
+      ]
     },
     "linux": {
       "target": [
