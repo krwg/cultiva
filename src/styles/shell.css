@@ -2970,6 +2970,16 @@ body.calendar-page .app-footer {
     font-size: 14px;
 }
 
+.onboarding-skip-link:focus {
+    outline: none;
+}
+
+.onboarding-skip-link:focus-visible {
+    outline: 2px solid var(--accent, #5a9a72);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 .import-preview-stats {
     display: grid;
     grid-template-columns: auto 1fr;
