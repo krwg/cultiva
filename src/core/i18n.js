@@ -1,6 +1,6 @@
 import enStatic from './locales/en.js';
 
-const _locales = { en: enStatic.default, ru: null };
+const _locales = { en: enStatic, ru: null };
 const _pending = { ru: null };
 const EMPTY = Object.freeze({});
 
@@ -19,7 +19,7 @@ async function loadLocale(key) {
   }
   if (!_pending[key]) {
     _pending[key] = import('./locales/ru.js').then((mod) => {
-      _locales.ru = mod.default;
+      _locales.ru = mod.default ?? mod;
       return _locales.ru;
     });
   }
