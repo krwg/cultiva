@@ -18,7 +18,8 @@ import {
 import { playPluginAmbientSound } from '../core/plugin-sounds.js';
 import { notifyAppearanceChanged } from '../core/appearance-sync.js';
 import { BRANDING } from '../core/branding.js';
-import { initHabitFormIcons, initSettingsSidebarIcons } from '../core/ui-icons.js';
+import { ensureI18nLocales } from '../core/i18n.js';
+import { initHabitFormIcons, initSettingsSidebarIcons, initSettingsEmptyIcon } from '../core/ui-icons.js';
 
 let ctx = null;
 let _lastSavedLang = null;
@@ -150,10 +151,11 @@ export function updateNotificationsDesktopBanner() {
   }
 }
 
-export function saveSettings() {
+export async function saveSettings() {
   const c = requireCtx();
   const prevLang = _lastSavedLang ?? settings.lang;
   const prevFocus = _lastSavedFocus ?? settings.focusMode;
+  await ensureI18nLocales(settings.lang);
   storage.set('cultiva-settings', settings);
   c.setLangAndT(settings.lang);
   applySettings();
@@ -186,6 +188,7 @@ export function applySettings() {
   }
   applyTranslations(settings.lang);
   initSettingsSidebarIcons();
+  initSettingsEmptyIcon();
   initHabitFormIcons();
 
   document.body.classList.remove(...getThemeBodyClassList(), ...getPluginThemeBodyClasses());
