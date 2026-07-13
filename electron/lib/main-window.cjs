@@ -194,7 +194,14 @@ function createMainWindow({
     const { app } = require('electron');
     if (!app.isQuitting) {
       event.preventDefault();
-      mainWindow.hide();
+      if (process.platform === 'darwin') {
+        mainWindow.hide();
+        if (app.dock) {
+          app.dock.hide();
+        }
+      } else {
+        mainWindow.hide();
+      }
     }
   });
 

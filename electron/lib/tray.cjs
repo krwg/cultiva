@@ -12,6 +12,9 @@ function buildMenu() {
       label: 'Open Cultiva',
       click: () => {
         if (win) {
+          if (process.platform === 'darwin' && app.dock) {
+            app.dock.show();
+          }
           win.show();
           win.focus();
         }
@@ -73,6 +76,9 @@ function initTray({ getMainWindow, resolveAppIconPath }) {
   tray.on('double-click', () => {
     const win = getMainWindow();
     if (win) {
+      if (process.platform === 'darwin' && app.dock) {
+        app.dock.show();
+      }
       win.show();
       win.focus();
     }

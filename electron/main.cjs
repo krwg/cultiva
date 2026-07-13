@@ -67,6 +67,15 @@ app.whenReady().then(() => {
   });
 
   app.on('activate', () => {
+    const win = getMainWindow();
+    if (win) {
+      if (process.platform === 'darwin' && app.dock) {
+        app.dock.show();
+      }
+      win.show();
+      win.focus();
+      return;
+    }
     if (BrowserWindow.getAllWindows().length === 0) {
       openMainWindow();
     }
@@ -85,6 +94,12 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  app.isQuitting = true;
   discord.clearDiscordActivity();
   discord.shutdownDiscordRPC();
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.removeAllListeners('close');
+    mainWindow.destroy();
+    mainWindow = null;
+  }
 });
