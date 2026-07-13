@@ -11,6 +11,10 @@ out/
 !build/installer.nsh
 !build/icon.png
 !build/icon.ico
+!build/icon.icns
+!build/background.tiff
+!build/VolumeIcon.icns
+!build/dmg-source/
 !build/icons/
 
 # === ELECTRON BUILDER ===
