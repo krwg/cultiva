@@ -40,7 +40,7 @@ jobs:
         run: npm run build
 
       - name: Cache Electron binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/electron
           key: ${{ runner.os }}-electron-${{ hashFiles('**/package-lock.json') }}
