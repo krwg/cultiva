@@ -1,4 +1,10 @@
 import { getTodayInTZ, getDateInTZ } from './timezone.js';
+import {
+  normalizeSchedule,
+  isScheduledDay,
+  weekStartMonday,
+  completionsInWeek
+} from './habit-schedule.js';
 
 function parseDayKey(dayKey) {
   const [y, m, d] = dayKey.split('-').map(Number);
@@ -37,6 +43,45 @@ function eachDay(from, to, fn) {
   }
 }
 
+function possibleDaysForHabit(habit, fromDate, toDate, fromKey, toKey) {
+  const schedule = normalizeSchedule(habit.schedule);
+  const historySet = new Set(habit.history || []);
+  let completions = 0;
+  let possible = 0;
+
+  if (schedule.mode === 'weekly') {
+    const weeksSeen = new Set();
+    eachDay(fromDate, toDate, (dayKey) => {
+      if (dayKey < fromKey || dayKey > toKey) {
+        return;
+      }
+      const ws = weekStartMonday(dayKey);
+      if (weeksSeen.has(ws)) {
+        return;
+      }
+      weeksSeen.add(ws);
+      possible += schedule.timesPerWeek;
+      completions += Math.min(completionsInWeek(habit, dayKey), schedule.timesPerWeek);
+    });
+    return { completions, possible };
+  }
+
+  eachDay(fromDate, toDate, (dayKey) => {
+    if (dayKey < fromKey || dayKey > toKey) {
+      return;
+    }
+    if (!isScheduledDay(habit, dayKey)) {
+      return;
+    }
+    possible += 1;
+    if (historySet.has(dayKey)) {
+      completions += 1;
+    }
+  });
+
+  return { completions, possible };
+}
+
 export function countCompletionsInRange(habits, fromDate, toDate) {
   const fromKey = getDateInTZ(fromDate);
   const toKey = getDateInTZ(toDate);
@@ -47,16 +92,9 @@ export function countCompletionsInRange(habits, fromDate, toDate) {
     if (habit.progress >= 365) {
       continue;
     }
-    const historySet = new Set(habit.history || []);
-    eachDay(fromDate, toDate, (dayKey) => {
-      if (dayKey < fromKey || dayKey > toKey) {
-        return;
-      }
-      possible += 1;
-      if (historySet.has(dayKey)) {
-        completions += 1;
-      }
-    });
+    const part = possibleDaysForHabit(habit, fromDate, toDate, fromKey, toKey);
+    completions += part.completions;
+    possible += part.possible;
   }
 
   return { completions, possible };
@@ -94,24 +132,24 @@ export function getPerHabitMonthlyRates(habits, anchor = new Date()) {
   const toKey = getDateInTZ(end);
   const todayKey = getTodayInTZ();
   const effectiveEnd = toKey > todayKey ? todayKey : toKey;
-  const totalDays = Math.max(1, Math.floor((parseDayKey(effectiveEnd) - parseDayKey(fromKey)) / (1000 * 60 * 60 * 24)) + 1);
 
   return habits
     .filter((h) => h.progress < 365)
     .map((habit) => {
-      const historySet = new Set(habit.history || []);
-      let done = 0;
-      eachDay(start, parseDayKey(effectiveEnd), (dayKey) => {
-        if (dayKey >= fromKey && dayKey <= effectiveEnd && historySet.has(dayKey)) {
-          done += 1;
-        }
-      });
+      const { completions, possible } = possibleDaysForHabit(
+        habit,
+        start,
+        parseDayKey(effectiveEnd),
+        fromKey,
+        effectiveEnd
+      );
+      const denom = Math.max(1, possible);
       return {
         id: habit.id,
         name: habit.name,
-        completions: done,
-        possible: totalDays,
-        rate: Math.round((done / totalDays) * 100)
+        completions,
+        possible,
+        rate: possible > 0 ? Math.round((completions / denom) * 100) : 0
       };
     })
     .sort((a, b) => b.rate - a.rate || b.completions - a.completions);

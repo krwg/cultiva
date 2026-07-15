@@ -34,12 +34,30 @@ describe('buildPluginHabitsSnapshot', () => {
         currentStreak: 4,
         bestStreak: 10,
         lastCompleted: '2026-07-12',
-        history: ['secret-should-not-leak']
+        history: [
+          '2026-06-01', '2026-06-02', '2026-06-03', '2026-06-04', '2026-06-05',
+          '2026-06-20', '2026-06-21', '2026-06-22', '2026-06-23', '2026-06-24',
+          '2026-07-01', '2026-07-02', '2026-07-10', '2026-07-11', '2026-07-12'
+        ]
       },
       {
         id: 't1',
         name: 'Trophy',
         progress: 999
+      },
+      {
+        id: 'p1',
+        name: 'Paused',
+        progress: 1,
+        paused: true,
+        history: ['2026-07-11']
+      },
+      {
+        id: 'ar1',
+        name: 'Archived',
+        progress: 1,
+        archived: true,
+        history: ['2026-07-10']
       }
     ]);
 
@@ -57,8 +75,14 @@ describe('buildPluginHabitsSnapshot', () => {
       completedToday: true,
       target: 1,
       unit: '',
-      todayProgress: 1
+      todayProgress: 1,
+      recentHistory: [
+        '2026-06-02', '2026-06-03', '2026-06-04', '2026-06-05',
+        '2026-06-20', '2026-06-21', '2026-06-22', '2026-06-23', '2026-06-24',
+        '2026-07-01', '2026-07-02', '2026-07-10', '2026-07-11', '2026-07-12'
+      ]
     });
     expect(snap[0].history).toBeUndefined();
+    expect(snap[0].recentHistory).toHaveLength(14);
   });
 });

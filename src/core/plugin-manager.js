@@ -15,7 +15,7 @@ import { getTranslations } from './i18n.js';
 import { formatPluginInstallError } from './plugin-errors.js';
 import { invokePluginRpc } from './plugin-api.js';
 import { readThemeCssColor } from './shell-chrome.js';
-import { cacheFetch } from './runtime-cache.js';
+import { cacheFetch, cacheInvalidate } from './runtime-cache.js';
 import { sanitizePluginHtml } from './sanitize-plugin-html.js';
 import {
   applyManifestContributions,
@@ -1245,6 +1245,7 @@ export const pluginManager = {
     if (!success) {
       throw new Error('Plugin download failed');
     }
+    cacheInvalidate('plugin-registry');
     return true;
   },
 
@@ -1279,6 +1280,7 @@ export const pluginManager = {
     }
 
     await markEverInstalled(pluginId);
+    cacheInvalidate('plugin-registry');
 
     return true;
   },
@@ -1312,6 +1314,7 @@ export const pluginManager = {
     }
 
     failedPlugins.delete(pluginId);
+    cacheInvalidate('plugin-registry');
 
     await this._refreshPluginContributionsUi();
 

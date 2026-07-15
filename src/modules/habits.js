@@ -120,8 +120,65 @@ export const habits = {
     return newHabit;
   },
 
+  _maxHistoryDate(history) {
+    if (!Array.isArray(history) || history.length === 0) {
+      return null;
+    }
+    let max = null;
+    for (const d of history) {
+      if (typeof d === 'string' && d && (!max || d > max)) {
+        max = d;
+      }
+    }
+    return max;
+  },
+
   toggle(id, amount = null) {
     return this._toggle(id, amount);
+  },
+
+  /** Revert today's completion (binary toggle-off or quantity back to previousAmount). */
+  undoCompletion(id, previousAmount = null) {
+    return this._undoCompletion(id, previousAmount);
+  },
+
+  async _undoCompletion(id, previousAmount = null) {
+    const allHabits = this.getAll();
+    const habit = allHabits.find((h) => h.id === id);
+    if (!habit) {
+      return null;
+    }
+
+    const today = getTodayInTZ();
+
+    if (habit.trackType === 'quantity') {
+      const current = this.quantityDayProgress(habit, today);
+      const target = this.quantityTarget(habit);
+      const wasCompleted = current >= target;
+      let restore;
+      if (previousAmount !== null && previousAmount !== undefined) {
+        const n = Number(previousAmount);
+        restore = Number.isFinite(n) ? Math.max(0, n) : Math.max(0, target - 1);
+      } else {
+        restore = Math.max(0, target - 1);
+      }
+      habit.dailyProgress = habit.dailyProgress || {};
+      habit.dailyProgress[today] = restore;
+      if (wasCompleted && restore < target) {
+        habit.progress = Math.max(0, habit.progress - 1);
+        habit.history = (habit.history || []).filter((d) => d !== today);
+        habit.lastCompleted = this._maxHistoryDate(habit.history);
+      }
+      this._recalculateStreaks(habit);
+    } else if (habit.lastCompleted === today || (habit.history || []).includes(today)) {
+      habit.progress = Math.max(0, habit.progress - 1);
+      habit.history = (habit.history || []).filter((d) => d !== today);
+      habit.lastCompleted = this._maxHistoryDate(habit.history);
+      this._recalculateStreaks(habit);
+    }
+
+    await storage.saveHabits(allHabits);
+    return { habit, justCompleted: false };
   },
 
   async _toggle(id, amount = null) {
@@ -131,9 +188,11 @@ export const habits = {
 
     const today = getTodayInTZ();
     let justCompleted = false;
+    let previousAmount = null;
 
     if (habit.trackType === 'quantity') {
       const current = this.quantityDayProgress(habit, today);
+      previousAmount = current;
       const target = this.quantityTarget(habit);
       let newAmount;
       if (amount !== null && amount !== undefined) {
@@ -155,16 +214,16 @@ export const habits = {
         justCompleted = true;
       } else if (!isCompleted && wasCompleted) {
         habit.progress = Math.max(0, habit.progress - 1);
-        habit.lastCompleted = null;
         habit.history = habit.history.filter(d => d !== today);
+        habit.lastCompleted = this._maxHistoryDate(habit.history);
       }
 
       this._recalculateStreaks(habit);
     } else {
-      if (habit.lastCompleted === today) {
-        habit.lastCompleted = null;
+      if (habit.lastCompleted === today || (habit.history || []).includes(today)) {
         habit.progress = Math.max(0, habit.progress - 1);
         habit.history = habit.history.filter(d => d !== today);
+        habit.lastCompleted = this._maxHistoryDate(habit.history);
       } else {
         habit.progress++;
         habit.lastCompleted = today;
@@ -176,7 +235,7 @@ export const habits = {
     }
 
     await storage.saveHabits(allHabits);
-    return { habit, justCompleted };
+    return { habit, justCompleted, previousAmount };
   },
 
   _recalculateStreaks(habit) {
@@ -186,19 +245,24 @@ export const habits = {
     const historySet = new Set(sortedHistory);
     const graceEnabled = isStreakGraceEnabled() && STREAK_GRACE_DAYS_PER_MONTH > 0;
     const schedule = normalizeSchedule(habit.schedule);
+    const todayWeekStart = weekStartMonday(today);
 
     if (schedule.mode === 'weekly') {
       let currentStreak = 0;
       let anchor = today;
       for (let w = 0; w < 104; w++) {
         const count = completionsInWeek(habit, anchor);
+        const weekStart = weekStartMonday(anchor);
         if (count >= schedule.timesPerWeek) {
           currentStreak++;
-          const d = new Date(`${weekStartMonday(anchor)}T12:00:00`);
+          const d = new Date(`${weekStart}T12:00:00`);
           d.setDate(d.getDate() - 7);
           anchor = d.toISOString().slice(0, 10);
-        } else if (anchor === today && count < schedule.timesPerWeek) {
-          break;
+        } else if (weekStart === todayWeekStart) {
+          // Current week still open / under quota — keep walking prior weeks.
+          const d = new Date(`${weekStart}T12:00:00`);
+          d.setDate(d.getDate() - 7);
+          anchor = d.toISOString().slice(0, 10);
         } else {
           break;
         }
@@ -225,7 +289,8 @@ export const habits = {
         currentStreak++;
         checkDate.setDate(checkDate.getDate() - 1);
       } else if (dateStr === today) {
-        break;
+        // Incomplete today does not break an existing streak — continue from yesterday.
+        checkDate.setDate(checkDate.getDate() - 1);
       } else if (graceEnabled && !graceMonthsUsed.has(monthKey(dateStr))) {
         const prev = new Date(checkDate);
         prev.setDate(prev.getDate() - 1);
@@ -300,12 +365,33 @@ export const habits = {
       bestStreak = Math.max(bestStreak, tempStreak);
     }
 
-    if (habit.lastCompleted !== today && schedule.mode !== 'weekly') {
+    // Calendar-day gap wipe breaks Fri→Mon weekdays streaks; use scheduled-day gaps only.
+    if (habit.lastCompleted !== today && schedule.mode !== 'weekly' && schedule.mode !== 'weekdays') {
       const lastDate = scheduledHistory[scheduledHistory.length - 1];
       if (lastDate) {
         const diffDays = daysBetween(lastDate, today);
         if (diffDays > 1 && !(graceEnabled && diffDays === 2)) {
           currentStreak = 0;
+        }
+      }
+    } else if (habit.lastCompleted !== today && schedule.mode === 'weekdays') {
+      const lastDate = scheduledHistory[scheduledHistory.length - 1];
+      if (lastDate) {
+        let missedScheduled = 0;
+        const cur = new Date(`${lastDate}T12:00:00`);
+        const end = new Date(`${today}T12:00:00`);
+        cur.setDate(cur.getDate() + 1);
+        while (cur < end) {
+          const ds = cur.toISOString().slice(0, 10);
+          if (isScheduledDay(habit, ds)) {
+            missedScheduled += 1;
+          }
+          cur.setDate(cur.getDate() + 1);
+        }
+        if (missedScheduled > 1 || (missedScheduled === 1 && !graceEnabled)) {
+          currentStreak = 0;
+        } else if (missedScheduled === 1 && graceEnabled) {
+          // Grace covers a single missed weekday — keep walk result.
         }
       }
     }

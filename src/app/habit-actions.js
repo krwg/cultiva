@@ -7,10 +7,10 @@ export async function toggleHabitWithHooks(id, amount = null) {
   if (!result) {
     return null;
   }
-  const { habit, justCompleted } = result;
+  const { habit, justCompleted, previousAmount } = result;
   if (justCompleted) {
     await pluginManager.triggerHook('onHabitComplete', habit);
-    showCompletionUndo(id);
+    showCompletionUndo(id, previousAmount);
   }
   return habit;
 }

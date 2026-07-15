@@ -135,4 +135,98 @@ describe('habits', () => {
     const stats = habits.getStats(h.id);
     expect(stats.completionRate).toBeLessThanOrEqual(100);
   });
+
+  it('keeps streak when today is incomplete', async () => {
+    vi.stubGlobal('localStorage', createMemoryStorage({
+      'cultiva-settings': JSON.stringify({ streakGraceEnabled: false })
+    }));
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({ name: 'Walk', trackType: 'binary' });
+    vi.setSystemTime(new Date('2026-05-28T12:00:00.000Z'));
+    await habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-05-29T12:00:00.000Z'));
+    await habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-05-30T12:00:00.000Z'));
+    habits._recalculateStreaks(store.habits.find((x) => x.id === h.id));
+    const open = store.habits.find((x) => x.id === h.id);
+    expect(open.lastCompleted).toBe('2026-05-29');
+    expect(open.currentStreak).toBe(2);
+  });
+
+  it('preserves weekday streak across Fri to Mon weekend gap', async () => {
+    vi.stubGlobal('localStorage', createMemoryStorage({
+      'cultiva-settings': JSON.stringify({ streakGraceEnabled: false })
+    }));
+    // Friday 2026-05-29 → Monday 2026-06-01
+    vi.setSystemTime(new Date('2026-05-29T12:00:00.000Z'));
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({
+      name: 'Office',
+      trackType: 'binary',
+      schedule: { mode: 'weekdays', weekdays: [1, 2, 3, 4, 5] }
+    });
+    await habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-06-01T12:00:00.000Z'));
+    await habits.toggle(h.id);
+    const done = habits.getAll().find((x) => x.id === h.id);
+    expect(done.currentStreak).toBe(2);
+  });
+
+  it('counts prior full weeks when current weekly quota is still open', async () => {
+    vi.stubGlobal('localStorage', createMemoryStorage({
+      'cultiva-settings': JSON.stringify({ streakGraceEnabled: false })
+    }));
+    // Wednesday mid-week
+    vi.setSystemTime(new Date('2026-05-27T12:00:00.000Z'));
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({
+      name: 'Gym',
+      trackType: 'binary',
+      schedule: { mode: 'weekly', timesPerWeek: 2 }
+    });
+    store.habits = habits.getAll().map((row) => {
+      if (row.id !== h.id) {
+        return row;
+      }
+      return {
+        ...row,
+        // Prior week Mon–Sun 2026-05-18..24: two completions; this week only one so far
+        history: ['2026-05-19', '2026-05-21', '2026-05-26'],
+        lastCompleted: '2026-05-26'
+      };
+    });
+    habits._recalculateStreaks(store.habits.find((x) => x.id === h.id));
+    const cur = store.habits.find((x) => x.id === h.id);
+    expect(cur.currentStreak).toBe(1);
+  });
+
+  it('undoCompletion reverts quantity instead of incrementing', async () => {
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({ name: 'Water', trackType: 'quantity', target: 2 });
+    await habits.toggle(h.id);
+    const mid = await habits.toggle(h.id);
+    expect(mid.justCompleted).toBe(true);
+    expect(mid.previousAmount).toBe(1);
+    await habits.undoCompletion(h.id, mid.previousAmount);
+    const undone = habits.getAll().find((x) => x.id === h.id);
+    expect(undone.dailyProgress['2026-05-30']).toBe(1);
+    expect(undone.progress).toBe(0);
+    expect(undone.history).not.toContain('2026-05-30');
+  });
+
+  it('sets lastCompleted to max remaining history on uncomplete', async () => {
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({ name: 'Meditate', trackType: 'binary' });
+    vi.setSystemTime(new Date('2026-05-28T12:00:00.000Z'));
+    await habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-05-29T12:00:00.000Z'));
+    await habits.toggle(h.id);
+    vi.setSystemTime(new Date('2026-05-30T12:00:00.000Z'));
+    await habits.toggle(h.id);
+    await habits.toggle(h.id);
+    const undone = habits.getAll().find((x) => x.id === h.id);
+    expect(undone.lastCompleted).toBe('2026-05-29');
+    expect(undone.history).toEqual(expect.arrayContaining(['2026-05-28', '2026-05-29']));
+    expect(undone.history).not.toContain('2026-05-30');
+  });
 });

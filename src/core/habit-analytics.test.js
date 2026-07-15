@@ -32,6 +32,43 @@ describe('habit-analytics', () => {
     expect(w.rate).toBe(36);
   });
 
+  it('counts only scheduled weekdays as possible days', async () => {
+    const { countCompletionsInRange } = await import('./habit-analytics.js');
+    const habits = [
+      {
+        progress: 1,
+        schedule: { mode: 'weekdays', weekdays: [1, 2, 3, 4, 5] },
+        history: ['2026-05-26', '2026-05-27']
+      }
+    ];
+    // Mon 2026-05-25 .. Sun 2026-05-31 → 5 weekday slots
+    const r = countCompletionsInRange(
+      habits,
+      new Date('2026-05-25T12:00:00.000Z'),
+      new Date('2026-05-31T12:00:00.000Z')
+    );
+    expect(r.possible).toBe(5);
+    expect(r.completions).toBe(2);
+  });
+
+  it('uses weekly quota for possible days', async () => {
+    const { countCompletionsInRange } = await import('./habit-analytics.js');
+    const habits = [
+      {
+        progress: 1,
+        schedule: { mode: 'weekly', timesPerWeek: 3 },
+        history: ['2026-05-26', '2026-05-27', '2026-05-28', '2026-05-29']
+      }
+    ];
+    const r = countCompletionsInRange(
+      habits,
+      new Date('2026-05-25T12:00:00.000Z'),
+      new Date('2026-05-31T12:00:00.000Z')
+    );
+    expect(r.possible).toBe(3);
+    expect(r.completions).toBe(3);
+  });
+
   it('ranks habits by monthly completion rate', async () => {
     const { getPerHabitMonthlyRates } = await import('./habit-analytics.js');
     const habits = [

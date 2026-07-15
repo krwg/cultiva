@@ -2,16 +2,25 @@ import { habits } from '../modules/habits.js';
 import { LEGACY_THRESHOLD } from './config.js';
 import { getTodayInTZ } from './timezone.js';
 
+const RECENT_HISTORY_LIMIT = 14;
+
+function recentHistoryDates(habit) {
+  const history = Array.isArray(habit?.history) ? habit.history : [];
+  return [...new Set(history.filter((d) => typeof d === 'string' && d))]
+    .sort()
+    .slice(-RECENT_HISTORY_LIMIT);
+}
+
 export function buildPluginHabitsSnapshot() {
   const today = getTodayInTZ();
   return habits.getAll()
-    .filter((h) => (h.progress ?? 0) < LEGACY_THRESHOLD)
+    .filter((h) => (h.progress ?? 0) < LEGACY_THRESHOLD && !h.paused && !h.archived)
     .map((h) => {
       const trackType = h.trackType === 'quantity' ? 'quantity' : 'binary';
       const target = trackType === 'quantity' ? habits.quantityTarget(h) : 1;
       const todayProgress = trackType === 'quantity'
         ? habits.quantityDayProgress(h, today)
-        : (h.lastCompleted === today ? 1 : 0);
+        : (h.lastCompleted === today || (h.history || []).includes(today) ? 1 : 0);
       return {
         id: h.id,
         name: h.treeName || h.name,
@@ -23,10 +32,11 @@ export function buildPluginHabitsSnapshot() {
         lastCompleted: h.lastCompleted ?? null,
         completedToday: trackType === 'quantity'
           ? todayProgress >= target
-          : h.lastCompleted === today,
+          : todayProgress === 1,
         target,
         unit: h.unit || '',
-        todayProgress
+        todayProgress,
+        recentHistory: recentHistoryDates(h)
       };
     });
 }

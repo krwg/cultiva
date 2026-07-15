@@ -6,7 +6,6 @@ import { openModal, closeModal } from './modals.js';
 import { renderGarden } from './garden-controller.js';
 import { initAutoBackup } from './auto-backup.js';
 import { applySettings } from './settings-controller.js';
-import { getCultivaTimezone } from '../core/timezone.js';
 
 let step = 0;
 const TOTAL = 5;
@@ -67,15 +66,33 @@ function renderStep() {
   if (step === 2) {
     title.textContent = tr.onboardingTzTitle || 'Timezone';
     const tz = localStorage.getItem('cultiva-timezone') || 'auto';
+    let zones = [];
+    try {
+      if (typeof Intl !== 'undefined' && typeof Intl.supportedValuesOf === 'function') {
+        zones = Intl.supportedValuesOf('timeZone');
+      }
+    } catch {
+      zones = [];
+    }
+    if (!Array.isArray(zones) || zones.length === 0) {
+      zones = [
+        'UTC', 'Europe/Moscow', 'Europe/London', 'Europe/Berlin',
+        'America/New_York', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Shanghai'
+      ];
+    }
+    const options = [
+      `<option value="auto">${tr.onboardingTzAuto || 'System default'}</option>`,
+      ...zones.map((z) => `<option value="${z}">${z}</option>`)
+    ].join('');
     root.innerHTML = `
       <p class="onboarding-muted">${tr.onboardingTzLead || 'Used for habit dates and calendar.'}</p>
       <label class="onboarding-field"><span>${tr.timezone}</span>
-        <select id="onboarding-tz" class="select-input">
-          <option value="auto">${tr.onboardingTzAuto || 'System default'}</option>
-          <option value="${getCultivaTimezone()}">${getCultivaTimezone()}</option>
-        </select>
+        <select id="onboarding-tz" class="select-input">${options}</select>
       </label>`;
-    el('onboarding-tz').value = tz;
+    const select = el('onboarding-tz');
+    if (select) {
+      select.value = zones.includes(tz) || tz === 'auto' ? tz : 'auto';
+    }
     return;
   }
   if (step === 3) {

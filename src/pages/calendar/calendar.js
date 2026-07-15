@@ -3,7 +3,7 @@ import { storage } from '../../modules/storage.js';
 import { habits } from '../../modules/habits.js';
 import { BRANDING } from '../../core/branding.js';
 import { getHolidaysForRegion, getHolidayForDate } from '../../core/holidays.js';
-import { getCultivaTimezone } from '../../core/timezone.js';
+import { getTodayInTZ as getTodayStrFromTZ, getTodayDateInTZ } from '../../core/timezone.js';
 import { LS_CUSTOM_BG_DATA } from '../../core/theme-config.js';
 import { createAppearanceSync } from '../../core/appearance-sync.js';
 import { pluginManager } from '../../core/plugin-manager.js';
@@ -56,27 +56,19 @@ function loadHolidays() {
 }
 
 function getTodayInTZ() {
-  const now = new Date();
-  const tz = getCultivaTimezone();
-  if (!tz) { return new Date(now.getFullYear(), now.getMonth(), now.getDate()); }
-  try {
-    const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' });
-    const parts = formatter.formatToParts(now);
-    return new Date(
-      parseInt(parts.find(p => p.type === 'year').value),
-      parseInt(parts.find(p => p.type === 'month').value) - 1,
-      parseInt(parts.find(p => p.type === 'day').value)
-    );
-  } catch (e) {
-    error('getTodayInTZ failed:', e);
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  }
+  return getTodayDateInTZ();
 }
 
 function getTodayStr() {
-  const tz = getCultivaTimezone();
-  const opts = tz ? { timeZone: tz } : {};
-  return new Date().toLocaleDateString('en-CA', opts);
+  return getTodayStrFromTZ();
+}
+
+function shiftMonth(date, delta) {
+  const y = date.getFullYear();
+  const m = date.getMonth() + delta;
+  const day = date.getDate();
+  const lastDay = new Date(y, m + 1, 0).getDate();
+  return new Date(y, m, Math.min(day, lastDay), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
 }
 
 function formatDateKey(date) {
@@ -210,8 +202,8 @@ function ensureHabitIndex() {
   try {
     for (const h of habits.getAll()) {
       if (h.trackType === 'binary') {
-        if (h.lastCompleted) {
-          append(h.lastCompleted, habitEventFromHabit(h));
+        for (const dateStr of h.history || []) {
+          append(dateStr, habitEventFromHabit(h));
         }
         continue;
       }
@@ -701,7 +693,7 @@ function goToToday() {
 
 function goPrevious() {
   log('goPrevious');
-  if (currentView === 'month') { currentDate.setMonth(currentDate.getMonth() - 1); }
+  if (currentView === 'month') { currentDate = shiftMonth(currentDate, -1); }
   else if (currentView === 'week') { currentDate.setDate(currentDate.getDate() - 7); }
   else { currentDate.setDate(currentDate.getDate() - 1); selectedDate = new Date(currentDate); }
   renderCurrentView();
@@ -709,7 +701,7 @@ function goPrevious() {
 
 function goNext() {
   log('goNext');
-  if (currentView === 'month') { currentDate.setMonth(currentDate.getMonth() + 1); }
+  if (currentView === 'month') { currentDate = shiftMonth(currentDate, 1); }
   else if (currentView === 'week') { currentDate.setDate(currentDate.getDate() + 7); }
   else { currentDate.setDate(currentDate.getDate() + 1); selectedDate = new Date(currentDate); }
   renderCurrentView();
