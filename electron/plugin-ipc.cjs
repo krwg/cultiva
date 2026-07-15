@@ -7,12 +7,60 @@ const { app } = require('electron');
 const {
   assertAllowedDownloadUrl,
   isPathInsideDir,
-  resolveUnderPluginRoot,
+  resolvePluginRelativeFile,
   assertSafeRelativeFileName,
   isSafePluginId
 } = require('./lib/plugin-path-guards.cjs');
+const {
+  buildPluginInstallFileList,
+  assertRegistrySha256ForFiles
+} = require('./lib/plugin-registry-integrity.cjs');
 
 const PLUGIN_FILES_DIR = path.join(app.getPath('userData'), 'cultiva-plugins');
+const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
+
+let cachedRegistryJson = null;
+let cachedRegistryAt = 0;
+const REGISTRY_CACHE_MS = 5 * 60 * 1000;
+
+function stripUtf8Bom(s) {
+  const t = String(s || '');
+  return t.charCodeAt(0) === 0xfeff ? t.slice(1) : t;
+}
+
+async function loadOfficialRegistry() {
+  const now = Date.now();
+  if (cachedRegistryJson && (now - cachedRegistryAt) < REGISTRY_CACHE_MS) {
+    return cachedRegistryJson;
+  }
+  const text = await httpsGetText(REGISTRY_URL);
+  const registry = JSON.parse(stripUtf8Bom(text).trim());
+  cachedRegistryJson = registry;
+  cachedRegistryAt = now;
+  return registry;
+}
+
+async function resolveInstallFilesFromRegistry(pluginId) {
+  const registry = await loadOfficialRegistry();
+  const pluginList = Array.isArray(registry.plugins) ? registry.plugins : [];
+  const pluginInfo = pluginList.find((p) => p && p.id === pluginId);
+  if (!pluginInfo) {
+    throw new Error('Plugin not found in registry');
+  }
+  if (!pluginInfo.baseUrl || typeof pluginInfo.baseUrl !== 'string') {
+    throw new Error('Registry entry missing baseUrl');
+  }
+
+  const sh = pluginInfo.sha256 && typeof pluginInfo.sha256 === 'object' ? pluginInfo.sha256 : {};
+  const base = String(pluginInfo.baseUrl).replace(/\/$/, '');
+  assertAllowedDownloadUrl(`${base}/manifest.json`);
+
+  const manifestText = await httpsGetText(`${base}/manifest.json`);
+  const manifest = JSON.parse(stripUtf8Bom(manifestText).trim());
+  const files = buildPluginInstallFileList(manifest, base, sh);
+  assertRegistrySha256ForFiles(files);
+  return files;
+}
 
 const MAX_REDIRECTS = 8;
 
@@ -164,9 +212,9 @@ function setupPluginIPC() {
     }
   });
 
-  ipcMain.handle('plugin:read-file', async (event, filePath) => {
+  ipcMain.handle('plugin:read-file', async (event, pluginId, relativeFile) => {
     try {
-      const fullPath = resolveUnderPluginRoot(PLUGIN_FILES_DIR, filePath);
+      const fullPath = resolvePluginRelativeFile(PLUGIN_FILES_DIR, pluginId, relativeFile);
       if (!fullPath) {
         return null;
       }
@@ -177,17 +225,19 @@ function setupPluginIPC() {
 
       return fs.readFileSync(fullPath, 'utf-8');
     } catch (e) {
-      console.error('[Plugin IPC] Failed to read file:', filePath, e);
+      console.error('[Plugin IPC] Failed to read file:', pluginId, relativeFile, e);
       return null;
     }
   });
 
-  ipcMain.handle('plugin:install', async (event, pluginId, files) => {
+  // Trust boundary: only pluginId — URLs/sha256 come from the official registry in main.
+  ipcMain.handle('plugin:install', async (event, pluginId) => {
     try {
       if (!isSafePluginId(pluginId)) {
         throw new Error('Invalid plugin id');
       }
 
+      const files = await resolveInstallFilesFromRegistry(pluginId);
       const pluginDir = path.join(PLUGIN_FILES_DIR, pluginId);
       const pluginRootResolved = path.resolve(pluginDir);
 
@@ -203,9 +253,6 @@ function setupPluginIPC() {
           throw new Error(`Blocked destination path for plugin file: ${file.name}`);
         }
         await downloadFile(file.url, destPath);
-        if (!file.sha256 || typeof file.sha256 !== 'string' || file.sha256.trim().length !== 64) {
-          throw new Error(`Missing registry sha256 for ${file.name}`);
-        }
         const expected = file.sha256.trim().toLowerCase();
         const actual = sha256HexOfFile(destPath);
         if (actual !== expected) {

@@ -13,6 +13,7 @@ import { saveSettings } from './settings-controller.js';
 import { showNotification } from './ui-shell.js';
 import { showConfirmDialog } from './dialogs.js';
 import { installFocusTrap, releaseFocusTrap } from './modals.js';
+import { escapeHtml } from '../core/escape-html.js';
 
 function tStrings() {
   return TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
@@ -488,7 +489,7 @@ window.openPluginSettings = async (pluginId) => {
 
   const header = document.createElement('div');
   header.className = 'modal-header';
-  header.innerHTML = `<h2>${localized.name}</h2><button type="button" class="modal-close" aria-label="${t.cancel || 'Close'}">&times;</button>`;
+  header.innerHTML = `<h2>${escapeHtml(localized.name)}</h2><button type="button" class="modal-close" aria-label="${escapeHtml(t.cancel || 'Close')}">&times;</button>`;
 
   const body = document.createElement('div');
   body.className = 'modal-body';

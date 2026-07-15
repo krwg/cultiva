@@ -104,3 +104,25 @@ export function scheduledDaysBetween(startStr, endStr, schedule) {
   ));
   return weeks * s.timesPerWeek;
 }
+
+/** Count completions for rate math; weekly habits are capped at timesPerWeek per Monday-week. */
+export function cappedCompletionCount(habit, startStr, endStr) {
+  const history = Array.isArray(habit?.history) ? habit.history : [];
+  const s = normalizeSchedule(habit?.schedule);
+  if (s.mode !== 'weekly') {
+    return history.filter((d) => d >= startStr && d <= endStr).length;
+  }
+  const byWeek = new Map();
+  for (const d of history) {
+    if (d < startStr || d > endStr) {
+      continue;
+    }
+    const ws = weekStartMonday(d);
+    byWeek.set(ws, (byWeek.get(ws) || 0) + 1);
+  }
+  let capped = 0;
+  for (const count of byWeek.values()) {
+    capped += Math.min(count, s.timesPerWeek);
+  }
+  return capped;
+}

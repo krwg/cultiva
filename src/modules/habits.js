@@ -6,6 +6,7 @@ import {
   isDueToday as scheduleIsDueToday,
   isScheduledDay,
   scheduledDaysBetween,
+  cappedCompletionCount,
   completionsInWeek,
   weekStartMonday,
   datesInWeek
@@ -396,8 +397,8 @@ export const habits = {
     const startDate = h.startDate || today;
 
     const totalDays = scheduledDaysBetween(startDate, today, h.schedule);
-    const completedDays = h.history?.length || 0;
-    const completionRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
+    const completedDays = cappedCompletionCount(h, startDate, today);
+    const completionRate = totalDays > 0 ? Math.min(100, Math.round((completedDays / totalDays) * 100)) : 0;
 
     return {
       name: h.name,

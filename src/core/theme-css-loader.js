@@ -75,7 +75,7 @@ async function readPluginAsset(pluginId, relPath) {
   if (!window.electron?.readPluginFile) {
     return '';
   }
-  const raw = await window.electron.readPluginFile(`${pluginId}/${relPath}`);
+  const raw = await window.electron.readPluginFile(pluginId, relPath);
   return raw || '';
 }
 

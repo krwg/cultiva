@@ -4,6 +4,7 @@ import {
   isDueToday,
   isScheduledDay,
   completionsInWeek,
+  cappedCompletionCount,
   weekdayFromDateStr
 } from './habit-schedule.js';
 
@@ -34,6 +35,15 @@ describe('habit-schedule', () => {
     expect(isDueToday(habit, '2026-07-08')).toBe(true);
     habit.history.push('2026-07-07');
     expect(isDueToday(habit, '2026-07-08')).toBe(false);
+  });
+
+  it('caps weekly completions per week for rate math', () => {
+    const habit = {
+      schedule: { mode: 'weekly', timesPerWeek: 2 },
+      history: ['2026-07-06', '2026-07-07', '2026-07-08', '2026-07-09']
+    };
+    // Mon 2026-07-06 week: 4 days logged, cap at 2
+    expect(cappedCompletionCount(habit, '2026-07-06', '2026-07-12')).toBe(2);
   });
 
   it('weekdayFromDateStr returns 0-6', () => {

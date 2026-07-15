@@ -39,6 +39,28 @@ function resolveUnderPluginRoot(pluginFilesDir, relativePath) {
   return resolved;
 }
 
+/** Resolve a file within a single plugin directory (no cross-plugin reads). */
+function resolvePluginRelativeFile(pluginFilesDir, pluginId, relativeFile) {
+  if (!isSafePluginId(pluginId)) {
+    return null;
+  }
+  const rel = String(relativeFile || '').replace(/^[/\\]+/, '');
+  if (!rel) {
+    return null;
+  }
+  try {
+    assertSafeRelativeFileName(rel);
+  } catch {
+    return null;
+  }
+  const pluginDir = path.join(pluginFilesDir, pluginId);
+  const resolved = path.resolve(pluginDir, rel);
+  if (!isPathInsideDir(pluginDir, resolved)) {
+    return null;
+  }
+  return resolved;
+}
+
 function assertSafeRelativeFileName(name) {
   if (!name || typeof name !== 'string') {
     throw new Error('Invalid file name');
@@ -64,6 +86,7 @@ module.exports = {
   assertAllowedDownloadUrl,
   isPathInsideDir,
   resolveUnderPluginRoot,
+  resolvePluginRelativeFile,
   assertSafeRelativeFileName,
   isSafePluginId
 };

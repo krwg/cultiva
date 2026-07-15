@@ -114,4 +114,25 @@ describe('habits', () => {
     expect(broken.currentStreak).toBe(1);
     expect(broken.bestStreak).toBe(1);
   });
+
+  it('caps weekly habit completion rate at 100%', async () => {
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({
+      name: 'Gym',
+      trackType: 'binary',
+      schedule: { mode: 'weekly', timesPerWeek: 2 }
+    });
+    store.habits = habits.getAll().map((row) => {
+      if (row.id !== h.id) {
+        return row;
+      }
+      return {
+        ...row,
+        startDate: '2026-05-25',
+        history: ['2026-05-25', '2026-05-26', '2026-05-27', '2026-05-28', '2026-05-29']
+      };
+    });
+    const stats = habits.getStats(h.id);
+    expect(stats.completionRate).toBeLessThanOrEqual(100);
+  });
 });

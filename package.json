@@ -73,7 +73,7 @@
       "icon": "build/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "signAndEditExecutable": false,
-      "verifyUpdateCodeSignature": false
+      "verifyUpdateCodeSignature": true
     },
     "nsis": {
       "oneClick": false,

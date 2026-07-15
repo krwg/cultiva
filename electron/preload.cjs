@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electron', {
   encryptAuthSecret: (plainText) => ipcRenderer.invoke('auth:encrypt-secret', plainText),
   decryptAuthSecret: (b64) => ipcRenderer.invoke('auth:decrypt-secret', b64),
+  setAuthSessionActive: (active) => ipcRenderer.invoke('auth:set-session-active', Boolean(active)),
   navigateTo: (page) => ipcRenderer.invoke('navigate-to', page),
   openCalendarWindow: () => ipcRenderer.send('open-calendar-window'),
   onUpdateMessage: (callback) => ipcRenderer.on('update-message', (_event, message) => callback(message)),
@@ -15,14 +16,14 @@ contextBridge.exposeInMainWorld('electron', {
   saveAutoBackup: (jsonPayload) => ipcRenderer.invoke('backup:save-automatic', jsonPayload),
   isElectron: true,
   platform: process.platform,
-  readPluginFile: (filePath) => ipcRenderer.invoke('plugin:read-file', filePath),
+  readPluginFile: (pluginId, relativeFile) => ipcRenderer.invoke('plugin:read-file', pluginId, relativeFile),
 
   showNativeNotification: (payload) => ipcRenderer.invoke('native-notification:show', payload),
   syncTrayHabits: (habits) => ipcRenderer.invoke('tray:sync-habits', habits),
   onTrayCompleteHabit: (callback) => ipcRenderer.on('tray:complete-habit', (_event, habitId) => callback(habitId)),
 
   pluginHttpGet: (url) => ipcRenderer.invoke('plugin:http-get', url),
-  installPlugin: (pluginId, files) => ipcRenderer.invoke('plugin:install', pluginId, files),
+  installPlugin: (pluginId) => ipcRenderer.invoke('plugin:install', pluginId),
   uninstallPlugin: (pluginId) => ipcRenderer.invoke('plugin:uninstall', pluginId),
   isPluginDownloaded: (pluginId) => ipcRenderer.invoke('plugin:is-downloaded', pluginId),
   getPluginResourcePath: (pluginId, resourcePath) => ipcRenderer.invoke('plugin:get-resource-path', pluginId, resourcePath),

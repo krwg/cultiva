@@ -14,6 +14,26 @@ function registerCoreIpc(ipcMain, {
   trayMod,
   shell
 }) {
+  let authSessionUnlocked = false;
+
+  function isTrustedAuthSender(event) {
+    try {
+      const wc = event?.sender;
+      if (!wc || wc.isDestroyed?.()) {
+        return false;
+      }
+      const mainWindow = getMainWindow();
+      if (mainWindow && !mainWindow.isDestroyed() && mainWindow.webContents === wc) {
+        return true;
+      }
+      const { BrowserWindow } = require('electron');
+      const win = BrowserWindow.fromWebContents(wc);
+      return Boolean(win && !win.isDestroyed());
+    } catch {
+      return false;
+    }
+  }
+
   ipcMain.handle('save-file', async (event, data, fileName) => {
     const mainWindow = getMainWindow();
     const { filePath } = await dialog.showSaveDialog(mainWindow, {
@@ -68,7 +88,9 @@ function registerCoreIpc(ipcMain, {
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
-        preload: path.join(__dirname, '../preload.cjs')
+        preload: path.join(__dirname, '../preload.cjs'),
+        webviewTag: false,
+        sandbox: true
       },
       icon: resolveAppIconPath()
     });
@@ -96,6 +118,9 @@ function registerCoreIpc(ipcMain, {
 
   ipcMain.handle('auth:encrypt-secret', (event, plainText) => {
     try {
+      if (!isTrustedAuthSender(event)) {
+        return { ok: false, error: 'Unauthorized' };
+      }
       if (!safeStorage.isEncryptionAvailable()) {
         return { ok: false, error: 'OS encryption is not available for safeStorage' };
       }
@@ -104,6 +129,14 @@ function registerCoreIpc(ipcMain, {
     } catch (e) {
       return { ok: false, error: e && e.message ? e.message : String(e) };
     }
+  });
+
+  ipcMain.handle('auth:set-session-active', (event, active) => {
+    if (!isTrustedAuthSender(event)) {
+      return { ok: false, error: 'Unauthorized' };
+    }
+    authSessionUnlocked = Boolean(active);
+    return { ok: true };
   });
 
   ipcMain.handle('native-notification:show', (event, payload) => {
@@ -130,6 +163,12 @@ function registerCoreIpc(ipcMain, {
 
   ipcMain.handle('auth:decrypt-secret', (event, b64) => {
     try {
+      if (!isTrustedAuthSender(event)) {
+        return { ok: false, error: 'Unauthorized' };
+      }
+      if (!authSessionUnlocked) {
+        return { ok: false, error: 'Auth session locked' };
+      }
       const buf = Buffer.from(String(b64), 'base64');
       const data = safeStorage.decryptString(buf);
       return { ok: true, data };

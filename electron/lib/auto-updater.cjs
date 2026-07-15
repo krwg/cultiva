@@ -29,6 +29,7 @@ function setupAutoUpdater(getMainWindow) {
   autoUpdater.logger = console;
   autoUpdater.autoDownload = true;
   autoUpdater.allowPrerelease = false;
+  // package.json win.verifyUpdateCodeSignature: true — signed Windows releases required for updates.
 
   if (autoUpdater.logger && autoUpdater.logger.transports && autoUpdater.logger.transports.file) {
     autoUpdater.logger.transports.file.level = 'info';

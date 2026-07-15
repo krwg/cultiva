@@ -15,6 +15,17 @@ function electronAuth() {
   return null;
 }
 
+async function setAuthSessionActive(active) {
+  const el = electronAuth();
+  if (el && typeof el.setAuthSessionActive === 'function') {
+    try {
+      await el.setAuthSessionActive(Boolean(active));
+    } catch (e) {
+      console.warn('[Auth] setAuthSessionActive failed:', e);
+    }
+  }
+}
+
 async function hashPassword(password, salt) {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
@@ -40,8 +51,11 @@ async function readStoredCredentials(user) {
     if (!el) {
       throw new Error('Encrypted credentials require the Cultiva desktop app');
     }
+    // Unlock briefly so login/register can decrypt before session is established.
+    await setAuthSessionActive(true);
     const res = await el.decryptAuthSecret(user.credentialsEnc);
     if (!res || !res.ok) {
+      await setAuthSessionActive(false);
       throw new Error(res.error || 'Failed to decrypt credentials');
     }
     return JSON.parse(res.data);
@@ -89,6 +103,9 @@ export const auth = {
       const session = await db.get('sessions', SESSION_KEY);
       if (session && session.email) {
         _currentUser = await db.get('users', session.email);
+        if (_currentUser) {
+          await setAuthSessionActive(true);
+        }
       }
     } catch (e) {
       console.warn('[Auth] Session init failed:', e);
@@ -132,13 +149,21 @@ export const auth = {
       throw new Error('User not found');
     }
 
-    const derived = await readStoredCredentials(user);
+    let derived;
+    try {
+      derived = await readStoredCredentials(user);
+    } catch (e) {
+      await setAuthSessionActive(false);
+      throw e;
+    }
     if (!derived || typeof derived.salt !== 'string' || typeof derived.passwordHash !== 'string') {
+      await setAuthSessionActive(false);
       throw new Error('Invalid stored credentials');
     }
 
     const passwordHash = await hashPassword(password, derived.salt);
     if (derived.passwordHash !== passwordHash) {
+      await setAuthSessionActive(false);
       throw new Error('Incorrect password');
     }
 
@@ -155,6 +180,7 @@ export const auth = {
     await storage.setCurrentUser(user.email);
 
     await migrateLegacyCredentialsToEncrypted(user);
+    await setAuthSessionActive(true);
 
     return { success: true, user: this._sanitizeUser(_currentUser) };
   },
@@ -166,6 +192,7 @@ export const auth = {
       console.warn('[Auth] Session cleanup failed:', e);
     }
     _currentUser = null;
+    await setAuthSessionActive(false);
     await storage.ensureLocalBackendAfterLogout();
     await storage.setCurrentUser(null);
   },

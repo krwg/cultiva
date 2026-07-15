@@ -1,5 +1,6 @@
 import { THEME_BODY_IDS, AMBIENT_BG_LAYER_IDS } from './theme-config.js';
 import { buildExtendedThemeCss } from './theme-tokens.js';
+import { sanitizePluginHtml } from './sanitize-plugin-html.js';
 
 const contributionsByPlugin = new Map();
 const pluginFontsByPlugin = new Map();
@@ -389,7 +390,7 @@ export function mountPluginBackgroundHtml(bgId) {
     el.setAttribute('aria-hidden', 'true');
     document.body.appendChild(el);
   }
-  el.innerHTML = bg.html;
+  el.innerHTML = sanitizePluginHtml(bg.html);
   el.style.display = 'block';
   return el;
 }

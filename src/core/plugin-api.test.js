@@ -48,4 +48,34 @@ describe('plugin-api', () => {
     expect(pub.avatar).toBeUndefined();
     expect(pub.accentColor).toBeUndefined();
   });
+
+  it('compareVersions returns -1/0/1 including equality', async () => {
+    const compareVersions = (a, b) => {
+      const strip = (v) => String(v || '').split(/[-+]/)[0];
+      const ap = strip(a).split('.').map((x) => parseInt(x, 10) || 0);
+      const bp = strip(b).split('.').map((x) => parseInt(x, 10) || 0);
+      for (let i = 0; i < Math.max(ap.length, bp.length); i++) {
+        const av = ap[i] || 0;
+        const bv = bp[i] || 0;
+        if (av < bv) {
+          return -1;
+        }
+        if (av > bv) {
+          return 1;
+        }
+      }
+      return 0;
+    };
+    const deps = {
+      storage: { get: vi.fn(), set: vi.fn() },
+      storagePrefix: 'plugin_demo_',
+      settings,
+      readThemeCssColor: () => '#000',
+      readPluginDataFile: vi.fn(),
+      compareVersions
+    };
+    expect(await invokePluginRpc('app.compareVersions', ['1.2.0', '1.2.0'], manifest, deps)).toBe(0);
+    expect(await invokePluginRpc('app.compareVersions', ['1.3.0', '1.2.0'], manifest, deps)).toBe(1);
+    expect(await invokePluginRpc('app.compareVersions', ['1.1.0', '1.2.0'], manifest, deps)).toBe(-1);
+  });
 });

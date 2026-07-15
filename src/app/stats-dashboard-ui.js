@@ -1,6 +1,7 @@
 import { habits } from '../modules/habits.js';
 import { TRANSLATIONS } from '../core/i18n.js';
 import { getWeeklySummary, getMonthlySummary, getPerHabitMonthlyRates } from '../core/habit-analytics.js';
+import { escapeHtml } from '../core/escape-html.js';
 
 export function renderStatsDashboard(lang) {
   const host = document.getElementById('stats-dashboard-body');
@@ -16,9 +17,9 @@ export function renderStatsDashboard(lang) {
   const habitRows = rows.length
     ? rows.map((r) => `
         <div class="stats-dashboard-row">
-          <span class="stats-dashboard-habit">${r.name}</span>
-          <span class="stats-dashboard-bar-wrap"><span class="stats-dashboard-bar" style="width:${r.rate}%"></span></span>
-          <span class="stats-dashboard-pct">${r.rate}%</span>
+          <span class="stats-dashboard-habit">${escapeHtml(r.name)}</span>
+          <span class="stats-dashboard-bar-wrap"><span class="stats-dashboard-bar" style="width:${Number(r.rate) || 0}%"></span></span>
+          <span class="stats-dashboard-pct">${Number(r.rate) || 0}%</span>
         </div>`).join('')
     : `<p class="onboarding-muted">${t.statsDashboardEmpty || 'Plant a habit to see trends.'}</p>`;
 

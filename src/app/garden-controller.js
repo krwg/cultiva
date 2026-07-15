@@ -10,6 +10,7 @@ import { showNotification } from './ui-shell.js';
 import { pluginManager } from '../core/plugin-manager.js';
 import { glyphSearch } from '../core/glyph-s-search.js';
 import { showConfirmDialog } from './dialogs.js';
+import { escapeHtml } from '../core/escape-html.js';
 
 let ctx = null;
 
@@ -101,8 +102,8 @@ function createHabitCard(habit, isTrophy = false) {
         <div class="card-header">
             <div class="plant-visual">${stage.emoji}</div>
             <div class="card-info">
-                <div class="card-title">${habit.treeName || habit.name}</div>
-                ${habit.description ? `<div class="card-description">${habit.description}</div>` : ''}
+                <div class="card-title">${escapeHtml(habit.treeName || habit.name)}</div>
+                ${habit.description ? `<div class="card-description">${escapeHtml(habit.description)}</div>` : ''}
                 <div class="card-subtitle">${stageLabel(stage, t)} • ${habit.progress}${t.days}${streakText}</div>
                 ${categoryBadge}
             </div>

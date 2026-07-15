@@ -194,13 +194,24 @@ export async function invokePluginRpc(method, args, manifest, deps) {
     if (typeof compareVersions !== 'function') {
       return 0;
     }
+    const result = compareVersions(a, b);
+    if (typeof result === 'number') {
+      if (result < 0) {
+        return -1;
+      }
+      if (result > 0) {
+        return 1;
+      }
+      return 0;
+    }
+    // Legacy boolean "a >= b" adapters
     if (compareVersions(a, b)) {
+      if (compareVersions(b, a)) {
+        return 0;
+      }
       return 1;
     }
-    if (compareVersions(b, a)) {
-      return -1;
-    }
-    return 0;
+    return -1;
   }
   if (method === 'app.getAccentColor') {
     return settings.accentColor || '';

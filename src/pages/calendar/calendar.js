@@ -9,6 +9,7 @@ import { createAppearanceSync } from '../../core/appearance-sync.js';
 import { pluginManager } from '../../core/plugin-manager.js';
 import { showAlertDialog, showConfirmDialog } from '../../app/dialogs.js';
 import { bindElectronPageLinks } from '../../app/electron-nav.js';
+import { escapeHtml } from '../../core/escape-html.js';
 
 document.documentElement.dataset.page = 'calendar';
 
@@ -451,7 +452,7 @@ function renderWeekEvent(event, startOfWeek) {
   eventEl.style.top = `${startMin}px`;
   eventEl.style.height = `${height}px`;
   eventEl.style.zIndex = 10 + dayIndex;
-  eventEl.innerHTML = `<div class="week-event-title">${event.title}</div><div class="week-event-time">${event.start} – ${event.end}</div>`;
+  eventEl.innerHTML = `<div class="week-event-title">${escapeHtml(event.title)}</div><div class="week-event-time">${escapeHtml(event.start)} – ${escapeHtml(event.end)}</div>`;
   eventEl.addEventListener('click', (e) => { e.stopPropagation(); openEventPanel(eventDate, event); });
   slot.style.position = 'relative';
   slot.appendChild(eventEl);
@@ -477,7 +478,7 @@ function renderWeekHabitEvent(habit, startOfWeek) {
   habitEl.style.top = '2px';
   habitEl.style.height = '20px';
   habitEl.style.zIndex = 5;
-  habitEl.innerHTML = `<div class="week-event-title">${habit.title}</div>`;
+  habitEl.innerHTML = `<div class="week-event-title">${escapeHtml(habit.title)}</div>`;
   slot.style.position = 'relative';
   slot.appendChild(habitEl);
 }
@@ -568,7 +569,7 @@ function renderDayEvent(event) {
   eventEl.style.top = `${startMin}px`;
   eventEl.style.position = 'relative';
   eventEl.style.zIndex = '5';
-  eventEl.innerHTML = `<div class="day-event-title">${event.title}</div><div class="day-event-time">${event.start} – ${event.end}</div>${event.notes ? `<div class="day-event-notes">${event.notes}</div>` : ''}`;
+  eventEl.innerHTML = `<div class="day-event-title">${escapeHtml(event.title)}</div><div class="day-event-time">${escapeHtml(event.start)} – ${escapeHtml(event.end)}</div>${event.notes ? `<div class="day-event-notes">${escapeHtml(event.notes)}</div>` : ''}`;
   eventEl.addEventListener('click', (e) => { e.stopPropagation(); openEventPanel(selectedDate, event); });
   slot.appendChild(eventEl);
 }

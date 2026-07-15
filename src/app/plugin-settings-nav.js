@@ -1,4 +1,6 @@
 import { getPluginSettingsNavItems } from '../core/plugin-contributions.js';
+import { sanitizePluginHtml } from '../core/sanitize-plugin-html.js';
+import { escapeHtml } from '../core/escape-html.js';
 
 const CORE_SECTION_ORDER = [
   'profile',
@@ -39,14 +41,14 @@ function ensurePluginSection(item) {
   section.dataset.pluginSection = item.pluginId;
   section.innerHTML = `
     <div class="settings-section-hero">
-      <div class="settings-section-hero-title">${item.label}</div>
-      ${item.description ? `<p class="settings-section-hero-desc">${item.description}</p>` : ''}
+      <div class="settings-section-hero-title">${escapeHtml(item.label)}</div>
+      ${item.description ? `<p class="settings-section-hero-desc">${escapeHtml(item.description)}</p>` : ''}
     </div>
     <div class="settings-group-card plugin-settings-section-body"></div>
   `;
   const body = section.querySelector('.plugin-settings-section-body');
   if (body && item.html) {
-    body.innerHTML = item.html;
+    body.innerHTML = sanitizePluginHtml(item.html);
   }
   host.appendChild(section);
   return section;
@@ -57,7 +59,7 @@ function createSidebarItem(item) {
   el.className = 'settings-sidebar-item settings-sidebar-item--plugin';
   el.dataset.section = item.sectionId;
   el.dataset.pluginNavId = item.navId;
-  el.innerHTML = `<span class="settings-sidebar-label">${item.label}</span>`;
+  el.innerHTML = `<span class="settings-sidebar-label">${escapeHtml(item.label)}</span>`;
   return el;
 }
 

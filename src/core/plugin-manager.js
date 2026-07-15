@@ -3,7 +3,6 @@ import { habits } from '../modules/habits.js';
 import { BRANDING } from './branding.js';
 import { PluginSandboxHost } from './plugin-sandbox-host.js';
 import { settings } from '../app/renderer-bootstrap.js';
-import { buildPluginInstallFileList, assertRegistrySha256ForFiles } from './plugin-registry-integrity.js';
 import {
   applyAppearancePreset,
   applyBackgroundById,
@@ -17,6 +16,7 @@ import { formatPluginInstallError } from './plugin-errors.js';
 import { invokePluginRpc } from './plugin-api.js';
 import { readThemeCssColor } from './shell-chrome.js';
 import { cacheFetch } from './runtime-cache.js';
+import { sanitizePluginHtml } from './sanitize-plugin-html.js';
 import {
   applyManifestContributions,
   registerPluginBackground,
@@ -353,7 +353,7 @@ function _patchPluginMainSheet(pluginId, selector, html) {
   if (!el) {
     return false;
   }
-  el.innerHTML = String(html || '');
+  el.innerHTML = sanitizePluginHtml(html);
   return true;
 }
 
@@ -365,7 +365,7 @@ function _mountPluginMainSheet(pluginId, html) {
   wrap.setAttribute('role', 'dialog');
   wrap.setAttribute('aria-modal', 'true');
   wrap.className = 'cultiva-plugin-sheet-root';
-  wrap.innerHTML = String(html || '');
+  wrap.innerHTML = sanitizePluginHtml(html);
   document.body.appendChild(wrap);
   _restoreSheetFocusState(wrap, previousFocus);
 
@@ -476,7 +476,7 @@ async function _readPluginContributionFile(pluginId, relPath) {
   if (!window.electron?.readPluginFile) {
     return '';
   }
-  const raw = await window.electron.readPluginFile(`${pluginId}/${relPath}`);
+  const raw = await window.electron.readPluginFile(pluginId, relPath);
   return raw || '';
 }
 
@@ -508,7 +508,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
         if (!allowed.includes(rel)) {
           throw new Error(`Data file not allowed: ${rel}`);
         }
-        const raw = await window.electron.readPluginFile(`${pluginId}/${rel}`);
+        const raw = await window.electron.readPluginFile(pluginId, rel);
         if (raw === null || raw === undefined || raw === '') {
           throw new Error(`Data file missing: ${rel}`);
         }
@@ -523,7 +523,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
       previewTheme: (themeId) => previewThemeById(themeId),
       clearThemePreview: () => clearThemePreview(),
       applyAppearancePreset: (presetId) => applyAppearancePreset(presetId),
-      compareVersions: (a, b) => pluginManager.checkVersion(a, b),
+      compareVersions: (a, b) => pluginManager.compareVersions(a, b),
       pluginId: manifest.id,
       manifestSummary: getSanitizedManifest(manifest)
     });
@@ -563,7 +563,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
     const wrap = document.createElement('div');
     wrap.id = `${pluginId}-garden-widget`;
     wrap.className = 'garden-plugin-widget';
-    wrap.innerHTML = data.html;
+    wrap.innerHTML = sanitizePluginHtml(data.html);
     const plugin = plugins.get(pluginId);
     const position = plugin?.gardenWidget?.position || 'top';
     _insertGardenWidget(container, wrap, position);
@@ -607,7 +607,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
     const wrap = document.createElement('div');
     wrap.id = `${pluginId}-calendar-widget`;
     wrap.className = 'calendar-plugin-widget';
-    wrap.innerHTML = data.html;
+    wrap.innerHTML = sanitizePluginHtml(data.html);
     container.prepend(wrap);
   });
 
@@ -629,7 +629,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
     }
     const id = registerPluginTheme(pluginId, data?.config || {});
     const { injectPluginThemeCss } = await import('./plugin-contributions.js');
-    await injectPluginThemeCss(id, async (pid, rel) => window.electron?.readPluginFile(`${pid}/${rel}`));
+    await injectPluginThemeCss(id, async (pid, rel) => window.electron?.readPluginFile(pid, rel));
     await pluginManager._refreshPluginContributionsUi();
   });
 
@@ -647,7 +647,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
     }
     const id = registerPluginBackground(pluginId, data?.config || {});
     const { injectPluginBackgroundCss } = await import('./plugin-contributions.js');
-    await injectPluginBackgroundCss(id, async (pid, rel) => window.electron?.readPluginFile(`${pid}/${rel}`));
+    await injectPluginBackgroundCss(id, async (pid, rel) => window.electron?.readPluginFile(pid, rel));
     await pluginManager._refreshPluginContributionsUi();
   });
 
@@ -900,7 +900,7 @@ export const pluginManager = {
         continue;
       }
       const name = rel.replace(/^[/\\]+/, '');
-      const css = await window.electron.readPluginFile(`${pluginId}/${name}`);
+      const css = await window.electron.readPluginFile(pluginId, name);
       if (css) {
         chunks.push(css);
       }
@@ -956,7 +956,7 @@ export const pluginManager = {
         return false;
       }
 
-      const manifestJson = await window.electron.readPluginFile(`${pluginId}/manifest.json`);
+      const manifestJson = await window.electron.readPluginFile(pluginId, 'manifest.json');
 
       if (!manifestJson) {
         console.warn('[PluginManager] Plugin manifest not found:', pluginId);
@@ -982,7 +982,7 @@ export const pluginManager = {
           : 'index.js';
       manifest.entry = entryRel;
 
-      const pluginCode = await window.electron.readPluginFile(`${pluginId}/${entryRel}`);
+      const pluginCode = await window.electron.readPluginFile(pluginId, entryRel);
 
       if (!pluginCode) {
         console.warn('[PluginManager] Plugin code not found:', entryRel);
@@ -1137,7 +1137,7 @@ export const pluginManager = {
             wrap.id = `${pluginId}-garden-widget`;
             wrap.className = 'garden-plugin-widget';
             if (node && typeof node.outerHTML === 'string') {
-              wrap.innerHTML = node.outerHTML;
+              wrap.innerHTML = sanitizePluginHtml(node.outerHTML);
             }
             _insertGardenWidget(container, wrap, plugin.gardenWidget.position);
           }
@@ -1147,7 +1147,7 @@ export const pluginManager = {
           const wrap = document.createElement('div');
           wrap.id = `${pluginId}-garden-widget`;
           wrap.className = 'garden-plugin-widget';
-          wrap.innerHTML = relay.innerHTML;
+          wrap.innerHTML = sanitizePluginHtml(relay.innerHTML);
           _insertGardenWidget(container, wrap, plugin.gardenWidget.position);
         }
       }
@@ -1169,7 +1169,7 @@ export const pluginManager = {
     const wrap = document.createElement('div');
     wrap.id = `${pluginId}-calendar-widget`;
     wrap.className = 'calendar-plugin-widget';
-    wrap.innerHTML = config?.html || '';
+    wrap.innerHTML = sanitizePluginHtml(config?.html);
     container.prepend(wrap);
   },
 
@@ -1222,28 +1222,6 @@ export const pluginManager = {
     return false;
   },
 
-  async _resolvePluginInstallBundle(pluginId) {
-    const registryText = await fetchPluginHttpText(REGISTRY_URL);
-    const registry = JSON.parse(stripUtf8Bom(registryText).trim());
-    const pluginList = Array.isArray(registry.plugins) ? registry.plugins : [];
-
-    const pluginInfo = pluginList.find((p) => p.id === pluginId);
-    if (!pluginInfo) {
-      throw new Error('Plugin not found in registry');
-    }
-
-    const sh = pluginInfo.sha256 && typeof pluginInfo.sha256 === 'object' ? pluginInfo.sha256 : {};
-    const base = String(pluginInfo.baseUrl).replace(/\/$/, '');
-
-    const manifestText = await fetchPluginHttpText(`${base}/manifest.json`);
-    const manifest = JSON.parse(stripUtf8Bom(manifestText).trim());
-
-    const files = buildPluginInstallFileList(manifest, base, sh);
-    assertRegistrySha256ForFiles(files);
-
-    return { pluginInfo, manifest, files };
-  },
-
   async isPluginDownloaded(pluginId) {
     if (!window.electron?.isPluginDownloaded) {
       return false;
@@ -1262,8 +1240,8 @@ export const pluginManager = {
       throw new Error('Plugin install is only available in the desktop app');
     }
 
-    const { files } = await this._resolvePluginInstallBundle(pluginId);
-    const success = await window.electron.installPlugin(pluginId, files);
+    // Main resolves URLs + sha256 only from the official registry (pluginId only).
+    const success = await window.electron.installPlugin(pluginId);
     if (!success) {
       throw new Error('Plugin download failed');
     }
@@ -1427,7 +1405,7 @@ export const pluginManager = {
       let icon = '';
       if (window.electron?.readPluginFile) {
         try {
-          const mj = await window.electron.readPluginFile(`${id}/manifest.json`);
+          const mj = await window.electron.readPluginFile(id, 'manifest.json');
           if (mj) {
             const m = JSON.parse(stripUtf8Bom(mj).trim());
             name = m.name || id;
@@ -1493,21 +1471,27 @@ export const pluginManager = {
     _initPromise = null;
   },
 
-  checkVersion(current, required) {
+  /** Three-way version compare: -1 if a < b, 0 if equal, 1 if a > b. */
+  compareVersions(a, b) {
     const strip = (v) => String(v || '').split(/[-+]/)[0];
-    const currentParts = strip(current).split('.').map((x) => parseInt(x, 10) || 0);
-    const requiredParts = strip(required).split('.').map((x) => parseInt(x, 10) || 0);
+    const aParts = strip(a).split('.').map((x) => parseInt(x, 10) || 0);
+    const bParts = strip(b).split('.').map((x) => parseInt(x, 10) || 0);
 
-    for (let i = 0; i < Math.max(currentParts.length, requiredParts.length); i++) {
-      const c = currentParts[i] || 0;
-      const r = requiredParts[i] || 0;
-      if (c < r) {
-        return false;
+    for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+      const av = aParts[i] || 0;
+      const bv = bParts[i] || 0;
+      if (av < bv) {
+        return -1;
       }
-      if (c > r) {
-        return true;
+      if (av > bv) {
+        return 1;
       }
     }
-    return true;
+    return 0;
+  },
+
+  /** Whether current satisfies min required (current >= required). */
+  checkVersion(current, required) {
+    return this.compareVersions(current, required) >= 0;
   }
 };

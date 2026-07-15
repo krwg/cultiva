@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url);
 const {
   isPathInsideDir,
   resolveUnderPluginRoot,
+  resolvePluginRelativeFile,
   assertSafeRelativeFileName,
   assertAllowedDownloadUrl,
   isSafePluginId
@@ -40,5 +41,13 @@ describe('plugin-path-guards', () => {
   it('validates plugin ids', () => {
     expect(isSafePluginId('weather')).toBe(true);
     expect(isSafePluginId('../bad')).toBe(false);
+  });
+
+  it('rejects cross-plugin relative reads', () => {
+    expect(resolvePluginRelativeFile(root, 'weather', '../other/secret.js')).toBeNull();
+    expect(resolvePluginRelativeFile(root, 'weather', 'manifest.json')).toBe(
+      path.resolve(root, 'weather', 'manifest.json')
+    );
+    expect(resolvePluginRelativeFile(root, '../evil', 'a.js')).toBeNull();
   });
 });

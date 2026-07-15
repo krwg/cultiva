@@ -1,13 +1,5 @@
 import { openModal, closeModal } from './modals.js';
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
+import { escapeHtml } from '../core/escape-html.js';
 
 function createDialog({ title, message, confirmText, cancelText, tone }) {
   const modal = document.createElement('div');
