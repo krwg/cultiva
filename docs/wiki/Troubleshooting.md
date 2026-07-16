@@ -10,7 +10,10 @@
 
 | Problem | Try |
 |---------|-----|
-| Habit came back after delete | Update to **2.0.0+**; export backup first |
+| Habit came back after delete | Update to **2.0.2+**; export backup first |
+| Habits empty after Calendar | Update to **2.0.2+** (account `userId` fix) |
+| Plugin could not start | Update to **2.0.2+** (CSP sandbox fix); reinstall plugin |
+| App stuck after close (macOS) | Update to **2.0.2+**; use Dock or Cmd+Q |
 | Reset didn't stick | Same — fixed in 1.7 storage layer |
 | Import failed | Check preview; ensure JSON/ZIP from Cultiva export |
 | Lost data | Check `userData/backups/` if auto-backup was on |

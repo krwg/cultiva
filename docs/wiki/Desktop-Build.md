@@ -49,7 +49,7 @@ Use `CSC_IDENTITY_AUTO_DISCOVERY=false` for unsigned builds (default in `electro
 
 ## CI artifacts
 
-Tag push `2.0.0` style triggers `.github/workflows/release.yml` — matrix builds Windows, macOS, Linux and publishes to GitHub Releases.
+Tag push `2.0.2` style triggers `.github/workflows/release.yml` — matrix builds Windows, macOS, Linux and publishes to GitHub Releases.
 
 ## Icons
 

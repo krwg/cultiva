@@ -12,9 +12,9 @@
 
 | OS | File |
 |----|------|
-| Windows | `Cultiva-Setup-2.0.0.exe` or portable `.exe` |
-| macOS | `.dmg` for your chip (x64 or arm64) |
-| Linux | `.AppImage` or `.deb` |
+| Windows | `Cultiva-Setup-2.0.2.exe` or portable `.exe` |
+| macOS | `Cultiva-2.0.2-mac-arm64.dmg` or `Cultiva-2.0.2-mac-x64.dmg` |
+| Linux | `Cultiva-2.0.2-linux-x86_64.AppImage` or `.deb` |
 
 3. Run the installer or AppImage. macOS users: if Gatekeeper blocks the app, open **System Settings → Privacy & Security** and allow it.
 

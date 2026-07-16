@@ -1,5 +1,18 @@
 # Roadmap
 
+## Shipped in 2.0.2 · Rowan (2026-07-17)
+
+| Area | Delivered |
+|------|-----------|
+| Data integrity | Account habits survive calendar navigation |
+| Plugins | Sandbox CSP restored — catalog plugins start again |
+| macOS lifecycle | Close keeps Dock; tray PNG; no zombie process |
+| Rowan Cluster | Animation after layout on macOS |
+
+Full notes: [2.0.2 release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.0.2-rowan-github.md)
+
+---
+
 ## Shipped in 2.0.0 · Rowan (2026-07-13)
 
 | Area | Delivered |

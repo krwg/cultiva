@@ -4,6 +4,24 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.0.2] — Rowan · 2026-07-17
+
+**Codename:** Rowan · Patch — data integrity, plugins, macOS lifecycle
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.0.2) · [Release notes](docs/release-notes-v2.0.2-rowan-github.md)
+
+### Fixed (users)
+- Account habits no longer orphan after calendar navigation (`userId` migration)
+- Plugins start again (production CSP `unsafe-eval` for PLE1 sandbox)
+- macOS: close no longer leaves an unreachable zombie process (Dock + tray)
+- Rowan Cluster animation resumes after layout on macOS
+- Russian locale and empty-state / toast copy (carried from 2.0.1 line)
+
+### Fixed (developers)
+- Storage flush before Electron garden↔calendar navigate; avoid empty LS clobber
+- Tray PNG/`nativeImage` on darwin; menu Quit sets `app.isQuitting`
+- ESLint eqeqeq/quotes for CI `lint-and-build`
+
 ## [2.0.1] — Rowan · 2026-07-14
 
 **Codename:** Rowan · Patch release — macOS QA bugfixes

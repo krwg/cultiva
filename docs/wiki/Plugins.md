@@ -6,7 +6,7 @@ Official extensions live in **[cultiva-plugins](https://github.com/krwg/cultiva-
 
 
 
-**Requires Cultiva ≥ 2.0.0** and registry **3.3.0**.
+**Requires Cultiva ≥ 2.0.0** (recommended **2.0.2+**) and registry **3.5.1**.
 
 
 
