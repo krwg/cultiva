@@ -97,6 +97,11 @@ app.on('before-quit', () => {
   app.isQuitting = true;
   discord.clearDiscordActivity();
   discord.shutdownDiscordRPC();
+  try {
+    trayMod.destroyTray();
+  } catch {
+    void 0;
+  }
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.removeAllListeners('close');
     mainWindow.destroy();

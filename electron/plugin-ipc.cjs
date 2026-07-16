@@ -230,7 +230,6 @@ function setupPluginIPC() {
     }
   });
 
-  // Trust boundary: only pluginId — URLs/sha256 come from the official registry in main.
   ipcMain.handle('plugin:install', async (event, pluginId) => {
     try {
       if (!isSafePluginId(pluginId)) {

@@ -39,7 +39,13 @@ function installAppMenu({ Menu, app, shell, getMainWindow, isDev }) {
           { role: 'hideOthers' },
           { role: 'unhide' },
           { type: 'separator' },
-          { role: 'quit' }
+          {
+            role: 'quit',
+            click: () => {
+              app.isQuitting = true;
+              app.quit();
+            }
+          }
         ]
       }]
       : []),

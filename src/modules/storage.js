@@ -102,8 +102,6 @@ function _flushHabitsLocalStorageNow() {
 if (typeof window !== 'undefined') {
   const flushOnLeave = () => {
     _flushHabitsLocalStorageNow();
-    // Kick an IDB flush if a write was scheduled; may not finish on hard kill,
-    // but helps Electron full-page navigations (garden ↔ calendar).
     if (_habitsWriteScheduled || _habitsWriteWaiters.length > 0) {
       void _flushHabitsToDisk();
     }
@@ -239,8 +237,6 @@ function migrateHabit(habit) {
     migrated.target = 1;
   }
 
-  // Keep email-style userIds. Stripping them used to orphan habits for
-  // logged-in users after calendar re-init (userId became null → filter miss).
   if (migrated.userId === undefined) {
     migrated.userId = null;
   }
@@ -397,8 +393,6 @@ export const storage = {
     let needsSave = false;
     _habitsCache = _habitsCache.map((h) => {
       const migrated = migrateHabit(h);
-      // Preserve ownership during schema migration; never drop userId to null
-      // when the session already has a logged-in user.
       if (_currentUserId && (migrated.userId === null || migrated.userId === undefined || migrated.userId === '')) {
         migrated.userId = _currentUserId;
         needsSave = true;
@@ -471,8 +465,6 @@ export const storage = {
 
       console.log('[Storage] Loaded', _habitsCache.length, 'habits for user:', _currentUserId || 'guest');
 
-      // Do not clobber a non-empty localStorage mirror with an empty filtered
-      // cache — that race left habits looking "wiped" after garden↔calendar.
       try {
         if (_habitsCache.length > 0) {
           localStorage.setItem('cultiva-habits', JSON.stringify(_habitsCache));

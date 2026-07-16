@@ -11,8 +11,6 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
 
   const cspProduction =
     "default-src 'self' file: cultiva: data: blob:; " +
-    // unsafe-eval is required for PLE1 plugin sandbox (new Function entry load).
-    // See SECURITY.md — iframe meta CSP alone is not enough under session CSP.
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' file: blob: data:; " +
     "img-src 'self' data: blob: file: https:; " +
     "style-src 'self' 'unsafe-inline'; " +
@@ -45,18 +43,39 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
 }
 
 function resolveAppIconPath() {
-  const candidates = [
-    path.join(__dirname, '../app-icon.ico'),
-    path.join(__dirname, '../../build/icon.ico'),
-    path.join(__dirname, '../../dist/favicon.ico')
-  ];
+  const candidates = [];
+  if (process.platform === 'darwin') {
+    candidates.push(
+      path.join(__dirname, '../../build/icon.png'),
+      path.join(__dirname, '../../build/icons/512x512.png'),
+      path.join(__dirname, '../../build/icons/256x256.png'),
+      path.join(__dirname, '../../dist/favicon.ico'),
+      path.join(__dirname, '../app-icon.ico'),
+      path.join(__dirname, '../../build/icon.ico')
+    );
+  } else {
+    candidates.push(
+      path.join(__dirname, '../app-icon.ico'),
+      path.join(__dirname, '../../build/icon.ico'),
+      path.join(__dirname, '../../dist/favicon.ico'),
+      path.join(__dirname, '../../build/icon.png')
+    );
+  }
   try {
     const { app } = require('electron');
     if (app?.isPackaged && process.resourcesPath) {
-      candidates.unshift(
-        path.join(process.resourcesPath, 'app-icon.ico'),
-        path.join(process.resourcesPath, 'favicon.ico')
-      );
+      if (process.platform === 'darwin') {
+        candidates.unshift(
+          path.join(process.resourcesPath, 'icon.png'),
+          path.join(process.resourcesPath, 'app-icon.ico'),
+          path.join(process.resourcesPath, 'favicon.ico')
+        );
+      } else {
+        candidates.unshift(
+          path.join(process.resourcesPath, 'app-icon.ico'),
+          path.join(process.resourcesPath, 'favicon.ico')
+        );
+      }
     }
   } catch {
     void 0;
@@ -196,14 +215,7 @@ function createMainWindow({
     const { app } = require('electron');
     if (!app.isQuitting) {
       event.preventDefault();
-      if (process.platform === 'darwin') {
-        mainWindow.hide();
-        if (app.dock) {
-          app.dock.hide();
-        }
-      } else {
-        mainWindow.hide();
-      }
+      mainWindow.hide();
     }
   });
 
