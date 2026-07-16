@@ -103,6 +103,17 @@ describe('storage migrateHabitRecord', () => {
     const out = migrateHabitRecord({ id: '3', name: 'Read', trackType: 'binary', target: 10 });
     expect(out.target).toBe(1);
   });
+
+  it('preserves email-style userId instead of stripping it', async () => {
+    const { migrateHabitRecord } = await import('./storage.js');
+    const out = migrateHabitRecord({
+      id: '4',
+      name: 'Walk',
+      progress: 2,
+      userId: 'user@example.com'
+    });
+    expect(out.userId).toBe('user@example.com');
+  });
 });
 
 describe('storage habit persistence', () => {

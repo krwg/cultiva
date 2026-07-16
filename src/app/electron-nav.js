@@ -1,3 +1,5 @@
+import { storage } from '../modules/storage.js';
+
 export function bindElectronPageLinks() {
   if (!window.electron?.navigateTo) {
     return;
@@ -17,9 +19,17 @@ export function bindElectronPageLinks() {
 
     anchor.addEventListener('click', (event) => {
       event.preventDefault();
-      void window.electron.navigateTo(
-        isCalendar ? 'pages/calendar/index.html' : 'index.html'
-      );
+      const target = isCalendar ? 'pages/calendar/index.html' : 'index.html';
+      void (async () => {
+        try {
+          if (storage.isReady()) {
+            await storage.flushPendingWrites();
+          }
+        } catch (e) {
+          console.warn('[Nav] flush before navigate failed:', e);
+        }
+        window.electron.navigateTo(target);
+      })();
     });
   });
 }
