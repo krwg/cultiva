@@ -11,7 +11,9 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
 
   const cspProduction =
     "default-src 'self' file: cultiva: data: blob:; " +
-    "script-src 'self' 'unsafe-inline' file: blob: data:; " +
+    // unsafe-eval is required for PLE1 plugin sandbox (new Function entry load).
+    // See SECURITY.md — iframe meta CSP alone is not enough under session CSP.
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' file: blob: data:; " +
     "img-src 'self' data: blob: file: https:; " +
     "style-src 'self' 'unsafe-inline'; " +
     "connect-src 'self' file: data: blob: https: https://raw.githubusercontent.com https://api.github.com https://github.com https://objects.githubusercontent.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://ice1.somafm.com https://ice2.somafm.com https://ice3.somafm.com https://ice4.somafm.com https://ice5.somafm.com https://ice6.somafm.com https://stream.radioparadise.com https://stream.chillhop.com; " +

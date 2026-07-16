@@ -12,4 +12,16 @@ describe('formatPluginInstallError', () => {
   it('falls back when detail is empty', () => {
     expect(formatPluginInstallError('', { pluginInstallStartFailed: 'Could not start.' })).toBe('Could not start.');
   });
+
+  it('maps CSP / EvalError sandbox failures', () => {
+    expect(formatPluginInstallError('EvalError: Refused to evaluate a string as JavaScript because \'unsafe-eval\' is not an allowed source of script in the following Content Security Policy directive', {
+      pluginInstallCspBlocked: 'CSP blocked.'
+    })).toBe('CSP blocked.');
+  });
+
+  it('maps sandbox load timeout', () => {
+    expect(formatPluginInstallError('Plugin sandbox load timeout', {
+      pluginInstallTimeout: 'Timed out.'
+    })).toBe('Timed out.');
+  });
 });

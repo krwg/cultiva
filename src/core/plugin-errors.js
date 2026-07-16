@@ -21,6 +21,13 @@ export function formatPluginInstallError(detail, t = {}) {
   if (/entry file missing/i.test(raw)) {
     return t.pluginInstallCorrupt || 'Plugin files are incomplete. Try installing again.';
   }
+  if (/EvalError|unsafe-eval|Content Security Policy/i.test(raw)) {
+    return t.pluginInstallCspBlocked
+      || 'Plugin sandbox was blocked by security policy. Update Cultiva and try again.';
+  }
+  if (/sandbox load timeout/i.test(raw)) {
+    return t.pluginInstallTimeout || 'Plugin took too long to start. Try again.';
+  }
 
   return t.pluginInstallStartFailed || 'Plugin could not start. Update Cultiva or try reinstalling the plugin.';
 }
