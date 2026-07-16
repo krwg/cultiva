@@ -399,7 +399,7 @@ export const storage = {
       const migrated = migrateHabit(h);
       // Preserve ownership during schema migration; never drop userId to null
       // when the session already has a logged-in user.
-      if (_currentUserId && (migrated.userId == null || migrated.userId === '')) {
+      if (_currentUserId && (migrated.userId === null || migrated.userId === undefined || migrated.userId === '')) {
         migrated.userId = _currentUserId;
         needsSave = true;
       }

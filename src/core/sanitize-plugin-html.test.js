@@ -16,7 +16,7 @@ describe('sanitizePluginHtml', () => {
 
 describe('escapeHtml', () => {
   it('escapes angle brackets and quotes', () => {
-    expect(escapeHtml(`<img src="x" onerror='y'>`)).toBe(
+    expect(escapeHtml('<img src="x" onerror=\'y\'>')).toBe(
       '&lt;img src=&quot;x&quot; onerror=&#39;y&#39;&gt;'
     );
   });
