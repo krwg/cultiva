@@ -81,13 +81,83 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: artifacts/**
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-          tag_name: ${{ github.ref_name }}
+      - name: Publish GitHub Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          mapfile -t files < <(find artifacts -type f | sort)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No release artifacts found under artifacts/" >&2
+            exit 1
+          fi
+          echo "Publishing ${#files[@]} file(s) for tag ${TAG}"
+
+          NAME="$(python3 -c "import json; print(json.load(open('cultiva.release.json'))['name'])")"
+          CODE="$(python3 -c "import json; print(json.load(open('cultiva.release.json'))['codename'])")"
+          TITLE="${NAME} ${TAG} · ${CODE}"
+
+          NOTES_FILE=""
+          for candidate in "docs/release-notes-v${TAG}-"*.md; do
+            if [ -f "$candidate" ]; then
+              NOTES_FILE="$candidate"
+              break
+            fi
+          done
+
+          # Retry transient GitHub API / Unicorn (5xx) failures.
+          retry() {
+            local attempt=1
+            local max=6
+            local delay=10
+            while true; do
+              if "$@"; then
+                return 0
+              fi
+              if [ "$attempt" -ge "$max" ]; then
+                echo "Command failed after ${max} attempts: $*" >&2
+                return 1
+              fi
+              echo "Transient failure (attempt ${attempt}/${max}); retrying in ${delay}s…" >&2
+              sleep "$delay"
+              attempt=$((attempt + 1))
+              delay=$((delay * 2))
+              if [ "$delay" -gt 60 ]; then
+                delay=60
+              fi
+            done
+          }
+
+          release_exists() {
+            gh release view "$TAG" >/dev/null 2>&1
+          }
+
+          if release_exists; then
+            echo "Release ${TAG} already exists — updating notes/assets"
+            if [ -n "$NOTES_FILE" ]; then
+              retry gh release edit "$TAG" --title "$TITLE" --notes-file "$NOTES_FILE"
+            else
+              retry gh release edit "$TAG" --title "$TITLE"
+            fi
+            retry gh release upload "$TAG" "${files[@]}" --clobber
+          else
+            echo "Creating release ${TAG}"
+            if [ -n "$NOTES_FILE" ]; then
+              retry gh release create "$TAG" \
+                --title "$TITLE" \
+                --notes-file "$NOTES_FILE" \
+                --latest \
+                "${files[@]}"
+            else
+              retry gh release create "$TAG" \
+                --title "$TITLE" \
+                --generate-notes \
+                --latest \
+                "${files[@]}"
+            fi
+          fi
+
+          echo "Published: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
