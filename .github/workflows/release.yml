@@ -108,17 +108,33 @@ jobs:
             fi
           done
 
-          # Retry transient GitHub API / Unicorn (5xx) failures.
+          # Retry only transient GitHub API / Unicorn (5xx) failures.
+          is_transient() {
+            local msg="$1"
+            echo "$msg" | grep -Eiq 'unicorn|502|503|504|timeout|temporar|rate limit|i/o timeout|connection reset|EOF|gateway'
+          }
+
           retry() {
             local attempt=1
             local max=6
             local delay=10
+            local out rc
             while true; do
-              if "$@"; then
+              set +e
+              out="$("$@" 2>&1)"
+              rc=$?
+              set -e
+              if [ "$rc" -eq 0 ]; then
+                printf '%s\n' "$out"
                 return 0
               fi
-              if [ "$attempt" -ge "$max" ]; then
-                echo "Command failed after ${max} attempts: $*" >&2
+              printf '%s\n' "$out" >&2
+              if echo "$out" | grep -Eiq 'already exists'; then
+                echo "Release already exists — continuing with upload path" >&2
+                return 2
+              fi
+              if [ "$attempt" -ge "$max" ] || ! is_transient "$out"; then
+                echo "Command failed after ${attempt} attempt(s): $*" >&2
                 return 1
               fi
               echo "Transient failure (attempt ${attempt}/${max}); retrying in ${delay}s…" >&2
@@ -131,33 +147,53 @@ jobs:
             done
           }
 
-          release_exists() {
-            gh release view "$TAG" >/dev/null 2>&1
-          }
-
-          if release_exists; then
-            echo "Release ${TAG} already exists — updating notes/assets"
-            if [ -n "$NOTES_FILE" ]; then
-              retry gh release edit "$TAG" --title "$TITLE" --notes-file "$NOTES_FILE"
-            else
-              retry gh release edit "$TAG" --title "$TITLE"
+          # Probe with retries: API flakes must not look like "missing release".
+          release_exists=0
+          for attempt in 1 2 3 4 5 6; do
+            set +e
+            view_out="$(gh release view "$TAG" 2>&1)"
+            view_rc=$?
+            set -e
+            if [ "$view_rc" -eq 0 ]; then
+              release_exists=1
+              break
             fi
-            retry gh release upload "$TAG" "${files[@]}" --clobber
-          else
-            echo "Creating release ${TAG}"
+            if echo "$view_out" | grep -Eiq 'release not found|HTTP 404|Not Found'; then
+              release_exists=0
+              break
+            fi
+            echo "release view flake (attempt ${attempt}/6): ${view_out}" >&2
+            sleep $((attempt * 5))
+          done
+
+          if [ "$release_exists" -eq 0 ]; then
+            echo "Creating release ${TAG} (metadata only)"
+            create_rc=0
             if [ -n "$NOTES_FILE" ]; then
               retry gh release create "$TAG" \
                 --title "$TITLE" \
                 --notes-file "$NOTES_FILE" \
-                --latest \
-                "${files[@]}"
+                --latest || create_rc=$?
             else
               retry gh release create "$TAG" \
                 --title "$TITLE" \
                 --generate-notes \
-                --latest \
-                "${files[@]}"
+                --latest || create_rc=$?
+            fi
+            # rc 2 = already exists (race / flaky view)
+            if [ "$create_rc" -ne 0 ] && [ "$create_rc" -ne 2 ]; then
+              exit "$create_rc"
             fi
           fi
+
+          echo "Syncing release title/notes"
+          if [ -n "$NOTES_FILE" ]; then
+            retry gh release edit "$TAG" --title "$TITLE" --notes-file "$NOTES_FILE"
+          else
+            retry gh release edit "$TAG" --title "$TITLE"
+          fi
+
+          echo "Uploading assets (clobber)"
+          retry gh release upload "$TAG" "${files[@]}" --clobber
 
           echo "Published: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
