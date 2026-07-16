@@ -129,12 +129,19 @@ export function applyAmbientBackground(doc, body, bg) {
   if (bg === 'sunbeam') { generateSunbeams(container); }
   if (bg === 'linden-bloom') { generateLindenLeaves(container); }
   if (bg === 'rowan-cluster') {
-    mountRowanCluster(container);
-    if (body.classList.contains('ambient-paused')) {
-      pauseRowanCluster(container);
-    } else {
-      resumeRowanCluster(container);
-    }
+    // display:none → block can leave 0×0 layout for one frame on macOS Electron;
+    // wait two frames so mountRowanCluster measures a real size.
+    const mount = () => {
+      mountRowanCluster(container);
+      if (body.classList.contains('ambient-paused')) {
+        pauseRowanCluster(container);
+      } else {
+        resumeRowanCluster(container);
+      }
+    };
+    requestAnimationFrame(() => {
+      requestAnimationFrame(mount);
+    });
   }
 }
 

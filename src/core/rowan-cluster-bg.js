@@ -229,7 +229,7 @@ export function mountRowanCluster(container) {
   };
 
   const drawFrame = (t) => {
-    if (!tree) {
+    if (!tree || w <= 0 || h <= 0) {
       return;
     }
     ctx.fillStyle = GRAPHITE;
@@ -253,17 +253,12 @@ export function mountRowanCluster(container) {
     raf = requestAnimationFrame(loop);
   };
 
-  resize();
-  const ro = typeof ResizeObserver !== 'undefined'
-    ? new ResizeObserver(() => resize())
-    : null;
-  ro?.observe(container);
-  window.addEventListener('resize', resize);
-
   const startLoop = () => {
     if (prefersReducedMotion()) {
-      drawFrame(0);
-      staticDrawn = true;
+      if (!staticDrawn) {
+        drawFrame(0);
+        staticDrawn = true;
+      }
       return;
     }
     if (!raf) {
@@ -271,12 +266,26 @@ export function mountRowanCluster(container) {
     }
   };
 
-  if (w > 0 && h > 0) {
-    startLoop();
-  } else {
-    requestAnimationFrame(() => {
-      resize();
+  const onLayout = () => {
+    resize();
+    if (w > 0 && h > 0) {
       startLoop();
+    }
+  };
+
+  onLayout();
+  const ro = typeof ResizeObserver !== 'undefined'
+    ? new ResizeObserver(() => onLayout())
+    : null;
+  ro?.observe(container);
+  window.addEventListener('resize', onLayout);
+
+  if (w <= 0 || h <= 0) {
+    requestAnimationFrame(() => {
+      onLayout();
+      if (w <= 0 || h <= 0) {
+        requestAnimationFrame(onLayout);
+      }
     });
   }
 
@@ -288,15 +297,13 @@ export function mountRowanCluster(container) {
   };
 
   container._rowanResume = () => {
-    if (!raf && !prefersReducedMotion()) {
-      raf = requestAnimationFrame(loop);
-    }
+    onLayout();
   };
 
   container._rowanStop = () => {
     container._rowanPause();
     ro?.disconnect();
-    window.removeEventListener('resize', resize);
+    window.removeEventListener('resize', onLayout);
     container.innerHTML = '';
     container._rowanStop = null;
     container._rowanPause = null;
