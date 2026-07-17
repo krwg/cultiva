@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('electron', {
   showNativeNotification: (payload) => ipcRenderer.invoke('native-notification:show', payload),
   syncTrayHabits: (habits) => ipcRenderer.invoke('tray:sync-habits', habits),
   onTrayCompleteHabit: (callback) => ipcRenderer.on('tray:complete-habit', (_event, habitId) => callback(habitId)),
+  onSoftReloadGarden: (callback) => ipcRenderer.on('cultiva:soft-reload-garden', () => callback()),
 
   pluginHttpGet: (url) => ipcRenderer.invoke('plugin:http-get', url),
   installPlugin: (pluginId) => ipcRenderer.invoke('plugin:install', pluginId),

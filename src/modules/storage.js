@@ -24,6 +24,8 @@ let _habitsLsTimer = null;
 
 let _habitsWriteScheduled = false;
 let _habitsWriteWaiters = [];
+/** Snapshot at queue time so a later _loadFromDB cannot flush an empty/wrong cache. */
+let _habitsWriteSnapshot = null;
 
 const _dirtySettingKeys = new Set();
 let _settingsWriteScheduled = false;
@@ -42,6 +44,7 @@ function _scheduleWriteFlush(runFlush) {
 }
 
 function _queueHabitsWrite() {
+  _habitsWriteSnapshot = _habitsCache.slice();
   if (!_habitsWriteScheduled) {
     _habitsWriteScheduled = true;
     _scheduleWriteFlush(_flushHabitsToDisk);
@@ -51,11 +54,27 @@ function _queueHabitsWrite() {
   });
 }
 
+function _mirrorHabitsToLocalStorage(habits) {
+  try {
+    if (!habits.length) {
+      const existing = localStorage.getItem('cultiva-habits');
+      if (existing && existing !== '[]') {
+        // Never clobber a non-empty mirror with [] from a raced empty flush.
+        return;
+      }
+    }
+    localStorage.setItem('cultiva-habits', JSON.stringify(habits));
+  } catch {
+    void 0;
+  }
+}
+
 async function _flushHabitsToDisk() {
   const waiters = _habitsWriteWaiters;
   _habitsWriteWaiters = [];
   _habitsWriteScheduled = false;
-  const myHabits = _habitsCache;
+  const myHabits = Array.isArray(_habitsWriteSnapshot) ? _habitsWriteSnapshot : _habitsCache.slice();
+  _habitsWriteSnapshot = null;
 
   try {
     await _persistHabitsUpsert(myHabits);
@@ -64,11 +83,7 @@ async function _flushHabitsToDisk() {
     waiters.forEach((w) => w.resolve());
   } catch (e) {
     console.error('[Storage] IndexedDB save failed, using localStorage only:', e);
-    try {
-      localStorage.setItem('cultiva-habits', JSON.stringify(myHabits));
-    } catch {
-      void 0;
-    }
+    _mirrorHabitsToLocalStorage(myHabits);
     waiters.forEach((w) => w.reject(e));
   }
 }
@@ -79,12 +94,8 @@ function _scheduleHabitsLocalStorageMirror(habits) {
   }
   _habitsLsTimer = setTimeout(() => {
     _habitsLsTimer = null;
-    try {
-      localStorage.setItem('cultiva-habits', JSON.stringify(habits));
-    } catch {
-      void 0;
-    }
-  }, 2500);
+    _mirrorHabitsToLocalStorage(habits);
+  }, 400);
 }
 
 function _flushHabitsLocalStorageNow() {
@@ -92,11 +103,7 @@ function _flushHabitsLocalStorageNow() {
     clearTimeout(_habitsLsTimer);
     _habitsLsTimer = null;
   }
-  try {
-    localStorage.setItem('cultiva-habits', JSON.stringify(_habitsCache));
-  } catch {
-    void 0;
-  }
+  _mirrorHabitsToLocalStorage(_habitsCache);
 }
 
 if (typeof window !== 'undefined') {
@@ -263,7 +270,9 @@ function migrateHabit(habit) {
     migrated.reminderTime = '09:00';
   }
 
-  migrated.updatedAt = Date.now();
+  if (!Number.isFinite(Number(migrated.updatedAt))) {
+    migrated.updatedAt = Date.now();
+  }
 
   return migrated;
 }
@@ -356,7 +365,7 @@ export const storage = {
         try {
           const parsed = JSON.parse(lsBundle);
           if (parsed && typeof parsed === 'object') {
-            const flatKeys = new Set(['lang', 'theme', 'showTrophies', 'showNextTreeProgress', 'focusMode', 'holidayRegion', 'avatar', 'pluginsEnabled', 'nativeNotifyEnabled', 'nativeNotifyHabits', 'nativeNotifyHabitsHour', 'nativeNotifyCalendar', 'nativeNotifyCalendarLeadMinutes']);
+            const flatKeys = new Set(['lang', 'theme', 'showTrophies', 'showNextTreeProgress', 'showGardenHeatmap', 'focusMode', 'holidayRegion', 'avatar', 'pluginsEnabled', 'nativeNotifyEnabled', 'nativeNotifyHabits', 'nativeNotifyHabitsHour', 'nativeNotifyCalendar', 'nativeNotifyCalendarLeadMinutes']);
             const keys = Object.keys(parsed);
             const looksLikeFlatAppSettings = keys.some((k) => flatKeys.has(k)) && !keys.includes('cultiva-settings');
             if (looksLikeFlatAppSettings) {
@@ -445,7 +454,45 @@ export const storage = {
     }
     await this.flushPendingWrites();
     await this._loadFromDB();
+    if (_habitsCache.length === 0) {
+      await this.recoverHabitsIfEmpty();
+    }
     return _habitsCache;
+  },
+
+  /**
+   * Restore habits from the localStorage mirror when the filtered IDB cache is empty.
+   * Protects against guest/account filter misses and raced empty flushes.
+   */
+  async recoverHabitsIfEmpty() {
+    if (_habitsCache.length > 0) {
+      return false;
+    }
+    try {
+      const raw = localStorage.getItem('cultiva-habits');
+      if (!raw || raw === '[]') {
+        return false;
+      }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        return false;
+      }
+      let recovered = parsed.map(migrateHabit).filter((h) => habitBelongsToUser(h, _currentUserId));
+      if (recovered.length === 0 && _currentUserId) {
+        recovered = parsed.map(migrateHabit).filter((h) => h.userId === null || h.userId === undefined || h.userId === '');
+        recovered = recovered.map((h) => ({ ...h, userId: _currentUserId }));
+      }
+      if (recovered.length === 0) {
+        return false;
+      }
+      _habitsCache = recovered;
+      await this._forceSaveHabits(_habitsCache);
+      console.log('[Storage] Recovered', _habitsCache.length, 'habits from localStorage mirror');
+      return true;
+    } catch (e) {
+      console.warn('[Storage] Habit recovery from localStorage failed:', e);
+      return false;
+    }
   },
 
   async _loadFromDB() {
@@ -605,8 +652,12 @@ export const storage = {
 
   async setCurrentUser(userId) {
     console.log('[Storage] Setting current user:', userId);
+    await this.flushPendingWrites();
     _currentUserId = userId;
     await this._loadFromDB();
+    if (_habitsCache.length === 0) {
+      await this.recoverHabitsIfEmpty();
+    }
   },
 
   async saveHabits(habits, { immediate = false } = {}) {

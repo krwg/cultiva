@@ -175,4 +175,29 @@ describe('storage habit persistence', () => {
     expect(storage.getHabits()).toHaveLength(2);
     expect(habitsStore.size).toBe(2);
   });
+
+  it('recovers habits from localStorage when the filtered cache is empty', async () => {
+    const { storage } = await import('./storage.js');
+    await storage.init();
+    localStorage.setItem('cultiva-habits', JSON.stringify([
+      { id: 'recover-me', name: 'Recover', progress: 3, userId: null }
+    ]));
+    expect(storage.getHabits()).toHaveLength(0);
+    const ok = await storage.recoverHabitsIfEmpty();
+    expect(ok).toBe(true);
+    expect(storage.getHabits()).toHaveLength(1);
+    expect(storage.getHabits()[0].id).toBe('recover-me');
+    expect(habitsStore.has('recover-me')).toBe(true);
+  });
+
+  it('does not clobber a non-empty localStorage mirror when flushing an empty snapshot', async () => {
+    const { storage } = await import('./storage.js');
+    await storage.init();
+    localStorage.setItem('cultiva-habits', JSON.stringify([{ id: 'keep-ls', name: 'Keep' }]));
+    await storage.saveHabits([]);
+    await storage.flushPendingWrites();
+    await new Promise((r) => setTimeout(r, 500));
+    const mirrored = JSON.parse(localStorage.getItem('cultiva-habits') || '[]');
+    expect(mirrored.length).toBeGreaterThan(0);
+  });
 });

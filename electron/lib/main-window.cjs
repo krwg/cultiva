@@ -110,6 +110,21 @@ function createMainWindow({
 
   attachCultivaNavigation(mainWindow, { isDev });
 
+  // Ctrl/Cmd+R must soft-refresh the garden, never hard-reload the BrowserWindow
+  // (hard reload races pending IndexedDB writes and can look like wiped habits).
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown') {
+      return;
+    }
+    const key = String(input.key || '').toLowerCase();
+    if ((input.control || input.meta) && key === 'r') {
+      event.preventDefault();
+      if (!mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('cultiva:soft-reload-garden');
+      }
+    }
+  });
+
   if (isDev) {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }

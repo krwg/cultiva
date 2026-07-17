@@ -1,7 +1,7 @@
 {
   "name": "Cultiva",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "codename": "Rowan",
-  "releaseTitle": "[2.1.0] Rowan: Windows patch",
+  "releaseTitle": "[2.1.1] Rowan: Fix critical bugs",
   "description": "Grow your habits. Grow yourself."
 }

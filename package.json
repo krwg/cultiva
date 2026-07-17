@@ -1,6 +1,6 @@
 {
   "name": "cultiva",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Grow your habits. Grow yourself.",
   "homepage": "https://github.com/krwg/cultiva",
   "main": "electron/main.cjs",
@@ -130,8 +130,17 @@
         "height": 498
       },
       "contents": [
-        { "x": 180, "y": 220, "type": "file" },
-        { "x": 478, "y": 220, "type": "link", "path": "/Applications" }
+        {
+          "x": 180,
+          "y": 220,
+          "type": "file"
+        },
+        {
+          "x": 478,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     },
     "linux": {

@@ -4,6 +4,24 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.1.1] — Rowan · 2026-07-18
+
+**Codename:** Rowan · Critical bugfix — garden reload, footer, heatmap toggle, storage safety
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.1.1) · [Release notes](docs/release-notes-v2.1.1-rowan-github.md)
+
+### Fixed
+- Soft garden reload recovers habits from IndexedDB / localStorage; Ctrl+R no longer hard-reloads the window
+- Habit write flush uses a queued snapshot so `_loadFromDB` cannot flush an empty cache over good data
+- Empty localStorage mirrors are not written over a non-empty backup
+- Compact, centered version footer on garden and calendar
+
+### Added
+- Settings → Calendar: toggle for Garden activity heatmap (default on)
+
+### Builds
+- Windows: `Cultiva-Setup-2.1.1.exe`, `Cultiva-Portable-2.1.1.exe`
+
 ## [2.1.0] — Rowan · 2026-07-18
 
 **Codename:** Rowan · Windows patch — garden UX, calendar heatmap, installer/icons

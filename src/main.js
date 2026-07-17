@@ -144,6 +144,11 @@ langSelect?.addEventListener('change', (e) => { settings.lang = e.target.value; 
 themeSelect?.addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); });
 trophyToggle?.addEventListener('change', (e) => { settings.showTrophies = e.target.checked; saveSettings(); });
 nextTreeToggle?.addEventListener('change', (e) => { settings.showNextTreeProgress = e.target.checked; saveSettings(); });
+const gardenHeatmapToggle = document.getElementById('toggle-garden-heatmap');
+gardenHeatmapToggle?.addEventListener('change', (e) => {
+  settings.showGardenHeatmap = e.target.checked;
+  saveSettings();
+});
 focusToggle?.addEventListener('change', (e) => { settings.focusMode = e.target.checked; saveSettings(); });
 document.getElementById('toggle-streak-grace')?.addEventListener('change', (e) => {
   settings.streakGraceEnabled = e.target.checked;
@@ -1060,6 +1065,31 @@ if (typeof window.electron !== 'undefined' && window.electron.onUpdateMessage) {
   });
 }
 
+async function softReloadGarden() {
+  const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+  try {
+    if (storage.isReady()) {
+      await storage.flushPendingWrites();
+      await storage.reloadHabits();
+    }
+  } catch (e) {
+    console.warn('[Garden] soft reload storage refresh failed:', e);
+  }
+  habitSearchQuery = '';
+  const searchEl = document.getElementById('habit-search');
+  if (searchEl) {
+    searchEl.value = '';
+  }
+  renderGarden();
+  syncTrayHabits();
+  const count = habits.getAll().length;
+  showNotification(
+    count > 0
+      ? (t.gardenReloaded || 'Garden refreshed')
+      : (t.gardenReloadedEmpty || 'Garden refreshed — no habits found')
+  );
+}
+
 async function init() {
   try {
     if (window.electron?.platform) {
@@ -1203,7 +1233,7 @@ async function init() {
       },
       moveFocusedHabit,
       toggleFocusMode: () => toggleFocusMode(!settings.focusMode),
-      reloadGarden: () => renderGarden(),
+      reloadGarden: () => { void softReloadGarden(); },
       openHelp: async () => {
         const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
         const settingsOpen = isModalOpen(settingsModal);
@@ -1292,7 +1322,11 @@ async function init() {
       },
       newHabit: () => openModal(addModal),
       openSettings: () => openModal(settingsModal),
-      reloadGarden: () => renderGarden()
+      reloadGarden: () => { void softReloadGarden(); }
+    });
+
+    window.electron?.onSoftReloadGarden?.(() => {
+      void softReloadGarden();
     });
 
     applyAccentColor(settings.accentColor);

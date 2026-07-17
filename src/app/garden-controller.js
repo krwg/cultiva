@@ -277,14 +277,20 @@ export function renderGarden() {
     }
   }
   if (c.trophyEl) {
+    const showNext = c.settings.showNextTreeProgress !== false;
     if (trophies.length === 0) {
-      if (c.settings.showNextTreeProgress !== false) {
+      if (showNext) {
         renderNextTreeProgress(c.trophyEl, t);
       } else {
         c.trophyEl.innerHTML = '';
       }
     } else {
       syncHabitCards(c.trophyEl, trophies, true, 'trophy');
+    }
+    const trophySection = document.getElementById('trophy-section');
+    if (trophySection) {
+      const hasNextTree = trophies.length === 0 && showNext && Boolean(c.trophyEl.querySelector('.habit-card--next-tree'));
+      trophySection.classList.toggle('hidden', !(c.settings.showTrophies || hasNextTree));
     }
   }
   const pausedSection = document.getElementById('paused-section');

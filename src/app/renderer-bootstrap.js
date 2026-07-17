@@ -10,6 +10,7 @@ export const DEFAULT_SETTINGS = {
   theme: 'auto',
   showTrophies: false,
   showNextTreeProgress: true,
+  showGardenHeatmap: true,
   focusMode: false,
   holidayRegion: 'us',
   avatar: { background: 'green', emoji: '🌱' },

@@ -799,12 +799,37 @@ async function refreshCalendarFromStorage() {
   renderCurrentView();
 }
 
+function isGardenHeatmapEnabled() {
+  try {
+    const raw = localStorage.getItem('cultiva-settings');
+    if (!raw) {
+      return true;
+    }
+    const parsed = JSON.parse(raw);
+    const bundle = parsed?.['cultiva-settings'] && typeof parsed['cultiva-settings'] === 'object'
+      ? parsed['cultiva-settings']
+      : parsed;
+    return bundle?.showGardenHeatmap !== false;
+  } catch {
+    return true;
+  }
+}
+
 function renderGardenHeatmap() {
+  const section = document.querySelector('.garden-heatmap-section');
   const cal = document.getElementById('garden-heatmap');
   if (!cal) {
     return;
   }
+  const enabled = isGardenHeatmapEnabled();
+  if (section) {
+    section.hidden = !enabled;
+    section.style.display = enabled ? '' : 'none';
+  }
   cal.innerHTML = '';
+  if (!enabled) {
+    return;
+  }
   const days = habits.getAggregatedCalendarData();
   const frag = document.createDocumentFragment();
   for (const d of days) {
