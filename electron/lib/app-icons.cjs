@@ -92,7 +92,7 @@ function resolveTrayIconImage() {
     return null;
   }
   try {
-    let img = nativeImage.createFromPath(ico);
+    const img = nativeImage.createFromPath(ico);
     if (img.isEmpty()) {
       return null;
     }

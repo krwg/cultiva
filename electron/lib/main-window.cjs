@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 const { CULTIVA_APP_URL, shouldUseCultivaProtocol } = require('./cultiva-protocol.cjs');
 const { attachCultivaNavigation } = require('./cultiva-navigation.cjs');
 const { resolveAppIconPath, resolveTrayIconImage } = require('./app-icons.cjs');

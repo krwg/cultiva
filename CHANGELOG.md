@@ -4,6 +4,25 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.1.0] — Rowan · 2026-07-18
+
+**Codename:** Rowan · Windows patch — garden UX, calendar heatmap, installer/icons
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.1.0) · [Release notes](docs/release-notes-v2.1.0-rowan-github.md)
+
+### Added
+- Calendar page aggregated all-habits contribution heatmap
+- Paused / archived habits section with resume/restore
+- Trophy Garden empty state: next Legacy tree progress card (settings toggle, default on)
+
+### Fixed
+- NSIS BrandingText bound to release codename (Rowan) via `sync-version`
+- Windows executable / tray / shortcut icons (`signAndEditExecutable`, tray PNG)
+- Compact app footer (version only)
+
+### Builds
+- Windows: `Cultiva-Setup-2.1.0.exe`, `Cultiva-Portable-2.1.0.exe`
+
 ## [2.0.2] — Rowan · 2026-07-17
 
 **Codename:** Rowan · Patch — data integrity, plugins, macOS lifecycle

@@ -25,18 +25,18 @@ Cultiva is an **offline-first desktop habit tracker**. Each habit you plant grow
 
 ## Download
 
-**[→ Latest release (2.0.2 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
+**[→ Latest release (2.1.0 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
-| **Windows** | `Cultiva-Setup-2.0.2.exe` | NSIS installer — shortcuts, uninstall entry |
-| **Windows** | `Cultiva-Portable-2.0.2.exe` | No install required |
-| **macOS Intel** | `Cultiva-2.0.2-mac-x64.dmg` | Also `.zip` |
+| **Windows** | `Cultiva-Setup-2.1.0.exe` | NSIS installer — shortcuts, uninstall entry |
+| **Windows** | `Cultiva-Portable-2.1.0.exe` | No install required |
+| **macOS Intel** | `Cultiva-2.0.2-mac-x64.dmg` | Latest multi-platform: 2.0.2 |
 | **macOS Apple Silicon** | `Cultiva-2.0.2-mac-arm64.dmg` | Also `.zip` |
 | **Linux** | `Cultiva-2.0.2-linux-x86_64.AppImage` | Single file, no root |
 | **Linux** | `Cultiva-2.0.2-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · [1.1.0 Cypress](docs/release-notes-v1.1.0-cypress-github.md)
+**Release notes:** [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md)
 
 > **Upgrading:** your garden is preserved. Export a backup under **Settings → Data** before updating, just in case.
 
@@ -58,6 +58,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
+| **2.1.0 Windows patch** | Calendar heatmap, paused habits, next Legacy card, installer/icons |
 | **2.0.2 patch** | Habit ownership after calendar, plugins start again, macOS Dock/tray lifecycle |
 | **Rowan theme** | Strict graphite black-and-white palette |
 | **Rowan Cluster background** | «Pulsing Cluster» — trembling branches, flickering pinnate leaves, pulsing berry probes with radar rings |
@@ -166,6 +167,6 @@ When Discord is running locally, Cultiva can show a simple presence line. Toggle
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.0.2 · Rowan**
+Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.1.0 · Rowan**
 
 </div>

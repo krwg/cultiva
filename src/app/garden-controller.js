@@ -212,14 +212,27 @@ function renderNextTreeProgress(container, t) {
   const pct = Math.min(100, ((candidate.progress || 0) / LEGACY_THRESHOLD) * 100);
   const name = escapeHtml(candidate.treeName || candidate.name || 'Habit');
   const label = (t.nextTreeDays || '{n} days to Legacy').replace('{n}', String(remaining));
+  const stage = habits.getStage(candidate.progress);
+  const categoryName = candidate.category ? (t.categories?.[candidate.category] || candidate.category) : '';
+  const categoryBadge = categoryName
+    ? `<span class="category-badge" data-i18n-category="${escapeHtml(candidate.category)}">${escapeHtml(categoryName)}</span>`
+    : '';
   container.innerHTML = `
-    <div class="next-tree-card" data-id="${escapeHtml(candidate.id)}">
-      <div class="next-tree-title">${t.nextTreeTitle || 'Next Legacy tree'}</div>
-      <div class="next-tree-name">${name}</div>
-      <div class="next-tree-sub">${label}</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <div class="next-tree-meta">${candidate.progress || 0} / ${LEGACY_THRESHOLD}${t.days || 'd'}</div>
-    </div>
+    <article class="habit-card habit-card--next-tree" data-id="${escapeHtml(candidate.id)}" data-card-mode="next-tree" data-category="${escapeHtml(candidate.category || 'none')}" role="listitem">
+      <div class="card-header">
+        <div class="plant-visual">${stage.emoji}</div>
+        <div class="card-info">
+          <div class="card-title">${name}</div>
+          <div class="card-subtitle">${escapeHtml(t.nextTreeTitle || 'Next Legacy tree')} · ${escapeHtml(label)}</div>
+          ${categoryBadge}<span class="status-badge status-badge--legacy">${escapeHtml(t.legacy || 'Legacy')}</span>
+        </div>
+      </div>
+      <div class="progress-bar" aria-hidden="true"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="card-subtitle next-tree-meta">${candidate.progress || 0} / ${LEGACY_THRESHOLD}${t.days || 'd'}</div>
+      <div class="card-actions">
+        <button type="button" class="btn-card btn-card-primary" data-card-act="stats">${escapeHtml(t.contextStats || 'Statistics')}</button>
+      </div>
+    </article>
   `;
 }
 
@@ -335,6 +348,11 @@ export function bindGardenCardEvents() {
       e.stopPropagation();
       const h = habits.getAll().find(x => x.id === id);
       if (!h) { return; }
+
+      if (card.dataset.cardMode === 'next-tree' || e.target.closest('[data-card-act="stats"]')) {
+        openStats(id);
+        return;
+      }
 
       if (card.dataset.cardMode === 'paused' || e.target.closest('[data-card-act="resume"]')) {
         if (h.archived) {

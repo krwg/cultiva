@@ -17,10 +17,6 @@ jobs:
         include:
           - os: windows-latest
             platform: win
-          - os: macos-latest
-            platform: mac
-          - os: ubuntu-latest
-            platform: linux
 
     runs-on: ${{ matrix.os }}
 
@@ -97,7 +93,10 @@ jobs:
 
           NAME="$(python3 -c "import json; print(json.load(open('cultiva.release.json'))['name'])")"
           CODE="$(python3 -c "import json; print(json.load(open('cultiva.release.json'))['codename'])")"
-          TITLE="${NAME} ${TAG} · ${CODE}"
+          TITLE="$(python3 -c "import json; d=json.load(open('cultiva.release.json')); print(d.get('releaseTitle') or f\"{d['name']} {d['version']} · {d['codename']}\")")"
+          if [ -z "$TITLE" ]; then
+            TITLE="${NAME} ${TAG} · ${CODE}"
+          fi
 
           NOTES_FILE=""
           shopt -s nullglob

@@ -81,7 +81,7 @@ function buildTrayImage() {
   }
   try {
     const { nativeImage } = require('electron');
-    let img = nativeImage.createFromPath(iconPath);
+    const img = nativeImage.createFromPath(iconPath);
     if (img.isEmpty()) {
       return null;
     }
