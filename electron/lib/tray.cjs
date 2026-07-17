@@ -1,7 +1,9 @@
-const { Tray, Menu, app, nativeImage } = require('electron');
+const { Tray, Menu, app } = require('electron');
 
 let tray = null;
 let getMainWindowRef = () => null;
+let resolveTrayImage = null;
+let resolveIconPath = null;
 let habitMenuItems = [];
 
 function showMainWindow(win) {
@@ -13,25 +15,6 @@ function showMainWindow(win) {
   }
   win.show();
   win.focus();
-}
-
-function loadTrayImage(iconPath) {
-  if (!iconPath) {
-    return null;
-  }
-  try {
-    const image = nativeImage.createFromPath(iconPath);
-    if (image.isEmpty()) {
-      return null;
-    }
-    if (process.platform === 'darwin') {
-      return image.resize({ width: 18, height: 18 });
-    }
-    return image;
-  } catch (e) {
-    console.warn('[Tray] Failed to load icon:', iconPath, e && e.message ? e.message : e);
-    return null;
-  }
 }
 
 function buildMenu() {
@@ -81,15 +64,45 @@ function refreshMenu() {
   tray.setContextMenu(buildMenu());
 }
 
-function initTray({ getMainWindow, resolveAppIconPath }) {
+function buildTrayImage() {
+  if (typeof resolveTrayImage === 'function') {
+    try {
+      const img = resolveTrayImage();
+      if (img && !img.isEmpty()) {
+        return img;
+      }
+    } catch (e) {
+      console.warn('[Tray] resolveTrayIconImage failed:', e && e.message ? e.message : e);
+    }
+  }
+  const iconPath = typeof resolveIconPath === 'function' ? resolveIconPath() : null;
+  if (!iconPath) {
+    return null;
+  }
+  try {
+    const { nativeImage } = require('electron');
+    let img = nativeImage.createFromPath(iconPath);
+    if (img.isEmpty()) {
+      return null;
+    }
+    const size = process.platform === 'darwin' ? 18 : 16;
+    return img.resize({ width: size, height: size, quality: 'best' });
+  } catch (e) {
+    console.warn('[Tray] Failed to load icon:', iconPath, e && e.message ? e.message : e);
+    return null;
+  }
+}
+
+function initTray({ getMainWindow, resolveAppIconPath, resolveTrayIconImage }) {
   if (tray) {
     return tray;
   }
   getMainWindowRef = getMainWindow;
-  const iconPath = resolveAppIconPath();
-  const image = loadTrayImage(iconPath);
+  resolveIconPath = resolveAppIconPath;
+  resolveTrayImage = resolveTrayIconImage || null;
+  const image = buildTrayImage();
   if (!image) {
-    console.warn('[Tray] Skipped — no usable tray icon at', iconPath || '(missing)');
+    console.warn('[Tray] Skipped — no usable tray icon');
     return null;
   }
   try {

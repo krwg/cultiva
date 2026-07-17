@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS = {
   lang: 'en',
   theme: 'auto',
   showTrophies: false,
+  showNextTreeProgress: true,
   focusMode: false,
   holidayRegion: 'us',
   avatar: { background: 'green', emoji: '🌱' },

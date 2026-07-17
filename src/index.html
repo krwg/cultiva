@@ -94,6 +94,15 @@
             <p class="section-desc" data-i18n="trophyDesc">Trees that reached 365+ days</p>
             <div class="garden-grid" id="trophy-container"></div>
         </section>
+
+        <section class="paused-section hidden" id="paused-section">
+            <div class="section-header">
+                <h2 data-i18n="pausedGarden">Paused</h2>
+                <span class="habit-count" id="paused-count">0</span>
+            </div>
+            <p class="section-desc" data-i18n="pausedDesc">Paused and archived habits — resume anytime</p>
+            <div class="garden-grid" id="paused-container"></div>
+        </section>
     </main>
 
     <div class="modal" id="add-modal">
@@ -605,6 +614,16 @@
                             </div>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="toggle-trophies">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="showNextTree">Next Legacy progress</span>
+                                <span class="setting-desc" data-i18n="showNextTreeDesc">When Trophy Garden is empty, show progress toward the nearest Legacy tree</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-next-tree" checked>
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>

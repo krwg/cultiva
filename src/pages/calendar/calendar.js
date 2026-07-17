@@ -795,7 +795,26 @@ async function refreshCalendarFromStorage() {
     error('refreshCalendarFromStorage failed:', e);
   }
   invalidateHabitIndex();
+  renderGardenHeatmap();
   renderCurrentView();
+}
+
+function renderGardenHeatmap() {
+  const cal = document.getElementById('garden-heatmap');
+  if (!cal) {
+    return;
+  }
+  cal.innerHTML = '';
+  const days = habits.getAggregatedCalendarData();
+  const frag = document.createDocumentFragment();
+  for (const d of days) {
+    const el = document.createElement('div');
+    el.className = 'calendar-day';
+    el.style.background = `var(--calendar-${d.level})`;
+    el.title = d.count > 0 ? `${d.date}: ${d.count}` : d.date;
+    frag.appendChild(el);
+  }
+  cal.appendChild(frag);
 }
 
 async function init() {
@@ -837,6 +856,7 @@ async function init() {
   loadHolidays();
   loadEvents();
   initColorSelector();
+  renderGardenHeatmap();
   await appearance.syncAll(true, { storage });
   appearance.bindAutoSync({
     storage,

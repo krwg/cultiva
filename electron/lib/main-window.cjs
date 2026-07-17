@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { CULTIVA_APP_URL, shouldUseCultivaProtocol } = require('./cultiva-protocol.cjs');
 const { attachCultivaNavigation } = require('./cultiva-navigation.cjs');
+const { resolveAppIconPath, resolveTrayIconImage } = require('./app-icons.cjs');
 
 function attachSessionContentSecurityPolicy({ isDev, session }) {
   if (attachSessionContentSecurityPolicy._done) {
@@ -40,52 +41,6 @@ function attachSessionContentSecurityPolicy({ isDev, session }) {
     responseHeaders['Content-Security-Policy'] = [policy];
     callback({ responseHeaders });
   });
-}
-
-function resolveAppIconPath() {
-  const candidates = [];
-  if (process.platform === 'darwin') {
-    candidates.push(
-      path.join(__dirname, '../../build/icon.png'),
-      path.join(__dirname, '../../build/icons/512x512.png'),
-      path.join(__dirname, '../../build/icons/256x256.png'),
-      path.join(__dirname, '../../dist/favicon.ico'),
-      path.join(__dirname, '../app-icon.ico'),
-      path.join(__dirname, '../../build/icon.ico')
-    );
-  } else {
-    candidates.push(
-      path.join(__dirname, '../app-icon.ico'),
-      path.join(__dirname, '../../build/icon.ico'),
-      path.join(__dirname, '../../dist/favicon.ico'),
-      path.join(__dirname, '../../build/icon.png')
-    );
-  }
-  try {
-    const { app } = require('electron');
-    if (app?.isPackaged && process.resourcesPath) {
-      if (process.platform === 'darwin') {
-        candidates.unshift(
-          path.join(process.resourcesPath, 'icon.png'),
-          path.join(process.resourcesPath, 'app-icon.ico'),
-          path.join(process.resourcesPath, 'favicon.ico')
-        );
-      } else {
-        candidates.unshift(
-          path.join(process.resourcesPath, 'app-icon.ico'),
-          path.join(process.resourcesPath, 'favicon.ico')
-        );
-      }
-    }
-  } catch {
-    void 0;
-  }
-  for (const candidate of candidates) {
-    if (candidate && fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-  return undefined;
 }
 
 function createMainWindow({
@@ -230,5 +185,6 @@ function createMainWindow({
 module.exports = {
   attachSessionContentSecurityPolicy,
   resolveAppIconPath,
+  resolveTrayIconImage,
   createMainWindow
 };

@@ -65,8 +65,10 @@ let focusedHabitId = null;
 
 const gardenEl = document.getElementById('garden-container');
 const trophyEl = document.getElementById('trophy-container');
+const pausedEl = document.getElementById('paused-container');
 const countEl = document.getElementById('habit-count');
 const trophyCountEl = document.getElementById('trophy-count');
+const pausedCountEl = document.getElementById('paused-count');
 const addModal = document.getElementById('add-modal');
 const statsModal = document.getElementById('stats-modal');
 const settingsModal = document.getElementById('settings-modal');
@@ -78,6 +80,7 @@ const userDropdown = document.getElementById('user-dropdown');
 const langSelect = document.getElementById('lang-select');
 const themeSelect = document.getElementById('theme-select');
 const trophyToggle = document.getElementById('toggle-trophies');
+const nextTreeToggle = document.getElementById('toggle-next-tree');
 const focusToggle = document.getElementById('toggle-focus');
 const quantityLogModal = document.getElementById('quantity-log-modal');
 const quantityLogInput = document.getElementById('quantity-log-input');
@@ -113,8 +116,10 @@ configureGardenController({
   setFocusedHabitId(id) { focusedHabitId = id; },
   gardenEl,
   trophyEl,
+  pausedEl,
   countEl,
   trophyCountEl,
+  pausedCountEl,
   addModal,
   statsModal
 });
@@ -138,6 +143,7 @@ let tempAvatar = { ...settings.avatar };
 langSelect?.addEventListener('change', (e) => { settings.lang = e.target.value; saveSettings(); });
 themeSelect?.addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); });
 trophyToggle?.addEventListener('change', (e) => { settings.showTrophies = e.target.checked; saveSettings(); });
+nextTreeToggle?.addEventListener('change', (e) => { settings.showNextTreeProgress = e.target.checked; saveSettings(); });
 focusToggle?.addEventListener('change', (e) => { settings.focusMode = e.target.checked; saveSettings(); });
 document.getElementById('toggle-streak-grace')?.addEventListener('change', (e) => {
   settings.streakGraceEnabled = e.target.checked;

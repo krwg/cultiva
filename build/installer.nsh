@@ -1,5 +1,5 @@
 !macro customHeader
-  BrandingText "Cultiva ${VERSION} · Linden"
+  BrandingText "Cultiva ${VERSION} · Rowan"
 !macroend
 
 !macro customWelcomePage

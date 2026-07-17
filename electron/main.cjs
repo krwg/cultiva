@@ -63,7 +63,8 @@ app.whenReady().then(() => {
   registerAutoBackupIpc(ipcMain);
   trayMod.initTray({
     getMainWindow,
-    resolveAppIconPath: mainWindowMod.resolveAppIconPath
+    resolveAppIconPath: mainWindowMod.resolveAppIconPath,
+    resolveTrayIconImage: mainWindowMod.resolveTrayIconImage
   });
 
   app.on('activate', () => {

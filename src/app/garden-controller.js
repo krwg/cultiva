@@ -69,16 +69,17 @@ function stageLabel(stage, t) {
   return map[stage.name] || stage.name;
 }
 
-function createHabitCard(habit, isTrophy = false) {
+function createHabitCard(habit, isTrophy = false, cardMode = 'active') {
   const c = requireCtx();
   const stage = isTrophy ? GROWTH_STAGES.LEGACY : habits.getStage(habit.progress);
   const today = getTodayStr();
+  const isPausedCard = cardMode === 'paused';
   const isCompleted = habit.trackType === 'binary'
     ? habit.lastCompleted === today
     : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
 
   let progressBar = '';
-  if (habit.trackType === 'quantity') {
+  if (!isPausedCard && habit.trackType === 'quantity') {
     const cur = habits.quantityDayProgress(habit, today);
     const tgt = habits.quantityTarget(habit);
     const pct = Math.min(100, (cur / tgt) * 100);
@@ -89,11 +90,19 @@ function createHabitCard(habit, isTrophy = false) {
   const categoryName = habit.category ? (t.categories?.[habit.category] || habit.category) : '';
   const categoryBadge = categoryName ? `<span class="category-badge" data-i18n-category="${habit.category}">${categoryName}</span>` : '';
   const streakText = habit.currentStreak > 0 ? ` • 🔥 ${habit.currentStreak}` : '';
+  const statusBadge = isPausedCard
+    ? `<span class="status-badge">${habit.archived ? (t.habitArchived || 'Archived') : (t.habitPaused || 'Paused')}</span>`
+    : '';
+
+  const primaryLabel = isPausedCard
+    ? (habit.archived ? (t.contextRestore || 'Restore') : (t.contextResume || 'Resume'))
+    : (isCompleted ? (t.done || 'Done') : (habit.trackType === 'quantity' ? (t.log || 'Log') : (t.complete || 'Complete')));
 
   const card = document.createElement('article');
-  card.className = 'habit-card';
+  card.className = `habit-card${isPausedCard ? ' habit-card--paused' : ''}`;
   card.dataset.id = habit.id;
   card.dataset.category = habit.category || 'none';
+  card.dataset.cardMode = cardMode;
   if (!isTrophy) {
     card.setAttribute('role', 'listitem');
     card.setAttribute('tabindex', '-1');
@@ -105,19 +114,19 @@ function createHabitCard(habit, isTrophy = false) {
                 <div class="card-title">${escapeHtml(habit.treeName || habit.name)}</div>
                 ${habit.description ? `<div class="card-description">${escapeHtml(habit.description)}</div>` : ''}
                 <div class="card-subtitle">${stageLabel(stage, t)} • ${habit.progress}${t.days}${streakText}</div>
-                ${categoryBadge}
+                ${categoryBadge}${statusBadge}
             </div>
         </div>
         ${progressBar}
         <div class="card-actions">
-            <button class="btn-card btn-card-primary${isCompleted ? ' completed' : ''}">${isCompleted ? (t.done || 'Done') : (habit.trackType === 'quantity' ? (t.log || 'Log') : (t.complete || 'Complete'))}</button>
-            <button class="btn-card btn-card-danger">✕</button>
+            <button class="btn-card btn-card-primary${isCompleted && !isPausedCard ? ' completed' : ''}" data-card-act="${isPausedCard ? 'resume' : 'complete'}">${primaryLabel}</button>
+            <button class="btn-card btn-card-danger" data-card-act="delete">✕</button>
         </div>
     `;
   return card;
 }
 
-function habitRenderKey(habit, isTrophy) {
+function habitRenderKey(habit, isTrophy, cardMode = 'active') {
   const c = requireCtx();
   const today = getTodayStr();
   const isCompleted = habit.trackType === 'binary'
@@ -125,7 +134,7 @@ function habitRenderKey(habit, isTrophy) {
     : habits.quantityDayProgress(habit, today) >= habits.quantityTarget(habit);
   const qty = habit.trackType === 'quantity' ? habits.quantityDayProgress(habit, today) : 0;
   return [
-    isTrophy ? 'trophy' : 'active',
+    isTrophy ? 'trophy' : cardMode,
     habit.progress,
     habit.currentStreak,
     isCompleted ? 1 : 0,
@@ -135,12 +144,14 @@ function habitRenderKey(habit, isTrophy) {
     habit.description,
     habit.category,
     habit.trackType,
+    habit.paused ? 1 : 0,
+    habit.archived ? 1 : 0,
     habits.quantityTarget(habit),
     c.settings.lang
   ].join('|');
 }
 
-function syncHabitCards(container, habitList, isTrophy = false) {
+function syncHabitCards(container, habitList, isTrophy = false, cardMode = 'active') {
   const c = requireCtx();
   if (!container) {
     return;
@@ -158,16 +169,16 @@ function syncHabitCards(container, habitList, isTrophy = false) {
   }
 
   habitList.forEach((habit, index) => {
-    const key = habitRenderKey(habit, isTrophy);
+    const key = habitRenderKey(habit, isTrophy, cardMode);
     let card = container.querySelector(`.habit-card[data-id="${habit.id}"]`);
 
     if (!card) {
-      card = createHabitCard(habit, isTrophy);
+      card = createHabitCard(habit, isTrophy, cardMode);
       card.dataset.renderKey = key;
       const ref = container.children[index] || null;
       container.insertBefore(card, ref);
     } else if (card.dataset.renderKey !== key) {
-      const next = createHabitCard(habit, isTrophy);
+      const next = createHabitCard(habit, isTrophy, cardMode);
       next.dataset.renderKey = key;
       card.replaceWith(next);
       card = next;
@@ -180,13 +191,36 @@ function syncHabitCards(container, habitList, isTrophy = false) {
       container.appendChild(card);
     }
 
-    if (!isTrophy) {
+    if (!isTrophy && cardMode === 'active') {
       const isFocused = habit.id === c.focusedHabitId;
       card.classList.toggle('habit-card--focus', isFocused);
       card.setAttribute('tabindex', isFocused ? '0' : '-1');
       card.setAttribute('aria-label', habit.treeName || habit.name);
     }
   });
+}
+
+function renderNextTreeProgress(container, t) {
+  const candidate = habits.getNextLegacyCandidate();
+  if (!candidate || !container) {
+    if (container) {
+      container.innerHTML = '';
+    }
+    return;
+  }
+  const remaining = Math.max(0, LEGACY_THRESHOLD - (candidate.progress || 0));
+  const pct = Math.min(100, ((candidate.progress || 0) / LEGACY_THRESHOLD) * 100);
+  const name = escapeHtml(candidate.treeName || candidate.name || 'Habit');
+  const label = (t.nextTreeDays || '{n} days to Legacy').replace('{n}', String(remaining));
+  container.innerHTML = `
+    <div class="next-tree-card" data-id="${escapeHtml(candidate.id)}">
+      <div class="next-tree-title">${t.nextTreeTitle || 'Next Legacy tree'}</div>
+      <div class="next-tree-name">${name}</div>
+      <div class="next-tree-sub">${label}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="next-tree-meta">${candidate.progress || 0} / ${LEGACY_THRESHOLD}${t.days || 'd'}</div>
+    </div>
+  `;
 }
 
 function clearGardenHabitNodes(gardenEl) {
@@ -205,6 +239,7 @@ export function renderGarden() {
   const all = habits.getAll();
   const active = filterHabits(habits.getGardenHabits());
   const trophies = all.filter(h => h.progress >= LEGACY_THRESHOLD);
+  const paused = filterHabits(habits.getPausedHabits());
   const t = TRANSLATIONS[c.settings.lang] || TRANSLATIONS.en;
   if (!c.focusedHabitId && active[0]) {
     c.setFocusedHabitId(active[0].id);
@@ -225,18 +260,34 @@ export function renderGarden() {
       document.getElementById('add-first')?.addEventListener('click', () => openModal(c.addModal));
     } else {
       c.gardenEl.querySelector('.empty-state')?.remove();
-      syncHabitCards(c.gardenEl, active, false);
+      syncHabitCards(c.gardenEl, active, false, 'active');
     }
   }
   if (c.trophyEl) {
     if (trophies.length === 0) {
-      c.trophyEl.innerHTML = '';
+      if (c.settings.showNextTreeProgress !== false) {
+        renderNextTreeProgress(c.trophyEl, t);
+      } else {
+        c.trophyEl.innerHTML = '';
+      }
     } else {
-      syncHabitCards(c.trophyEl, trophies, true);
+      syncHabitCards(c.trophyEl, trophies, true, 'trophy');
+    }
+  }
+  const pausedSection = document.getElementById('paused-section');
+  if (pausedSection) {
+    pausedSection.classList.toggle('hidden', paused.length === 0);
+  }
+  if (c.pausedEl) {
+    if (paused.length === 0) {
+      c.pausedEl.innerHTML = '';
+    } else {
+      syncHabitCards(c.pausedEl, paused, false, 'paused');
     }
   }
   if (c.countEl) { c.countEl.textContent = `${active.length}/${MAX_ACTIVE_HABITS}`; }
   if (c.trophyCountEl) { c.trophyCountEl.textContent = trophies.length; }
+  if (c.pausedCountEl) { c.pausedCountEl.textContent = paused.length; }
   applyTranslations(c.settings.lang);
   pluginManager.refreshGardenWidgets();
 }
@@ -285,6 +336,18 @@ export function bindGardenCardEvents() {
       const h = habits.getAll().find(x => x.id === id);
       if (!h) { return; }
 
+      if (card.dataset.cardMode === 'paused' || e.target.closest('[data-card-act="resume"]')) {
+        if (h.archived) {
+          await habits.setArchived(id, false);
+          showNotification(t.habitRestored || t.contextRestore || 'Habit restored');
+        } else {
+          await habits.setPaused(id, false);
+          showNotification(t.habitResumed || t.contextResume || 'Habit resumed');
+        }
+        renderGarden();
+        return;
+      }
+
       const today = getTodayStr();
       const isCompleted = h.trackType === 'binary'
         ? h.lastCompleted === today
@@ -331,4 +394,5 @@ export function bindGardenCardEvents() {
 
   c.gardenEl?.addEventListener('click', handleCardClick);
   c.trophyEl?.addEventListener('click', handleCardClick);
+  c.pausedEl?.addEventListener('click', handleCardClick);
 }

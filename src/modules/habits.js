@@ -60,6 +60,74 @@ export const habits = {
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   },
 
+  getPausedHabits() {
+    return this.getAll()
+      .filter((h) => h.progress < LEGACY_THRESHOLD && (h.paused || h.archived))
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  },
+
+  getNextLegacyCandidate() {
+    const candidates = this.getAll()
+      .filter((h) => h.progress < LEGACY_THRESHOLD && this.isGardenVisible(h));
+    if (!candidates.length) {
+      return null;
+    }
+    candidates.sort((a, b) => {
+      if (b.progress !== a.progress) {
+        return b.progress - a.progress;
+      }
+      const aCreated = a.createdAt || a.id || '';
+      const bCreated = b.createdAt || b.id || '';
+      return String(aCreated).localeCompare(String(bCreated));
+    });
+    return candidates[0];
+  },
+
+  getAggregatedCalendarData() {
+    const list = this.getAll().filter((h) => h.progress < LEGACY_THRESHOLD);
+    const start = new Date();
+    start.setDate(start.getDate() - 364);
+    const historyMaps = list.map((h) => ({
+      habit: h,
+      historySet: new Set(h.history || [])
+    }));
+    const days = [];
+
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + i);
+      const ds = getDateInTZ(d);
+      let count = 0;
+      for (const { habit: h, historySet } of historyMaps) {
+        if (!historySet.has(ds)) {
+          continue;
+        }
+        if (h.trackType === 'quantity') {
+          if (this.quantityDayProgress(h, ds) >= this.quantityTarget(h)) {
+            count += 1;
+          }
+        } else {
+          count += 1;
+        }
+      }
+      let level = 0;
+      if (count >= 1) {
+        level = 1;
+      }
+      if (count >= 2) {
+        level = 2;
+      }
+      if (count >= 3) {
+        level = 3;
+      }
+      if (count >= 5) {
+        level = 4;
+      }
+      days.push({ date: ds, level, count });
+    }
+    return days;
+  },
+
   getAll() {
     return storage.getHabits();
   },

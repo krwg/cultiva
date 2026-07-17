@@ -13,8 +13,71 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
+
+.garden-heatmap-section {
+    margin: 0 0 24px;
+    padding: 14px 0 4px;
+    border-top: 1px solid var(--border-light, rgba(128,128,128,0.15));
+}
+
+.garden-heatmap-header {
+    margin-bottom: 10px;
+}
+
+.garden-heatmap-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.garden-heatmap-desc {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.garden-heatmap-section .contribution-calendar {
+    display: grid;
+    grid-template-columns: repeat(53, 1fr);
+    gap: 3px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+}
+
+.garden-heatmap-section .contribution-calendar::-webkit-scrollbar { display: none; }
+
+.garden-heatmap-section .calendar-day {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    background: var(--calendar-0);
+}
+
+.garden-heatmap-section .calendar-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.garden-heatmap-section .legend-square {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+.garden-heatmap-section .legend-square[data-level="0"] { background: var(--calendar-0); }
+.garden-heatmap-section .legend-square[data-level="1"] { background: var(--calendar-1); }
+.garden-heatmap-section .legend-square[data-level="2"] { background: var(--calendar-2); }
+.garden-heatmap-section .legend-square[data-level="3"] { background: var(--calendar-3); }
+.garden-heatmap-section .legend-square[data-level="4"] { background: var(--calendar-4); }
 
 .calendar-month {
     font-size: 22px;

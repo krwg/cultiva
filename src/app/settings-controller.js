@@ -61,6 +61,9 @@ export async function loadSettings() {
       if (typeof saved.showTrophies === 'boolean') {
         settings.showTrophies = saved.showTrophies;
       }
+      if (typeof saved.showNextTreeProgress === 'boolean') {
+        settings.showNextTreeProgress = saved.showNextTreeProgress;
+      }
       if (typeof saved.focusMode === 'boolean') {
         settings.focusMode = saved.focusMode;
       }
@@ -213,6 +216,10 @@ export function applySettings() {
   }
   if (c.trophyToggle) {
     c.trophyToggle.checked = settings.showTrophies;
+  }
+  const nextTreeToggle = document.getElementById('toggle-next-tree');
+  if (nextTreeToggle) {
+    nextTreeToggle.checked = settings.showNextTreeProgress !== false;
   }
   document.body.classList.toggle('focus-mode', settings.focusMode);
   if (c.focusToggle) {

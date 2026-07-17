@@ -311,8 +311,49 @@ a:hover { color: var(--accent-blue-hover); }
 .calendar-body { padding: 24px 0 80px; max-width: 900px; }
 .calendar-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
 
-.garden-section, .trophy-section { margin-bottom: 48px; }
-.trophy-section.hidden { display: none; }
+.garden-section, .trophy-section, .paused-section { margin-bottom: 48px; }
+.trophy-section.hidden, .paused-section.hidden { display: none; }
+.habit-card--paused { opacity: 0.78; }
+.status-badge {
+  display: inline-block;
+  margin-top: 4px;
+  margin-right: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: var(--radius-full);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+.next-tree-card {
+  grid-column: 1 / -1;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg, 12px);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color, transparent);
+}
+.next-tree-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.next-tree-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.next-tree-sub {
+  margin: 4px 0 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.next-tree-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-tertiary, var(--text-secondary));
+}
+body.focus-mode .paused-section { display: none !important; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .section-header h2 { font-size: 20px; font-weight: 600; }
 .section-desc { font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px; }
@@ -2968,16 +3009,6 @@ body.calendar-page .app-footer {
     color: var(--text-secondary);
     cursor: pointer;
     font-size: 14px;
-}
-
-.onboarding-skip-link:focus {
-    outline: none;
-}
-
-.onboarding-skip-link:focus-visible {
-    outline: 2px solid var(--accent, #5a9a72);
-    outline-offset: 2px;
-    border-radius: 4px;
 }
 
 .import-preview-stats {

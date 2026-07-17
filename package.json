@@ -1,6 +1,6 @@
 {
   "name": "cultiva",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Grow your habits. Grow yourself.",
   "homepage": "https://github.com/krwg/cultiva",
   "main": "electron/main.cjs",
@@ -50,6 +50,10 @@
         "to": "app-icon.ico"
       },
       {
+        "from": "build/icons/16x16.png",
+        "to": "tray-icon.png"
+      },
+      {
         "from": "dist/favicon.ico",
         "to": "favicon.ico"
       }
@@ -72,7 +76,7 @@
       ],
       "icon": "build/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "signAndEditExecutable": false,
+      "signAndEditExecutable": true,
       "verifyUpdateCodeSignature": true
     },
     "nsis": {

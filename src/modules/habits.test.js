@@ -229,4 +229,47 @@ describe('habits', () => {
     expect(undone.history).toEqual(expect.arrayContaining(['2026-05-28', '2026-05-29']));
     expect(undone.history).not.toContain('2026-05-30');
   });
+
+  it('lists paused habits separately from the garden', async () => {
+    const { habits } = await import('./habits.js');
+    const h = await habits.add({ name: 'Meditate', trackType: 'binary' });
+    await habits.setPaused(h.id, true);
+    expect(habits.getGardenHabits()).toHaveLength(0);
+    expect(habits.getPausedHabits()).toHaveLength(1);
+    expect(habits.getPausedHabits()[0].id).toBe(h.id);
+  });
+
+  it('picks the closest habit as next Legacy candidate', async () => {
+    const { habits } = await import('./habits.js');
+    const a = await habits.add({ name: 'A', trackType: 'binary' });
+    const b = await habits.add({ name: 'B', trackType: 'binary' });
+    store.habits = store.habits.map((h) => {
+      if (h.id === a.id) {
+        return { ...h, progress: 100 };
+      }
+      if (h.id === b.id) {
+        return { ...h, progress: 200 };
+      }
+      return h;
+    });
+    const next = habits.getNextLegacyCandidate();
+    expect(next?.id).toBe(b.id);
+  });
+
+  it('aggregates calendar levels across all habits', async () => {
+    const { habits } = await import('./habits.js');
+    const a = await habits.add({ name: 'A', trackType: 'binary' });
+    const b = await habits.add({ name: 'B', trackType: 'binary' });
+    store.habits = store.habits.map((h) => {
+      if (h.id === a.id || h.id === b.id) {
+        return { ...h, history: ['2026-05-30'] };
+      }
+      return h;
+    });
+    const days = habits.getAggregatedCalendarData();
+    expect(days).toHaveLength(365);
+    const today = days.find((d) => d.date === '2026-05-30');
+    expect(today?.count).toBe(2);
+    expect(today?.level).toBe(2);
+  });
 });

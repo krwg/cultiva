@@ -398,8 +398,8 @@ a:hover { color: var(--accent-blue-hover); }
 .calendar-body { padding: 24px 0 80px; max-width: 900px; }
 .calendar-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
 
-.garden-section, .trophy-section { margin-bottom: 48px; }
-.trophy-section.hidden { display: none; }
+.garden-section, .trophy-section, .paused-section { margin-bottom: 48px; }
+.trophy-section.hidden, .paused-section.hidden { display: none; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .section-header h2 { font-size: 20px; font-weight: 600; }
 .section-desc { font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px; }
