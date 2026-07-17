@@ -1,10 +1,10 @@
 !macro customHeader
-  BrandingText "Cultiva ${VERSION} · Rowan"
+  BrandingText "Cultiva ${VERSION} - Rowan"
 !macroend
 
 !macro customWelcomePage
   !define MUI_WELCOMEPAGE_TITLE "Welcome to Cultiva"
-  !define MUI_WELCOMEPAGE_TEXT "Grow your habits. Grow yourself.$\r$\n$\r$\nOffline-first habit tracker — no cloud, no account required."
+  !define MUI_WELCOMEPAGE_TEXT "Grow your habits. Grow yourself.$\r$\n$\r$\nOffline-first habit tracker - no cloud, no account required."
   !insertmacro MUI_PAGE_WELCOME
 !macroend
 

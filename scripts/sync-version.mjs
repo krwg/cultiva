@@ -24,8 +24,10 @@ if (pkg.version !== version) {
 
 if (codename) {
   let nsh = readFileSync(installerNshPath, 'utf-8');
-  const nextBranding = `BrandingText "Cultiva \${VERSION} · ${codename}"`;
-  if (/BrandingText\s+"Cultiva \$\{VERSION\} · [^"]+"/.test(nsh)) {
+  const nextBranding = `BrandingText "Cultiva \${VERSION} - ${codename}"`;
+  if (/BrandingText\s+"Cultiva \$\{VERSION\} - [^"]+"/.test(nsh)) {
+    nsh = nsh.replace(/BrandingText\s+"Cultiva \$\{VERSION\} - [^"]+"/, nextBranding);
+  } else if (/BrandingText\s+"Cultiva \$\{VERSION\} · [^"]+"/.test(nsh)) {
     nsh = nsh.replace(/BrandingText\s+"Cultiva \$\{VERSION\} · [^"]+"/, nextBranding);
   } else {
     nsh = nsh.replace(/BrandingText\s+"[^"]*"/, nextBranding);
