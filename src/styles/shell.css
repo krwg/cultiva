@@ -313,6 +313,34 @@ a:hover { color: var(--accent-blue-hover); }
 
 .garden-section, .trophy-section, .paused-section { margin-bottom: 48px; }
 .trophy-section.hidden, .paused-section.hidden { display: none; }
+.habit-card--paused { opacity: 0.78; }
+.habit-card--next-tree::before {
+  background: linear-gradient(90deg, #ffd700, #ffb340);
+}
+.habit-card--next-tree .status-badge--legacy {
+  display: inline-block;
+  margin-top: 4px;
+  margin-right: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 215, 0, 0.18);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+}
+.habit-card--next-tree .next-tree-meta { margin: 0; }
+.habit-card--next-tree .card-actions { margin-top: auto; }
+.habit-card .status-badge {
+  display: inline-block;
+  margin-top: 4px;
+  margin-right: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: var(--radius-full);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+body.focus-mode .paused-section { display: none !important; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .section-header h2 { font-size: 20px; font-weight: 600; }
 .section-desc { font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px; }
@@ -335,12 +363,12 @@ a:hover { color: var(--accent-blue-hover); }
     padding: 4px 10px; border-radius: var(--radius-full); font-family: var(--font-mono);
 }
 
-.app-footer { background: var(--bg-primary); border-top: 1px solid var(--border-light); padding: 32px 24px; margin-top: auto; }
-.footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+.app-footer { background: var(--bg-primary); border-top: 1px solid var(--border-light); padding: 20px 24px; margin-top: auto; }
+.footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 0; text-align: center; }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 24px; }
 .footer-links a { font-size: 13px; color: var(--text-secondary); }
 .footer-links a:hover { color: var(--text-primary); }
-.footer-version { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 4px; letter-spacing: 0.5px; }
+.footer-version { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 0; letter-spacing: 0.5px; }
 
 .calendar-grid {
     background: var(--bg-primary); border-radius: 20px; padding: 20px;
