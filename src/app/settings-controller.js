@@ -236,6 +236,18 @@ export function applySettings() {
   initSettingsEmptyIcon();
   initHabitFormIcons();
 
+  document.body.classList.toggle('developer-mode', settings.developerMode === true);
+  if (!settings.developerMode) {
+    const devItem = document.querySelector('.settings-sidebar-item[data-section="developer"]');
+    if (devItem) {
+      devItem.setAttribute('hidden', '');
+      devItem.setAttribute('aria-hidden', 'true');
+      devItem.classList.remove('active');
+    }
+    document.getElementById('section-developer')?.classList.remove('active');
+    document.body.classList.remove('dev-secret-bg', 'dev-secret-bg--animated');
+  }
+
   document.body.classList.remove(...getThemeBodyClassList(), ...getPluginThemeBodyClasses());
 
   const appliedTheme = resolveThemeBodyId(settings.theme);

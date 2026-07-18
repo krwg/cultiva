@@ -117,11 +117,13 @@ export async function enableDeveloperMode({ toast = true } = {}) {
 }
 
 function leaveDeveloperSection() {
-  const active = document.querySelector('.settings-sidebar-item[data-section="developer"].active');
-  if (!active) {
-    return;
-  }
-  const fallback = document.querySelector('.settings-sidebar-item[data-section="general"], .settings-sidebar-item[data-section="appearance"]');
+  const section = document.getElementById('section-developer');
+  section?.classList.remove('active');
+  const item = document.querySelector('.settings-sidebar-item[data-section="developer"]');
+  item?.classList.remove('active');
+
+  const fallback = document.querySelector('.settings-sidebar-item[data-section="appearance"]')
+    || document.querySelector('.settings-sidebar-item[data-section="profile"]');
   if (fallback && typeof window.__cultivaActivateSettingsSection === 'function') {
     window.__cultivaActivateSettingsSection(fallback);
   }
@@ -130,13 +132,16 @@ function leaveDeveloperSection() {
 /** Re-hide Developer in the sidebar; requires version taps to unlock again. */
 export async function hideDeveloperMode() {
   settings.developerMode = false;
+  settings.devAnimBackground = false;
   document.body.classList.remove('dev-secret-bg', 'dev-secret-bg--animated', 'developer-mode');
-  await saveSettings();
   leaveDeveloperSection();
   syncDeveloperUi();
   if (window.cultivaDev) {
     delete window.cultivaDev;
   }
+  await saveSettings();
+  // Re-assert after applySettings() (saveSettings → applySettings) which may touch body classes
+  syncDeveloperUi();
   showNotification('', t().devModeHidden || 'Developer mode hidden');
 }
 
@@ -147,22 +152,32 @@ export async function disableDeveloperMode() {
   clearSessionOverrides();
   simulatedDate = null;
   document.body.classList.remove('dev-secret-bg', 'dev-secret-bg--animated', 'developer-mode');
-  await saveSettings();
   leaveDeveloperSection();
   syncDeveloperUi();
   if (window.cultivaDev) {
     delete window.cultivaDev;
   }
+  await saveSettings();
+  syncDeveloperUi();
   showNotification('', t().devModeDisabled || 'Developer mode off');
 }
 
 function syncDeveloperUi() {
+  const unlocked = isDeveloperMode();
   const item = document.querySelector('.settings-sidebar-item[data-section="developer"]');
   if (item) {
-    item.hidden = !isDeveloperMode();
+    if (unlocked) {
+      item.removeAttribute('hidden');
+      item.setAttribute('aria-hidden', 'false');
+    } else {
+      item.setAttribute('hidden', '');
+      item.setAttribute('aria-hidden', 'true');
+      item.classList.remove('active');
+      document.getElementById('section-developer')?.classList.remove('active');
+    }
   }
-  document.body.classList.toggle('developer-mode', isDeveloperMode());
-  if (isDeveloperMode()) {
+  document.body.classList.toggle('developer-mode', unlocked);
+  if (unlocked) {
     refreshDevPanel();
   } else {
     document.body.classList.remove('dev-secret-bg', 'dev-secret-bg--animated');

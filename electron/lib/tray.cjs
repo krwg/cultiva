@@ -92,6 +92,11 @@ function applyTooltip() {
   tray.setToolTip(text || 'Cultiva');
 }
 
+function setTrayTooltip(text) {
+  pluginTooltipSuffix = text != null ? String(text) : '';
+  applyTooltip();
+}
+
 function buildTrayImage() {
   if (typeof resolveTrayImage === 'function') {
     try {
@@ -157,11 +162,6 @@ function initTray({ getMainWindow, resolveAppIconPath, resolveTrayIconImage }) {
 function updateTrayHabits(habits) {
   habitMenuItems = Array.isArray(habits) ? habits.slice(0, 12) : [];
   refreshMenu();
-}
-
-function setTrayTooltip(text) {
-  pluginTooltipSuffix = text != null ? String(text) : '';
-  applyTooltip();
 }
 
 function setTrayPluginItems(items) {

@@ -4,6 +4,19 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.3.2] — Rowan · 2026-07-18
+
+**Codename:** Rowan · Dev Mode hide fix · Weather tray °
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.2) · [Release notes](docs/release-notes-v2.3.2-rowan-github.md)
+
+### Fixed
+- **Developer Mode** sidebar no longer stuck visible after Hide / Turn off (`display:flex` overrode `hidden`)
+- Weather tray temperature (tooltip + menu); companion Weather **2.7.2** / registry **3.5.7**
+
+### Notes
+- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
+
 ## [2.3.1] — Rowan · 2026-07-18
 
 **Codename:** Rowan · Discord prefs · Dev Mode polish · PE2 tray · Weather tray °

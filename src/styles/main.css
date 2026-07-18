@@ -900,6 +900,17 @@ body.with-ambient-bg .app-main {
     color: var(--text-secondary);
 }
 
+/* display:flex above overrides the HTML [hidden] attribute — gate Developer via body class */
+.settings-sidebar-item[data-section="developer"] {
+    display: none !important;
+}
+body.developer-mode .settings-sidebar-item[data-section="developer"] {
+    display: flex !important;
+}
+body:not(.developer-mode) #section-developer.active {
+    display: none !important;
+}
+
 .settings-sidebar-item:hover {
     background: var(--bg-tertiary);
     color: var(--text-primary);

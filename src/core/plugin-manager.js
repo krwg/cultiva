@@ -795,7 +795,9 @@ function _wireSandboxHost(host, pluginId, manifest) {
 
   host.setHandler('onUiTrayTooltip', (data) => {
     const text = data && data.text != null ? String(data.text) : '';
-    window.electron?.setTrayTooltip?.(text);
+    if (window.electron?.setTrayTooltip) {
+      void window.electron.setTrayTooltip(text);
+    }
   });
 
   host.setHandler('onUiTrayRegister', (data) => {
@@ -803,13 +805,17 @@ function _wireSandboxHost(host, pluginId, manifest) {
       id: item && item.id != null ? String(item.id) : '',
       label: item && item.label != null ? String(item.label) : '',
       pluginId,
-      enabled: item && item.enabled !== false
-    }));
-    window.electron?.setTrayPluginItems?.(items);
+      enabled: !(item && item.enabled === false)
+    })).filter((item) => item.id && item.label);
+    if (window.electron?.setTrayPluginItems) {
+      void window.electron.setTrayPluginItems(items);
+    }
   });
 
   host.setHandler('onUiTrayClear', () => {
-    window.electron?.clearTrayPluginItems?.();
+    if (window.electron?.clearTrayPluginItems) {
+      void window.electron.clearTrayPluginItems();
+    }
   });
 }
 
