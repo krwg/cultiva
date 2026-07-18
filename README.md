@@ -11,7 +11,7 @@
 [![Stars](https://img.shields.io/github/stars/krwg/cultiva?style=flat-square&color=ffcc00)](https://github.com/krwg/cultiva/stargazers)
 [![Discord](https://img.shields.io/badge/discord-rich%20presence-5865F2?style=flat-square&logo=discord&logoColor=white)](#discord-rich-presence)
 
-[Landing](https://krwg.github.io/cultiva/) · [Wiki](https://github.com/krwg/cultiva/wiki) · [Plugins](https://krwg.github.io/cultiva-plugins/)
+[Landing](https://krwg.github.io/cultiva/) · [Wiki](https://github.com/krwg/cultiva/wiki) · [Plugins](https://krwg.github.io/cultiva-plugins/) · [**Progress**](CultivaProgress.md)
 
 </div>
 
@@ -20,6 +20,8 @@
 Cultiva is an **offline-first desktop habit tracker**. Each habit you plant grows from a seed into a legacy tree — with plugins, calendar, themes, and **zero cloud lock-in**.
 
 **No subscriptions. No accounts. No telemetry.** Just you and your garden.
+
+Prefer the long story over individual release notes? Read **[Cultiva Progress](CultivaProgress.md)** — Maple → Rowan, English & Russian in one file.
 
 ---
 
@@ -36,7 +38,7 @@ Cultiva is an **offline-first desktop habit tracker**. Each habit you plant grow
 | **Linux** | `Cultiva-2.0.2-linux-x86_64.AppImage` | Single file, no root |
 | **Linux** | `Cultiva-2.0.2-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [2.1.1 Rowan](docs/release-notes-v2.1.1-rowan-github.md) · [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md)
+**Release notes:** [2.1.1 Rowan](docs/release-notes-v2.1.1-rowan-github.md) · [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
 
 > **Upgrading:** your garden is preserved. Export a backup under **Settings → Data** before updating, just in case.
 
