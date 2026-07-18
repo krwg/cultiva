@@ -368,19 +368,18 @@ body.focus-mode .paused-section { display: none !important; }
     min-width: 0;
 }
 .garden-grid .habit-card {
-    height: 100%;
+    height: auto;
+    align-self: start;
+    min-height: 184px;
 }
 
-/* Beds participate in the parent grid so habit cards keep the original layout. */
-.garden-bed {
-    display: contents;
-}
+/* Bed chrome as full-width grid items; habit cards stay siblings in the garden grid. */
 .garden-bed-header {
     grid-column: 1 / -1;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 4px 0;
+    padding: 2px 4px 0;
     border-radius: var(--radius-md, 10px);
     transition: background 0.15s ease, box-shadow 0.15s ease;
 }
@@ -390,9 +389,6 @@ body.focus-mode .paused-section { display: none !important; }
     font-weight: 600;
     letter-spacing: 0.02em;
     color: var(--text-secondary);
-}
-.garden-bed-cards {
-    display: contents;
 }
 .garden-bed-dropzone {
     min-height: 72px;
@@ -406,7 +402,6 @@ body.focus-mode .paused-section { display: none !important; }
     color: var(--text-tertiary);
     padding: 12px;
 }
-.garden-bed--drop-target .garden-bed-header,
 .garden-bed-header.garden-bed--drop-target,
 .garden-bed-dropzone.garden-bed--drop-target {
     background: color-mix(in srgb, var(--accent-blue, #3b82f6) 10%, transparent);
@@ -428,13 +423,14 @@ body.focus-mode .paused-section { display: none !important; }
 .app-footer {
     background: var(--bg-primary);
     border-top: 1px solid var(--border-light);
-    padding: 10px 24px;
+    padding: 4px 16px;
     margin-top: auto;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
+    min-height: 22px;
+    max-height: 28px;
     box-sizing: border-box;
     width: 100%;
 }
@@ -458,12 +454,12 @@ body.focus-mode .paused-section { display: none !important; }
 .footer-links a { font-size: 13px; color: var(--text-secondary); }
 .footer-links a:hover { color: var(--text-primary); }
 .footer-version {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-tertiary);
     font-family: var(--font-mono);
     margin: 0;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
+    letter-spacing: 0.4px;
+    line-height: 1;
 }
 
 .calendar-grid {
@@ -2554,13 +2550,14 @@ body.with-ambient-bg > [id^="bg-"] {
     min-width: 0;
     max-width: 100%;
     align-self: start;
+    height: auto !important;
 }
 
 .garden-plugin-widget .habit-card,
 .habit-card.garden-plugin-card {
     width: 100%;
     min-height: 184px;
-    height: auto;
+    height: auto !important;
     align-self: start;
 }
 
@@ -2778,6 +2775,7 @@ body.with-ambient-bg > [id^="bg-"] {
 }
 
 .cv-dialog-message {
+    white-space: pre-line;
     font-size: 14px;
     line-height: 1.5;
     color: var(--text-secondary);
@@ -2985,8 +2983,9 @@ body.calendar-page .calendar-body {
 body.calendar-page .app-footer {
     flex-shrink: 0;
     margin-top: 0;
-    padding: 10px 24px;
-    min-height: 40px;
+    padding: 4px 16px;
+    min-height: 22px;
+    max-height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3170,4 +3169,101 @@ body.calendar-page .app-footer {
 
 body.ambient-paused [id^="bg-"] * {
     animation-play-state: paused !important;
+}
+
+/* Plugin store browse: search, tags, featured, details */
+.plugin-store-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.plugin-store-search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md, 10px);
+    background: var(--bg-secondary, var(--bg-tertiary));
+    color: var(--text-primary);
+    font-size: 13px;
+}
+.plugin-store-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.plugin-store-chip {
+    appearance: none;
+    border: 1px solid var(--border-light);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full, 999px);
+    cursor: pointer;
+    line-height: 1.2;
+}
+.plugin-store-chip.is-active {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border-color: transparent;
+}
+.plugin-store-heading {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 8px 0 6px;
+}
+.plugin-details-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.plugin-details-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.plugin-details-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: var(--radius-full, 999px);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+.plugin-details-perms {
+    margin: 0;
+    padding-left: 1.2em;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+.plugin-details-meta {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+.plugin-details-changelog {
+    margin: 0;
+    max-height: 220px;
+    overflow: auto;
+    padding: 10px 12px;
+    border-radius: var(--radius-md, 10px);
+    background: var(--bg-tertiary);
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.plugin-details-screenshots {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.plugin-details-screenshots img {
+    width: 100%;
+    border-radius: var(--radius-md, 10px);
+    border: 1px solid var(--border-light);
 }

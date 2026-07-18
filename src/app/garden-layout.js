@@ -101,6 +101,22 @@ export function bedTitle(bed, t) {
 
 let _dndBound = false;
 
+function clearDropTargets(gardenEl) {
+  gardenEl.querySelectorAll('.garden-bed--drop-target').forEach((el) => el.classList.remove('garden-bed--drop-target'));
+}
+
+function resolveBedIdFromEvent(target) {
+  const card = target.closest?.('.habit-card[data-id]');
+  if (card?.dataset?.bedId != null && card.dataset.bedId !== '') {
+    return fromDomBedId(card.dataset.bedId);
+  }
+  const header = target.closest?.('.garden-bed-header, .garden-bed-dropzone');
+  if (header?.dataset?.bedId != null) {
+    return fromDomBedId(header.dataset.bedId);
+  }
+  return null;
+}
+
 export function bindGardenDragDrop(gardenEl, { onReorder }) {
   if (!gardenEl || _dndBound) {
     return;
@@ -127,19 +143,24 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
   });
 
   gardenEl.addEventListener('dragover', (e) => {
-    const bed = e.target.closest('.garden-bed');
     const card = e.target.closest('.habit-card[data-id]');
-    if (!bed && !card) {
+    const zone = e.target.closest('.garden-bed-header, .garden-bed-dropzone');
+    if (!card && !zone) {
       return;
     }
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     clearDropTargets(gardenEl);
-    if (bed) {
-      bed.classList.add('garden-bed--drop-target');
-      bed.querySelector('.garden-bed-header')?.classList.add('garden-bed--drop-target');
-      bed.querySelector('.garden-bed-dropzone')?.classList.add('garden-bed--drop-target');
+    const bedId = resolveBedIdFromEvent(e.target);
+    if (bedId == null && !card) {
+      return;
     }
+    const domId = toDomBedId(bedId ?? fromDomBedId(card?.dataset?.bedId));
+    gardenEl.querySelectorAll(`[data-bed-id="${CSS.escape(domId)}"]`).forEach((el) => {
+      if (el.classList.contains('garden-bed-header') || el.classList.contains('garden-bed-dropzone')) {
+        el.classList.add('garden-bed--drop-target');
+      }
+    });
   });
 
   gardenEl.addEventListener('drop', (e) => {
@@ -148,9 +169,14 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
     if (!id) {
       return;
     }
-    const bedEl = e.target.closest('.garden-bed');
     const overCard = e.target.closest('.habit-card[data-id]');
-    const bedId = fromDomBedId(bedEl?.dataset.bedId);
+    let bedId = resolveBedIdFromEvent(e.target);
+    if (bedId == null && overCard) {
+      bedId = fromDomBedId(overCard.dataset.bedId);
+    }
+    if (bedId == null) {
+      bedId = UNGROUPED_BED_ID;
+    }
     let beforeId = null;
     if (overCard && overCard.dataset.id !== id && overCard.dataset.cardMode === 'active') {
       beforeId = overCard.dataset.id;
@@ -160,10 +186,6 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
   });
 }
 
-function clearDropTargets(gardenEl) {
-  gardenEl.querySelectorAll('.garden-bed--drop-target').forEach((el) => el.classList.remove('garden-bed--drop-target'));
-}
-
 export function makeHabitCardDraggable(card) {
   if (!card || card.dataset.cardMode !== 'active') {
     return;
@@ -171,43 +193,53 @@ export function makeHabitCardDraggable(card) {
   card.setAttribute('draggable', 'true');
 }
 
-export function renderBedShell(bed, title, { showHeader, emptyLabel }) {
-  const wrap = document.createElement('section');
-  wrap.className = 'garden-bed';
-  wrap.dataset.bedId = toDomBedId(bed.id);
-  wrap.setAttribute('role', 'group');
-  wrap.setAttribute('aria-label', title);
-  if (showHeader) {
-    const head = document.createElement('div');
+/** Flat-grid header (full-width grid item). */
+export function ensureBedHeader(gardenEl, bed, title, { afterEl }) {
+  const domId = toDomBedId(bed.id);
+  let head = gardenEl.querySelector(`:scope > .garden-bed-header[data-bed-id="${CSS.escape(domId)}"]`);
+  if (!head) {
+    head = document.createElement('div');
     head.className = 'garden-bed-header';
+    head.dataset.bedId = domId;
     head.innerHTML = `<h3 class="garden-bed-title">${escapeHtml(title)}</h3>`;
-    wrap.appendChild(head);
+    if (afterEl?.nextSibling) {
+      gardenEl.insertBefore(head, afterEl.nextSibling);
+    } else if (afterEl) {
+      afterEl.after(head);
+    } else {
+      gardenEl.appendChild(head);
+    }
+  } else {
+    const titleEl = head.querySelector('.garden-bed-title');
+    if (titleEl) {
+      titleEl.textContent = title;
+    }
   }
-  const cards = document.createElement('div');
-  cards.className = 'garden-bed-cards';
-  wrap.appendChild(cards);
-  if (emptyLabel) {
-    const zone = document.createElement('div');
-    zone.className = 'garden-bed-dropzone';
-    zone.textContent = emptyLabel;
-    cards.appendChild(zone);
-  }
-  return { wrap, cards };
+  return head;
 }
 
-export function syncBedDropzone(cardsEl, isEmpty, emptyLabel) {
-  if (!cardsEl) {
-    return;
-  }
-  let zone = cardsEl.querySelector(':scope > .garden-bed-dropzone');
-  if (isEmpty) {
-    if (!zone) {
-      zone = document.createElement('div');
-      zone.className = 'garden-bed-dropzone';
-      cardsEl.appendChild(zone);
-    }
+export function ensureBedDropzone(gardenEl, bed, emptyLabel, { afterEl }) {
+  const domId = toDomBedId(bed.id);
+  let zone = gardenEl.querySelector(`:scope > .garden-bed-dropzone[data-bed-id="${CSS.escape(domId)}"]`);
+  if (!zone) {
+    zone = document.createElement('div');
+    zone.className = 'garden-bed-dropzone';
+    zone.dataset.bedId = domId;
     zone.textContent = emptyLabel || '';
-  } else if (zone) {
-    zone.remove();
+    if (afterEl?.nextSibling) {
+      gardenEl.insertBefore(zone, afterEl.nextSibling);
+    } else if (afterEl) {
+      afterEl.after(zone);
+    } else {
+      gardenEl.appendChild(zone);
+    }
+  } else {
+    zone.textContent = emptyLabel || '';
   }
+  return zone;
+}
+
+export function removeBedChrome(gardenEl, domId) {
+  gardenEl.querySelector(`:scope > .garden-bed-header[data-bed-id="${CSS.escape(domId)}"]`)?.remove();
+  gardenEl.querySelector(`:scope > .garden-bed-dropzone[data-bed-id="${CSS.escape(domId)}"]`)?.remove();
 }

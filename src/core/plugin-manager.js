@@ -398,6 +398,10 @@ function _mountPluginMainSheet(pluginId, html) {
       return;
     }
     let payload = { ..._readDatasetGeoPayload(t), ...(_readCultivaPayloadFromEl(t) || {}) };
+    if (t.type === 'checkbox') {
+      payload.checked = Boolean(t.checked);
+      payload.value = t.checked;
+    }
     if (t.dataset.tz) {
       payload.tz = t.dataset.tz;
     }

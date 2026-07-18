@@ -19,8 +19,9 @@ import {
   bedTitle,
   bindGardenDragDrop,
   makeHabitCardDraggable,
-  renderBedShell,
-  syncBedDropzone,
+  ensureBedHeader,
+  ensureBedDropzone,
+  removeBedChrome,
   getGardenBeds
 } from './garden-layout.js';
 
@@ -219,81 +220,99 @@ function syncActiveGardenWithBeds(gardenEl, active, t) {
   const bedsMeta = getGardenBeds();
   const order = bedRenderOrder(active);
   const showHeaders = bedsMeta.length > 0;
+  const dropHint = t.bedDropHint || 'Drop habits here';
 
-  const existingBeds = [...gardenEl.querySelectorAll(':scope > .garden-bed')];
-  const nextBedIds = new Set(order.map((b) => toDomBedId(b.id)));
-  for (const el of existingBeds) {
-    if (!nextBedIds.has(el.dataset.bedId || toDomBedId(UNGROUPED_BED_ID))) {
-      el.remove();
-    }
-  }
-
-  // Remove orphan habit cards sitting directly under garden (legacy layout)
-  [...gardenEl.querySelectorAll(':scope > .habit-card')].forEach((el) => el.remove());
+  // Remove legacy nest wrappers and empty state
+  gardenEl.querySelectorAll(':scope > .garden-bed').forEach((el) => el.remove());
   gardenEl.querySelector('.empty-state')?.remove();
 
-  const renderedDomIds = [];
+  const keepHabitIds = new Set(active.map((h) => h.id));
+  [...gardenEl.querySelectorAll(':scope > .habit-card')].forEach((el) => {
+    if (!keepHabitIds.has(el.dataset.id)) {
+      el.remove();
+    }
+  });
+
+  const nextDomIds = new Set();
+  const plugins = [...gardenEl.querySelectorAll(':scope > .garden-plugin-widget')];
+  let anchor = plugins[plugins.length - 1] || null;
+
   order.forEach((bed) => {
     const bedId = bed.id || UNGROUPED_BED_ID;
     const domId = toDomBedId(bedId);
     const list = habitsInBed(active, bedId);
     if (list.length === 0 && bedId !== UNGROUPED_BED_ID && !bedsMeta.some((b) => b.id === bedId)) {
+      removeBedChrome(gardenEl, domId);
       return;
     }
     if (list.length === 0 && bedId === UNGROUPED_BED_ID && bedsMeta.length > 0 && active.every((h) => h.bedId)) {
+      removeBedChrome(gardenEl, domId);
       return;
     }
-    let wrap = gardenEl.querySelector(`:scope > .garden-bed[data-bed-id="${CSS.escape(domId)}"]`);
-    let cardsEl = wrap?.querySelector('.garden-bed-cards');
-    if (!wrap || !cardsEl) {
-      const shell = renderBedShell(bed, bedTitle(bed, t), { showHeader: showHeaders });
-      wrap = shell.wrap;
-      cardsEl = shell.cards;
-      const plugins = [...gardenEl.querySelectorAll(':scope > .garden-plugin-widget')];
-      const lastPlugin = plugins[plugins.length - 1];
-      if (lastPlugin?.nextSibling) {
-        gardenEl.insertBefore(wrap, lastPlugin.nextSibling);
-      } else if (lastPlugin) {
-        lastPlugin.after(wrap);
-      } else {
-        gardenEl.appendChild(wrap);
-      }
+    nextDomIds.add(domId);
+
+    if (showHeaders) {
+      const head = ensureBedHeader(gardenEl, bed, bedTitle(bed, t), { afterEl: anchor });
+      anchor = head;
     } else {
-      const titleEl = wrap.querySelector('.garden-bed-title');
-      if (showHeaders) {
-        if (!titleEl) {
-          const head = document.createElement('div');
-          head.className = 'garden-bed-header';
-          head.innerHTML = `<h3 class="garden-bed-title">${escapeHtml(bedTitle(bed, t))}</h3>`;
-          wrap.insertBefore(head, cardsEl);
-        } else {
-          titleEl.textContent = bedTitle(bed, t);
-        }
-      } else {
-        wrap.querySelector('.garden-bed-header')?.remove();
-      }
+      removeBedChrome(gardenEl, domId);
     }
-    renderedDomIds.push(domId);
-    syncHabitCards(cardsEl, list, false, 'active');
-    syncBedDropzone(
-      cardsEl,
-      list.length === 0 && showHeaders,
-      t.bedDropHint || 'Drop habits here'
-    );
+
+    // Sync cards as direct children of the garden grid (preserves column layout)
+    list.forEach((habit, index) => {
+      const key = habitRenderKey(habit, false, 'active');
+      let card = gardenEl.querySelector(`:scope > .habit-card[data-id="${CSS.escape(habit.id)}"]`);
+      if (!card) {
+        card = createHabitCard(habit, false, 'active');
+        card.dataset.renderKey = key;
+        card.dataset.bedId = domId;
+        if (anchor?.nextSibling) {
+          gardenEl.insertBefore(card, anchor.nextSibling);
+        } else if (anchor) {
+          anchor.after(card);
+        } else {
+          gardenEl.appendChild(card);
+        }
+      } else if (card.dataset.renderKey !== key) {
+        const next = createHabitCard(habit, false, 'active');
+        next.dataset.renderKey = key;
+        next.dataset.bedId = domId;
+        card.replaceWith(next);
+        card = next;
+      } else {
+        card.dataset.bedId = domId;
+      }
+      makeHabitCardDraggable(card);
+      const c = requireCtx();
+      const isFocused = habit.id === c.focusedHabitId;
+      card.classList.toggle('habit-card--focus', isFocused);
+      card.setAttribute('tabindex', isFocused ? '0' : '-1');
+      card.setAttribute('aria-label', habit.treeName || habit.name);
+
+      // Place after previous card / header in bed order
+      const prev = index === 0
+        ? (showHeaders
+          ? gardenEl.querySelector(`:scope > .garden-bed-header[data-bed-id="${CSS.escape(domId)}"]`)
+          : anchor)
+        : gardenEl.querySelector(`:scope > .habit-card[data-id="${CSS.escape(list[index - 1].id)}"]`);
+      if (prev && card.previousElementSibling !== prev) {
+        prev.after(card);
+      }
+      anchor = card;
+    });
+
+    if (list.length === 0 && showHeaders) {
+      const zone = ensureBedDropzone(gardenEl, bed, dropHint, { afterEl: anchor });
+      anchor = zone;
+    } else {
+      gardenEl.querySelector(`:scope > .garden-bed-dropzone[data-bed-id="${CSS.escape(domId)}"]`)?.remove();
+    }
   });
 
-  // Order bed sections to match bedRenderOrder
-  const pluginCount = gardenEl.querySelectorAll(':scope > .garden-plugin-widget').length;
-  renderedDomIds.forEach((domId, i) => {
-    const wrap = gardenEl.querySelector(`:scope > .garden-bed[data-bed-id="${CSS.escape(domId)}"]`);
-    if (!wrap) {
-      return;
-    }
-    const targetIndex = pluginCount + i;
-    const current = [...gardenEl.children].indexOf(wrap);
-    if (current !== targetIndex) {
-      const ref = gardenEl.children[targetIndex] || null;
-      gardenEl.insertBefore(wrap, ref);
+  // Drop chrome for beds no longer rendered
+  [...gardenEl.querySelectorAll(':scope > .garden-bed-header, :scope > .garden-bed-dropzone')].forEach((el) => {
+    if (!nextDomIds.has(el.dataset.bedId)) {
+      el.remove();
     }
   });
 }

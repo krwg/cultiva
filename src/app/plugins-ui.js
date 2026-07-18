@@ -204,6 +204,288 @@ function localizedPluginMeta(pluginId, fallbackName, fallbackDesc, registryPlugi
   };
 }
 
+let browseTagFilter = '';
+let browseSearchQuery = '';
+
+function permissionLabel(perm, t) {
+  const key = String(perm || '');
+  const map = {
+    network: t.pluginPermNetwork || 'Internet access',
+    storage: t.pluginPermStorage || 'Local data storage',
+    ui: t.pluginPermUi || 'UI widgets',
+    'habits.write': t.pluginPermHabitsWrite || 'Complete habits',
+    'habits.read': settings.lang === 'ru' ? 'Чтение привычек' : 'Read habits',
+    'settings.read': settings.lang === 'ru' ? 'Чтение настроек' : 'Read settings'
+  };
+  return map[key] || key;
+}
+
+function formatPermissionsList(permissions, t) {
+  const perms = Array.isArray(permissions) ? permissions : [];
+  if (!perms.length) {
+    return '';
+  }
+  return perms.map((p) => `• ${permissionLabel(p, t)}`).join('\n');
+}
+
+function isFeaturedPlugin(p) {
+  if (p?.featured === true) {
+    return true;
+  }
+  const tags = Array.isArray(p?.tags) ? p.tags : [];
+  return tags.some((tag) => String(tag).toLowerCase() === 'featured');
+}
+
+function pluginSortKey(p) {
+  const updated = p?.lastUpdated ? Date.parse(p.lastUpdated) : 0;
+  return Number.isFinite(updated) ? updated : 0;
+}
+
+function sortBrowsePlugins(plugins) {
+  return [...plugins].sort((a, b) => {
+    const byDate = pluginSortKey(b) - pluginSortKey(a);
+    if (byDate !== 0) {
+      return byDate;
+    }
+    const nameA = String(a?.name || a?.id || '').toLowerCase();
+    const nameB = String(b?.name || b?.id || '').toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+}
+
+function collectRegistryTags(plugins) {
+  const tags = new Set();
+  for (const p of plugins) {
+    for (const tag of Array.isArray(p.tags) ? p.tags : []) {
+      const cleaned = String(tag || '').trim();
+      if (cleaned) {
+        tags.add(cleaned);
+      }
+    }
+  }
+  return [...tags].sort((a, b) => a.localeCompare(b));
+}
+
+function matchesBrowseFilters(p, meta) {
+  if (browseTagFilter) {
+    const tags = Array.isArray(p.tags) ? p.tags.map((tag) => String(tag).toLowerCase()) : [];
+    if (!tags.includes(browseTagFilter.toLowerCase())) {
+      return false;
+    }
+  }
+  const q = browseSearchQuery.trim().toLowerCase();
+  if (!q) {
+    return true;
+  }
+  const hay = [
+    p.id,
+    meta.name,
+    meta.description,
+    meta.tagline,
+    ...(Array.isArray(p.tags) ? p.tags : [])
+  ].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+function resolvePluginAssetUrl(baseUrl, rel) {
+  if (!rel) {
+    return '';
+  }
+  const value = String(rel);
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+  const base = String(baseUrl || '').replace(/\/$/, '');
+  if (!base) {
+    return value;
+  }
+  return `${base}/${value.replace(/^\//, '')}`;
+}
+
+function formatLastUpdatedLabel(iso, t) {
+  if (!iso) {
+    return '';
+  }
+  const prefix = t.pluginLastUpdated || 'Updated';
+  const day = String(iso).slice(0, 10);
+  return `${prefix} ${day}`;
+}
+
+async function confirmPluginPermissions(row, t) {
+  const list = formatPermissionsList(row?.permissions, t);
+  const message = list
+    || (settings.lang === 'ru' ? 'Плагин не запрашивает особых разрешений.' : 'This plugin does not request special permissions.');
+  return showConfirmDialog(message, {
+    title: t.pluginInstallPermissionsTitle || 'Allow permissions?',
+    confirmText: t.install || 'Install',
+    cancelText: t.cancel || 'Cancel'
+  });
+}
+
+async function openPluginDetailsModal(p) {
+  const t = tStrings();
+  const meta = resolvePluginCatalogMeta(p, settings.lang);
+  const wrap = document.createElement('div');
+  wrap.className = 'plugin-settings-modal plugin-details-modal';
+  wrap.setAttribute('role', 'dialog');
+  wrap.setAttribute('aria-modal', 'true');
+
+  const sheet = document.createElement('div');
+  sheet.className = 'plugin-settings-sheet';
+
+  const header = document.createElement('div');
+  header.className = 'modal-header';
+  header.innerHTML = `<h2>${escapeHtml(meta.name || p.id)}</h2><button type="button" class="modal-close" aria-label="${escapeHtml(t.cancel || 'Close')}">&times;</button>`;
+
+  const body = document.createElement('div');
+  body.className = 'modal-body plugin-details-body';
+
+  const desc = document.createElement('p');
+  desc.className = 'plugin-description';
+  desc.textContent = meta.description || '';
+  body.appendChild(desc);
+
+  const tags = Array.isArray(p.tags) ? p.tags : [];
+  if (tags.length) {
+    const tagsWrap = document.createElement('div');
+    tagsWrap.className = 'plugin-details-tags';
+    for (const tag of tags) {
+      const chip = document.createElement('span');
+      chip.className = 'plugin-details-tag';
+      chip.textContent = String(tag);
+      tagsWrap.appendChild(chip);
+    }
+    body.appendChild(tagsWrap);
+  }
+
+  const perms = Array.isArray(p.permissions) ? p.permissions : [];
+  if (perms.length) {
+    const list = document.createElement('ul');
+    list.className = 'plugin-details-perms';
+    for (const perm of perms) {
+      const li = document.createElement('li');
+      li.textContent = permissionLabel(perm, t);
+      list.appendChild(li);
+    }
+    body.appendChild(list);
+  }
+
+  const updated = formatLastUpdatedLabel(p.lastUpdated, t);
+  if (updated) {
+    const metaEl = document.createElement('div');
+    metaEl.className = 'plugin-details-meta';
+    metaEl.textContent = updated;
+    body.appendChild(metaEl);
+  }
+
+  const changelogRel = p.changelog || 'CHANGELOG.md';
+  const changelogUrl = resolvePluginAssetUrl(p.baseUrl, changelogRel);
+  if (changelogUrl) {
+    try {
+      const res = await fetch(changelogUrl, { cache: 'no-store' });
+      if (res.ok) {
+        const text = await res.text();
+        const lines = text.split(/\r?\n/).slice(0, 40).join('\n');
+        if (lines.trim()) {
+          const pre = document.createElement('pre');
+          pre.className = 'plugin-details-changelog';
+          const code = document.createElement('code');
+          code.textContent = lines;
+          pre.appendChild(code);
+          body.appendChild(pre);
+        }
+      }
+    } catch {
+      void 0;
+    }
+  }
+
+  const shots = Array.isArray(p.screenshots) ? p.screenshots : [];
+  if (shots.length) {
+    const shotsWrap = document.createElement('div');
+    shotsWrap.className = 'plugin-details-screenshots';
+    for (const shot of shots) {
+      const src = resolvePluginAssetUrl(p.baseUrl, shot);
+      if (!src) {
+        continue;
+      }
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = meta.name || p.id;
+      img.loading = 'lazy';
+      img.addEventListener('error', () => {
+        img.remove();
+        if (!shotsWrap.childElementCount) {
+          shotsWrap.remove();
+        }
+      });
+      shotsWrap.appendChild(img);
+    }
+    if (shotsWrap.childElementCount) {
+      body.appendChild(shotsWrap);
+    }
+  }
+
+  const footer = document.createElement('div');
+  footer.className = 'plugin-settings-actions modal-footer';
+  const btnClose = document.createElement('button');
+  btnClose.type = 'button';
+  btnClose.className = 'btn-secondary';
+  btnClose.textContent = t.cancel || 'Close';
+  footer.appendChild(btnClose);
+
+  sheet.appendChild(header);
+  sheet.appendChild(body);
+  sheet.appendChild(footer);
+  wrap.appendChild(sheet);
+  document.body.appendChild(wrap);
+  installFocusTrap(wrap);
+
+  const close = () => {
+    releaseFocusTrap();
+    wrap.remove();
+  };
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap) {
+      close();
+    }
+  });
+  header.querySelector('.modal-close')?.addEventListener('click', close);
+  btnClose.addEventListener('click', close);
+}
+
+function createBrowsePluginCard(p, t, plugins) {
+  const card = document.createElement('div');
+  card.className = 'plugin-card';
+
+  const meta = resolvePluginCatalogMeta(p, settings.lang);
+  const stub = { id: p.id, name: meta.name, description: meta.description, version: p.version, loaded: true, enabled: true };
+  const main = createPluginCardMain(stub, null, t, {
+    showSettings: false,
+    registryPlugins: plugins,
+    browseMeta: {
+      minAppVersion: p.minAppVersion,
+      author: p.author
+    }
+  });
+
+  const actions = main.querySelector('.plugin-actions');
+  actions.replaceChildren();
+
+  const btnDetails = document.createElement('button');
+  btnDetails.type = 'button';
+  btnDetails.className = 'plugin-btn plugin-btn-settings';
+  btnDetails.textContent = t.pluginDetails || 'Details';
+  btnDetails.addEventListener('click', () => {
+    void openPluginDetailsModal(p);
+  });
+  actions.appendChild(btnDetails);
+  appendBrowseInstallButton(actions, p, t);
+
+  card.appendChild(main);
+  return card;
+}
+
 function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVersion = null, registryPlugins = [], browseMeta = null } = {}) {
   const meta = localizedPluginMeta(p.id, p.name, p.description, registryPlugins);
   const main = document.createElement('div');
@@ -252,12 +534,12 @@ function createPluginCardMain(p, pluginData, t, { showSettings = false, updateVe
   versionRow.className = 'plugin-meta';
   const ver = document.createElement('span');
   ver.className = 'plugin-version';
-  ver.textContent = p.version ? `v${p.version}` : '';
+  ver.textContent = p.version ? `[${p.version}]` : '';
   versionRow.appendChild(ver);
   if (updateVersion) {
     const upd = document.createElement('span');
     upd.className = 'plugin-update-badge';
-    upd.textContent = `${t.pluginUpdateAvailable || 'Update available'} · v${updateVersion}`;
+    upd.textContent = `${t.pluginUpdateAvailable || 'Update available'} · [${updateVersion}]`;
     versionRow.appendChild(upd);
   }
   if (browseMeta?.minAppVersion) {
@@ -437,6 +719,96 @@ async function loadInstalledPlugins(registryPlugins = []) {
   }
 }
 
+function renderBrowseStore(container, plugins, t) {
+  container.replaceChildren();
+
+  if (plugins.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'plugins-empty';
+    empty.dataset.i18n = 'noPluginsAvailable';
+    empty.textContent = t.noPluginsAvailable;
+    container.appendChild(empty);
+    return;
+  }
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'plugin-store-toolbar';
+
+  const search = document.createElement('input');
+  search.type = 'search';
+  search.className = 'plugin-store-search';
+  search.placeholder = t.pluginStoreSearchPlaceholder || 'Search plugins…';
+  search.value = browseSearchQuery;
+  search.addEventListener('input', () => {
+    browseSearchQuery = search.value || '';
+    const active = document.activeElement === search;
+    const start = search.selectionStart;
+    const end = search.selectionEnd;
+    renderBrowseStore(container, plugins, t);
+    const next = container.querySelector('.plugin-store-search');
+    if (next && active) {
+      next.focus();
+      try {
+        next.setSelectionRange(start, end);
+      } catch {
+        void 0;
+      }
+    }
+  });
+  toolbar.appendChild(search);
+
+  const chips = document.createElement('div');
+  chips.className = 'plugin-store-chips';
+  const allTags = collectRegistryTags(plugins);
+  const chipValues = ['', ...allTags];
+  for (const tag of chipValues) {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'plugin-store-chip';
+    if ((tag || '') === (browseTagFilter || '')) {
+      chip.classList.add('is-active');
+    }
+    chip.textContent = tag || (t.pluginFilterAll || 'All');
+    chip.addEventListener('click', () => {
+      browseTagFilter = tag || '';
+      renderBrowseStore(container, plugins, t);
+    });
+    chips.appendChild(chip);
+  }
+  toolbar.appendChild(chips);
+  container.appendChild(toolbar);
+
+  const filtered = plugins.filter((p) => {
+    const meta = resolvePluginCatalogMeta(p, settings.lang);
+    return matchesBrowseFilters(p, meta);
+  });
+
+  if (!filtered.length) {
+    const empty = document.createElement('div');
+    empty.className = 'plugins-empty';
+    empty.textContent = t.noPluginsAvailable;
+    container.appendChild(empty);
+    return;
+  }
+
+  const featured = sortBrowsePlugins(filtered.filter((p) => isFeaturedPlugin(p)));
+  const rest = sortBrowsePlugins(filtered.filter((p) => !isFeaturedPlugin(p)));
+
+  if (featured.length) {
+    const heading = document.createElement('div');
+    heading.className = 'plugin-store-heading';
+    heading.textContent = t.pluginFeatured || 'Featured';
+    container.appendChild(heading);
+    for (const p of featured) {
+      container.appendChild(createBrowsePluginCard(p, t, plugins));
+    }
+  }
+
+  for (const p of rest) {
+    container.appendChild(createBrowsePluginCard(p, t, plugins));
+  }
+}
+
 async function loadAvailablePlugins(registryPlugins = []) {
   const container = document.getElementById('available-plugins-list');
   if (!container) {
@@ -453,40 +825,7 @@ async function loadAvailablePlugins(registryPlugins = []) {
 
   try {
     const plugins = await pluginManager.getAvailablePlugins();
-
-    container.replaceChildren();
-
-    if (plugins.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'plugins-empty';
-      empty.dataset.i18n = 'noPluginsAvailable';
-      empty.textContent = t.noPluginsAvailable;
-      container.appendChild(empty);
-      return;
-    }
-
-    for (const p of plugins) {
-      const card = document.createElement('div');
-      card.className = 'plugin-card';
-
-      const meta = resolvePluginCatalogMeta(p, settings.lang);
-      const stub = { id: p.id, name: meta.name, description: meta.description, version: p.version, loaded: true, enabled: true };
-      const main = createPluginCardMain(stub, null, t, {
-        showSettings: false,
-        registryPlugins: plugins,
-        browseMeta: {
-          minAppVersion: p.minAppVersion,
-          author: p.author
-        }
-      });
-
-      const actions = main.querySelector('.plugin-actions');
-      actions.replaceChildren();
-      appendBrowseInstallButton(actions, p, t);
-
-      card.appendChild(main);
-      container.appendChild(card);
-    }
+    renderBrowseStore(container, plugins, t);
   } catch (e) {
     console.error('[Plugins UI] loadAvailablePlugins:', e);
     container.replaceChildren();
@@ -514,6 +853,12 @@ window.installPlugin = async (pluginId) => {
   const t = tStrings();
   try {
     const row = (await pluginManager.getAvailablePlugins()).find((p) => p.id === pluginId);
+    if (row) {
+      const allowed = await confirmPluginPermissions(row, t);
+      if (!allowed) {
+        return;
+      }
+    }
     if (row && pluginShowsGetButton(row) && row.downloaded && !row.installed) {
       showNotification('', t.pluginActivateProgress || 'Installing plugin...');
       await pluginManager.activatePlugin(pluginId);
