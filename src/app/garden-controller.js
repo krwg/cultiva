@@ -393,7 +393,7 @@ function clearGardenHabitNodes(gardenEl) {
     return;
   }
   Array.from(gardenEl.children).forEach((child) => {
-    if (!child.classList.contains('garden-plugin-widget')) {
+    if (!child.classList.contains('garden-plugin-widget') && !child.classList.contains('garden-plugins-row')) {
       child.remove();
     }
   });
