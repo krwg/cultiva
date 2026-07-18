@@ -522,6 +522,8 @@ const CACHE_TEMP_KEYS = [
 export async function clearAppCache() {
   const overlay = document.getElementById('cache-clear-overlay');
   if (overlay) {
+    overlay.hidden = false;
+    overlay.style.display = 'flex';
     overlay.classList.add('active');
     overlay.setAttribute('aria-hidden', 'false');
   }
@@ -542,6 +544,8 @@ export async function clearAppCache() {
   await refreshCacheSizeDisplay();
   if (overlay) {
     overlay.classList.remove('active');
+    overlay.hidden = true;
+    overlay.style.display = 'none';
     overlay.setAttribute('aria-hidden', 'true');
   }
   const t = tStrings();

@@ -227,7 +227,7 @@ function syncActiveGardenWithBeds(gardenEl, active, t) {
 
   const keepHabitIds = new Set(active.map((h) => h.id));
   [...gardenEl.querySelectorAll('.habit-card')].forEach((el) => {
-    if (el.closest('.garden-plugin-widget')) {
+    if (el.closest('.garden-plugin-widget') || el.closest('.garden-plugins-row')) {
       return;
     }
     if (!keepHabitIds.has(el.dataset.id)) {
@@ -235,8 +235,11 @@ function syncActiveGardenWithBeds(gardenEl, active, t) {
     }
   });
 
-  const plugins = [...gardenEl.querySelectorAll(':scope > .garden-plugin-widget')];
-  let insertAfter = plugins[plugins.length - 1] || null;
+  const pluginsRow = gardenEl.querySelector(':scope > .garden-plugins-row');
+  const plugins = pluginsRow
+    ? [...pluginsRow.querySelectorAll(':scope > .garden-plugin-widget')]
+    : [...gardenEl.querySelectorAll(':scope > .garden-plugin-widget')];
+  let insertAfter = pluginsRow || plugins[plugins.length - 1] || null;
   const nextDomIds = new Set();
 
   order.forEach((bed) => {
@@ -343,7 +346,7 @@ function syncActiveGardenWithBeds(gardenEl, active, t) {
     }
   });
   [...gardenEl.querySelectorAll(':scope > .garden-bed-header, :scope > .garden-bed-dropzone, :scope > .habit-card')].forEach((el) => {
-    if (!el.closest('.garden-plugin-widget')) {
+    if (!el.closest('.garden-plugin-widget') && !el.closest('.garden-plugins-row')) {
       el.remove();
     }
   });

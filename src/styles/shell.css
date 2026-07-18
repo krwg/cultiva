@@ -2567,6 +2567,22 @@ body.with-ambient-bg > [id^="bg-"] {
     height: auto !important;
 }
 
+.garden-plugins-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+.garden-plugins-row > .garden-plugin-widget {
+    width: 100%;
+    align-self: start;
+}
+
 .garden-plugin-widget .habit-card,
 .habit-card.garden-plugin-card {
     width: 100%;
@@ -3505,16 +3521,18 @@ body.header-search-hidden .habit-search-wrap,
     position: fixed;
     inset: 0;
     z-index: 10050;
-    display: none;
+    display: none !important;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background: color-mix(in srgb, var(--bg-secondary) 72%, transparent);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    pointer-events: none;
 }
 .cache-clear-overlay.active {
-    display: flex;
+    display: flex !important;
+    pointer-events: auto;
 }
 .cache-clear-cloud {
     position: relative;
@@ -3522,18 +3540,25 @@ body.header-search-hidden .habit-search-wrap,
     height: 80px;
     margin-bottom: 18px;
 }
-.cache-clear-cloud .cloud-body,
-.cache-clear-cloud .cloud-data {
+.cache-clear-orb {
     position: absolute;
-    inset: 12px;
-    border-radius: 40% 40% 36% 36%;
-    background: color-mix(in srgb, var(--accent-blue, #0071e3) 18%, var(--bg-primary));
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent-blue, #0071e3) 42%, transparent);
     animation: cacheSpotPulse 1.1s ease-in-out infinite;
 }
-.cache-clear-cloud .cloud-data {
-    inset: 22px 18px 18px 28px;
+.cache-clear-orb--a {
+    inset: 14px;
+}
+.cache-clear-orb--b {
+    inset: 26px 20px 18px 30px;
     opacity: 0.55;
     animation-delay: 0.2s;
+}
+/* Never reuse loading-screen .cloud-body inside the cache overlay */
+.cache-clear-overlay .cloud-body,
+.cache-clear-overlay .cloud-data {
+    display: none !important;
+    animation: none !important;
 }
 @keyframes cacheSpotPulse {
     0%, 100% { transform: scale(0.92); opacity: 0.55; }

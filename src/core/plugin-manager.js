@@ -333,15 +333,28 @@ function _readDatasetGeoPayload(t) {
   return p;
 }
 
+function _ensureGardenPluginsRow(container) {
+  let row = container.querySelector(':scope > .garden-plugins-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'garden-plugins-row';
+    container.prepend(row);
+  } else if (row !== container.firstElementChild) {
+    container.prepend(row);
+  }
+  return row;
+}
+
 function _insertGardenWidget(container, node, position) {
   if (!container || !node) {
     return;
   }
+  const row = _ensureGardenPluginsRow(container);
   if (position === 'top') {
-    container.prepend(node);
+    row.prepend(node);
     return;
   }
-  container.appendChild(node);
+  row.appendChild(node);
 }
 
 function _patchPluginMainSheet(pluginId, selector, html) {
