@@ -10,7 +10,7 @@ Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://gith
 
 - Visual habit cards with **five growth stages**
 - **Focus mode** for fewer distractions
-- Habit **search** (`Ctrl/Cmd+F`)
+- Habit **search** (`Ctrl/Cmd+F`) powered by **glyph-s 2.7** (can be hidden from the header in Settings → Search)
 - **Context menu** on habit cards
 - **Keyboard shortcuts** — press **F1** for contextual help
 - Plugin widgets sized to match habit cards
@@ -73,5 +73,5 @@ Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://gith
 
 ## Optional integrations
 
-- **Discord Rich Presence** — Settings → Discord
+- **Discord Rich Presence** — activity-based garden stats, stable elapsed time, Focus session hook, Get Cultiva / GitHub buttons (Settings → Discord)
 - No other third-party analytics or crash reporters

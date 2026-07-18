@@ -8,7 +8,7 @@ const DISCORD_STRINGS = {
     calendar: { details: 'Planning habits', state: 'Browsing calendar' },
     stats: { details: 'Reviewing progress', state: 'Checking statistics' },
     settings: { details: 'Customizing', state: 'Adjusting settings' },
-    trophy: { details: 'Trophy Garden', state: 'Admiring legacy trees' },
+    trophy: { details: 'Trophy Garden', state: 'Admiring trophy trees' },
     focus: { details: 'Focus Mode', state: 'Deep work session' },
     pages: { details: 'Exploring Cultiva', state: 'Reading documentation' }
   },
@@ -17,17 +17,32 @@ const DISCORD_STRINGS = {
     calendar: { details: 'Планирует', state: 'Смотрит календарь' },
     stats: { details: 'Анализирует', state: 'Проверяет статистику' },
     settings: { details: 'Настраивает', state: 'Меняет параметры' },
-    trophy: { details: 'Сад трофеев', state: 'Любуется деревьями' },
+    trophy: { details: 'Сад трофеев', state: 'Любуется деревьями-трофеями' },
     focus: { details: 'Режим фокуса', state: 'Глубокая работа' },
     pages: { details: 'Изучает Cultiva', state: 'Читает документацию' }
   }
 };
+
+const PRESENCE_BUTTONS = [
+  { label: 'Get Cultiva', url: 'https://krwg.github.io/cultiva/' },
+  { label: 'GitHub', url: 'https://github.com/krwg/cultiva' }
+];
 
 let rpc = null;
 let rpcReady = false;
 let discordEnabled = true;
 let currentLocale = 'en';
 let currentPage = 'garden';
+let sessionStartMs = null;
+let lastActivityPayload = null;
+let refreshTimer = null;
+
+function ensureSessionStart() {
+  if (sessionStartMs == null) {
+    sessionStartMs = Date.now();
+  }
+  return sessionStartMs;
+}
 
 function initDiscordRPC() {
   if (rpc) {
@@ -39,13 +54,17 @@ function initDiscordRPC() {
   rpc.on('ready', () => {
     console.log('[Discord] Rich Presence connected');
     rpcReady = true;
+    ensureSessionStart();
     if (discordEnabled) {
-      updateDiscordActivity();
+      updateDiscordActivity(lastActivityPayload || { page: currentPage });
     }
 
-    setInterval(() => {
+    if (refreshTimer) {
+      clearInterval(refreshTimer);
+    }
+    refreshTimer = setInterval(() => {
       if (rpcReady && discordEnabled) {
-        updateDiscordActivity();
+        updateDiscordActivity(lastActivityPayload || { page: currentPage, locale: currentLocale });
       }
     }, 15000);
   });
@@ -67,20 +86,45 @@ function updateDiscordActivity(activityData = {}) {
   }
 
   const locale = activityData.locale || currentLocale;
+  currentLocale = locale;
   const strings = DISCORD_STRINGS[locale] || DISCORD_STRINGS.en;
   const page = activityData.page || currentPage;
+  currentPage = page;
   const pageStrings = strings[page] || strings.garden;
+
+  const startMs = activityData.startTimestamp
+    ? (activityData.startTimestamp instanceof Date
+      ? activityData.startTimestamp.getTime()
+      : Number(activityData.startTimestamp))
+    : ensureSessionStart();
 
   const activity = {
     details: activityData.details || pageStrings.details,
     state: activityData.state || pageStrings.state,
-    startTimestamp: activityData.startTimestamp || new Date(),
+    startTimestamp: startMs,
     largeImageKey: activityData.largeImageKey || 'garden',
     largeImageText: activityData.largeImageText || 'Cultiva',
-    smallImageKey: activityData.smallImageKey,
-    smallImageText: activityData.smallImageText,
-    partySize: activityData.partySize,
-    partyMax: activityData.partyMax
+    buttons: PRESENCE_BUTTONS
+  };
+
+  if (activityData.smallImageKey) {
+    activity.smallImageKey = activityData.smallImageKey;
+  }
+  if (activityData.smallImageText) {
+    activity.smallImageText = activityData.smallImageText;
+  }
+
+  lastActivityPayload = {
+    ...activityData,
+    page,
+    locale,
+    details: activity.details,
+    state: activity.state,
+    largeImageKey: activity.largeImageKey,
+    largeImageText: activity.largeImageText,
+    smallImageKey: activity.smallImageKey,
+    smallImageText: activity.smallImageText,
+    startTimestamp: startMs
   };
 
   rpc.setActivity(activity).catch((err) => {
@@ -99,6 +143,10 @@ function clearDiscordActivity() {
 }
 
 function shutdownDiscordRPC() {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
   if (rpc) {
     if (rpcReady) {
       clearDiscordActivity();
@@ -136,12 +184,19 @@ function detectPageFromUrl(url) {
 function onMainWindowNavigation(url) {
   currentPage = detectPageFromUrl(url);
   if (discordEnabled) {
-    updateDiscordActivity({ page: currentPage });
+    const next = {
+      ...(lastActivityPayload || {}),
+      page: currentPage
+    };
+    delete next.details;
+    delete next.state;
+    updateDiscordActivity(next);
   }
 }
 
 function onMainWindowReadyShow() {
   currentPage = 'garden';
+  ensureSessionStart();
   if (discordEnabled) {
     updateDiscordActivity({ page: 'garden' });
   }
@@ -154,7 +209,7 @@ function onMainWindowClosed() {
 }
 
 function registerDiscordIpc(ipcMain) {
-  ipcMain.handle('discord:update-activity', (event, activityData) => {
+  ipcMain.handle('discord:update-activity', (event, activityData = {}) => {
     if (activityData.locale) {
       currentLocale = activityData.locale;
     }
@@ -164,24 +219,27 @@ function registerDiscordIpc(ipcMain) {
 
     if (rpcReady && discordEnabled) {
       updateDiscordActivity(activityData);
-      return { success: true };
+      return { success: true, activity: lastActivityPayload, sessionStartMs: ensureSessionStart() };
     }
-    return { success: false, error: 'Discord RPC not ready or disabled' };
+    return { success: false, error: 'Discord RPC not ready or disabled', sessionStartMs: sessionStartMs };
   });
 
   ipcMain.handle('discord:status', () => {
     return {
       connected: rpcReady,
-      enabled: discordEnabled
+      enabled: discordEnabled,
+      sessionStartMs: sessionStartMs,
+      activity: lastActivityPayload
     };
   });
 
   ipcMain.handle('discord:enable', () => {
     discordEnabled = true;
+    ensureSessionStart();
     if (rpcReady) {
-      updateDiscordActivity({ page: currentPage, locale: currentLocale });
+      updateDiscordActivity(lastActivityPayload || { page: currentPage, locale: currentLocale });
     }
-    return { success: true };
+    return { success: true, sessionStartMs: sessionStartMs };
   });
 
   ipcMain.handle('discord:disable', () => {
@@ -195,13 +253,31 @@ function registerDiscordIpc(ipcMain) {
   ipcMain.handle('discord:set-locale', (event, locale) => {
     currentLocale = locale || 'en';
     if (rpcReady && discordEnabled) {
-      updateDiscordActivity({ locale: currentLocale });
+      updateDiscordActivity({ ...(lastActivityPayload || {}), locale: currentLocale });
     }
     return { success: true };
+  });
+
+  ipcMain.handle('discord:set-focus-session', (event, payload = {}) => {
+    const active = payload.active === true;
+    currentPage = active ? 'focus' : (payload.page || 'garden');
+    if (active && payload.startedAt) {
+      sessionStartMs = Number(payload.startedAt) || Date.now();
+    }
+    if (rpcReady && discordEnabled) {
+      updateDiscordActivity({
+        ...(lastActivityPayload || {}),
+        page: currentPage,
+        details: payload.details,
+        state: payload.state
+      });
+    }
+    return { success: true, page: currentPage, sessionStartMs };
   });
 }
 
 module.exports = {
+  DISCORD_STRINGS,
   initDiscordRPC,
   updateDiscordActivity,
   clearDiscordActivity,

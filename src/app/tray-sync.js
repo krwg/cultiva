@@ -20,4 +20,5 @@ export function syncTrayHabits() {
     return;
   }
   void window.electron.syncTrayHabits(buildTrayHabitPayload());
+  void import('./discord-presence.js').then((m) => m.scheduleDiscordPresenceRefresh());
 }

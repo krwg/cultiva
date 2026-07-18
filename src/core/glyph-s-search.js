@@ -1,3 +1,11 @@
+/**
+ * Cultiva adapter for glyph-s 2.7 (FlokeStudio/glyph-s).
+ * Maps habit/plugin-shaped objects onto the engine item API.
+ */
+import { rankSearchItems, createSearchEngine } from './glyph-s/engine.js';
+
+const ENGINE_VERSION = '2.7.0';
+
 function normalizeToken(input) {
   return String(input || '')
     .normalize('NFKD')
@@ -6,66 +14,51 @@ function normalizeToken(input) {
     .trim();
 }
 
-function collectSearchText(item) {
-  return normalizeToken([
-    item?.name,
-    item?.description,
+function toGlyphItem(item) {
+  const name = String(item?.name || item?.title || item?.id || '');
+  const description = String(item?.description || item?.text || '');
+  const tags = Array.isArray(item?.tags) ? item.tags.map(String) : [];
+  const keys = [
+    ...tags,
     item?.category,
     item?.treeName,
     item?.unit,
-    item?.notes,
     item?.bedId,
     item?.tagline,
-    ...(Array.isArray(item?.tags) ? item.tags : [])
-  ].join(' '));
+    item?.type
+  ].filter(Boolean).map(String);
+
+  return {
+    cat: String(item?.category || item?.type || 'note'),
+    title: () => name,
+    sub: String(item?.id || ''),
+    keys,
+    body: () => [description, item?.notes, item?.tagline].filter(Boolean).join(' '),
+    _src: item
+  };
 }
 
-function scoreQuery(text, query) {
-  if (!query) {
-    return 0;
-  }
-  const tokens = query.split(/\s+/).filter(Boolean);
-  if (!tokens.length) {
-    return 0;
-  }
-  let score = 0;
-  for (const token of tokens) {
-    if (text.includes(token)) {
-      score += token.length * 10;
-      continue;
-    }
-    const words = text.split(/\s+/).filter(Boolean);
-    let tokenHit = false;
-    for (const word of words) {
-      if (word.startsWith(token)) {
-        score += token.length * 4;
-        tokenHit = true;
-        break;
-      }
-      if (word.includes(token)) {
-        score += token.length * 2;
-        tokenHit = true;
-        break;
-      }
-    }
-    if (!tokenHit) {
-      return 0;
-    }
-  }
-  return score;
-}
+export { normalizeToken, ENGINE_VERSION, createSearchEngine };
 
-export { normalizeToken };
-
-export function glyphSearch(items, query) {
-  const q = normalizeToken(query);
+export function glyphSearch(items, query, opts = {}) {
+  const list = Array.isArray(items) ? items : [];
+  const q = String(query || '').trim();
   if (!q) {
-    return items;
+    return list;
   }
 
-  return items
-    .map((item) => ({ item, score: scoreQuery(collectSearchText(item), q) }))
-    .filter((entry) => entry.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .map((entry) => entry.item);
+  const mapped = list.map(toGlyphItem);
+  const ranked = rankSearchItems(mapped, q, {
+    limit: opts.limit ?? Math.max(list.length, 12),
+    profile: opts.profile || 'balanced',
+    settings: {
+      fuzzyLayout: true,
+      fuzzyTransliteration: true,
+      profile: opts.profile || 'balanced'
+    }
+  });
+
+  return ranked
+    .map((row) => row?.it?._src)
+    .filter(Boolean);
 }

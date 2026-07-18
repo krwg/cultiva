@@ -60,7 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
-| **2.2.0 beds + settings** | Horizontal beds (max 3), pinned footer, Focus/Storage IA, trophy gate, curated quotes |
+| **2.2.0 beds + settings** | Horizontal beds, fixed footer, Focus/Storage IA, glyph-s 2.7, Discord activity presence |
 | **2.1.3 store + search** | Cultiva-styled plugin store, glyph search index, Radio player Neo |
 | **2.1.2 garden beds** | Drag-and-drop reorder + custom beds; Weather Neo companion |
 | **2.1.1 critical fix** | Garden reload / storage race, compact footer, heatmap toggle |

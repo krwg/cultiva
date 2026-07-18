@@ -8,7 +8,7 @@ function createDialog({ title, message, confirmText, cancelText, tone }) {
   modal.setAttribute('aria-modal', 'true');
 
   const safeTitle = escapeHtml(title || 'Cultiva');
-  const safeMessage = escapeHtml(message || '');
+  const safeMessage = escapeHtml(message || '').replace(/\n/g, '<br>');
   const safeConfirm = escapeHtml(confirmText || 'OK');
   const safeCancel = escapeHtml(cancelText || 'Cancel');
 
@@ -20,7 +20,7 @@ function createDialog({ title, message, confirmText, cancelText, tone }) {
         <button type="button" class="modal-close" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body cv-dialog-body">
-        <p class="cv-dialog-message">${safeMessage}</p>
+        <div class="cv-dialog-message">${safeMessage}</div>
         <div class="modal-actions cv-dialog-actions">
           ${cancelText ? `<button type="button" class="btn-secondary cv-dialog-cancel">${safeCancel}</button>` : ''}
           <button type="button" class="btn-primary ${tone === 'danger' ? 'cv-dialog-danger' : ''} cv-dialog-confirm">${safeConfirm}</button>

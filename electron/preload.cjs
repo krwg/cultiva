@@ -37,8 +37,8 @@ let discordEnabled = true;
 
 contextBridge.exposeInMainWorld('discord', {
   updateActivity: (data) => {
-    if (!discordEnabled) {return;}
-    ipcRenderer.invoke('discord:update-activity', data);
+    if (!discordEnabled) {return Promise.resolve({ success: false });}
+    return ipcRenderer.invoke('discord:update-activity', data);
   },
   getStatus: () => ipcRenderer.invoke('discord:status'),
   enable: () => {
@@ -48,5 +48,7 @@ contextBridge.exposeInMainWorld('discord', {
   disable: () => {
     discordEnabled = false;
     return ipcRenderer.invoke('discord:disable');
-  }
+  },
+  setLocale: (locale) => ipcRenderer.invoke('discord:set-locale', locale),
+  setFocusSession: (payload) => ipcRenderer.invoke('discord:set-focus-session', payload)
 });

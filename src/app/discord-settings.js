@@ -1,36 +1,22 @@
 import { TRANSLATIONS } from '../core/i18n.js';
+import {
+  getDiscordPageStrings,
+  getLastDiscordPayload,
+  pushDiscordPresence
+} from './discord-presence.js';
 
 let ctx = null;
 let initialized = false;
-let sessionStartTime = null;
+let sessionStartMs = null;
 
 export function configureDiscordSettings(deps) {
   ctx = deps;
-}
-
-function getPageDetails(page, locale) {
-  const strings = {
-    en: { garden: 'In the garden', calendar: 'Planning habits', stats: 'Reviewing progress', settings: 'Customizing', trophy: 'Trophy Garden', focus: 'Focus Mode', pages: 'Exploring Cultiva' },
-    ru: { garden: 'В саду', calendar: 'Планирует', stats: 'Анализирует', settings: 'Настраивает', trophy: 'Сад трофеев', focus: 'Режим фокуса', pages: 'Изучает Cultiva' }
-  };
-  return strings[locale]?.[page] || strings.en[page] || 'In the garden';
-}
-
-function getPageState(page, locale) {
-  const strings = {
-    en: { garden: 'Growing habits', calendar: 'Browsing calendar', stats: 'Checking statistics', settings: 'Adjusting settings', trophy: 'Admiring legacy trees', focus: 'Deep work session', pages: 'Reading documentation' },
-    ru: { garden: 'Выращивает привычки', calendar: 'Смотрит календарь', stats: 'Проверяет статистику', settings: 'Меняет параметры', trophy: 'Любуется деревьями', focus: 'Глубокая работа', pages: 'Читает документацию' }
-  };
-  return strings[locale]?.[page] || strings.en[page] || 'Growing habits';
 }
 
 function detectCurrentPage() {
   const url = window.location.href;
   if (url.includes('/calendar')) { return 'calendar'; }
   if (url.includes('/pages/')) { return 'pages'; }
-  if (url.includes('settings')) { return 'settings'; }
-  if (url.includes('stats')) { return 'stats'; }
-  if (url.includes('trophy')) { return 'trophy'; }
   return 'garden';
 }
 
@@ -43,8 +29,8 @@ function updatePreviewText(details, state) {
 
 function updatePreviewTime() {
   const previewTime = document.getElementById('discord-preview-time');
-  if (!previewTime || !sessionStartTime) { return; }
-  const elapsed = Math.floor((Date.now() - sessionStartTime.getTime()) / 1000);
+  if (!previewTime || sessionStartMs == null) { return; }
+  const elapsed = Math.floor((Date.now() - sessionStartMs) / 1000);
   const hours = Math.floor(elapsed / 3600);
   const minutes = Math.floor((elapsed % 3600) / 60);
   const seconds = elapsed % 60;
@@ -54,6 +40,17 @@ function updatePreviewTime() {
   } else {
     previewTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} elapsed`;
   }
+}
+
+function syncPreviewFromPayload(payload, locale) {
+  if (payload?.details || payload?.state) {
+    updatePreviewText(payload.details, payload.state);
+    return;
+  }
+  const page = payload?.page || detectCurrentPage();
+  const strings = getDiscordPageStrings(locale);
+  const row = strings[page] || strings.garden;
+  updatePreviewText(row.details, row.state);
 }
 
 async function checkDiscordStatus() {
@@ -68,28 +65,30 @@ async function checkDiscordStatus() {
     const status = await window.discord.getStatus();
     const enabled = discordToggle?.checked || false;
 
+    if (typeof status.sessionStartMs === 'number' && status.sessionStartMs > 0) {
+      sessionStartMs = status.sessionStartMs;
+    }
+
     if (status.connected && enabled) {
       discordStatusBadge.textContent = '●';
       discordStatusBadge.style.color = '#4caf50';
       discordStatusText.textContent = t.discordConnected || 'Connected';
-      if (!sessionStartTime) { sessionStartTime = new Date(); }
+      if (sessionStartMs == null) { sessionStartMs = Date.now(); }
+      syncPreviewFromPayload(status.activity || getLastDiscordPayload(), settings.lang || 'en');
     } else if (status.connected && !enabled) {
       discordStatusBadge.textContent = '○';
       discordStatusBadge.style.color = '#ff9500';
       discordStatusText.textContent = t.discordDisabled || 'Disabled';
-      sessionStartTime = null;
     } else {
       discordStatusBadge.textContent = '○';
       discordStatusBadge.style.color = 'var(--text-tertiary)';
       discordStatusText.textContent = t.discordDisconnected || 'Disconnected';
-      sessionStartTime = null;
     }
   } catch (err) {
     console.warn('[Discord] Status check failed:', err);
     discordStatusBadge.textContent = '○';
     discordStatusBadge.style.color = 'var(--text-tertiary)';
     discordStatusText.textContent = t.discordUnavailable || 'Unavailable';
-    sessionStartTime = null;
   }
 }
 
@@ -121,19 +120,21 @@ export function ensureDiscordSettingsInitialized() {
     discordToggle.addEventListener('change', async (e) => {
       const enabled = e.target.checked;
       localStorage.setItem('cultiva-discord-enabled', enabled);
-      const settings = ctx?.getSettings?.() || {};
 
       if (window.discord) {
         if (enabled) {
-          await window.discord.enable();
-          sessionStartTime = new Date();
-          const page = detectCurrentPage();
-          const locale = settings.lang || 'en';
-          await window.discord.updateActivity({ page, locale });
-          updatePreviewText(getPageDetails(page, locale), getPageState(page, locale));
+          const res = await window.discord.enable();
+          if (typeof res?.sessionStartMs === 'number') {
+            sessionStartMs = res.sessionStartMs;
+          } else if (sessionStartMs == null) {
+            sessionStartMs = Date.now();
+          }
+          const payload = await pushDiscordPresence();
+          if (payload) {
+            syncPreviewFromPayload(payload, payload.locale);
+          }
         } else {
           await window.discord.disable();
-          sessionStartTime = null;
           updatePreviewText('Rich Presence', 'Disabled');
           if (previewTime) { previewTime.textContent = '--:--'; }
         }
@@ -155,10 +156,8 @@ export function ensureDiscordSettingsInitialized() {
       void checkDiscordStatus();
       const settings = ctx?.getSettings?.() || {};
       if (discordToggle?.checked) {
-        sessionStartTime = new Date();
-        const page = detectCurrentPage();
-        const locale = settings.lang || 'en';
-        updatePreviewText(getPageDetails(page, locale), getPageState(page, locale));
+        const payload = getLastDiscordPayload();
+        syncPreviewFromPayload(payload, settings.lang || 'en');
       }
     });
   }
@@ -171,7 +170,10 @@ export function scheduleDiscordWarmup() {
   if (typeof window.discord === 'undefined') {
     return;
   }
-  const run = () => ensureDiscordSettingsInitialized();
+  const run = () => {
+    ensureDiscordSettingsInitialized();
+    void pushDiscordPresence();
+  };
   if ('requestIdleCallback' in window) {
     requestIdleCallback(run, { timeout: 4000 });
   } else {

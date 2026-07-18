@@ -45,7 +45,7 @@ export const UPDATE_STATUS_ICONS = {
   info: MATERIAL.info
 };
 
-export const CHECK_UPDATES_ICON = MATERIAL.manageSearch;
+export const CHECK_UPDATES_ICON = MATERIAL.search;
 
 export const SETTINGS_SIDEBAR_ICONS = {
   profile: MATERIAL.person,

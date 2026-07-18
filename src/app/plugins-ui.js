@@ -213,12 +213,12 @@ let browseSortMode = 'updated';
 function permissionLabel(perm, t) {
   const key = String(perm || '');
   const map = {
-    network: t.pluginPermNetwork || 'Internet access',
-    storage: t.pluginPermStorage || 'Local data storage',
-    ui: t.pluginPermUi || 'UI widgets',
-    'habits.write': t.pluginPermHabitsWrite || 'Complete habits',
-    'habits.read': settings.lang === 'ru' ? 'Чтение привычек' : 'Read habits',
-    'settings.read': settings.lang === 'ru' ? 'Чтение настроек' : 'Read settings'
+    network: t.pluginPermNetwork || 'Internet access — fetch remote data for this plugin',
+    storage: t.pluginPermStorage || 'Local storage — save plugin settings and favorites on this device',
+    ui: t.pluginPermUi || 'UI — show widgets in the garden or header',
+    'habits.write': t.pluginPermHabitsWrite || 'Habits write — mark habits complete on your behalf',
+    'habits.read': t.pluginPermHabitsRead || 'Habits read — see habit names and progress',
+    'settings.read': t.pluginPermSettingsRead || 'Settings read — read language, theme, and related options'
   };
   return map[key] || key;
 }
@@ -228,7 +228,7 @@ function formatPermissionsList(permissions, t) {
   if (!perms.length) {
     return '';
   }
-  return perms.map((p) => `• ${permissionLabel(p, t)}`).join('\n');
+  return perms.map((p) => `- ${permissionLabel(p, t)}`).join('\n');
 }
 
 function isFeaturedPlugin(p) {
@@ -413,6 +413,10 @@ async function openPluginDetailsModal(p) {
 
   const perms = Array.isArray(p.permissions) ? p.permissions : [];
   if (perms.length) {
+    const heading = document.createElement('div');
+    heading.className = 'plugin-details-perms-title';
+    heading.textContent = t.pluginPermissions || 'Permissions';
+    body.appendChild(heading);
     const list = document.createElement('ul');
     list.className = 'plugin-details-perms';
     for (const perm of perms) {
@@ -438,14 +442,11 @@ async function openPluginDetailsModal(p) {
       const res = await fetch(changelogUrl, { cache: 'no-store' });
       if (res.ok) {
         const text = await res.text();
-        const lines = text.split(/\r?\n/).slice(0, 40).join('\n');
-        if (lines.trim()) {
-          const pre = document.createElement('pre');
-          pre.className = 'plugin-details-changelog';
-          const code = document.createElement('code');
-          code.textContent = lines;
-          pre.appendChild(code);
-          body.appendChild(pre);
+        if (text.trim()) {
+          const changelog = document.createElement('div');
+          changelog.className = 'plugin-details-changelog release-md release-detail-body';
+          changelog.innerHTML = renderReleaseMarkdown(text);
+          body.appendChild(changelog);
         }
       }
     } catch {

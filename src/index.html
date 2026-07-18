@@ -848,7 +848,7 @@
                             </div>
                             <button class="btn-small btn-danger" id="settings-reset" data-i18n="resetBtn">Reset</button>
                         </div>
-                        <div class="settings-divider"></div>
+                        <div class="settings-group-title" data-i18n="storageGroupCache">Cache</div>
                         <div class="setting-item setting-item-static">
                             <div class="setting-info">
                                 <span class="setting-label" data-i18n="cacheSizeLabel">Cache size</span>
@@ -958,13 +958,23 @@
                     <div class="settings-section-content" id="section-search">
                         <div class="settings-section-hero">
                             <div class="settings-section-hero-title" data-i18n="searchSectionTitle">Search</div>
-                            <p class="settings-section-hero-desc" data-i18n="searchSectionDesc">Glyph search indexes habits, plugins, beds, calendar events, and settings labels locally on this device — no cloud.</p>
+                            <p class="settings-section-hero-desc" data-i18n="searchSectionDesc">glyph-s 2.7 indexes habits, plugins, beds, calendar events, and settings labels locally on this device — no cloud.</p>
                         </div>
                         <div class="settings-group-card">
                             <div class="setting-item">
                                 <div class="setting-info">
-                                    <span class="setting-label" data-i18n="searchIndexToggle">Enhanced glyph search</span>
-                                    <span class="setting-desc" data-i18n="searchIndexToggleDesc">When on, the header search uses a local index for better matches across Cultiva.</span>
+                                    <span class="setting-label" data-i18n="headerSearchToggle">Show search in header</span>
+                                    <span class="setting-desc" data-i18n="headerSearchToggleDesc">When off, the search field is hidden from the garden header.</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-header-search" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="searchIndexToggle">Enhanced glyph-s search</span>
+                                    <span class="setting-desc" data-i18n="searchIndexToggleDesc">When on, header search uses the local glyph-s 2.7 index for better matches across Cultiva.</span>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="toggle-glyph-search" checked>
@@ -973,14 +983,23 @@
                             </div>
                             <div class="setting-item setting-item-static">
                                 <div class="setting-info">
+                                    <span class="setting-label" data-i18n="searchEngineLabel">Search engine</span>
+                                    <span class="setting-desc" id="glyph-search-engine">glyph-s 2.7.0</span>
+                                </div>
+                            </div>
+                            <div class="setting-item setting-item-static">
+                                <div class="setting-info">
                                     <span class="setting-label" data-i18n="searchIndexStatusLabel">Index status</span>
                                     <span class="setting-desc" id="glyph-search-status" data-i18n="searchIndexIdle">Not indexed yet</span>
                                 </div>
                             </div>
-                            <div class="setting-item">
+                            <div class="setting-item glyph-rebuild-row">
                                 <div class="setting-info">
                                     <span class="setting-label" data-i18n="searchIndexRebuild">Rebuild index</span>
                                     <span class="setting-desc" data-i18n="searchIndexRebuildDesc">Re-scan habits, plugins, and other local data.</span>
+                                    <div class="glyph-rebuild-progress" id="glyph-search-rebuild-bar" hidden aria-hidden="true">
+                                        <div class="glyph-rebuild-progress-fill" id="glyph-search-rebuild-fill"></div>
+                                    </div>
                                 </div>
                                 <button type="button" class="btn-small btn-secondary" id="glyph-search-rebuild" data-i18n="searchIndexRebuildBtn">Rebuild</button>
                             </div>
@@ -1269,6 +1288,14 @@
             <div class="footer-brand"><span class="footer-version"></span></div>
         </div>
     </footer>
+
+    <div id="cache-clear-overlay" class="cache-clear-overlay" aria-hidden="true">
+        <div class="cache-clear-cloud">
+            <div class="cloud-body"></div>
+            <div class="cloud-data"></div>
+        </div>
+        <p class="cache-clear-text" data-i18n="cacheClearing">Clearing cache…</p>
+    </div>
 
     <div class="ambient-bg-root" aria-hidden="true">
         <div class="bg-aurora" id="bg-aurora" style="display:none;"></div>

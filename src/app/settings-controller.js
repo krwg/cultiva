@@ -78,6 +78,12 @@ export async function loadSettings() {
       if (typeof saved.focusHideChrome === 'boolean') {
         settings.focusHideChrome = saved.focusHideChrome;
       }
+      if (typeof saved.headerSearchEnabled === 'boolean') {
+        settings.headerSearchEnabled = saved.headerSearchEnabled;
+      }
+      if (typeof saved.glyphSearchEnhanced === 'boolean') {
+        settings.glyphSearchEnhanced = saved.glyphSearchEnhanced;
+      }
       if (saved.holidayRegion) {
         settings.holidayRegion = saved.holidayRegion;
       }
@@ -319,6 +325,11 @@ export function applySettings() {
   updateNotificationsDesktopBanner();
   refreshPluginNotifySettingsUi();
   void refreshCacheSizeDisplay();
+  void import('./search-settings.js').then((m) => {
+    m.applyHeaderSearchVisibility?.();
+    m.refreshGlyphSearchSettingsUi?.();
+  });
+  void import('./discord-presence.js').then((m) => m.scheduleDiscordPresenceRefresh());
 
   applyAccentColor(settings.accentColor);
   applyLowPowerMode(settings.lowPowerMode, settings.ambientIntensity);
@@ -509,6 +520,12 @@ const CACHE_TEMP_KEYS = [
 ];
 
 export async function clearAppCache() {
+  const overlay = document.getElementById('cache-clear-overlay');
+  if (overlay) {
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+  }
+  await new Promise((r) => setTimeout(r, 420));
   for (const key of CACHE_TEMP_KEYS) {
     try {
       localStorage.removeItem(key);
@@ -523,9 +540,13 @@ export async function clearAppCache() {
     void 0;
   }
   await refreshCacheSizeDisplay();
+  if (overlay) {
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
   const t = tStrings();
   if (typeof window.showNotification === 'function') {
-    window.showNotification('✓', t.cacheCleared || 'Cache cleared');
+    window.showNotification('', t.cacheCleared || 'Cache cleared');
   }
 }
 

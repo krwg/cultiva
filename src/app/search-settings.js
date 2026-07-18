@@ -10,6 +10,7 @@ import {
   isGlyphSearchEnhanced,
   setGlyphSearchEnhanced
 } from '../core/glyph-search-index.js';
+import { ENGINE_VERSION } from '../core/glyph-s-search.js';
 import { getGardenBeds } from './garden-layout.js';
 
 function tStrings() {
@@ -30,15 +31,36 @@ function settingsLabelDocs(t) {
   ];
 }
 
-export async function rebuildGlyphSearchIndexNow() {
+function setRebuildProgress(pct, label) {
+  const bar = document.getElementById('glyph-search-rebuild-bar');
+  const fill = document.getElementById('glyph-search-rebuild-fill');
   const statusEl = document.getElementById('glyph-search-status');
-  const t = tStrings();
-  if (statusEl) {
-    statusEl.textContent = t.searchIndexBuilding || 'Indexing…';
+  if (bar) {
+    bar.hidden = pct == null;
+    bar.setAttribute('aria-hidden', pct == null ? 'true' : 'false');
   }
+  if (fill && pct != null) {
+    fill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+  }
+  if (statusEl && label) {
+    statusEl.textContent = label;
+  }
+}
+
+export async function rebuildGlyphSearchIndexNow() {
+  const t = tStrings();
+  const rebuildBtn = document.getElementById('glyph-search-rebuild');
+  if (rebuildBtn) {
+    rebuildBtn.disabled = true;
+    rebuildBtn.classList.add('is-busy');
+  }
+  setRebuildProgress(8, t.searchIndexBuilding || 'Indexing…');
+
+  await new Promise((r) => requestAnimationFrame(() => r()));
 
   let registryPlugins = [];
   try {
+    setRebuildProgress(28, t.searchIndexBuildingPlugins || t.searchIndexBuilding || 'Indexing plugins…');
     registryPlugins = await pluginManager.getAvailablePlugins();
   } catch {
     registryPlugins = [];
@@ -61,6 +83,7 @@ export async function rebuildGlyphSearchIndexNow() {
     }))
   ];
 
+  setRebuildProgress(55, t.searchIndexBuildingHabits || t.searchIndexBuilding || 'Indexing habits…');
   let events = [];
   try {
     const raw = await storage.get('calendar-events');
@@ -73,6 +96,7 @@ export async function rebuildGlyphSearchIndexNow() {
     events = [];
   }
 
+  setRebuildProgress(78, t.searchIndexBuilding || 'Indexing…');
   const status = buildGlyphSearchIndex({
     habits: habits.getAll(),
     beds: getGardenBeds(),
@@ -81,16 +105,43 @@ export async function rebuildGlyphSearchIndexNow() {
     settingsLabels: settingsLabelDocs(tStrings())
   });
 
+  setRebuildProgress(100, (t.searchIndexReady || 'Indexed · {n} items')
+    .replace('{n}', String(status.count || 0)));
+  await new Promise((r) => setTimeout(r, 280));
+  setRebuildProgress(null);
+  if (rebuildBtn) {
+    rebuildBtn.disabled = false;
+    rebuildBtn.classList.remove('is-busy');
+  }
   refreshGlyphSearchSettingsUi();
   return status;
+}
+
+export function applyHeaderSearchVisibility() {
+  const wrap = document.querySelector('.habit-search-wrap');
+  const enabled = settings.headerSearchEnabled !== false;
+  document.body.classList.toggle('header-search-hidden', !enabled);
+  if (wrap) {
+    wrap.hidden = !enabled;
+    wrap.style.display = enabled ? '' : 'none';
+  }
 }
 
 export function refreshGlyphSearchSettingsUi() {
   const t = tStrings();
   const toggle = document.getElementById('toggle-glyph-search');
+  const headerToggle = document.getElementById('toggle-header-search');
   const statusEl = document.getElementById('glyph-search-status');
+  const engineEl = document.getElementById('glyph-search-engine');
   if (toggle) {
     toggle.checked = isGlyphSearchEnhanced();
+  }
+  if (headerToggle) {
+    headerToggle.checked = settings.headerSearchEnabled !== false;
+  }
+  if (engineEl) {
+    engineEl.textContent = (t.searchEngineVersion || 'glyph-s {v}')
+      .replace('{v}', ENGINE_VERSION);
   }
   if (statusEl) {
     const st = getGlyphSearchStatus();
@@ -101,10 +152,12 @@ export function refreshGlyphSearchSettingsUi() {
       statusEl.textContent = t.searchIndexIdle || 'Not indexed yet';
     }
   }
+  applyHeaderSearchVisibility();
 }
 
 export function bindGlyphSearchSettings() {
   const toggle = document.getElementById('toggle-glyph-search');
+  const headerToggle = document.getElementById('toggle-header-search');
   const rebuildBtn = document.getElementById('glyph-search-rebuild');
   if (toggle && !toggle.dataset.bound) {
     toggle.dataset.bound = '1';
@@ -118,6 +171,15 @@ export function bindGlyphSearchSettings() {
       } else {
         refreshGlyphSearchSettingsUi();
       }
+    });
+  }
+  if (headerToggle && !headerToggle.dataset.bound) {
+    headerToggle.dataset.bound = '1';
+    headerToggle.checked = settings.headerSearchEnabled !== false;
+    headerToggle.addEventListener('change', () => {
+      settings.headerSearchEnabled = headerToggle.checked;
+      applyHeaderSearchVisibility();
+      void saveSettings();
     });
   }
   if (rebuildBtn && !rebuildBtn.dataset.bound) {

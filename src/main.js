@@ -1063,6 +1063,15 @@ function toggleFocusMode(enabled) {
   if (focusToggle) { focusToggle.checked = enabled; }
   storage.set('cultiva-settings', settings);
   renderGarden();
+  void import('./app/discord-presence.js').then((m) => {
+    m.setDiscordFocusSession(enabled);
+    if (enabled && window.discord?.setFocusSession) {
+      void window.discord.setFocusSession({ active: true, startedAt: Date.now() });
+    } else if (window.discord?.setFocusSession) {
+      void window.discord.setFocusSession({ active: false });
+    }
+    void m.pushDiscordPresence({ page: enabled ? 'focus' : 'garden' });
+  });
 }
 
 function scheduleDeferredOnboarding() {
@@ -1120,6 +1129,7 @@ async function softReloadGarden() {
   }
   renderGarden();
   syncTrayHabits();
+  void import('./app/discord-presence.js').then((m) => m.scheduleDiscordPresenceRefresh());
   const count = habits.getAll().length;
   showNotification(
     count > 0
@@ -1173,6 +1183,7 @@ async function init() {
     initAutoBackup();
     scheduleDeferredOnboarding();
     scheduleDiscordWarmup();
+    void import('./app/discord-presence.js').then((m) => m.scheduleDiscordPresenceRefresh());
 
     await updateAuthUI();
     updateCultivaDatePreview();

@@ -320,7 +320,7 @@ a:hover { color: var(--accent-blue-hover); }
 .dropdown-item.danger { color: var(--accent-red); justify-content: center; padding: 12px; background: rgba(255, 59, 48, 0.08); }
 .dropdown-item.danger:hover { background: rgba(255, 59, 48, 0.15); }
 
-.app-main, .calendar-body { max-width: 1200px; margin: 0 auto; padding: 32px 24px; flex: 1 1 auto; width: 100%; box-sizing: border-box; transition: padding 0.3s var(--ease-apple); }
+.app-main, .calendar-body { max-width: 1200px; margin: 0 auto; padding: 32px 24px 52px; flex: 1 1 auto; width: 100%; box-sizing: border-box; transition: padding 0.3s var(--ease-apple); }
 .calendar-body { padding: 24px 0 80px; max-width: 900px; }
 .calendar-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
 
@@ -433,7 +433,9 @@ body.focus-hide-chrome .app-footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: sticky;
+    position: fixed;
+    left: 0;
+    right: 0;
     bottom: 0;
     z-index: 40;
     min-height: 0;
@@ -996,7 +998,7 @@ body.with-ambient-bg .app-main {
     background: var(--bg-primary);
     overflow-y: auto;
     position: relative;
-    padding-bottom: 14px;
+    padding-bottom: 48px;
     scrollbar-width: thin;
     scrollbar-color: var(--border-medium) transparent;
 }
@@ -2994,8 +2996,10 @@ body.calendar-page .calendar-body {
 
 body.calendar-page .app-footer {
     flex-shrink: 0;
-    margin-top: auto;
-    position: sticky;
+    margin-top: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
     bottom: 0;
     z-index: 40;
     padding: 6px 16px;
@@ -3409,4 +3413,189 @@ body.ambient-paused [id^="bg-"] * {
     .garden-bed-row {
         grid-template-columns: 1fr;
     }
+}
+
+/* Plugin store toolbar — one compact Cultiva row */
+.plugin-store-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    margin: 0 0 14px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg, 14px);
+    background: color-mix(in srgb, var(--bg-secondary) 70%, var(--bg-primary));
+}
+.plugin-store-search {
+    flex: 1 1 160px;
+    min-width: 140px;
+    max-width: 100%;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-full, 999px);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: var(--font-main);
+    outline: none;
+}
+.plugin-store-search:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+}
+.plugin-store-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 auto;
+}
+.plugin-store-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+.plugin-store-filter-label {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+.plugin-store-select {
+    height: 34px;
+    min-width: 112px;
+    padding: 0 28px 0 10px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md, 10px);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: var(--font-main);
+}
+
+body.header-search-hidden .habit-search-wrap,
+.habit-search-wrap[hidden] {
+    display: none !important;
+}
+
+.glyph-rebuild-progress {
+    margin-top: 10px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--bg-tertiary);
+    overflow: hidden;
+}
+.glyph-rebuild-progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: var(--accent-blue, #0071e3);
+    transition: width 0.25s var(--ease-apple);
+}
+#glyph-search-rebuild.is-busy {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.cache-clear-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--bg-secondary) 72%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.cache-clear-overlay.active {
+    display: flex;
+}
+.cache-clear-cloud {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 18px;
+}
+.cache-clear-cloud .cloud-body,
+.cache-clear-cloud .cloud-data {
+    position: absolute;
+    inset: 12px;
+    border-radius: 40% 40% 36% 36%;
+    background: color-mix(in srgb, var(--accent-blue, #0071e3) 18%, var(--bg-primary));
+    animation: cacheSpotPulse 1.1s ease-in-out infinite;
+}
+.cache-clear-cloud .cloud-data {
+    inset: 22px 18px 18px 28px;
+    opacity: 0.55;
+    animation-delay: 0.2s;
+}
+@keyframes cacheSpotPulse {
+    0%, 100% { transform: scale(0.92); opacity: 0.55; }
+    50% { transform: scale(1.06); opacity: 1; }
+}
+.cache-clear-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.cv-dialog-message {
+    white-space: pre-wrap;
+    line-height: 1.45;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 18px;
+}
+
+.plugin-details-perms-title {
+    margin: 16px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.plugin-details-perms {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+}
+.plugin-details-perms li {
+    position: relative;
+    padding: 6px 0 6px 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+.plugin-details-perms li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--text-tertiary);
+}
+.plugin-details-changelog.release-md,
+.plugin-details-readme.release-md {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-light);
+    font-family: var(--font-main);
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+.plugin-details-changelog.release-md pre,
+.plugin-details-readme.release-md pre {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    padding: 12px;
+    overflow-x: auto;
+}
+
+.settings-section-content {
+    padding-bottom: 28px;
 }

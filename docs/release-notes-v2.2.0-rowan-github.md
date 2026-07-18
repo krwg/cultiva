@@ -6,36 +6,25 @@
 
 ## Summary
 
-- **Footer** pinned to the bottom of the window (sticky + flex), readable version line
-- **Garden beds** as horizontal rows under plugin widgets; rename/delete via context menu; **max 3 habits per bed**
-- **Trophy Garden** is the master switch — Legacy/trophy progress never shows when trophies are off; copy uses “trophy”, not inheritance wording
-- **Calendar** garden activity heatmap no longer flashes when disabled
-- **Settings IA** — Focus tab, heatmap under Statistics, Data → Storage (+ cache), Updates toggles, plugin notification mutes, Material-style sidebar icons, subsection titles
+- **Footer** fixed to the bottom of the window across themes and ambient backgrounds
+- **Garden beds** as horizontal rows under plugin widgets (max 3 habits each)
+- **Trophy Garden** master switch for next-trophy progress
+- **Calendar** heatmap no longer flashes when disabled
+- **Settings IA** — Focus, Storage, Updates toggles, plugin notify mutes, Material icons
+- **glyph-s 2.7** local search engine + header search toggle + rebuild progress
+- **Plugin store** compact one-line filters; README/changelog release-style render; permission lists with dashes
+- **Discord Rich Presence** activity-based (habit counts / streaks), stable elapsed timer, focus IPC, Get Cultiva / GitHub buttons
 - Companion: **Quote 1.6.0** — 500 curated EN + 500 authentic RU quotes (registry **3.5.4**)
 
-## Garden
+## Discord
 
-- Beds render as full-width `.garden-bed-row` grids (3 columns → 2 → 1 on narrow viewports)
-- Context menu targets bed header / row / dropzone (rename & delete work again)
-- Drag-and-drop into a full bed shows a localized toast
+- Activity from garden stats instead of static page strings
+- Session `startTimestamp` no longer resets every 15s or when opening Discord settings
+- `discord:set-focus-session` for Focus / Pomodoro-style presence
+- Buttons: Get Cultiva (landing) · GitHub
+- Removed unused `partySize` / `partyMax`
 
-## Settings
+## Search
 
-| Section | Notes |
-|---------|--------|
-| Focus | Focus mode + auto-start + hide chrome |
-| Garden | Trophies, trophy progress, streak grace |
-| Statistics | Garden activity heatmap + stats dashboard |
-| Storage | Export/import/reset + cache size / clear |
-| Updates | Check for updates / automatic updates toggles |
-| Notifications | Per-plugin mute list |
-
-## Fixes
-
-- Trophy section empty when `showTrophies` is off even if next-tree progress is on
-- Calendar heatmap starts `hidden` and only renders after appearance sync when enabled
-
-## Docs
-
-- Landing eyebrow → 2.2.0
-- README highlights + registry pointer **3.5.4**
+- Vendored **glyph-s 2.7.0** (`src/core/glyph-s/`)
+- Settings → Search: show/hide header search, rebuild with progress bar

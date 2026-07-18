@@ -31,6 +31,8 @@ export const DEFAULT_SETTINGS = {
   streakGraceEnabled: true,
   checkUpdatesEnabled: true,
   autoUpdateEnabled: false,
+  headerSearchEnabled: true,
+  glyphSearchEnhanced: true,
   storageBackend: 'local',
   gardenBeds: []
 };
