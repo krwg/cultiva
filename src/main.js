@@ -1061,6 +1061,7 @@ function toggleFocusMode(enabled) {
   document.body.classList.toggle('focus-mode', enabled);
   document.body.classList.toggle('focus-hide-chrome', enabled && settings.focusHideChrome === true);
   if (focusToggle) { focusToggle.checked = enabled; }
+  syncFocusExitChip();
   storage.set('cultiva-settings', settings);
   renderGarden();
   void import('./app/discord-presence.js').then((m) => {
@@ -1072,6 +1073,27 @@ function toggleFocusMode(enabled) {
     }
     void m.pushDiscordPresence({ page: enabled ? 'focus' : 'garden' });
   });
+}
+
+function syncFocusExitChip() {
+  let chip = document.getElementById('focus-exit-chip');
+  const show = settings.focusMode && settings.focusHideChrome;
+  if (show && !chip) {
+    chip = document.createElement('button');
+    chip.type = 'button';
+    chip.id = 'focus-exit-chip';
+    chip.className = 'focus-exit-chip';
+    chip.addEventListener('click', () => {
+      toggleFocusMode(false);
+      showNotification('Focus Mode Disabled');
+    });
+    document.body.appendChild(chip);
+  }
+  if (chip) {
+    const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+    chip.textContent = t.exitFocus || 'Exit Focus';
+    chip.hidden = !show;
+  }
 }
 
 function scheduleDeferredOnboarding() {
@@ -1154,6 +1176,8 @@ async function init() {
     initSettingsSidebarIcons();
     initSettingsEmptyIcon();
     initHabitFormIcons();
+    void import('./app/dev-mode.js').then((m) => m.initDeveloperMode());
+    syncFocusExitChip();
     renderGarden();
     bindElectronPageLinks();
 

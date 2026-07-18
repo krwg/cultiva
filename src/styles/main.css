@@ -3529,6 +3529,116 @@ body.header-search-hidden .habit-search-wrap,
     display: none !important;
 }
 
+.focus-exit-chip {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 120;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+    background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-md, 0 4px 16px rgba(0,0,0,0.12));
+}
+.focus-exit-chip:hover {
+    border-color: var(--accent-blue, #0071e3);
+}
+
+.dev-overrides-card {
+    padding: 12px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.dev-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    letter-spacing: 0.02em;
+}
+.dev-field input {
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 13px;
+}
+.dev-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.dev-actions--wrap {
+    padding: 12px 14px;
+}
+.dev-rpc-log {
+    max-height: 220px;
+    overflow: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.45;
+    padding: 8px 12px 16px;
+    color: var(--text-secondary);
+}
+.dev-rpc-row {
+    padding: 2px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-light) 70%, transparent);
+}
+.dev-rpc-row--blocked {
+    color: var(--accent-red, #ff3b30);
+}
+
+body.dev-secret-bg::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        linear-gradient(180deg, #0b0b0b 0%, #141414 100%),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 11px,
+            rgba(244, 244, 244, 0.03) 11px,
+            rgba(244, 244, 244, 0.03) 12px
+        );
+    background-blend-mode: normal;
+}
+body.dev-secret-bg::after {
+    content: 'DEV · ASCII GARDEN';
+    position: fixed;
+    left: 16px;
+    bottom: 48px;
+    z-index: 1;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: rgba(244, 244, 244, 0.35);
+}
+
+html.dev-force-reduced-motion *,
+html.dev-force-reduced-motion *::before,
+html.dev-force-reduced-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
 .glyph-rebuild-progress {
     margin-top: 10px;
     height: 4px;

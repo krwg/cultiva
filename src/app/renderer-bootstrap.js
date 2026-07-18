@@ -34,7 +34,9 @@ export const DEFAULT_SETTINGS = {
   headerSearchEnabled: true,
   glyphSearchEnhanced: true,
   storageBackend: 'local',
-  gardenBeds: []
+  gardenBeds: [],
+  developerMode: false,
+  devForceReducedMotion: false
 };
 
 export const settings = { ...DEFAULT_SETTINGS };

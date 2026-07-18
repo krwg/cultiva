@@ -61,7 +61,8 @@ export const SETTINGS_SIDEBAR_ICONS = {
   data: MATERIAL.folder,
   updates: MATERIAL.download,
   plugins: MATERIAL.extension,
-  about: MATERIAL.info
+  about: MATERIAL.info,
+  developer: MATERIAL.settings
 };
 
 export function setSvgIcon(el, svg) {

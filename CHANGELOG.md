@@ -4,6 +4,24 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.3.0] — Rowan · 2026-07-18
+
+**Codename:** Rowan · Developer Mode · green lint · Weather Neo solar skies
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.0) · [Release notes](docs/release-notes-v2.3.0-rowan-github.md)
+
+### Added
+- **Developer Mode** — 7 taps on footer version; Settings → Developer; `window.cultivaDev`
+- Session overrides for `LEGACY_THRESHOLD` / bed & garden caps; feature-flag panel; RPC inspector
+- Floating **Exit Focus** chip when chrome is hidden
+- Companion **Weather Neo 2.7.0** — solar phases, sunrise/sunset, light text on dark skies (registry **3.5.5**)
+
+### Fixed
+- ESLint green again: ignore vendored `src/core/glyph-s/**`; `eqeqeq` null-ignore; remaining app equality fixes
+
+### Notes
+- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
+
 ## [2.2.0] — Rowan · 2026-07-18
 
 **Codename:** Rowan · Horizontal beds · settings IA · glyph-s 2.7 · Discord activity presence

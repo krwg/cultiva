@@ -58,11 +58,14 @@ export async function rebuildGlyphSearchIndexNow() {
 
   await new Promise((r) => requestAnimationFrame(() => r()));
 
-  let registryPlugins = [];
+  let registryPlugins;
   try {
     setRebuildProgress(28, t.searchIndexBuildingPlugins || t.searchIndexBuilding || 'Indexing plugins…');
     registryPlugins = await pluginManager.getAvailablePlugins();
   } catch {
+    registryPlugins = [];
+  }
+  if (!Array.isArray(registryPlugins)) {
     registryPlugins = [];
   }
 

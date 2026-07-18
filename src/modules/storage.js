@@ -370,7 +370,7 @@ export const storage = {
         try {
           const parsed = JSON.parse(lsBundle);
           if (parsed && typeof parsed === 'object') {
-            const flatKeys = new Set(['lang', 'theme', 'showTrophies', 'showNextTreeProgress', 'showGardenHeatmap', 'focusMode', 'focusAutoStart', 'focusHideChrome', 'headerSearchEnabled', 'glyphSearchEnhanced', 'holidayRegion', 'avatar', 'pluginsEnabled', 'nativeNotifyEnabled', 'nativeNotifyHabits', 'nativeNotifyHabitsHour', 'nativeNotifyCalendar', 'nativeNotifyCalendarLeadMinutes', 'pluginNotifyMuted', 'checkUpdatesEnabled', 'autoUpdateEnabled']);
+            const flatKeys = new Set(['lang', 'theme', 'showTrophies', 'showNextTreeProgress', 'showGardenHeatmap', 'focusMode', 'focusAutoStart', 'focusHideChrome', 'headerSearchEnabled', 'glyphSearchEnhanced', 'holidayRegion', 'avatar', 'pluginsEnabled', 'nativeNotifyEnabled', 'nativeNotifyHabits', 'nativeNotifyHabitsHour', 'nativeNotifyCalendar', 'nativeNotifyCalendarLeadMinutes', 'pluginNotifyMuted', 'checkUpdatesEnabled', 'autoUpdateEnabled', 'developerMode', 'devForceReducedMotion']);
             const keys = Object.keys(parsed);
             const looksLikeFlatAppSettings = keys.some((k) => flatKeys.has(k)) && !keys.includes('cultiva-settings');
             if (looksLikeFlatAppSettings) {

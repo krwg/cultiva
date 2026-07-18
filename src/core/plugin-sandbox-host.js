@@ -453,18 +453,44 @@ export class PluginSandboxHost {
 
     if (d.type === 'RPC') {
       const { id, method, args } = d;
+      const t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+      const logRpc = (extra) => {
+        try {
+          import('../app/dev-mode.js').then((m) => {
+            if (typeof m.recordPluginRpc === 'function') {
+              m.recordPluginRpc({
+                pluginId: this.pluginId,
+                method,
+                ms: Math.round(((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - t0),
+                ...extra
+              });
+            }
+          }).catch(() => {});
+        } catch {
+          /* ignore */
+        }
+      };
       if (!isAllowedPluginRpcMethod(method)) {
+        logRpc({ allowed: false, error: 'blocked' });
         this._replyRpc(id, undefined, 'Blocked RPC: ' + method);
         return;
       }
       const handler = this._handlers.onRpc;
       if (!handler) {
+        logRpc({ allowed: false, error: 'no handler' });
         this._replyRpc(id, undefined, 'No RPC handler');
         return;
       }
       Promise.resolve(handler(method, args || []))
-        .then((result) => this._replyRpc(id, result))
-        .catch((err) => this._replyRpc(id, undefined, String(err && err.message ? err.message : err)));
+        .then((result) => {
+          logRpc({ allowed: true });
+          this._replyRpc(id, result);
+        })
+        .catch((err) => {
+          const msg = String(err && err.message ? err.message : err);
+          logRpc({ allowed: true, error: msg });
+          this._replyRpc(id, undefined, msg);
+        });
       return;
     }
 

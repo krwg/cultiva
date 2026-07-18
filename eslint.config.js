@@ -36,7 +36,7 @@ export default [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-console': 'warn',
       'prefer-const': 'error',
-      'eqeqeq': ['error', 'always'],
+      'eqeqeq': ['error', 'always', { null: 'ignore' }],
       'curly': ['error', 'all'],
       'semi': ['error', 'always'],
       'quotes': ['error', 'single', { avoidEscape: true }],
@@ -45,5 +45,16 @@ export default [
     },
   },
 
-  { ignores: ['dist/**', 'release/**', 'node_modules/**', 'vite.config.js', 'vitest.config.js', 'src/core/locales/**'] }
+  {
+    ignores: [
+      'dist/**',
+      'release/**',
+      'node_modules/**',
+      'vite.config.js',
+      'vitest.config.js',
+      'src/core/locales/**',
+      // Vendored glyph-s 2.7 — third-party style, not Cultiva's curly/eqeqeq guide
+      'src/core/glyph-s/**',
+    ],
+  },
 ];

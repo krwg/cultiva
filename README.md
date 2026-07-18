@@ -27,18 +27,18 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 
 ## Download
 
-**[→ Latest release (2.2.0 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
+**[→ Latest release (2.3.0 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
-| **Windows** | `Cultiva-Setup-2.2.0.exe` | NSIS installer — shortcuts, uninstall entry |
-| **Windows** | `Cultiva-Portable-2.2.0.exe` | No install required |
-| **macOS Intel** | `Cultiva-2.2.0-mac-x64.dmg` | Also `.zip` |
-| **macOS Apple Silicon** | `Cultiva-2.2.0-mac-arm64.dmg` | Also `.zip` |
-| **Linux** | `Cultiva-2.2.0-linux-x86_64.AppImage` | Single file, no root |
-| **Linux** | `Cultiva-2.2.0-linux-amd64.deb` | Debian / Ubuntu |
+| **Windows** | `Cultiva-Setup-2.3.0.exe` | NSIS installer — shortcuts, uninstall entry |
+| **Windows** | `Cultiva-Portable-2.3.0.exe` | No install required |
+| **macOS Intel** | `Cultiva-2.3.0-mac-x64.dmg` | Also `.zip` |
+| **macOS Apple Silicon** | `Cultiva-2.3.0-mac-arm64.dmg` | Also `.zip` |
+| **Linux** | `Cultiva-2.3.0-linux-x86_64.AppImage` | Single file, no root |
+| **Linux** | `Cultiva-2.3.0-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [2.2.0 Rowan](docs/release-notes-v2.2.0-rowan-github.md) · [2.1.3 Rowan](docs/release-notes-v2.1.3-rowan-github.md) · [2.1.2 Rowan](docs/release-notes-v2.1.2-rowan-github.md) · [2.1.1 Rowan](docs/release-notes-v2.1.1-rowan-github.md) · [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
+**Release notes:** [2.3.0 Rowan](docs/release-notes-v2.3.0-rowan-github.md) · [2.2.0 Rowan](docs/release-notes-v2.2.0-rowan-github.md) · [2.1.3 Rowan](docs/release-notes-v2.1.3-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
 
 > **Upgrading:** your garden is preserved. Export a backup under **Settings → Storage** before updating, just in case.
 
@@ -60,6 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
+| **2.3.0 developer tools** | Footer unlock, cultivaDev API, Weather Neo solar skies, green lint |
 | **2.2.0 beds + settings** | Horizontal beds, fixed footer, Focus/Storage IA, glyph-s 2.7, Discord activity presence |
 | **2.1.3 store + search** | Cultiva-styled plugin store, glyph search index, Radio player Neo |
 | **2.1.2 garden beds** | Drag-and-drop reorder + custom beds; Weather Neo companion |
@@ -100,11 +101,11 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.2.0+**) and registry **[3.5.4](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.3.0+**) and registry **[3.5.5](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
-| Weather | 2.6.0 | Header + garden (Neo optional) |
+| Weather | 2.7.0 | Header + garden (Neo solar skies) |
 | Time | 2.2.2 | Header |
 | Radio | 2.4.0 | Header (player sheet + Neo FX) |
 | Pomodoro | 1.2.1 | Header |
@@ -173,6 +174,6 @@ When Discord is running locally, Cultiva can show **activity-based** Rich Presen
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.2.0 · Rowan**
+Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.3.0 · Rowan**
 
 </div>

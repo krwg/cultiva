@@ -373,6 +373,10 @@
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
                         <span class="sidebar-label" data-i18n="aboutHelp">About</span>
                     </div>
+                    <div class="settings-sidebar-item" data-section="developer" hidden>
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
+                        <span class="sidebar-label" data-i18n="developer">Developer</span>
+                    </div>
                 </div>
 
                 <div class="settings-content" id="settings-content">
@@ -1145,6 +1149,59 @@
                                 </div>
                             </div>
                             <a href="https://github.com/krwg/Cultiva" target="_blank" rel="noopener noreferrer" class="btn-primary about-github-btn" data-i18n="aboutGitHub">GitHub repository</a>
+                        </div>
+                    </div>
+
+                    <div class="settings-section-content" id="section-developer">
+                        <div class="settings-section-hero">
+                            <div class="settings-section-hero-title" data-i18n="developerSectionTitle">Developer Mode</div>
+                            <p class="settings-section-hero-desc" data-i18n="developerSectionDesc">Session tools for testing. Unlocked by tapping the footer version seven times. Console: window.cultivaDev</p>
+                        </div>
+
+                        <div class="settings-group-title" data-i18n="devFlagsTitle">Feature flags</div>
+                        <div class="settings-group-card">
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="showTrophy">Trophy Garden</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-trophies"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="showNextTree">Next Legacy card</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-next-tree"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="showGardenHeatmap">Garden heatmap</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-heatmap"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="focusHideChrome">Hide chrome in focus</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-focus-chrome"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="lowPowerMode">Low power</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-low-power"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="devForceReducedMotion">Force reduced motion</span><span class="setting-desc" data-i18n="devForceReducedMotionDesc">Pause ambient / Neo motion without changing OS settings</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-force-reduced"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="autoBackup">Auto-backup</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-auto-backup"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="checkUpdatesEnabled">Check for updates</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-check-updates"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="autoUpdateEnabled">Auto-update</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-auto-update"><span class="toggle-slider"></span></label></div>
+                        </div>
+
+                        <div class="settings-group-title" data-i18n="devOverridesTitle">Session overrides</div>
+                        <div class="settings-group-card dev-overrides-card">
+                            <label class="dev-field"><span>LEGACY_THRESHOLD</span><input type="number" id="dev-override-legacy" min="1" max="3650"></label>
+                            <label class="dev-field"><span>MAX_HABITS_PER_BED</span><input type="number" id="dev-override-bed" min="1" max="12"></label>
+                            <label class="dev-field"><span>MAX_ACTIVE_HABITS</span><input type="number" id="dev-override-active" min="1" max="50"></label>
+                            <div class="dev-actions">
+                                <button type="button" class="btn-secondary" id="dev-apply-overrides" data-i18n="devApplyOverrides">Apply</button>
+                                <button type="button" class="btn-secondary" id="dev-clear-overrides" data-i18n="devClearOverrides">Reset</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-group-title" data-i18n="devToolsTitle">Tools</div>
+                        <div class="settings-group-card">
+                            <div class="dev-actions dev-actions--wrap">
+                                <button type="button" class="btn-secondary" id="dev-complete-all" data-i18n="devCompleteAll">Complete all today</button>
+                                <button type="button" class="btn-secondary" id="dev-seed-habits" data-i18n="devSeedHabits">Seed 3 habits</button>
+                                <button type="button" class="btn-secondary" id="dev-export-state" data-i18n="devExportState">Export debug JSON</button>
+                                <button type="button" class="btn-secondary" id="dev-chaos-toggle" data-i18n="devChaosStart">Start chaos themes</button>
+                                <button type="button" class="btn-secondary" id="dev-secret-bg" data-i18n="devSecretBg">Toggle secret background</button>
+                                <button type="button" class="btn-secondary" id="dev-disable" data-i18n="devDisable">Turn off developer mode</button>
+                            </div>
+                            <label class="dev-field" style="margin-top:12px;">
+                                <span data-i18n="devSimulateDate">Simulate date</span>
+                                <input type="date" id="dev-simulate-date">
+                            </label>
+                        </div>
+
+                        <div class="settings-group-title" data-i18n="devRpcTitle">Plugin RPC log</div>
+                        <div class="settings-group-card">
+                            <div class="dev-actions"><button type="button" class="btn-secondary" id="dev-clear-rpc" data-i18n="devClearRpc">Clear log</button></div>
+                            <div id="dev-rpc-log" class="dev-rpc-log" aria-live="polite"></div>
                         </div>
                     </div>
 

@@ -11,7 +11,7 @@
 
 | | |
 |:--|:--|
-| **Latest** | [**2.2.0 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.2.0) · beds · settings IA · glyph-s 2.7 · Discord activity |
+| **Latest** | [**2.3.0 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.3.0) · Developer Mode · Weather Neo solar skies |
 | **In short** | Offline-first habit garden · no telemetry · habits you can *see* grow |
 | **License** | GPL-3.0 · by [krwg](https://github.com/krwg) |
 
@@ -86,7 +86,7 @@ A short map before the longer walk. Each row is a *season*, not a feature dump.
 | mid May | **0.4** | **Coconut** | One downloadable Windows app in this repo; web pages step aside |
 | late May | **1.1** | **Cypress** | The app starts to feel like a daily tool — search, keys, backups |
 | early Jul | **1.7** | **Linden** | Same garden on Windows, Mac, and Linux; gentler first launch |
-| mid Jul | **2.0–2.2** | **Rowan** | Graphite look, beds, search, Discord presence; careful polish |
+| mid Jul | **2.0–2.3** | **Rowan** | Graphite, beds, search, Discord, Developer Mode, Weather Neo skies |
 
 ```
 static page → Maple (browser) → Aspen (IDB + Desktop sibling)
@@ -298,6 +298,8 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 
 **2.2.0** is the layout and presence chapter: beds become **horizontal rows** under plugin widgets (three habits each), the **footer pins to the window**, Settings grow clearer rooms (Focus, Storage, Updates, per-plugin notifies), **glyph-s 2.7** powers search with a rebuild progress bar, and **Discord** finally shows what you are growing — activity, streaks, Focus sessions — with Get Cultiva and GitHub buttons. Quote ships **500 + 500** curated lines. The garden stays offline; only the doors you open (updates, plugins, optional Discord) reach the network.
 
+**2.3.0** opens the workshop door: tap the footer version seven times for **Developer Mode** — flags, session overrides for Legacy/bed caps, `window.cultivaDev`, an RPC log, and a few playful tools — while lint is green again (vendored glyph-s ignored). Weather Neo learns the sun: sunrise/sunset from Open-Meteo, sunset and blue-hour skies, and light text on dark nights so the forecast stays readable.
+
 Through all of that, the Sequoia promise held: one home, a tool you download, data that stays yours.
 
 ---
@@ -400,7 +402,7 @@ Features come and go. The metaphor does not: plant something, show up, watch it 
 | сер. мая | **0.4** | **Кокос** | Одно скачиваемое Windows-приложение в этом репо; веб-страницы уходят |
 | кон. мая | **1.1** | **Кипарис** | Приложение начинает ощущаться ежедневным инструментом |
 | нач. июл | **1.7** | **Липа** | Тот же сад на Windows, Mac и Linux; мягче первый запуск |
-| сер. июл | **2.0–2.2** | **Рябина** | Графит, грядки, поиск, Discord presence; аккуратный полиш |
+| сер. июл | **2.0–2.3** | **Рябина** | Графит, грядки, поиск, Discord, Dev Mode, Погода Нео |
 
 ```
 статика → Клён (браузер) → Осина (IDB + соседний Desktop)
@@ -611,6 +613,8 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 **2.1.3** принесла магазин плагинов в стиле Cultiva, локальный индекс **glyph-поиска** (привычки, плагины, грядки, события, настройки), компактную строку версии в подвале и Radio Neo на листе плеера.
 
 **2.2.0** — глава про раскладку и присутствие: грядки стали **горизонтальными рядами** под виджетами плагинов (по три привычки), **подвал прибит к окну**, в настройках появились понятные комнаты (Фокус, Хранилище, Обновления, мьюты уведомлений плагинов), **glyph-s 2.7** крутит поиск с прогрессом пересборки, а **Discord** наконец показывает, что вы растите — активность, серии, сессии Фокуса — с кнопками Get Cultiva и GitHub. Quote отдаёт **500 + 500** отобранных цитат. Сад остаётся офлайн; в сеть выходят только двери, которые вы сами открываете.
+
+**2.3.0** открывает мастерскую: семь нажатий по версии в подвале — **режим разработчика** (флаги, оверрайды Legacy/грядок, `window.cultivaDev`, лог RPC и пара шуток), а линт снова зелёный. Погода Нео учится солнцу: восход/закат из Open-Meteo, закат и синий час, светлый текст на тёмном небе.
 
 Сквозь всё это держалось обещание Секвойи: один дом, инструмент, который скачивают, данные, которые остаются вашими.
 

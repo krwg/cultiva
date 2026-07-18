@@ -78,6 +78,12 @@ export async function loadSettings() {
       if (typeof saved.focusHideChrome === 'boolean') {
         settings.focusHideChrome = saved.focusHideChrome;
       }
+      if (typeof saved.developerMode === 'boolean') {
+        settings.developerMode = saved.developerMode;
+      }
+      if (typeof saved.devForceReducedMotion === 'boolean') {
+        settings.devForceReducedMotion = saved.devForceReducedMotion;
+      }
       if (typeof saved.headerSearchEnabled === 'boolean') {
         settings.headerSearchEnabled = saved.headerSearchEnabled;
       }

@@ -4,7 +4,7 @@
 
 Cultiva is an offline-first desktop habit tracker. Each habit grows from a **seed** to a **legacy tree** on your machine — no cloud, no account, no telemetry.
 
-**Current release:** [2.2.0 · Rowan](https://github.com/krwg/cultiva/releases/tag/2.2.0)
+**Current release:** [2.3.0 · Rowan](https://github.com/krwg/cultiva/releases/tag/2.3.0)
 
 Prefer the long story? **[Cultiva Progress](https://github.com/krwg/cultiva/blob/main/CultivaProgress.md)** — Maple → Rowan, English & Russian.
 
