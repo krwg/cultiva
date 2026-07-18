@@ -6,6 +6,7 @@ const CORE_SECTION_ORDER = [
   'profile',
   'appearance',
   'notifications',
+  'search',
   'shortcuts',
   'garden',
   'statistics',
