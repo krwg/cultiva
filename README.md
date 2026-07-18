@@ -27,20 +27,20 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 
 ## Download
 
-**[→ Latest release (2.1.3 · Rowan)](https://github.com/krwg/cultiva/releases/latest)** · **in progress: 2.2.0**
+**[→ Latest release (2.2.0 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
-| **Windows** | `Cultiva-Setup-2.1.1.exe` | NSIS installer — shortcuts, uninstall entry |
-| **Windows** | `Cultiva-Portable-2.1.1.exe` | No install required |
-| **macOS Intel** | `Cultiva-2.0.2-mac-x64.dmg` | Latest multi-platform: 2.0.2 |
-| **macOS Apple Silicon** | `Cultiva-2.0.2-mac-arm64.dmg` | Also `.zip` |
-| **Linux** | `Cultiva-2.0.2-linux-x86_64.AppImage` | Single file, no root |
-| **Linux** | `Cultiva-2.0.2-linux-amd64.deb` | Debian / Ubuntu |
+| **Windows** | `Cultiva-Setup-2.2.0.exe` | NSIS installer — shortcuts, uninstall entry |
+| **Windows** | `Cultiva-Portable-2.2.0.exe` | No install required |
+| **macOS Intel** | `Cultiva-2.2.0-mac-x64.dmg` | Also `.zip` |
+| **macOS Apple Silicon** | `Cultiva-2.2.0-mac-arm64.dmg` | Also `.zip` |
+| **Linux** | `Cultiva-2.2.0-linux-x86_64.AppImage` | Single file, no root |
+| **Linux** | `Cultiva-2.2.0-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [2.1.2 Rowan](docs/release-notes-v2.1.2-rowan-github.md) · [2.1.1 Rowan](docs/release-notes-v2.1.1-rowan-github.md) · [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
+**Release notes:** [2.2.0 Rowan](docs/release-notes-v2.2.0-rowan-github.md) · [2.1.3 Rowan](docs/release-notes-v2.1.3-rowan-github.md) · [2.1.2 Rowan](docs/release-notes-v2.1.2-rowan-github.md) · [2.1.1 Rowan](docs/release-notes-v2.1.1-rowan-github.md) · [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
 
-> **Upgrading:** your garden is preserved. Export a backup under **Settings → Data** before updating, just in case.
+> **Upgrading:** your garden is preserved. Export a backup under **Settings → Storage** before updating, just in case.
 
 ---
 
@@ -100,15 +100,15 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.1.3+**) and registry **[3.5.3](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.2.0+**) and registry **[3.5.4](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
-| Weather | 2.3.2 | Header + garden |
+| Weather | 2.6.0 | Header + garden (Neo optional) |
 | Time | 2.2.2 | Header |
-| Radio | 2.2.0 | Header |
+| Radio | 2.4.0 | Header (player sheet + Neo FX) |
 | Pomodoro | 1.2.1 | Header |
-| Quote of the Day | 1.3.2 | Garden |
+| Quote of the Day | 1.6.0 | Garden (500 EN + 500 RU) |
 | Habit Reflection | 1.1.0 | Hooks |
 | Weekly Stats | 1.0.0 | Garden + hooks |
 | Routine | 1.0.0 | Garden + hooks |
@@ -167,12 +167,12 @@ Issues, PRs, and commit messages in **English**. In-app strings: `src/core/i18n.
 
 ## Discord Rich Presence
 
-When Discord is running locally, Cultiva can show a simple presence line. Toggle under **Settings → Discord**.
+When Discord is running locally, Cultiva can show **activity-based** Rich Presence (habit counts / streaks, Focus session, Get Cultiva + GitHub buttons). Toggle under **Settings → Discord**.
 
 ---
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.1.2 · Rowan**
+Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.2.0 · Rowan**
 
 </div>

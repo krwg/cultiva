@@ -34,7 +34,7 @@ You can replay parts of setup later in **Settings**.
 
 - Stored locally in **IndexedDB** (Electron `userData`)
 - **No account** required
-- Export anytime: **Settings → Data → Export** (JSON or ZIP)
+- Export anytime: **Settings → Storage → Export** (JSON or ZIP)
 - **Auto-backup:** 7 rotating snapshots in the app data folder when enabled
 
 ## Upgrading

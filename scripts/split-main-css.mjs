@@ -88,3 +88,4 @@ body.ambient-paused [id^="bg-"] * {
 
 writeFileSync(shellOut, `${ambientExtract.shell.trim()}\n${SHELL_PERF_FOOTER}`);
 console.log('[split-main-css] shell.css + public/styles/themes|ambient written');
+console.log('[split-main-css] Edit src/styles/main.css only — shell.css is generated.');

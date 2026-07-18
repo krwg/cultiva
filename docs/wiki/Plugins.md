@@ -6,7 +6,7 @@ Official extensions live in **[cultiva-plugins](https://github.com/krwg/cultiva-
 
 
 
-**Requires Cultiva ≥ 2.0.0** (recommended **2.0.2+**) and registry **3.5.1**.
+**Requires Cultiva ≥ 2.0.0** (recommended **2.2.0+**) and registry **3.5.4**.
 
 
 
@@ -44,15 +44,15 @@ Install/uninstall requires the **desktop app** (Electron), not the browser-only 
 
 |--------|---------|------------------|
 
-| Weather | 2.3.2 | Header + optional garden chip |
+| Weather | 2.6.0 | Header + optional garden chip |
 
 | Time | 2.2.2 | Header |
 
-| Radio | 2.2.0 | Header (SomaFM) |
+| Radio | 2.4.0 | Header (SomaFM + player Neo) |
 
 | Pomodoro | 1.2.1 | Header |
 
-| Quote of the Day | 1.3.2 | Garden |
+| Quote of the Day | 1.6.0 | Garden (500 EN + 500 RU) |
 
 | Streak Celebrator | 1.1.0 | Garden + completion hook |
 

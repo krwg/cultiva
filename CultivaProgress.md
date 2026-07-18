@@ -11,7 +11,7 @@
 
 | | |
 |:--|:--|
-| **Latest** | [2.1.1 Rowan](https://github.com/krwg/cultiva/releases/tag/2.1.1) · **2.1.2** (garden beds + Weather Neo, commit) |
+| **Latest** | [**2.2.0 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.2.0) · beds · settings IA · glyph-s 2.7 · Discord activity |
 | **In short** | Offline-first habit garden · no telemetry · habits you can *see* grow |
 | **License** | GPL-3.0 · by [krwg](https://github.com/krwg) |
 
@@ -86,7 +86,7 @@ A short map before the longer walk. Each row is a *season*, not a feature dump.
 | mid May | **0.4** | **Coconut** | One downloadable Windows app in this repo; web pages step aside |
 | late May | **1.1** | **Cypress** | The app starts to feel like a daily tool — search, keys, backups |
 | early Jul | **1.7** | **Linden** | Same garden on Windows, Mac, and Linux; gentler first launch |
-| mid Jul | **2.0–2.1** | **Rowan** | Graphite look, richer plugins, schedules; careful Windows fixes |
+| mid Jul | **2.0–2.2** | **Rowan** | Graphite look, beds, search, Discord presence; careful polish |
 
 ```
 static page → Maple (browser) → Aspen (IDB + Desktop sibling)
@@ -294,6 +294,10 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 
 **2.1.2** lets you **drag cards** and group habits into custom **beds** — your layout, not just the category strip. The Weather plugin gained opt-in **Weather Neo**: richer gradients, time-of-day tint, soft in-card rain/snow/glow, and a longer forecast sheet — still fine on Cultiva 1.7+, fancy when you flip the switch.
 
+**2.1.3** brought a Cultiva-styled **plugin store**, a local **glyph search** index (habits, plugins, beds, events, settings), a compact centered footer line, and companion Radio Neo on the player sheet.
+
+**2.2.0** is the layout and presence chapter: beds become **horizontal rows** under plugin widgets (three habits each), the **footer pins to the window**, Settings grow clearer rooms (Focus, Storage, Updates, per-plugin notifies), **glyph-s 2.7** powers search with a rebuild progress bar, and **Discord** finally shows what you are growing — activity, streaks, Focus sessions — with Get Cultiva and GitHub buttons. Quote ships **500 + 500** curated lines. The garden stays offline; only the doors you open (updates, plugins, optional Discord) reach the network.
+
 Through all of that, the Sequoia promise held: one home, a tool you download, data that stays yours.
 
 ---
@@ -396,7 +400,7 @@ Features come and go. The metaphor does not: plant something, show up, watch it 
 | сер. мая | **0.4** | **Кокос** | Одно скачиваемое Windows-приложение в этом репо; веб-страницы уходят |
 | кон. мая | **1.1** | **Кипарис** | Приложение начинает ощущаться ежедневным инструментом |
 | нач. июл | **1.7** | **Липа** | Тот же сад на Windows, Mac и Linux; мягче первый запуск |
-| сер. июл | **2.0–2.1** | **Рябина** | Графитовый вид, богаче плагины, расписания; аккуратные фиксы |
+| сер. июл | **2.0–2.2** | **Рябина** | Графит, грядки, поиск, Discord presence; аккуратный полиш |
 
 ```
 статика → Клён (браузер) → Осина (IDB + соседний Desktop)
@@ -603,6 +607,10 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 **2.1.1** исправила больной вечерний баг: «Обновить сад» больше не стирало список; сохранения перестали гонкой затирать хорошие бэкапы; подвал стал короткой центрированной строкой версии; теплокарту в настройках можно выключить, если она просто не нравится глазу.
 
 **2.1.2** даёт **перетаскивание карточек** и свои **грядки** — раскладка сада как хочется, а не только по категориям. У плагина «Погода» появился опциональный режим **Погода Нео**: более живые градиенты, тонировка по времени суток, мягкий дождь/снег/сияние в карточке и более длинное окно прогноза — на Cultiva 1.7+ всё работает, а «крутой» вид включается переключателем.
+
+**2.1.3** принесла магазин плагинов в стиле Cultiva, локальный индекс **glyph-поиска** (привычки, плагины, грядки, события, настройки), компактную строку версии в подвале и Radio Neo на листе плеера.
+
+**2.2.0** — глава про раскладку и присутствие: грядки стали **горизонтальными рядами** под виджетами плагинов (по три привычки), **подвал прибит к окну**, в настройках появились понятные комнаты (Фокус, Хранилище, Обновления, мьюты уведомлений плагинов), **glyph-s 2.7** крутит поиск с прогрессом пересборки, а **Discord** наконец показывает, что вы растите — активность, серии, сессии Фокуса — с кнопками Get Cultiva и GitHub. Quote отдаёт **500 + 500** отобранных цитат. Сад остаётся офлайн; в сеть выходят только двери, которые вы сами открываете.
 
 Сквозь всё это держалось обещание Секвойи: один дом, инструмент, который скачивают, данные, которые остаются вашими.
 

@@ -1,6 +1,6 @@
 # Features
 
-Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.0.0-rowan-github.md).
+Overview of **Cultiva 2.2.0 · Rowan**. Full notes: [release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.2.0-rowan-github.md).
 
 **Engines:** CoreV6 · GrowthKit3 · IDB3 · PLE1 (Plugin Engine 1)
 
@@ -9,11 +9,12 @@ Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://gith
 ## Garden
 
 - Visual habit cards with **five growth stages**
+- **Horizontal beds** under plugin widgets (max **3** habits per bed; rename/delete; drag-and-drop)
 - **Focus mode** for fewer distractions
 - Habit **search** (`Ctrl/Cmd+F`) powered by **glyph-s 2.7** (can be hidden from the header in Settings → Search)
-- **Context menu** on habit cards
+- **Context menu** on habit cards and beds
 - **Keyboard shortcuts** — press **F1** for contextual help
-- Plugin widgets sized to match habit cards
+- Plugin widgets sized to match habit cards, in a dedicated plugins row
 
 ## Habits & streaks
 
@@ -27,6 +28,7 @@ Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://gith
 ## Calendar
 
 - Month, week, and day views
+- Aggregated **year heatmap** for all habits (toggle in Settings → Statistics)
 - Regional holidays (configurable)
 - Same **theme and ambient background** as the garden
 - Plugin rail for calendar widgets
@@ -36,11 +38,12 @@ Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://gith
 
 | Action | Where |
 |--------|--------|
-| Export JSON / ZIP | Settings → Data |
-| Export iCal | Settings → Data |
-| Import with preview | Settings → Data |
-| Auto-backup (7 files) | Settings → Data (toggle) |
-| Full reset | Settings → Data (removes habits, settings, plugins) |
+| Export JSON / ZIP | Settings → Storage |
+| Export iCal | Settings → Storage |
+| Import with preview | Settings → Storage |
+| Auto-backup (7 files) | Settings → Storage (toggle) |
+| Clear search cache | Settings → Storage |
+| Full reset | Settings → Storage (removes habits, settings, plugins) |
 
 ## Appearance
 
@@ -50,13 +53,16 @@ Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://gith
 - Optional **accent color** override
 - **Auto** light/dark following system preference
 - `prefers-reduced-motion` slows or disables ambient animation
+- Footer pinned to the bottom of the window
 
 ## Plugins
 
 - Official catalog: [cultiva-plugins](https://github.com/krwg/cultiva-plugins)
+- Cultiva-styled store: search + category/sort chips, Featured filter, Details (README / changelog)
 - **sha256** integrity check on every file at install
 - Sandboxed iframe; permissions: `network`, `storage`, `ui`, `habits.read`, `habits.write`
 - Manifest-driven **settings UI** and **contributions** (themes, backgrounds, sounds, nav)
+- Per-plugin notification mute in Settings → Notifications
 
 ## Platform
 
@@ -68,7 +74,7 @@ Overview of **Cultiva 2.0.0 · Rowan**. Full notes: [release notes](https://gith
 
 ## Localization
 
-- **~348** English and Russian string pairs
+- **~348+** English and Russian string pairs
 - Language switch in Settings or onboarding
 
 ## Optional integrations
