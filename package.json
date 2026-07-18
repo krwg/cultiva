@@ -168,18 +168,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
-    "electron": "^40.10.6",
-    "electron-builder": "^26.15.6",
-    "eslint": "^10.2.0",
-    "globals": "^17.5.0",
+    "concurrently": "^10.0.3",
+    "cross-env": "^10.1.0",
+    "electron": "^43.1.1",
+    "electron-builder": "^26.15.7",
+    "eslint": "^10.7.0",
+    "globals": "^17.7.0",
     "happy-dom": "^20.10.6",
     "jimp": "^1.6.0",
-    "png-to-ico": "^2.1.8",
-    "vite": "^6.4.3",
-    "vitest": "^3.2.4",
-    "wait-on": "^7.2.0"
+    "png-to-ico": "^3.0.2",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10",
+    "wait-on": "^9.0.10"
   },
   "dependencies": {
     "archiver": "^7.0.1",
