@@ -15,7 +15,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Sheet `data-url` action payloads for plugin UI chips
 
 ### Notes
-- Companion Radio **2.5.0** / registry **3.5.8**
+- Companion Radio **2.5.1** (install integrity / LF hashes) · registry **3.5.9**
 - Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
 
 ## [2.3.2] — Rowan · 2026-07-18

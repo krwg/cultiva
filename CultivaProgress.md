@@ -304,7 +304,7 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 
 **2.3.2** seals two leaks: Developer Mode finally disappears from Settings after Hide/Off (flex was fighting `hidden`), and Weather **2.7.2** puts °C in the tray tooltip and menu.
 
-**2.3.3** lets plugins share the tray without stomping each other, and ships Radio **2.5** — playlist paste that actually works, stream history, ten more SomaFM rooms, and the station name in the tray.
+**2.3.3** lets plugins share the tray without stomping each other, and ships Radio **2.5** — playlist paste that actually works, stream history, ten more SomaFM rooms, and the station name in the tray. Radio **2.5.1** fixes store install when Windows CRLF hashes disagreed with GitHub LF bytes.
 
 Through all of that, the Sequoia promise held: one home, a tool you download, data that stays yours.
 
@@ -626,7 +626,7 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 
 **2.3.2** закрывает два бага: пункт Developer снова прячется после Hide/Off, а Weather **2.7.2** показывает °C в tooltip и меню трея.
 
-**2.3.3** делит трей между плагинами без войны, а Radio **2.5** наконец переваривает вставленные `.m3u`/`.pls`, помнит историю потоков, добавляет десять станций и пишет текущую волну в трей.
+**2.3.3** делит трей между плагинами без войны, а Radio **2.5** наконец переваривает вставленные `.m3u`/`.pls`, помнит историю потоков, добавляет десять станций и пишет текущую волну в трей. **2.5.1** чинит установку из магазина (хеши LF vs CRLF).
 
 Сквозь всё это держалось обещание Секвойи: один дом, инструмент, который скачивают, данные, которые остаются вашими.
 

@@ -104,7 +104,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.3.3+**) and registry **[3.5.8](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.3.3+**) and registry **[3.5.9](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
