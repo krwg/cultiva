@@ -422,6 +422,9 @@ function _mountPluginMainSheet(pluginId, html) {
     if (t.dataset.station) {
       payload.stationId = t.dataset.station;
     }
+    if (t.dataset.url) {
+      payload.url = t.dataset.url;
+    }
     if (t.dataset.format) {
       payload.format = t.dataset.format;
     }
@@ -796,7 +799,7 @@ function _wireSandboxHost(host, pluginId, manifest) {
   host.setHandler('onUiTrayTooltip', (data) => {
     const text = data && data.text != null ? String(data.text) : '';
     if (window.electron?.setTrayTooltip) {
-      void window.electron.setTrayTooltip(text);
+      void window.electron.setTrayTooltip(text, pluginId);
     }
   });
 
@@ -808,13 +811,16 @@ function _wireSandboxHost(host, pluginId, manifest) {
       enabled: !(item && item.enabled === false)
     })).filter((item) => item.id && item.label);
     if (window.electron?.setTrayPluginItems) {
-      void window.electron.setTrayPluginItems(items);
+      void window.electron.setTrayPluginItems(items, pluginId);
     }
   });
 
   host.setHandler('onUiTrayClear', () => {
     if (window.electron?.clearTrayPluginItems) {
-      void window.electron.clearTrayPluginItems();
+      void window.electron.clearTrayPluginItems(pluginId);
+    }
+    if (window.electron?.setTrayTooltip) {
+      void window.electron.setTrayTooltip('', pluginId);
     }
   });
 }

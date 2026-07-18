@@ -20,9 +20,9 @@ contextBridge.exposeInMainWorld('electron', {
 
   showNativeNotification: (payload) => ipcRenderer.invoke('native-notification:show', payload),
   syncTrayHabits: (habits) => ipcRenderer.invoke('tray:sync-habits', habits),
-  setTrayTooltip: (text) => ipcRenderer.invoke('tray:set-tooltip', text),
-  setTrayPluginItems: (items) => ipcRenderer.invoke('tray:set-plugin-items', items),
-  clearTrayPluginItems: () => ipcRenderer.invoke('tray:clear-plugin-items'),
+  setTrayTooltip: (text, pluginId) => ipcRenderer.invoke('tray:set-tooltip', text, pluginId),
+  setTrayPluginItems: (items, pluginId) => ipcRenderer.invoke('tray:set-plugin-items', items, pluginId),
+  clearTrayPluginItems: (pluginId) => ipcRenderer.invoke('tray:clear-plugin-items', pluginId),
   onTrayCompleteHabit: (callback) => ipcRenderer.on('tray:complete-habit', (_event, habitId) => callback(habitId)),
   onTrayPluginAction: (cb) => ipcRenderer.on('tray:plugin-action', (_e, payload) => cb(payload)),
   onSoftReloadGarden: (callback) => ipcRenderer.on('cultiva:soft-reload-garden', () => callback()),

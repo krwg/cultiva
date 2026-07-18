@@ -11,7 +11,7 @@
 
 | | |
 |:--|:--|
-| **Latest** | [**2.3.2 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.3.2) · Dev Mode hide fix · Weather tray ° |
+| **Latest** | [**2.3.3 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.3.3) · PE2 tray merge · Radio 2.5 |
 | **In short** | Offline-first habit garden · no telemetry · habits you can *see* grow |
 | **License** | GPL-3.0 · by [krwg](https://github.com/krwg) |
 
@@ -303,6 +303,8 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 **2.3.1** tunes the dials: Discord presence gets display modes and per-field toggles; Developer Mode starts hidden each session (hide/turn-off, animated backdrop, habit disable); PE2 exposes tray tooltip and menu hooks so Weather can show degrees in the tray.
 
 **2.3.2** seals two leaks: Developer Mode finally disappears from Settings after Hide/Off (flex was fighting `hidden`), and Weather **2.7.2** puts °C in the tray tooltip and menu.
+
+**2.3.3** lets plugins share the tray without stomping each other, and ships Radio **2.5** — playlist paste that actually works, stream history, ten more SomaFM rooms, and the station name in the tray.
 
 Through all of that, the Sequoia promise held: one home, a tool you download, data that stays yours.
 
@@ -623,6 +625,8 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 **2.3.1** крутит тонкие ручки: Discord — режимы и тумблеры полей; Dev Mode скрыт до анлока (скрыть/выключить, аним-фон, отключение привычек); PE2 даёт трей-хуки, и Weather выводит градусы в tooltip.
 
 **2.3.2** закрывает два бага: пункт Developer снова прячется после Hide/Off, а Weather **2.7.2** показывает °C в tooltip и меню трея.
+
+**2.3.3** делит трей между плагинами без войны, а Radio **2.5** наконец переваривает вставленные `.m3u`/`.pls`, помнит историю потоков, добавляет десять станций и пишет текущую волну в трей.
 
 Сквозь всё это держалось обещание Секвойи: один дом, инструмент, который скачивают, данные, которые остаются вашими.
 

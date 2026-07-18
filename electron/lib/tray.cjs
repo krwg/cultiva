@@ -5,8 +5,10 @@ let getMainWindowRef = () => null;
 let resolveTrayImage = null;
 let resolveIconPath = null;
 let habitMenuItems = [];
-let pluginTooltipSuffix = '';
-let pluginMenuItems = [];
+/** @type {Map<string, string>} */
+const pluginTooltips = new Map();
+/** @type {Map<string, Array<{ id: string, label: string, pluginId: string, enabled: boolean }>>} */
+const pluginMenus = new Map();
 
 function showMainWindow(win) {
   if (!win || win.isDestroyed()) {
@@ -17,6 +19,19 @@ function showMainWindow(win) {
   }
   win.show();
   win.focus();
+}
+
+function flattenedPluginMenuItems() {
+  const out = [];
+  for (const items of pluginMenus.values()) {
+    for (const item of items) {
+      out.push(item);
+      if (out.length >= 12) {
+        return out;
+      }
+    }
+  }
+  return out;
 }
 
 function buildMenu() {
@@ -48,6 +63,7 @@ function buildMenu() {
     template.push({ type: 'separator' });
   }
 
+  const pluginMenuItems = flattenedPluginMenuItems();
   if (pluginMenuItems.length) {
     for (const item of pluginMenuItems) {
       template.push({
@@ -88,12 +104,28 @@ function applyTooltip() {
   if (!tray) {
     return;
   }
-  const text = typeof pluginTooltipSuffix === 'string' ? pluginTooltipSuffix.trim() : '';
-  tray.setToolTip(text || 'Cultiva');
+  const parts = [];
+  for (const text of pluginTooltips.values()) {
+    const t = String(text || '').trim();
+    if (t) {
+      parts.push(t);
+    }
+  }
+  tray.setToolTip(parts.length ? parts.join(' · ') : 'Cultiva');
 }
 
-function setTrayTooltip(text) {
-  pluginTooltipSuffix = text != null ? String(text) : '';
+/**
+ * @param {string} text
+ * @param {string} [pluginId]
+ */
+function setTrayTooltip(text, pluginId) {
+  const key = pluginId != null && String(pluginId) ? String(pluginId) : '_default';
+  const value = text != null ? String(text).trim() : '';
+  if (!value) {
+    pluginTooltips.delete(key);
+  } else {
+    pluginTooltips.set(key, value);
+  }
   applyTooltip();
 }
 
@@ -132,7 +164,7 @@ function initTray({ getMainWindow, resolveAppIconPath, resolveTrayIconImage }) {
   }
   getMainWindowRef = getMainWindow;
   resolveIconPath = resolveAppIconPath;
-  resolveTrayImage = resolveTrayIconImage || null;
+  resolveTrayImage = resolveTrayIconImage;
   const image = buildTrayImage();
   if (!image) {
     console.warn('[Tray] Skipped — no usable tray icon');
@@ -141,7 +173,7 @@ function initTray({ getMainWindow, resolveAppIconPath, resolveTrayIconImage }) {
   try {
     tray = new Tray(image);
   } catch (e) {
-    console.warn('[Tray] Init failed:', e && e.message ? e.message : e);
+    console.warn('[Tray] Failed to create tray:', e && e.message ? e.message : e);
     tray = null;
     return null;
   }
@@ -164,19 +196,40 @@ function updateTrayHabits(habits) {
   refreshMenu();
 }
 
-function setTrayPluginItems(items) {
+/**
+ * @param {Array<{ id?: string, label?: string, pluginId?: string, enabled?: boolean }>} items
+ * @param {string} [pluginId]
+ */
+function setTrayPluginItems(items, pluginId) {
   const list = Array.isArray(items) ? items : [];
-  pluginMenuItems = list.slice(0, 6).map((item) => ({
+  const inferredId = pluginId != null && String(pluginId)
+    ? String(pluginId)
+    : (list.find((i) => i && i.pluginId)?.pluginId || '_default');
+  const key = String(inferredId || '_default');
+  const mapped = list.slice(0, 6).map((item) => ({
     id: String(item && item.id != null ? item.id : ''),
     label: String(item && item.label != null ? item.label : ''),
-    pluginId: String(item && item.pluginId != null ? item.pluginId : ''),
-    enabled: item && item.enabled !== false
+    pluginId: String(item && item.pluginId != null ? item.pluginId : key),
+    enabled: !(item && item.enabled === false)
   })).filter((item) => item.id && item.label);
+
+  if (!mapped.length) {
+    pluginMenus.delete(key);
+  } else {
+    pluginMenus.set(key, mapped);
+  }
   refreshMenu();
 }
 
-function clearTrayPluginItems() {
-  pluginMenuItems = [];
+/**
+ * @param {string} [pluginId]
+ */
+function clearTrayPluginItems(pluginId) {
+  if (pluginId != null && String(pluginId)) {
+    pluginMenus.delete(String(pluginId));
+  } else {
+    pluginMenus.clear();
+  }
   refreshMenu();
 }
 

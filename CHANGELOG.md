@@ -4,6 +4,20 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.3.3] — Rowan · 2026-07-19
+
+**Codename:** Rowan · PE2 tray merge · Radio 2.5 companion
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.3) · [Release notes](docs/release-notes-v2.3.3-rowan-github.md)
+
+### Added
+- PE2 tray contributions merge by plugin id (Weather + Radio coexist)
+- Sheet `data-url` action payloads for plugin UI chips
+
+### Notes
+- Companion Radio **2.5.0** / registry **3.5.8**
+- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
+
 ## [2.3.2] — Rowan · 2026-07-18
 
 **Codename:** Rowan · Dev Mode hide fix · Weather tray °

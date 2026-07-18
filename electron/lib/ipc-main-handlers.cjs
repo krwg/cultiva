@@ -188,10 +188,10 @@ function registerCoreIpc(ipcMain, {
     }
   });
 
-  ipcMain.handle('tray:set-tooltip', (event, text) => {
+  ipcMain.handle('tray:set-tooltip', (event, text, pluginId) => {
     try {
       if (trayMod && typeof trayMod.setTrayTooltip === 'function') {
-        trayMod.setTrayTooltip(text);
+        trayMod.setTrayTooltip(text, pluginId);
       }
       return { ok: true };
     } catch (e) {
@@ -199,10 +199,10 @@ function registerCoreIpc(ipcMain, {
     }
   });
 
-  ipcMain.handle('tray:set-plugin-items', (event, items) => {
+  ipcMain.handle('tray:set-plugin-items', (event, items, pluginId) => {
     try {
       if (trayMod && typeof trayMod.setTrayPluginItems === 'function') {
-        trayMod.setTrayPluginItems(items);
+        trayMod.setTrayPluginItems(items, pluginId);
       }
       return { ok: true };
     } catch (e) {
@@ -210,10 +210,10 @@ function registerCoreIpc(ipcMain, {
     }
   });
 
-  ipcMain.handle('tray:clear-plugin-items', () => {
+  ipcMain.handle('tray:clear-plugin-items', (event, pluginId) => {
     try {
       if (trayMod && typeof trayMod.clearTrayPluginItems === 'function') {
-        trayMod.clearTrayPluginItems();
+        trayMod.clearTrayPluginItems(pluginId);
       }
       return { ok: true };
     } catch (e) {
