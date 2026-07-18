@@ -122,7 +122,7 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
 
   gardenEl.addEventListener('dragend', (e) => {
     e.target.closest('.habit-card')?.classList.remove('habit-card--dragging');
-    gardenEl.querySelectorAll('.garden-bed--drop-target').forEach((el) => el.classList.remove('garden-bed--drop-target'));
+    clearDropTargets(gardenEl);
     dragId = null;
   });
 
@@ -134,8 +134,12 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
     }
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    gardenEl.querySelectorAll('.garden-bed--drop-target').forEach((el) => el.classList.remove('garden-bed--drop-target'));
-    bed?.classList.add('garden-bed--drop-target');
+    clearDropTargets(gardenEl);
+    if (bed) {
+      bed.classList.add('garden-bed--drop-target');
+      bed.querySelector('.garden-bed-header')?.classList.add('garden-bed--drop-target');
+      bed.querySelector('.garden-bed-dropzone')?.classList.add('garden-bed--drop-target');
+    }
   });
 
   gardenEl.addEventListener('drop', (e) => {
@@ -151,9 +155,13 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
     if (overCard && overCard.dataset.id !== id && overCard.dataset.cardMode === 'active') {
       beforeId = overCard.dataset.id;
     }
-    gardenEl.querySelectorAll('.garden-bed--drop-target').forEach((el) => el.classList.remove('garden-bed--drop-target'));
+    clearDropTargets(gardenEl);
     void onReorder?.(id, bedId, beforeId);
   });
+}
+
+function clearDropTargets(gardenEl) {
+  gardenEl.querySelectorAll('.garden-bed--drop-target').forEach((el) => el.classList.remove('garden-bed--drop-target'));
 }
 
 export function makeHabitCardDraggable(card) {
@@ -163,7 +171,7 @@ export function makeHabitCardDraggable(card) {
   card.setAttribute('draggable', 'true');
 }
 
-export function renderBedShell(bed, title, { showHeader }) {
+export function renderBedShell(bed, title, { showHeader, emptyLabel }) {
   const wrap = document.createElement('section');
   wrap.className = 'garden-bed';
   wrap.dataset.bedId = toDomBedId(bed.id);
@@ -178,5 +186,28 @@ export function renderBedShell(bed, title, { showHeader }) {
   const cards = document.createElement('div');
   cards.className = 'garden-bed-cards';
   wrap.appendChild(cards);
+  if (emptyLabel) {
+    const zone = document.createElement('div');
+    zone.className = 'garden-bed-dropzone';
+    zone.textContent = emptyLabel;
+    cards.appendChild(zone);
+  }
   return { wrap, cards };
+}
+
+export function syncBedDropzone(cardsEl, isEmpty, emptyLabel) {
+  if (!cardsEl) {
+    return;
+  }
+  let zone = cardsEl.querySelector(':scope > .garden-bed-dropzone');
+  if (isEmpty) {
+    if (!zone) {
+      zone = document.createElement('div');
+      zone.className = 'garden-bed-dropzone';
+      cardsEl.appendChild(zone);
+    }
+    zone.textContent = emptyLabel || '';
+  } else if (zone) {
+    zone.remove();
+  }
 }

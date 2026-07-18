@@ -1344,6 +1344,12 @@ export const pluginManager = {
     return updates;
   },
 
+  /** Force-fetch registry (bypass cache) and return catalog rows. */
+  async refreshPluginStore() {
+    cacheInvalidate('plugin-registry');
+    return this.getAvailablePlugins();
+  },
+
   async getAvailablePlugins() {
     try {
       return await cacheFetch('plugin-registry', async () => {

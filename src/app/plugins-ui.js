@@ -25,6 +25,96 @@ export async function checkPluginUpdatesToast() {
   await notifyPluginUpdatesIfAny();
 }
 
+let _settingsCtxBound = false;
+let _settingsCtxMenu = null;
+
+export async function refreshPluginStoreAndUpdates() {
+  const t = tStrings();
+  showNotification('', t.pluginStoreRefreshing || 'Refreshing plugin store…');
+  try {
+    await pluginManager.refreshPluginStore();
+    await renderPluginsSection();
+    renderPluginHeaderItems();
+    const updates = await pluginManager.getAvailablePluginUpdates();
+    if (!updates.length) {
+      showNotification('', t.pluginStoreUpToDate || 'Plugin store updated. All plugins are up to date.');
+      return { updated: 0 };
+    }
+    let ok = 0;
+    for (const row of updates) {
+      try {
+        if (typeof window.installPlugin === 'function') {
+          await window.installPlugin(row.id);
+          ok += 1;
+        }
+      } catch (e) {
+        console.warn('[Plugins] Update failed:', row.id, e);
+      }
+    }
+    await renderPluginsSection();
+    renderPluginHeaderItems();
+    const msg = (t.pluginStoreUpdatedCount || 'Plugin store refreshed. Updated {n} plugin(s).')
+      .replace('{n}', String(ok));
+    showNotification('', msg);
+    return { updated: ok };
+  } catch (e) {
+    console.error('[Plugins] Store refresh failed:', e);
+    showNotification('', t.pluginStoreRefreshFailed || 'Could not refresh the plugin store.');
+    return { updated: 0, error: e };
+  }
+}
+
+function closeSettingsContextMenu() {
+  _settingsCtxMenu?.remove();
+  _settingsCtxMenu = null;
+}
+
+export function bindSettingsPluginsContextMenu() {
+  if (_settingsCtxBound) {
+    return;
+  }
+  const modal = document.getElementById('settings-modal');
+  if (!modal) {
+    return;
+  }
+  _settingsCtxBound = true;
+
+  modal.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('input, textarea, select, [contenteditable="true"]')) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    closeSettingsContextMenu();
+    const t = tStrings();
+    const menu = document.createElement('div');
+    menu.className = 'cv-context-menu';
+    menu.setAttribute('role', 'menu');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cv-context-menu-item';
+    btn.setAttribute('role', 'menuitem');
+    btn.textContent = t.contextRefreshPluginStore || 'Refresh plugin store';
+    btn.addEventListener('click', () => {
+      closeSettingsContextMenu();
+      void refreshPluginStoreAndUpdates();
+    });
+    menu.appendChild(btn);
+    document.body.appendChild(menu);
+    const rect = menu.getBoundingClientRect();
+    menu.style.left = `${Math.max(8, Math.min(e.clientX, window.innerWidth - rect.width - 8))}px`;
+    menu.style.top = `${Math.max(8, Math.min(e.clientY, window.innerHeight - rect.height - 8))}px`;
+    _settingsCtxMenu = menu;
+  });
+
+  document.addEventListener('click', closeSettingsContextMenu);
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') {
+      closeSettingsContextMenu();
+    }
+  });
+}
+
 async function notifyPluginUpdatesIfAny() {
   if (pluginUpdatesToastShown || !settings.pluginsEnabled) {
     return;
@@ -51,6 +141,7 @@ function registryUpdateVersion(registryPlugins, pluginId, installedVersion) {
 }
 
 export async function renderPluginsSection() {
+  bindSettingsPluginsContextMenu();
   const pluginsToggle = document.getElementById('toggle-plugins');
   if (pluginsToggle) {
     pluginsToggle.checked = settings.pluginsEnabled;

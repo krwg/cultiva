@@ -13,7 +13,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 - Drag-and-drop reorder for habit cards in the garden
 - Custom garden **beds** (грядки) — UI grouping independent of categories; create / rename / delete / move via context menu
-- Weather plugin companion **2.4.0**: opt-in **Weather Neo** (geometry gradients, time-of-day tint, in-card CSS animations, low-power aware), compact longer forecast sheet with humidity/wind, hourly and 7-day outlook
+- Weather plugin companion **2.4.0+**: opt-in **Weather Neo**, hourly and 7-day outlook
+- Settings context menu: **Refresh plugin store** (force registry fetch + update installed plugins)
+
+### Fixed
+- Garden grid preserved with beds (`display: contents`) — habits no longer stack in one column; plugin garden cards match habit card size again
+- Footer pinned to the window bottom (no empty gap below the version line)
+- Ambient background layers wrapped so they do not participate in the flex column after the footer
 
 ### Notes
 - Weather Neo stays compatible with Cultiva **1.7+** (`minAppVersion` unchanged); Neo is a plugin setting

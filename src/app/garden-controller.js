@@ -20,6 +20,7 @@ import {
   bindGardenDragDrop,
   makeHabitCardDraggable,
   renderBedShell,
+  syncBedDropzone,
   getGardenBeds
 } from './garden-layout.js';
 
@@ -274,6 +275,11 @@ function syncActiveGardenWithBeds(gardenEl, active, t) {
     }
     renderedDomIds.push(domId);
     syncHabitCards(cardsEl, list, false, 'active');
+    syncBedDropzone(
+      cardsEl,
+      list.length === 0 && showHeaders,
+      t.bedDropHint || 'Drop habits here'
+    );
   });
 
   // Order bed sections to match bedRenderOrder
