@@ -116,6 +116,9 @@ function buildSandboxBootstrapDocument(pluginId) {
         openCalendar: function () { return rpc('app.openCalendar', []); },
         reloadGarden: function () { return rpc('app.reloadGarden', []); },
         syncTray: function () { return rpc('app.syncTray', []); },
+        setTrayTooltip: function (text) { return rpc('app.setTrayTooltip', [text]); },
+        setTrayPluginItems: function (items) { return rpc('app.setTrayPluginItems', [items]); },
+        clearTrayPluginItems: function () { return rpc('app.clearTrayPluginItems', []); },
         getBuiltinBackgrounds: function () { return rpc('app.getBuiltinBackgrounds', []); },
         getAppearancePresets: function () { return rpc('app.getAppearancePresets', []); },
         getHabit: function (id) { return rpc('app.getHabit', [id]); },
@@ -189,6 +192,15 @@ function buildSandboxBootstrapDocument(pluginId) {
             icon: opts.icon === undefined ? null : opts.icon,
             labelColor: opts.labelColor === undefined ? null : opts.labelColor
           });
+        },
+        setTrayTooltip: function (text) {
+          send({ type: 'UI_TRAY_TOOLTIP', text: text != null ? String(text) : '' });
+        },
+        registerTrayItems: function (items) {
+          send({ type: 'UI_TRAY_REGISTER', items: Array.isArray(items) ? items : [] });
+        },
+        clearTrayItems: function () {
+          send({ type: 'UI_TRAY_CLEAR' });
         },
         showNotification: function (icon, text) {
           return rpc('ui.showNotification', [icon != null ? icon : '\\uD83D\\uDD0C', text != null ? String(text) : '']);
@@ -312,6 +324,14 @@ function buildSandboxBootstrapDocument(pluginId) {
       if (pluginInstance && typeof pluginInstance.onModalAction === 'function') {
         Promise.resolve(pluginInstance.onModalAction(d.action, d.payload || null)).catch(function (e) {
           console.error('[PluginSandbox] onModalAction error', d.action, e);
+        });
+      }
+      return;
+    }
+    if (d.type === 'TRAY_ACTION') {
+      if (pluginInstance && typeof pluginInstance.onTrayAction === 'function') {
+        Promise.resolve(pluginInstance.onTrayAction(d.id)).catch(function (e) {
+          console.error('[PluginSandbox] onTrayAction error', d.id, e);
         });
       }
       return;
@@ -561,6 +581,27 @@ export class PluginSandboxHost {
     if (d.type === 'UI_UPDATE_HEADER') {
       if (this._handlers.onUiUpdateHeader) {
         this._handlers.onUiUpdateHeader(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_TRAY_TOOLTIP') {
+      if (this._handlers.onUiTrayTooltip) {
+        this._handlers.onUiTrayTooltip(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_TRAY_REGISTER') {
+      if (this._handlers.onUiTrayRegister) {
+        this._handlers.onUiTrayRegister(d);
+      }
+      return;
+    }
+
+    if (d.type === 'UI_TRAY_CLEAR') {
+      if (this._handlers.onUiTrayClear) {
+        this._handlers.onUiTrayClear(d);
       }
       return;
     }

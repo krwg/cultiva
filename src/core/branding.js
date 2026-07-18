@@ -4,8 +4,8 @@ export const BRANDING = {
   CORE_ENGINE: 'CoreV6',
   HABIT_ENGINE: 'GrowthKit3',
   DATABASE: 'IDB3',
-  PLUGIN_ENGINE: 'PLE1',
-  VERSION: '2.3.0',
+  PLUGIN_ENGINE: 'PE2',
+  VERSION: '2.3.1',
   CODENAME: 'Rowan',
 
   KEYS: {

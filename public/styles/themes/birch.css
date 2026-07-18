@@ -28,49 +28,64 @@ body.theme-birch {
     --calendar-4: #0b0b0b;
 }
 
-@media (prefers-color-scheme: dark) {
-    body.theme-birch {
-        --bg-primary: #ffffff;
-        --bg-secondary: #ffffff;
-        --bg-tertiary: #f4f4f4;
-        --bg-quaternary: #e8e8e8;
-        --text-primary: #0b0b0b;
-        --text-secondary: #3a3a3a;
-        --text-tertiary: #6a6a6a;
-        --border-light: #e0e0e0;
-        --border-medium: #c8c8c8;
-    }
-}
-
 body.theme-birch .add-btn,
+
 body.theme-birch .add-btn:hover,
+
 body.theme-birch .btn-primary,
+
 body.theme-birch .btn-primary:hover,
+
 body.theme-birch .btn-card-primary:not(.completed),
+
 body.theme-birch .dropdown-item.primary,
+
 body.theme-birch .dropdown-item.primary:hover,
+
 body.theme-birch .dynamic-notification-btn,
+
 body.theme-birch .day.today,
+
 body.theme-birch .month-day.today,
+
 body.theme-birch .week-day.today,
+
 body.theme-birch .status-badge.online,
+
 body.theme-birch .btn-danger:hover,
+
 body.theme-birch .btn-danger-outline:hover,
+
 body.theme-birch .btn-card-danger:hover,
+
 body.theme-birch .plugin-btn-install,
+
 body.theme-birch .plugin-btn-install:hover,
+
 body.theme-birch .plugin-btn-get,
+
 body.theme-birch .plugin-btn-get:hover,
+
 body.theme-birch .plugin-btn-settings,
+
 body.theme-birch .plugin-btn-settings:hover,
+
 body.theme-birch .plugin-btn-uninstall:hover,
+
 body.theme-birch .event-btn-primary,
+
 body.theme-birch .event-btn-primary:hover,
+
 body.theme-birch .release-badge.latest,
+
 body.theme-birch .update-status-card.updating .status-icon,
+
 body.theme-birch .update-status-card.available .status-icon,
+
 body.theme-birch .update-status-card.downloaded .status-icon,
+
 body.theme-birch .update-status-card.error .status-icon,
+
 body.theme-birch .user-avatar {
     color: var(--on-light);
 }
@@ -114,8 +129,11 @@ body.theme-birch .btn-primary:hover {
 }
 
 body.theme-birch .habit-card,
+
 body.theme-birch .settings-group-card,
+
 body.theme-birch .modal-content,
+
 body.theme-birch .stat-card {
     background: var(--bg-primary);
     border-color: var(--border-light);
@@ -145,6 +163,7 @@ body.theme-birch .view-btn.active {
 }
 
 body.theme-birch .calendar-grid,
+
 body.theme-birch .event-panel {
     background: var(--bg-primary);
     border-color: var(--border-light);

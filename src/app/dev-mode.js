@@ -116,13 +116,39 @@ export async function enableDeveloperMode({ toast = true } = {}) {
   }
 }
 
+function leaveDeveloperSection() {
+  const active = document.querySelector('.settings-sidebar-item[data-section="developer"].active');
+  if (!active) {
+    return;
+  }
+  const fallback = document.querySelector('.settings-sidebar-item[data-section="general"], .settings-sidebar-item[data-section="appearance"]');
+  if (fallback && typeof window.__cultivaActivateSettingsSection === 'function') {
+    window.__cultivaActivateSettingsSection(fallback);
+  }
+}
+
+/** Re-hide Developer in the sidebar; requires version taps to unlock again. */
+export async function hideDeveloperMode() {
+  settings.developerMode = false;
+  document.body.classList.remove('dev-secret-bg', 'dev-secret-bg--animated', 'developer-mode');
+  await saveSettings();
+  leaveDeveloperSection();
+  syncDeveloperUi();
+  if (window.cultivaDev) {
+    delete window.cultivaDev;
+  }
+  showNotification('', t().devModeHidden || 'Developer mode hidden');
+}
+
 export async function disableDeveloperMode() {
   settings.developerMode = false;
+  settings.devAnimBackground = false;
   stopChaosMode();
   clearSessionOverrides();
   simulatedDate = null;
-  document.body.classList.remove('dev-secret-bg');
+  document.body.classList.remove('dev-secret-bg', 'dev-secret-bg--animated', 'developer-mode');
   await saveSettings();
+  leaveDeveloperSection();
   syncDeveloperUi();
   if (window.cultivaDev) {
     delete window.cultivaDev;
@@ -138,6 +164,8 @@ function syncDeveloperUi() {
   document.body.classList.toggle('developer-mode', isDeveloperMode());
   if (isDeveloperMode()) {
     refreshDevPanel();
+  } else {
+    document.body.classList.remove('dev-secret-bg', 'dev-secret-bg--animated');
   }
 }
 
@@ -191,7 +219,10 @@ function refreshDevPanel() {
     ['dev-flag-auto-backup', 'autoBackupEnabled'],
     ['dev-flag-auto-update', 'autoUpdateEnabled'],
     ['dev-flag-check-updates', 'checkUpdatesEnabled'],
-    ['dev-flag-force-reduced', 'devForceReducedMotion']
+    ['dev-flag-force-reduced', 'devForceReducedMotion'],
+    ['dev-flag-plugins', 'pluginsEnabled'],
+    ['dev-flag-header-search', 'headerSearchEnabled'],
+    ['dev-flag-anim-bg', 'devAnimBackground']
   ];
   for (const [id, key] of flagIds) {
     const el = document.getElementById(id);
@@ -201,11 +232,50 @@ function refreshDevPanel() {
   }
 
   document.body.classList.toggle('ambient-paused', settings.devForceReducedMotion === true || settings.lowPowerMode === true);
-  if (settings.devForceReducedMotion) {
-    document.documentElement.classList.add('dev-force-reduced-motion');
-  } else {
-    document.documentElement.classList.remove('dev-force-reduced-motion');
+  document.documentElement.classList.toggle('dev-force-reduced-motion', settings.devForceReducedMotion === true);
+  document.body.classList.toggle('dev-secret-bg', settings.devAnimBackground === true);
+  document.body.classList.toggle('dev-secret-bg--animated', settings.devAnimBackground === true);
+
+  refreshDevHabitsList();
+}
+
+function refreshDevHabitsList() {
+  const list = document.getElementById('dev-habits-list');
+  if (!list) {
+    return;
   }
+  const all = habits.getAll().filter((h) => (h.progress || 0) < getRuntimeConfig().LEGACY_THRESHOLD);
+  if (!all.length) {
+    list.innerHTML = `<p class="setting-hint">${t().devHabitsEmpty || 'No habits'}</p>`;
+    return;
+  }
+  list.innerHTML = all.map((h) => {
+    const name = escapeHtml(h.treeName || h.name || h.id);
+    const on = h.disabled !== true;
+    return `<div class="dev-habit-row" data-id="${escapeHtml(h.id)}">
+      <span class="dev-habit-name">${name}</span>
+      <button type="button" class="btn-secondary dev-habit-toggle" data-id="${escapeHtml(h.id)}" data-on="${on ? '1' : '0'}">${on ? (t().devDisableHabit || 'Disable') : (t().devEnableHabit || 'Enable')}</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.dev-habit-toggle').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const currentlyOn = btn.dataset.on === '1';
+      await habits.setDisabled(id, currentlyOn);
+      const { renderGarden } = await import('./garden-controller.js');
+      renderGarden();
+      refreshDevHabitsList();
+      showNotification('', currentlyOn ? (t().devHabitDisabled || 'Habit disabled') : (t().devHabitEnabled || 'Habit enabled'));
+    });
+  });
+}
+
+function escapeHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 async function applyFlagFromToggle(key, checked) {
@@ -213,6 +283,13 @@ async function applyFlagFromToggle(key, checked) {
   if (key === 'lowPowerMode' || key === 'devForceReducedMotion') {
     document.body.classList.toggle('ambient-paused', settings.lowPowerMode || settings.devForceReducedMotion);
     document.documentElement.classList.toggle('dev-force-reduced-motion', settings.devForceReducedMotion === true);
+  }
+  if (key === 'devAnimBackground') {
+    document.body.classList.toggle('dev-secret-bg', checked);
+    document.body.classList.toggle('dev-secret-bg--animated', checked);
+  }
+  if (key === 'headerSearchEnabled') {
+    document.body.classList.toggle('header-search-hidden', checked === false);
   }
   if (key === 'showTrophies' || key === 'showNextTreeProgress' || key === 'showGardenHeatmap') {
     const { renderGarden } = await import('./garden-controller.js');
@@ -385,6 +462,12 @@ function exposeCultivaDev() {
     disableSecretBg: () => {
       document.body.classList.remove('dev-secret-bg');
     },
+    setDisabled: async (id, disabled = true) => {
+      await habits.setDisabled(id, disabled);
+      const { renderGarden } = await import('./garden-controller.js');
+      renderGarden();
+      refreshDevHabitsList();
+    },
     getRpcLog: () => rpcLog.slice(),
     onRpc: (fn) => {
       rpcListeners.add(fn);
@@ -427,9 +510,58 @@ function bindDevPanelControls() {
   });
   document.getElementById('dev-secret-bg')?.addEventListener('click', () => {
     document.body.classList.toggle('dev-secret-bg');
+    document.body.classList.toggle('dev-secret-bg--animated', document.body.classList.contains('dev-secret-bg'));
+    settings.devAnimBackground = document.body.classList.contains('dev-secret-bg');
+    void saveSettings();
+  });
+  document.getElementById('dev-hide')?.addEventListener('click', () => {
+    void hideDeveloperMode();
   });
   document.getElementById('dev-disable')?.addEventListener('click', () => {
     void disableDeveloperMode();
+  });
+  document.getElementById('dev-boost-legacy')?.addEventListener('click', async () => {
+    const cfg = getRuntimeConfig();
+    const candidate = habits.getNextLegacyCandidate?.() || habits.getGardenHabits()[0];
+    if (!candidate) {
+      showNotification('', t().devNoHabits || 'No habits');
+      return;
+    }
+    const all = habits.getAll();
+    const h = all.find((x) => x.id === candidate.id);
+    if (h) {
+      h.progress = Math.max(0, cfg.LEGACY_THRESHOLD - 1);
+      const { storage } = await import('../modules/storage.js');
+      await storage.saveHabits(all);
+      const { renderGarden } = await import('./garden-controller.js');
+      renderGarden();
+      showNotification('', t().devBoosted || 'Boosted toward Legacy');
+    }
+  });
+  document.getElementById('dev-reload-plugins')?.addEventListener('click', async () => {
+    try {
+      await pluginManager.init?.();
+      showNotification('', t().devPluginsReloaded || 'Plugins reloaded');
+    } catch (err) {
+      console.warn('[dev] reload plugins', err);
+    }
+  });
+  document.getElementById('dev-open-storage')?.addEventListener('click', () => {
+    if (typeof window.__cultivaActivateSettingsSection === 'function') {
+      const item = document.querySelector('.settings-sidebar-item[data-section="data"]');
+      if (item) {
+        window.__cultivaActivateSettingsSection(item);
+      }
+    }
+  });
+  document.getElementById('dev-copy-rpc')?.addEventListener('click', () => {
+    const text = JSON.stringify(rpcLog.slice(-100), null, 2);
+    try {
+      navigator.clipboard?.writeText(text);
+    } catch {
+      /* ignore */
+    }
+    showNotification('', t().devRpcCopied || 'RPC log copied');
   });
   document.getElementById('dev-simulate-date')?.addEventListener('change', (e) => {
     const v = e.target.value;
@@ -456,7 +588,10 @@ function bindDevPanelControls() {
     'dev-flag-auto-backup': 'autoBackupEnabled',
     'dev-flag-auto-update': 'autoUpdateEnabled',
     'dev-flag-check-updates': 'checkUpdatesEnabled',
-    'dev-flag-force-reduced': 'devForceReducedMotion'
+    'dev-flag-force-reduced': 'devForceReducedMotion',
+    'dev-flag-plugins': 'pluginsEnabled',
+    'dev-flag-header-search': 'headerSearchEnabled',
+    'dev-flag-anim-bg': 'devAnimBackground'
   };
   for (const [id, key] of Object.entries(flagMap)) {
     document.getElementById(id)?.addEventListener('change', (e) => {
@@ -472,13 +607,17 @@ export function initDeveloperMode() {
   if (!Object.prototype.hasOwnProperty.call(settings, 'devForceReducedMotion')) {
     settings.devForceReducedMotion = false;
   }
+  if (!Object.prototype.hasOwnProperty.call(settings, 'devAnimBackground')) {
+    settings.devAnimBackground = false;
+  }
+  // Always start hidden — unlock only via 7 taps on the footer version this session.
+  if (settings.developerMode) {
+    settings.developerMode = false;
+    void saveSettings();
+  }
   bindFooterUnlock();
   bindDevPanelControls();
   syncDeveloperUi();
-  if (isDeveloperMode()) {
-    exposeCultivaDev();
-    printAsciiBanner();
-  }
 }
 
 export const DEV_DEFAULTS = {

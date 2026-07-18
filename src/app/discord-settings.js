@@ -1,8 +1,10 @@
 import { TRANSLATIONS } from '../core/i18n.js';
 import {
   getDiscordPageStrings,
+  getDiscordPrefs,
   getLastDiscordPayload,
-  pushDiscordPresence
+  pushDiscordPresence,
+  saveDiscordPrefs
 } from './discord-presence.js';
 
 let ctx = null;
@@ -29,7 +31,14 @@ function updatePreviewText(details, state) {
 
 function updatePreviewTime() {
   const previewTime = document.getElementById('discord-preview-time');
-  if (!previewTime || sessionStartMs == null) { return; }
+  const prefs = getDiscordPrefs();
+  if (!previewTime) { return; }
+  if (prefs.showElapsed === false) {
+    previewTime.hidden = true;
+    return;
+  }
+  previewTime.hidden = false;
+  if (sessionStartMs == null) { return; }
   const elapsed = Math.floor((Date.now() - sessionStartMs) / 1000);
   const hours = Math.floor(elapsed / 3600);
   const minutes = Math.floor((elapsed % 3600) / 60);
@@ -51,6 +60,75 @@ function syncPreviewFromPayload(payload, locale) {
   const strings = getDiscordPageStrings(locale);
   const row = strings[page] || strings.garden;
   updatePreviewText(row.details, row.state);
+}
+
+function bindDiscordPrefsUi() {
+  const prefs = getDiscordPrefs();
+  const map = [
+    ['discord-show-habits', 'showHabitCount'],
+    ['discord-show-streak', 'showStreak'],
+    ['discord-show-trophies', 'showTrophies'],
+    ['discord-show-elapsed', 'showElapsed'],
+    ['discord-show-buttons', 'showButtons'],
+    ['discord-show-focus', 'showFocusOverride']
+  ];
+  for (const [id, key] of map) {
+    const el = document.getElementById(id);
+    if (!el) { continue; }
+    el.checked = prefs[key] !== false;
+    el.addEventListener('change', async () => {
+      saveDiscordPrefs({ [key]: el.checked });
+      const payload = await pushDiscordPresence();
+      if (payload) {
+        syncPreviewFromPayload(payload, payload.locale);
+      }
+      updatePreviewTime();
+    });
+  }
+
+  const mode = document.getElementById('discord-display-mode');
+  if (mode) {
+    mode.value = prefs.displayMode || 'activity';
+    mode.addEventListener('change', async () => {
+      saveDiscordPrefs({ displayMode: mode.value });
+      const payload = await pushDiscordPresence();
+      if (payload) {
+        syncPreviewFromPayload(payload, payload.locale);
+      }
+    });
+  }
+
+  const image = document.getElementById('discord-image-style');
+  if (image) {
+    image.value = prefs.imageStyle || 'auto';
+    image.addEventListener('change', async () => {
+      saveDiscordPrefs({ imageStyle: image.value });
+      await pushDiscordPresence();
+    });
+  }
+
+  const details = document.getElementById('discord-custom-details');
+  const state = document.getElementById('discord-custom-state');
+  if (details) {
+    details.value = prefs.customDetails || '';
+    details.addEventListener('change', async () => {
+      saveDiscordPrefs({ customDetails: details.value });
+      const payload = await pushDiscordPresence();
+      if (payload) {
+        syncPreviewFromPayload(payload, payload.locale);
+      }
+    });
+  }
+  if (state) {
+    state.value = prefs.customState || '';
+    state.addEventListener('change', async () => {
+      saveDiscordPrefs({ customState: state.value });
+      const payload = await pushDiscordPresence();
+      if (payload) {
+        syncPreviewFromPayload(payload, payload.locale);
+      }
+    });
+  }
 }
 
 async function checkDiscordStatus() {
@@ -115,6 +193,8 @@ export function ensureDiscordSettingsInitialized() {
 
   const savedEnabled = localStorage.getItem('cultiva-discord-enabled') !== 'false';
   if (discordToggle) { discordToggle.checked = savedEnabled; }
+
+  bindDiscordPrefsUi();
 
   if (discordToggle) {
     discordToggle.addEventListener('change', async (e) => {

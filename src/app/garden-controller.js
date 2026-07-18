@@ -104,7 +104,7 @@ function createHabitCard(habit, isTrophy = false, cardMode = 'active') {
   const categoryBadge = categoryName ? `<span class="category-badge" data-i18n-category="${habit.category}">${categoryName}</span>` : '';
   const streakText = habit.currentStreak > 0 ? ` • 🔥 ${habit.currentStreak}` : '';
   const statusBadge = isPausedCard
-    ? `<span class="status-badge">${habit.archived ? (t.habitArchived || 'Archived') : (t.habitPaused || 'Paused')}</span>`
+    ? `<span class="status-badge">${habit.disabled ? (t.habitDisabled || 'Disabled') : habit.archived ? (t.habitArchived || 'Archived') : (t.habitPaused || 'Paused')}</span>`
     : '';
 
   const primaryLabel = isPausedCard

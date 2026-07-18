@@ -68,6 +68,27 @@ export function syncPluginTray() {
   }
 }
 
+export function setPluginTrayTooltip(text) {
+  if (window.electron?.setTrayTooltip) {
+    return window.electron.setTrayTooltip(text != null ? String(text) : '');
+  }
+  return Promise.resolve({ ok: false });
+}
+
+export function setPluginTrayPluginItems(items) {
+  if (window.electron?.setTrayPluginItems) {
+    return window.electron.setTrayPluginItems(Array.isArray(items) ? items : []);
+  }
+  return Promise.resolve({ ok: false });
+}
+
+export function clearPluginTrayPluginItems() {
+  if (window.electron?.clearTrayPluginItems) {
+    return window.electron.clearTrayPluginItems();
+  }
+  return Promise.resolve({ ok: false });
+}
+
 export function getBuiltinBackgroundIds() {
   return ['none', ...AMBIENT_BG_LAYER_IDS, 'custom'];
 }

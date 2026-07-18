@@ -188,6 +188,39 @@ function registerCoreIpc(ipcMain, {
     }
   });
 
+  ipcMain.handle('tray:set-tooltip', (event, text) => {
+    try {
+      if (trayMod && typeof trayMod.setTrayTooltip === 'function') {
+        trayMod.setTrayTooltip(text);
+      }
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e && e.message ? e.message : String(e) };
+    }
+  });
+
+  ipcMain.handle('tray:set-plugin-items', (event, items) => {
+    try {
+      if (trayMod && typeof trayMod.setTrayPluginItems === 'function') {
+        trayMod.setTrayPluginItems(items);
+      }
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e && e.message ? e.message : String(e) };
+    }
+  });
+
+  ipcMain.handle('tray:clear-plugin-items', () => {
+    try {
+      if (trayMod && typeof trayMod.clearTrayPluginItems === 'function') {
+        trayMod.clearTrayPluginItems();
+      }
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e && e.message ? e.message : String(e) };
+    }
+  });
+
   ipcMain.handle('shell:set-titlebar-overlay', (event, options) => {
     const mainWindow = getMainWindow();
     if (!mainWindow || process.platform !== 'win32') {

@@ -43,7 +43,7 @@ function daysBetween(aStr, bStr) {
 
 export const habits = {
   isGardenVisible(habit) {
-    return habit && !habit.paused && !habit.archived;
+    return habit && !habit.paused && !habit.archived && !habit.disabled;
   },
 
   isDueToday(habit, todayStr = getTodayInTZ()) {
@@ -62,7 +62,7 @@ export const habits = {
 
   getPausedHabits() {
     return this.getAll()
-      .filter((h) => h.progress < LEGACY_THRESHOLD && (h.paused || h.archived))
+      .filter((h) => h.progress < LEGACY_THRESHOLD && (h.paused || h.archived || h.disabled))
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   },
 
@@ -497,6 +497,22 @@ export const habits = {
     habit.paused = !!paused;
     if (habit.paused) {
       habit.archived = false;
+      habit.disabled = false;
+    }
+    await storage.saveHabits(allHabits);
+    return habit;
+  },
+
+  async setDisabled(id, disabled) {
+    const allHabits = this.getAll();
+    const habit = allHabits.find((h) => h.id === id);
+    if (!habit) {
+      return null;
+    }
+    habit.disabled = !!disabled;
+    if (habit.disabled) {
+      habit.paused = false;
+      habit.archived = false;
     }
     await storage.saveHabits(allHabits);
     return habit;
@@ -511,6 +527,7 @@ export const habits = {
     habit.archived = !!archived;
     if (habit.archived) {
       habit.paused = false;
+      habit.disabled = false;
     }
     await storage.saveHabits(allHabits);
     return habit;
@@ -549,7 +566,7 @@ export const habits = {
   async moveToBed(id, bedId, beforeId = null) {
     const allHabits = this.getAll();
     const habit = allHabits.find((h) => h.id === id);
-    if (!habit || habit.paused || habit.archived || habit.progress >= LEGACY_THRESHOLD) {
+    if (!habit || habit.paused || habit.archived || habit.disabled || habit.progress >= LEGACY_THRESHOLD) {
       return false;
     }
     const targetBed = bedId || '';

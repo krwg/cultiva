@@ -36,7 +36,8 @@ export const DEFAULT_SETTINGS = {
   storageBackend: 'local',
   gardenBeds: [],
   developerMode: false,
-  devForceReducedMotion: false
+  devForceReducedMotion: false,
+  devAnimBackground: false
 };
 
 export const settings = { ...DEFAULT_SETTINGS };

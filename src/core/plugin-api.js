@@ -33,7 +33,10 @@ import {
   setPluginLang,
   setPluginHeaderBadge,
   setPluginShowTrophies,
-  syncPluginTray
+  syncPluginTray,
+  setPluginTrayTooltip,
+  setPluginTrayPluginItems,
+  clearPluginTrayPluginItems
 } from './plugin-app-bridge.js';
 
 function requirePermission(manifest, permission) {
@@ -274,6 +277,15 @@ export async function invokePluginRpc(method, args, manifest, deps) {
   if (method === 'app.syncTray') {
     syncPluginTray();
     return true;
+  }
+  if (method === 'app.setTrayTooltip') {
+    return setPluginTrayTooltip(args[0]);
+  }
+  if (method === 'app.setTrayPluginItems') {
+    return setPluginTrayPluginItems(args[0]);
+  }
+  if (method === 'app.clearTrayPluginItems') {
+    return clearPluginTrayPluginItems();
   }
   if (method === 'app.getBuiltinBackgrounds') {
     return getBuiltinBackgroundIds();

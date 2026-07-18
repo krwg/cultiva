@@ -11,7 +11,7 @@
 
 | | |
 |:--|:--|
-| **Latest** | [**2.3.0 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.3.0) · Developer Mode · Weather Neo solar skies |
+| **Latest** | [**2.3.1 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.3.1) · Discord prefs · Dev Mode · PE2 tray · Weather ° |
 | **In short** | Offline-first habit garden · no telemetry · habits you can *see* grow |
 | **License** | GPL-3.0 · by [krwg](https://github.com/krwg) |
 
@@ -299,6 +299,8 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 **2.2.0** is the layout and presence chapter: beds become **horizontal rows** under plugin widgets (three habits each), the **footer pins to the window**, Settings grow clearer rooms (Focus, Storage, Updates, per-plugin notifies), **glyph-s 2.7** powers search with a rebuild progress bar, and **Discord** finally shows what you are growing — activity, streaks, Focus sessions — with Get Cultiva and GitHub buttons. Quote ships **500 + 500** curated lines. The garden stays offline; only the doors you open (updates, plugins, optional Discord) reach the network.
 
 **2.3.0** opens the workshop door: tap the footer version seven times for **Developer Mode** — flags, session overrides for Legacy/bed caps, `window.cultivaDev`, an RPC log, and a few playful tools — while lint is green again (vendored glyph-s ignored). Weather Neo learns the sun: sunrise/sunset from Open-Meteo, sunset and blue-hour skies, and light text on dark nights so the forecast stays readable.
+
+**2.3.1** tunes the dials: Discord presence gets display modes and per-field toggles; Developer Mode starts hidden each session (hide/turn-off, animated backdrop, habit disable); PE2 exposes tray tooltip and menu hooks so Weather can show degrees in the tray.
 
 Through all of that, the Sequoia promise held: one home, a tool you download, data that stays yours.
 
@@ -615,6 +617,8 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 **2.2.0** — глава про раскладку и присутствие: грядки стали **горизонтальными рядами** под виджетами плагинов (по три привычки), **подвал прибит к окну**, в настройках появились понятные комнаты (Фокус, Хранилище, Обновления, мьюты уведомлений плагинов), **glyph-s 2.7** крутит поиск с прогрессом пересборки, а **Discord** наконец показывает, что вы растите — активность, серии, сессии Фокуса — с кнопками Get Cultiva и GitHub. Quote отдаёт **500 + 500** отобранных цитат. Сад остаётся офлайн; в сеть выходят только двери, которые вы сами открываете.
 
 **2.3.0** открывает мастерскую: семь нажатий по версии в подвале — **режим разработчика** (флаги, оверрайды Legacy/грядок, `window.cultivaDev`, лог RPC и пара шуток), а линт снова зелёный. Погода Нео учится солнцу: восход/закат из Open-Meteo, закат и синий час, светлый текст на тёмном небе.
+
+**2.3.1** крутит тонкие ручки: Discord — режимы и тумблеры полей; Dev Mode скрыт до анлока (скрыть/выключить, аним-фон, отключение привычек); PE2 даёт трей-хуки, и Weather выводит градусы в tooltip.
 
 Сквозь всё это держалось обещание Секвойи: один дом, инструмент, который скачивают, данные, которые остаются вашими.
 

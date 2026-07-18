@@ -114,11 +114,16 @@ export function initContextMenu(h) {
       );
       if (habit?.archived) {
         items.push({ label: t.contextRestore || 'Restore from archive', action: () => handlers.restoreHabit(habitId) });
+      } else if (habit?.disabled) {
+        items.push({ label: t.contextEnable || 'Enable habit', action: () => handlers.enableHabit?.(habitId) });
+        items.push({ label: t.contextArchive || 'Archive habit', action: () => handlers.archiveHabit(habitId) });
       } else if (habit?.paused) {
         items.push({ label: t.contextResume || 'Resume habit', action: () => handlers.resumeHabit(habitId) });
+        items.push({ label: t.contextDisable || 'Disable habit', action: () => handlers.disableHabit?.(habitId) });
         items.push({ label: t.contextArchive || 'Archive habit', action: () => handlers.archiveHabit(habitId) });
       } else {
         items.push({ label: t.contextPause || 'Pause habit', action: () => handlers.pauseHabit(habitId) });
+        items.push({ label: t.contextDisable || 'Disable habit', action: () => handlers.disableHabit?.(habitId) });
         items.push({ label: t.contextArchive || 'Archive habit', action: () => handlers.archiveHabit(habitId) });
       }
       items.push(

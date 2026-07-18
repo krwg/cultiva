@@ -780,6 +780,81 @@
                             <span class="status-badge" id="discord-status-badge">●</span>
                         </div>
                         <div class="settings-divider"></div>
+                        <div class="settings-group-title" data-i18n="discordDisplayTitle">What to show</div>
+                        <div class="settings-group-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordDisplayMode">Display mode</span>
+                                    <span class="setting-desc" data-i18n="discordDisplayModeDesc">Activity from the garden, quiet status, or custom text</span>
+                                </div>
+                                <select id="discord-display-mode" class="select-input" style="max-width:160px;">
+                                    <option value="activity" data-i18n="discordModeActivity">Activity</option>
+                                    <option value="quiet" data-i18n="discordModeQuiet">Quiet</option>
+                                    <option value="custom" data-i18n="discordModeCustom">Custom</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordShowHabitCount">Habit count</span>
+                                    <span class="setting-desc" data-i18n="discordShowHabitCountDesc">Show how many habits are growing</span>
+                                </div>
+                                <label class="toggle-switch"><input type="checkbox" id="discord-show-habits" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordShowStreak">Best streak</span>
+                                    <span class="setting-desc" data-i18n="discordShowStreakDesc">Show your longest current streak</span>
+                                </div>
+                                <label class="toggle-switch"><input type="checkbox" id="discord-show-streak" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordShowTrophies">Trophy count</span>
+                                    <span class="setting-desc" data-i18n="discordShowTrophiesDesc">Mention Legacy trees when you have them</span>
+                                </div>
+                                <label class="toggle-switch"><input type="checkbox" id="discord-show-trophies" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordShowElapsed">Elapsed timer</span>
+                                    <span class="setting-desc" data-i18n="discordShowElapsedDesc">Show session time under the status</span>
+                                </div>
+                                <label class="toggle-switch"><input type="checkbox" id="discord-show-elapsed" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordShowButtons">Profile buttons</span>
+                                    <span class="setting-desc" data-i18n="discordShowButtonsDesc">Get Cultiva and GitHub links on the presence card</span>
+                                </div>
+                                <label class="toggle-switch"><input type="checkbox" id="discord-show-buttons" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordShowFocus">Focus overrides status</span>
+                                    <span class="setting-desc" data-i18n="discordShowFocusDesc">When Focus Mode is on, show Focus instead of the garden</span>
+                                </div>
+                                <label class="toggle-switch"><input type="checkbox" id="discord-show-focus" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="discordImageStyle">Large image</span>
+                                    <span class="setting-desc" data-i18n="discordImageStyleDesc">Art key shown on the Discord card</span>
+                                </div>
+                                <select id="discord-image-style" class="select-input" style="max-width:160px;">
+                                    <option value="auto" data-i18n="discordImageAuto">Auto</option>
+                                    <option value="garden" data-i18n="discordImageGarden">Garden</option>
+                                    <option value="legacy" data-i18n="discordImageLegacy">Legacy tree</option>
+                                    <option value="theme" data-i18n="discordImageTheme">Match theme</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="settings-group-title" data-i18n="discordCustomTitle">Custom text</div>
+                        <div class="settings-group-card" style="padding:12px 14px 16px;">
+                            <label class="dev-field"><span data-i18n="discordCustomDetails">Details line</span><input type="text" id="discord-custom-details" maxlength="128" placeholder="Growing habits"></label>
+                            <label class="dev-field" style="margin-top:8px;"><span data-i18n="discordCustomState">State line</span><input type="text" id="discord-custom-state" maxlength="128" placeholder="In the garden"></label>
+                            <p class="setting-hint" data-i18n="discordCustomHint">Used when display mode is Custom.</p>
+                        </div>
+                        <div class="settings-divider"></div>
                         <div class="setting-item setting-item-static">
                             <div class="setting-info">
                                 <span class="setting-label" data-i18n="discordPreview">Preview</span>
@@ -1155,7 +1230,11 @@
                     <div class="settings-section-content" id="section-developer">
                         <div class="settings-section-hero">
                             <div class="settings-section-hero-title" data-i18n="developerSectionTitle">Developer Mode</div>
-                            <p class="settings-section-hero-desc" data-i18n="developerSectionDesc">Session tools for testing. Unlocked by tapping the footer version seven times. Console: window.cultivaDev</p>
+                            <p class="settings-section-hero-desc" data-i18n="developerSectionDesc">Hidden until you tap the footer version seven times. Console: window.cultivaDev · Engine PE2</p>
+                        </div>
+                        <div class="dev-actions" style="margin:0 0 16px; padding:0 4px;">
+                            <button type="button" class="btn-secondary" id="dev-hide" data-i18n="devHide">Hide developer mode</button>
+                            <button type="button" class="btn-secondary" id="dev-disable" data-i18n="devDisable">Turn off developer mode</button>
                         </div>
 
                         <div class="settings-group-title" data-i18n="devFlagsTitle">Feature flags</div>
@@ -1169,6 +1248,9 @@
                             <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="autoBackup">Auto-backup</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-auto-backup"><span class="toggle-slider"></span></label></div>
                             <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="checkUpdatesEnabled">Check for updates</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-check-updates"><span class="toggle-slider"></span></label></div>
                             <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="autoUpdateEnabled">Auto-update</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-auto-update"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="plugins">Plugins</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-plugins"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="headerSearchEnabled">Header search</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-header-search"><span class="toggle-slider"></span></label></div>
+                            <div class="setting-item"><div class="setting-info"><span class="setting-label" data-i18n="devAnimBg">Animated developer background</span></div><label class="toggle-switch"><input type="checkbox" id="dev-flag-anim-bg"><span class="toggle-slider"></span></label></div>
                         </div>
 
                         <div class="settings-group-title" data-i18n="devOverridesTitle">Session overrides</div>
@@ -1182,15 +1264,26 @@
                             </div>
                         </div>
 
-                        <div class="settings-group-title" data-i18n="devToolsTitle">Tools</div>
+                        <div class="settings-group-title" data-i18n="devHabitsTitle">Habits</div>
                         <div class="settings-group-card">
+                            <p class="setting-hint" data-i18n="devHabitsHint">Disable removes a habit from the garden without deleting it.</p>
+                            <div id="dev-habits-list" class="dev-habits-list"></div>
                             <div class="dev-actions dev-actions--wrap">
                                 <button type="button" class="btn-secondary" id="dev-complete-all" data-i18n="devCompleteAll">Complete all today</button>
                                 <button type="button" class="btn-secondary" id="dev-seed-habits" data-i18n="devSeedHabits">Seed 3 habits</button>
+                                <button type="button" class="btn-secondary" id="dev-boost-legacy" data-i18n="devBoostLegacy">Boost nearest to Legacy−1</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-group-title" data-i18n="devToolsTitle">Tools</div>
+                        <div class="settings-group-card">
+                            <div class="dev-actions dev-actions--wrap">
                                 <button type="button" class="btn-secondary" id="dev-export-state" data-i18n="devExportState">Export debug JSON</button>
                                 <button type="button" class="btn-secondary" id="dev-chaos-toggle" data-i18n="devChaosStart">Start chaos themes</button>
                                 <button type="button" class="btn-secondary" id="dev-secret-bg" data-i18n="devSecretBg">Toggle secret background</button>
-                                <button type="button" class="btn-secondary" id="dev-disable" data-i18n="devDisable">Turn off developer mode</button>
+                                <button type="button" class="btn-secondary" id="dev-reload-plugins" data-i18n="devReloadPlugins">Reload plugins</button>
+                                <button type="button" class="btn-secondary" id="dev-open-storage" data-i18n="devOpenStorage">Open Storage settings</button>
+                                <button type="button" class="btn-secondary" id="dev-copy-rpc" data-i18n="devCopyRpc">Copy RPC log</button>
                             </div>
                             <label class="dev-field" style="margin-top:12px;">
                                 <span data-i18n="devSimulateDate">Simulate date</span>

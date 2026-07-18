@@ -24,8 +24,42 @@ const FALLBACK = {
   }
 };
 
+const PREFS_KEY = 'cultiva-discord-prefs';
+
+export const DISCORD_PREF_DEFAULTS = Object.freeze({
+  showHabitCount: true,
+  showStreak: true,
+  showTrophies: true,
+  showElapsed: true,
+  showButtons: true,
+  showFocusOverride: true,
+  displayMode: 'activity', // activity | quiet | custom
+  imageStyle: 'auto', // auto | garden | legacy | theme
+  customDetails: '',
+  customState: ''
+});
+
 let _focusSession = false;
 let _lastPayload = null;
+
+export function getDiscordPrefs() {
+  try {
+    const raw = localStorage.getItem(PREFS_KEY);
+    if (!raw) {
+      return { ...DISCORD_PREF_DEFAULTS };
+    }
+    const parsed = JSON.parse(raw);
+    return { ...DISCORD_PREF_DEFAULTS, ...(parsed && typeof parsed === 'object' ? parsed : {}) };
+  } catch {
+    return { ...DISCORD_PREF_DEFAULTS };
+  }
+}
+
+export function saveDiscordPrefs(partial) {
+  const next = { ...getDiscordPrefs(), ...partial };
+  localStorage.setItem(PREFS_KEY, JSON.stringify(next));
+  return next;
+}
 
 export function getDiscordPageStrings(locale = 'en') {
   return FALLBACK[locale] || FALLBACK.en;
@@ -40,7 +74,8 @@ export function isDiscordFocusSession() {
 }
 
 function detectPage() {
-  if (_focusSession || settings.focusMode === true) {
+  const prefs = getDiscordPrefs();
+  if (prefs.showFocusOverride && (_focusSession || settings.focusMode === true)) {
     return 'focus';
   }
   const url = window.location.href;
@@ -55,7 +90,7 @@ function detectPage() {
 
 function gardenSnapshot() {
   const all = typeof habits.getAll === 'function' ? habits.getAll() : [];
-  const active = all.filter((h) => !h.archived && !h.paused);
+  const active = all.filter((h) => !h.archived && !h.paused && !h.disabled);
   const trophies = all.filter((h) => (h.progress || 0) >= LEGACY_THRESHOLD || h.stage === 'legacy');
   let bestStreak = 0;
   for (const h of active) {
@@ -86,10 +121,34 @@ function themeImageKey() {
   return 'garden';
 }
 
-function buildActivityCopy(page, locale, snap) {
+function resolveLargeImage(prefs, snap) {
+  if (prefs.imageStyle === 'garden') {
+    return 'garden';
+  }
+  if (prefs.imageStyle === 'legacy') {
+    return 'legacy-tree';
+  }
+  if (prefs.imageStyle === 'theme') {
+    return themeImageKey();
+  }
+  return snap.hasLegacy ? 'legacy-tree' : themeImageKey();
+}
+
+function buildActivityCopy(page, locale, snap, prefs) {
   const strings = getDiscordPageStrings(locale);
   const base = strings[page] || strings.garden;
   const ru = locale === 'ru';
+
+  if (prefs.displayMode === 'custom') {
+    return {
+      details: (prefs.customDetails || '').trim() || base.details,
+      state: (prefs.customState || '').trim() || base.state
+    };
+  }
+
+  if (prefs.displayMode === 'quiet') {
+    return { details: 'Cultiva', state: ru ? 'В саду' : 'In the garden' };
+  }
 
   if (page === 'focus') {
     return { details: base.details, state: base.state };
@@ -100,18 +159,20 @@ function buildActivityCopy(page, locale, snap) {
   }
 
   if (page === 'garden' || page === 'trophy') {
-    const details = ru
-      ? `Растёт ${snap.activeCount} ${snap.activeCount === 1 ? 'привычка' : 'привычек'}`
-      : `Growing ${snap.activeCount} habit${snap.activeCount === 1 ? '' : 's'}`;
-    let state;
-    if (snap.bestStreak > 0) {
+    let details = base.details;
+    if (prefs.showHabitCount) {
+      details = ru
+        ? `Растёт ${snap.activeCount} ${snap.activeCount === 1 ? 'привычка' : 'привычек'}`
+        : `Growing ${snap.activeCount} habit${snap.activeCount === 1 ? '' : 's'}`;
+    }
+
+    let state = base.state;
+    if (prefs.showStreak && snap.bestStreak > 0) {
       state = ru ? `🔥 Серия ${snap.bestStreak} дн.` : `🔥 ${snap.bestStreak}-day streak`;
-    } else if (snap.hasLegacy) {
+    } else if (prefs.showTrophies && snap.hasLegacy) {
       state = ru
         ? `Трофеев: ${snap.trophyCount}`
         : `${snap.trophyCount} trophy tree${snap.trophyCount === 1 ? '' : 's'}`;
-    } else {
-      state = base.state;
     }
     return { details, state };
   }
@@ -131,12 +192,12 @@ export async function pushDiscordPresence(overrides = {}) {
     return null;
   }
 
+  const prefs = getDiscordPrefs();
   const locale = overrides.locale || settings.lang || 'en';
   const page = overrides.page || detectPage();
   const snap = gardenSnapshot();
-  const copy = buildActivityCopy(page, locale, snap);
-  const largeImageKey = overrides.largeImageKey
-    || (snap.hasLegacy ? 'legacy-tree' : themeImageKey());
+  const copy = buildActivityCopy(page, locale, snap, prefs);
+  const largeImageKey = overrides.largeImageKey || resolveLargeImage(prefs, snap);
 
   const payload = {
     page,
@@ -146,7 +207,9 @@ export async function pushDiscordPresence(overrides = {}) {
     largeImageKey,
     largeImageText: 'Cultiva',
     smallImageKey: overrides.smallImageKey,
-    smallImageText: overrides.smallImageText
+    smallImageText: overrides.smallImageText,
+    showButtons: prefs.showButtons !== false,
+    showElapsed: prefs.showElapsed !== false
   };
 
   _lastPayload = payload;

@@ -101,11 +101,17 @@ function updateDiscordActivity(activityData = {}) {
   const activity = {
     details: activityData.details || pageStrings.details,
     state: activityData.state || pageStrings.state,
-    startTimestamp: startMs,
     largeImageKey: activityData.largeImageKey || 'garden',
-    largeImageText: activityData.largeImageText || 'Cultiva',
-    buttons: PRESENCE_BUTTONS
+    largeImageText: activityData.largeImageText || 'Cultiva'
   };
+
+  if (activityData.showElapsed !== false) {
+    activity.startTimestamp = startMs;
+  }
+
+  if (activityData.showButtons !== false) {
+    activity.buttons = PRESENCE_BUTTONS;
+  }
 
   if (activityData.smallImageKey) {
     activity.smallImageKey = activityData.smallImageKey;

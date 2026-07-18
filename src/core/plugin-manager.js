@@ -220,6 +220,7 @@ const pluginHooks = {
 
 let _initPromise = null;
 let _isInitialized = false;
+let _trayPluginActionWired = false;
 
 function _syncHookList(hookName, pluginId) {
   const list = pluginHooks[hookName];
@@ -791,6 +792,25 @@ function _wireSandboxHost(host, pluginId, manifest) {
       }
     }
   });
+
+  host.setHandler('onUiTrayTooltip', (data) => {
+    const text = data && data.text != null ? String(data.text) : '';
+    window.electron?.setTrayTooltip?.(text);
+  });
+
+  host.setHandler('onUiTrayRegister', (data) => {
+    const items = (data.items || []).map((item) => ({
+      id: item && item.id != null ? String(item.id) : '',
+      label: item && item.label != null ? String(item.label) : '',
+      pluginId,
+      enabled: item && item.enabled !== false
+    }));
+    window.electron?.setTrayPluginItems?.(items);
+  });
+
+  host.setHandler('onUiTrayClear', () => {
+    window.electron?.clearTrayPluginItems?.();
+  });
 }
 
 export const pluginManager = {
@@ -896,6 +916,14 @@ export const pluginManager = {
 
     _isInitialized = true;
     console.log('[PluginManager] Initialized with', plugins.size, 'plugins');
+
+    if (!_trayPluginActionWired && window.electron?.onTrayPluginAction) {
+      _trayPluginActionWired = true;
+      window.electron.onTrayPluginAction(({ pluginId, id }) => {
+        const plugin = plugins.get(pluginId);
+        plugin?.sandbox?.postToSandbox({ type: 'TRAY_ACTION', id });
+      });
+    }
 
     const runDeferredHooks = async () => {
       await this.triggerHook('onAppStart');

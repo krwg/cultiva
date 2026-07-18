@@ -4,6 +4,27 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.3.1] — Rowan · 2026-07-18
+
+**Codename:** Rowan · Discord prefs · Dev Mode polish · PE2 tray · Weather tray °
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.1) · [Release notes](docs/release-notes-v2.3.1-rowan-github.md)
+
+### Added
+- Discord Rich Presence: display modes, per-field toggles, image style, custom text
+- Developer Mode: hide/turn-off, animated background, habit disable tools, more flags
+- Habit **Disable** / **Enable** (context menu + Dev panel); disabled habits leave the garden
+- PE2 tray APIs: `setTrayTooltip`, `registerTrayItems`, `clearTrayItems`
+- Companion Weather **2.7.1** — tray temperature; Neo night/blue-hour forecast contrast (registry **3.5.6**)
+
+### Fixed
+- Empty tray tooltip no longer forced to a stale label when plugins clear it
+- Weather Neo forecast text contrast on dark sky phases
+
+### Notes
+- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
+- Developer Mode starts hidden each session; unlock with 7 taps on the footer version
+
 ## [2.3.0] — Rowan · 2026-07-18
 
 **Codename:** Rowan · Developer Mode · green lint · Weather Neo solar skies

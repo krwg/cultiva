@@ -1363,6 +1363,16 @@ async function init() {
         renderGarden();
         showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitResumed || 'Habit resumed');
       },
+      disableHabit: async (id) => {
+        await habits.setDisabled(id, true);
+        renderGarden();
+        showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitDisabled || 'Habit disabled');
+      },
+      enableHabit: async (id) => {
+        await habits.setDisabled(id, false);
+        renderGarden();
+        showNotification((TRANSLATIONS[settings.lang] || TRANSLATIONS.en).habitEnabled || 'Habit enabled');
+      },
       archiveHabit: async (id) => {
         await habits.setArchived(id, true);
         renderGarden();

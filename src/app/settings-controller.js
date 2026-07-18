@@ -84,6 +84,9 @@ export async function loadSettings() {
       if (typeof saved.devForceReducedMotion === 'boolean') {
         settings.devForceReducedMotion = saved.devForceReducedMotion;
       }
+      if (typeof saved.devAnimBackground === 'boolean') {
+        settings.devAnimBackground = saved.devAnimBackground;
+      }
       if (typeof saved.headerSearchEnabled === 'boolean') {
         settings.headerSearchEnabled = saved.headerSearchEnabled;
       }

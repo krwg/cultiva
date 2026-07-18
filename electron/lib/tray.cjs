@@ -5,6 +5,8 @@ let getMainWindowRef = () => null;
 let resolveTrayImage = null;
 let resolveIconPath = null;
 let habitMenuItems = [];
+let pluginTooltipSuffix = '';
+let pluginMenuItems = [];
 
 function showMainWindow(win) {
   if (!win || win.isDestroyed()) {
@@ -46,6 +48,24 @@ function buildMenu() {
     template.push({ type: 'separator' });
   }
 
+  if (pluginMenuItems.length) {
+    for (const item of pluginMenuItems) {
+      template.push({
+        label: item.label,
+        enabled: item.enabled !== false,
+        click: () => {
+          if (win && !win.isDestroyed()) {
+            win.webContents.send('tray:plugin-action', {
+              pluginId: item.pluginId,
+              id: item.id
+            });
+          }
+        }
+      });
+    }
+    template.push({ type: 'separator' });
+  }
+
   template.push({
     label: 'Quit',
     click: () => {
@@ -62,6 +82,14 @@ function refreshMenu() {
     return;
   }
   tray.setContextMenu(buildMenu());
+}
+
+function applyTooltip() {
+  if (!tray) {
+    return;
+  }
+  const text = typeof pluginTooltipSuffix === 'string' ? pluginTooltipSuffix.trim() : '';
+  tray.setToolTip(text || 'Cultiva');
 }
 
 function buildTrayImage() {
@@ -112,7 +140,7 @@ function initTray({ getMainWindow, resolveAppIconPath, resolveTrayIconImage }) {
     tray = null;
     return null;
   }
-  tray.setToolTip('Cultiva');
+  applyTooltip();
   tray.on('double-click', () => {
     showMainWindow(getMainWindow());
   });
@@ -131,6 +159,27 @@ function updateTrayHabits(habits) {
   refreshMenu();
 }
 
+function setTrayTooltip(text) {
+  pluginTooltipSuffix = text != null ? String(text) : '';
+  applyTooltip();
+}
+
+function setTrayPluginItems(items) {
+  const list = Array.isArray(items) ? items : [];
+  pluginMenuItems = list.slice(0, 6).map((item) => ({
+    id: String(item && item.id != null ? item.id : ''),
+    label: String(item && item.label != null ? item.label : ''),
+    pluginId: String(item && item.pluginId != null ? item.pluginId : ''),
+    enabled: item && item.enabled !== false
+  })).filter((item) => item.id && item.label);
+  refreshMenu();
+}
+
+function clearTrayPluginItems() {
+  pluginMenuItems = [];
+  refreshMenu();
+}
+
 function destroyTray() {
   if (tray) {
     tray.destroy();
@@ -141,5 +190,8 @@ function destroyTray() {
 module.exports = {
   initTray,
   updateTrayHabits,
+  setTrayTooltip,
+  setTrayPluginItems,
+  clearTrayPluginItems,
   destroyTray
 };

@@ -154,6 +154,9 @@ export interface CultivaPluginUi {
   patchMainSheet?(selector: string, html: string): void;
   closeMainSheet(): void;
   updateMainHeader(opts: { label?: string; icon?: string; labelColor?: string | null }): void;
+  setTrayTooltip?(text: string): void;
+  registerTrayItems?(items: Array<{ id: string; label: string; enabled?: boolean }>): void;
+  clearTrayItems?(): void;
   showNotification(icon: string, text: string): Promise<void>;
   confirm?(message: string, options?: Record<string, unknown>): Promise<boolean>;
   alert?(message: string, options?: Record<string, unknown>): Promise<void>;
@@ -261,6 +264,9 @@ export interface CultivaPluginApp {
   openCalendar(): Promise<boolean>;
   reloadGarden(): Promise<boolean>;
   syncTray(): Promise<boolean>;
+  setTrayTooltip?(text: string): Promise<unknown>;
+  setTrayPluginItems?(items: Array<{ id: string; label: string; pluginId?: string; enabled?: boolean }>): Promise<unknown>;
+  clearTrayPluginItems?(): Promise<unknown>;
   getBuiltinBackgrounds(): Promise<string[]>;
   getAppearancePresets(): Promise<CultivaPluginAppearancePresetSummary[]>;
   getHabits(): Promise<CultivaPluginHabitSnapshot[]>;
@@ -291,6 +297,7 @@ export interface CultivaPluginInstance {
   onEnable?(): void | Promise<void>;
   onDisable?(): void | Promise<void>;
   onModalAction?(action: string, payload: unknown): void | Promise<void>;
+  onTrayAction?(id: string): void | Promise<void>;
   [method: string]: unknown;
 }
 

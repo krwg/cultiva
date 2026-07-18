@@ -3608,18 +3608,12 @@ body.dev-secret-bg::before {
     z-index: -1;
     pointer-events: none;
     background:
-        linear-gradient(180deg, #0b0b0b 0%, #141414 100%),
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 11px,
-            rgba(244, 244, 244, 0.03) 11px,
-            rgba(244, 244, 244, 0.03) 12px
-        );
-    background-blend-mode: normal;
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(52, 199, 89, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 85% 80%, rgba(0, 113, 227, 0.14), transparent 50%),
+        linear-gradient(180deg, #0b0b0b 0%, #121212 55%, #0a0a0a 100%);
 }
 body.dev-secret-bg::after {
-    content: 'DEV · ASCII GARDEN';
+    content: 'DEV · ASCII GARDEN · PE2';
     position: fixed;
     left: 16px;
     bottom: 48px;
@@ -3628,7 +3622,46 @@ body.dev-secret-bg::after {
     font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.14em;
-    color: rgba(244, 244, 244, 0.35);
+    color: rgba(244, 244, 244, 0.4);
+}
+body.dev-secret-bg--animated::before {
+    animation: dev-bg-drift 18s ease-in-out infinite alternate;
+}
+body.dev-secret-bg--animated::after {
+    animation: dev-bg-pulse 4s ease-in-out infinite;
+}
+@keyframes dev-bg-drift {
+    0% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+    100% { filter: hue-rotate(25deg) brightness(1.08); transform: scale(1.04); }
+}
+@keyframes dev-bg-pulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.7; }
+}
+
+.dev-habits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 14px 4px;
+    max-height: 220px;
+    overflow: auto;
+}
+.dev-habit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-light) 70%, transparent);
+}
+.dev-habit-name {
+    font-size: 13px;
+    color: var(--text-primary);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 html.dev-force-reduced-motion *,
