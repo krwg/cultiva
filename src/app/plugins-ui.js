@@ -14,6 +14,7 @@ import { showNotification } from './ui-shell.js';
 import { showConfirmDialog } from './dialogs.js';
 import { installFocusTrap, releaseFocusTrap } from './modals.js';
 import { escapeHtml } from '../core/escape-html.js';
+import { renderReleaseMarkdown } from '../core/release-markdown.js';
 
 function tStrings() {
   return TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
@@ -206,6 +207,7 @@ function localizedPluginMeta(pluginId, fallbackName, fallbackDesc, registryPlugi
 
 let browseTagFilter = '';
 let browseSearchQuery = '';
+let browseSortMode = 'updated';
 
 function permissionLabel(perm, t) {
   const key = String(perm || '');
@@ -241,15 +243,28 @@ function pluginSortKey(p) {
   return Number.isFinite(updated) ? updated : 0;
 }
 
+function pluginDisplayName(p) {
+  const meta = resolvePluginCatalogMeta(p, settings.lang);
+  return String(meta.name || p?.name || p?.id || '');
+}
+
 function sortBrowsePlugins(plugins) {
+  const mode = browseSortMode || 'updated';
   return [...plugins].sort((a, b) => {
+    if (mode === 'name-az') {
+      return pluginDisplayName(a).localeCompare(pluginDisplayName(b), settings.lang === 'ru' ? 'ru' : 'en', { sensitivity: 'base' });
+    }
+    if (mode === 'name-za') {
+      return pluginDisplayName(b).localeCompare(pluginDisplayName(a), settings.lang === 'ru' ? 'ru' : 'en', { sensitivity: 'base' });
+    }
+    if (mode === 'name-ru') {
+      return pluginDisplayName(a).localeCompare(pluginDisplayName(b), 'ru', { sensitivity: 'base' });
+    }
     const byDate = pluginSortKey(b) - pluginSortKey(a);
     if (byDate !== 0) {
       return byDate;
     }
-    const nameA = String(a?.name || a?.id || '').toLowerCase();
-    const nameB = String(b?.name || b?.id || '').toLowerCase();
-    return nameA.localeCompare(nameB);
+    return pluginDisplayName(a).localeCompare(pluginDisplayName(b), settings.lang === 'ru' ? 'ru' : 'en', { sensitivity: 'base' });
   });
 }
 
@@ -344,6 +359,25 @@ async function openPluginDetailsModal(p) {
   desc.className = 'plugin-description';
   desc.textContent = meta.description || '';
   body.appendChild(desc);
+
+  const readmeRel = p.readme || 'README.md';
+  const readmeUrl = resolvePluginAssetUrl(p.baseUrl, readmeRel);
+  if (readmeUrl) {
+    try {
+      const res = await fetch(readmeUrl, { cache: 'no-store' });
+      if (res.ok) {
+        const md = await res.text();
+        if (md.trim()) {
+          const readme = document.createElement('div');
+          readme.className = 'plugin-details-readme release-md';
+          readme.innerHTML = renderReleaseMarkdown(md);
+          body.appendChild(readme);
+        }
+      }
+    } catch {
+      void 0;
+    }
+  }
 
   const tags = Array.isArray(p.tags) ? p.tags : [];
   if (tags.length) {
@@ -757,25 +791,66 @@ function renderBrowseStore(container, plugins, t) {
   });
   toolbar.appendChild(search);
 
-  const chips = document.createElement('div');
-  chips.className = 'plugin-store-chips';
+  const filters = document.createElement('div');
+  filters.className = 'plugin-store-filters';
+
+  const tagWrap = document.createElement('label');
+  tagWrap.className = 'plugin-store-filter';
+  const tagLabel = document.createElement('span');
+  tagLabel.className = 'plugin-store-filter-label';
+  tagLabel.textContent = t.pluginFilterCategory || 'Category';
+  const tagSelect = document.createElement('select');
+  tagSelect.className = 'plugin-store-select';
   const allTags = collectRegistryTags(plugins);
-  const chipValues = ['', ...allTags];
-  for (const tag of chipValues) {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'plugin-store-chip';
-    if ((tag || '') === (browseTagFilter || '')) {
-      chip.classList.add('is-active');
+  const tagOptions = [['', t.pluginFilterAll || 'All'], ...allTags.map((tag) => [tag, tag])];
+  for (const [value, label] of tagOptions) {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    if ((value || '') === (browseTagFilter || '')) {
+      opt.selected = true;
     }
-    chip.textContent = tag || (t.pluginFilterAll || 'All');
-    chip.addEventListener('click', () => {
-      browseTagFilter = tag || '';
-      renderBrowseStore(container, plugins, t);
-    });
-    chips.appendChild(chip);
+    tagSelect.appendChild(opt);
   }
-  toolbar.appendChild(chips);
+  tagSelect.addEventListener('change', () => {
+    browseTagFilter = tagSelect.value || '';
+    renderBrowseStore(container, plugins, t);
+  });
+  tagWrap.appendChild(tagLabel);
+  tagWrap.appendChild(tagSelect);
+  filters.appendChild(tagWrap);
+
+  const sortWrap = document.createElement('label');
+  sortWrap.className = 'plugin-store-filter';
+  const sortLabel = document.createElement('span');
+  sortLabel.className = 'plugin-store-filter-label';
+  sortLabel.textContent = t.pluginSortLabel || 'Sort';
+  const sortSelect = document.createElement('select');
+  sortSelect.className = 'plugin-store-select';
+  const sortModes = [
+    ['updated', t.pluginSortUpdated || 'Updated'],
+    ['name-az', t.pluginSortNameAz || 'A–Z'],
+    ['name-za', t.pluginSortNameZa || 'Z–A'],
+    ['name-ru', t.pluginSortNameRu || 'А–Я']
+  ];
+  for (const [value, label] of sortModes) {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    if (value === (browseSortMode || 'updated')) {
+      opt.selected = true;
+    }
+    sortSelect.appendChild(opt);
+  }
+  sortSelect.addEventListener('change', () => {
+    browseSortMode = sortSelect.value || 'updated';
+    renderBrowseStore(container, plugins, t);
+  });
+  sortWrap.appendChild(sortLabel);
+  sortWrap.appendChild(sortSelect);
+  filters.appendChild(sortWrap);
+
+  toolbar.appendChild(filters);
   container.appendChild(toolbar);
 
   const filtered = plugins.filter((p) => {

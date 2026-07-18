@@ -8,18 +8,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 **Codename:** Rowan · Garden beds (drag-and-drop + custom groups) · Weather Neo companion
 
-[Release notes](docs/release-notes-v2.1.2-rowan-github.md)
+[Release notes](docs/release-notes-v2.1.2-rowan-github.md) · [Footer height audit](https://github.com/krwg/cultiva/issues/167)
 
 ### Added
 - Drag-and-drop reorder for habit cards in the garden
 - Custom garden **beds** (грядки) — UI grouping independent of categories; create / rename / delete / move via context menu
 - Weather plugin companion **2.5.x**: opt-in **Weather Neo**, hourly and 7-day outlook
 - Settings context menu: **Refresh plugin store** (force registry fetch + update installed plugins)
-- Plugin store: tag filters, Featured, `[version]` labels, permissions confirm before install, Details (changelog / screenshots)
+- Plugin store: category + sort dropdowns, Featured, `[version]` labels, permissions confirm before install, Details (README / changelog / screenshots)
 
 ### Fixed
 - Habit cards stay in the garden CSS grid (flat siblings + bed headers); weather card no longer stretches the row
-- Footer height halved (compact version line, ~22px)
+- Footer fixed to a single version line (**20px** chrome); legacy `main.css` duplicate no longer carries `32px` padding ([#167](https://github.com/krwg/cultiva/issues/167))
+- Deleting a garden bed appends its habits to ungrouped with reindexed `sortOrder`
 - Weather city search for Cyrillic queries (transliteration + Open-Meteo merge)
 
 ### Notes

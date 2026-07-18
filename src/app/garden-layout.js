@@ -5,7 +5,6 @@ import { saveSettings } from './settings-controller.js';
 import { escapeHtml } from '../core/escape-html.js';
 
 export const UNGROUPED_BED_ID = '';
-/** DOM dataset value — empty string is awkward in selectors. */
 export const UNGROUPED_BED_DOM = '__ungrouped__';
 
 export function toDomBedId(bedId) {
@@ -60,20 +59,19 @@ export async function renameGardenBed(bedId, name) {
 
 export async function deleteGardenBed(bedId) {
   const all = habits.getAll();
-  let changed = false;
-  for (const h of all) {
-    if ((h.bedId || '') === bedId) {
+  const moved = all.filter((h) => (h.bedId || '') === bedId);
+  if (moved.length) {
+    const ungrouped = all.filter((h) => (h.bedId || UNGROUPED_BED_ID) === UNGROUPED_BED_ID && (h.bedId || '') !== bedId);
+    const base = ungrouped.reduce((max, h) => Math.max(max, Number(h.sortOrder) || 0), 0) + 1;
+    moved.forEach((h, i) => {
       h.bedId = UNGROUPED_BED_ID;
-      changed = true;
-    }
-  }
-  if (changed) {
+      h.sortOrder = base + i;
+    });
     await storage.saveHabits(all);
   }
   await setGardenBeds(getGardenBeds().filter((b) => b.id !== bedId));
 }
 
-/** Ordered bed ids for rendering: custom beds, then ungrouped last if needed. */
 export function bedRenderOrder(activeHabits) {
   const beds = getGardenBeds();
   const used = new Set(activeHabits.map((h) => h.bedId || UNGROUPED_BED_ID));
@@ -193,7 +191,6 @@ export function makeHabitCardDraggable(card) {
   card.setAttribute('draggable', 'true');
 }
 
-/** Flat-grid header (full-width grid item). */
 export function ensureBedHeader(gardenEl, bed, title, { afterEl }) {
   const domId = toDomBedId(bed.id);
   let head = gardenEl.querySelector(`:scope > .garden-bed-header[data-bed-id="${CSS.escape(domId)}"]`);

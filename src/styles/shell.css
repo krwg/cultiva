@@ -423,16 +423,18 @@ body.focus-mode .paused-section { display: none !important; }
 .app-footer {
     background: var(--bg-primary);
     border-top: 1px solid var(--border-light);
-    padding: 4px 16px;
+    padding: 0 12px;
     margin-top: auto;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 22px;
-    max-height: 28px;
+    height: 20px;
+    min-height: 20px;
+    max-height: 20px;
     box-sizing: border-box;
     width: 100%;
+    overflow: hidden;
 }
 .footer-content {
     max-width: 1200px;
@@ -2983,12 +2985,14 @@ body.calendar-page .calendar-body {
 body.calendar-page .app-footer {
     flex-shrink: 0;
     margin-top: 0;
-    padding: 4px 16px;
-    min-height: 22px;
-    max-height: 28px;
+    padding: 0 12px;
+    height: 20px;
+    min-height: 20px;
+    max-height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .release-md-table {
@@ -3188,27 +3192,54 @@ body.ambient-paused [id^="bg-"] * {
     color: var(--text-primary);
     font-size: 13px;
 }
-.plugin-store-chips {
+.plugin-store-filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 10px;
+    align-items: flex-end;
 }
-.plugin-store-chip {
-    appearance: none;
+.plugin-store-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 140px;
+    flex: 1 1 140px;
+}
+.plugin-store-filter-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+.plugin-store-select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 10px;
     border: 1px solid var(--border-light);
-    background: var(--bg-tertiary);
+    border-radius: var(--radius-md, 10px);
+    background: var(--bg-secondary, var(--bg-tertiary));
+    color: var(--text-primary);
+    font-size: 13px;
+}
+.plugin-details-readme {
+    font-size: 13px;
+    line-height: 1.5;
     color: var(--text-secondary);
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: var(--radius-full, 999px);
-    cursor: pointer;
-    line-height: 1.2;
+    max-height: 320px;
+    overflow: auto;
+    padding: 10px 12px;
+    border-radius: var(--radius-md, 10px);
+    background: var(--bg-tertiary);
 }
-.plugin-store-chip.is-active {
-    background: var(--text-primary);
-    color: var(--bg-primary);
-    border-color: transparent;
+.plugin-details-readme h2,
+.plugin-details-readme h3,
+.plugin-details-readme h4 {
+    color: var(--text-primary);
+    margin: 12px 0 6px;
 }
+.plugin-details-readme p { margin: 0 0 8px; }
+.plugin-details-readme ul { margin: 0 0 8px; padding-left: 1.2em; }
 .plugin-store-heading {
     font-size: 12px;
     font-weight: 600;
