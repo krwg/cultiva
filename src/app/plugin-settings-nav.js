@@ -8,6 +8,7 @@ const CORE_SECTION_ORDER = [
   'notifications',
   'search',
   'shortcuts',
+  'focus',
   'garden',
   'statistics',
   'calendar',

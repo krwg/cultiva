@@ -122,6 +122,10 @@ export async function invokePluginRpc(method, args, manifest, deps) {
     return listPluginStorageKeys(storage, storagePrefix);
   }
   if (method === 'ui.showNotification') {
+    const muted = settings?.pluginNotifyMuted;
+    if (muted && typeof muted === 'object' && muted[pluginId] === true) {
+      return undefined;
+    }
     const icon = args[0] ?? '';
     const text = args[1] ?? '';
     if (typeof window.showNotification === 'function') {

@@ -222,96 +222,128 @@ function syncActiveGardenWithBeds(gardenEl, active, t) {
   const showHeaders = bedsMeta.length > 0;
   const dropHint = t.bedDropHint || 'Drop habits here';
 
-  // Remove legacy nest wrappers and empty state
   gardenEl.querySelectorAll(':scope > .garden-bed').forEach((el) => el.remove());
   gardenEl.querySelector('.empty-state')?.remove();
 
   const keepHabitIds = new Set(active.map((h) => h.id));
-  [...gardenEl.querySelectorAll(':scope > .habit-card')].forEach((el) => {
+  [...gardenEl.querySelectorAll('.habit-card')].forEach((el) => {
+    if (el.closest('.garden-plugin-widget')) {
+      return;
+    }
     if (!keepHabitIds.has(el.dataset.id)) {
       el.remove();
     }
   });
 
-  const nextDomIds = new Set();
   const plugins = [...gardenEl.querySelectorAll(':scope > .garden-plugin-widget')];
-  let anchor = plugins[plugins.length - 1] || null;
+  let insertAfter = plugins[plugins.length - 1] || null;
+  const nextDomIds = new Set();
 
   order.forEach((bed) => {
     const bedId = bed.id || UNGROUPED_BED_ID;
     const domId = toDomBedId(bedId);
     const list = habitsInBed(active, bedId);
     if (list.length === 0 && bedId !== UNGROUPED_BED_ID && !bedsMeta.some((b) => b.id === bedId)) {
-      removeBedChrome(gardenEl, domId);
+      gardenEl.querySelector(`:scope > .garden-bed-row[data-bed-id="${CSS.escape(domId)}"]`)?.remove();
       return;
     }
     if (list.length === 0 && bedId === UNGROUPED_BED_ID && bedsMeta.length > 0 && active.every((h) => h.bedId)) {
-      removeBedChrome(gardenEl, domId);
+      gardenEl.querySelector(`:scope > .garden-bed-row[data-bed-id="${CSS.escape(domId)}"]`)?.remove();
       return;
     }
     nextDomIds.add(domId);
 
-    if (showHeaders) {
-      const head = ensureBedHeader(gardenEl, bed, bedTitle(bed, t), { afterEl: anchor });
-      anchor = head;
-    } else {
-      removeBedChrome(gardenEl, domId);
+    let row = gardenEl.querySelector(`:scope > .garden-bed-row[data-bed-id="${CSS.escape(domId)}"]`);
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'garden-bed-row';
+      row.dataset.bedId = domId;
+      if (insertAfter?.nextSibling) {
+        gardenEl.insertBefore(row, insertAfter.nextSibling);
+      } else if (insertAfter) {
+        insertAfter.after(row);
+      } else {
+        gardenEl.appendChild(row);
+      }
+    } else if (insertAfter && row.previousElementSibling !== insertAfter) {
+      insertAfter.after(row);
     }
 
-    // Sync cards as direct children of the garden grid (preserves column layout)
-    list.forEach((habit, index) => {
+    if (showHeaders) {
+      let head = row.querySelector(':scope > .garden-bed-header');
+      if (!head) {
+        head = document.createElement('div');
+        head.className = 'garden-bed-header';
+        head.dataset.bedId = domId;
+        row.prepend(head);
+      }
+      head.dataset.bedId = domId;
+      const title = bedTitle(bed, t);
+      const titleEl = head.querySelector('.garden-bed-title');
+      if (!titleEl) {
+        head.innerHTML = `<h3 class="garden-bed-title">${escapeHtml(title)}</h3>`;
+      } else if (titleEl.textContent !== title) {
+        titleEl.textContent = title;
+      }
+    } else {
+      row.querySelector(':scope > .garden-bed-header')?.remove();
+    }
+
+    list.slice(0, 3).forEach((habit, index) => {
       const key = habitRenderKey(habit, false, 'active');
-      let card = gardenEl.querySelector(`:scope > .habit-card[data-id="${CSS.escape(habit.id)}"]`);
+      let card = row.querySelector(`:scope > .habit-card[data-id="${CSS.escape(habit.id)}"]`)
+        || gardenEl.querySelector(`.habit-card[data-id="${CSS.escape(habit.id)}"]`);
       if (!card) {
         card = createHabitCard(habit, false, 'active');
-        card.dataset.renderKey = key;
-        card.dataset.bedId = domId;
-        if (anchor?.nextSibling) {
-          gardenEl.insertBefore(card, anchor.nextSibling);
-        } else if (anchor) {
-          anchor.after(card);
-        } else {
-          gardenEl.appendChild(card);
-        }
       } else if (card.dataset.renderKey !== key) {
         const next = createHabitCard(habit, false, 'active');
-        next.dataset.renderKey = key;
-        next.dataset.bedId = domId;
         card.replaceWith(next);
         card = next;
-      } else {
-        card.dataset.bedId = domId;
       }
+      card.dataset.renderKey = key;
+      card.dataset.bedId = domId;
       makeHabitCardDraggable(card);
       const c = requireCtx();
       const isFocused = habit.id === c.focusedHabitId;
       card.classList.toggle('habit-card--focus', isFocused);
       card.setAttribute('tabindex', isFocused ? '0' : '-1');
       card.setAttribute('aria-label', habit.treeName || habit.name);
-
-      // Place after previous card / header in bed order
-      const prev = index === 0
-        ? (showHeaders
-          ? gardenEl.querySelector(`:scope > .garden-bed-header[data-bed-id="${CSS.escape(domId)}"]`)
-          : anchor)
-        : gardenEl.querySelector(`:scope > .habit-card[data-id="${CSS.escape(list[index - 1].id)}"]`);
+      if (card.parentElement !== row) {
+        row.appendChild(card);
+      }
+      const header = row.querySelector(':scope > .garden-bed-header');
+      const siblings = [...row.querySelectorAll(':scope > .habit-card')];
+      const prev = index === 0 ? header : siblings[index - 1];
       if (prev && card.previousElementSibling !== prev) {
         prev.after(card);
+      } else if (!prev && card !== row.firstElementChild) {
+        row.prepend(card);
       }
-      anchor = card;
     });
 
     if (list.length === 0 && showHeaders) {
-      const zone = ensureBedDropzone(gardenEl, bed, dropHint, { afterEl: anchor });
-      anchor = zone;
+      let zone = row.querySelector(':scope > .garden-bed-dropzone');
+      if (!zone) {
+        zone = document.createElement('div');
+        zone.className = 'garden-bed-dropzone';
+        zone.dataset.bedId = domId;
+        zone.textContent = dropHint;
+        row.appendChild(zone);
+      }
     } else {
-      gardenEl.querySelector(`:scope > .garden-bed-dropzone[data-bed-id="${CSS.escape(domId)}"]`)?.remove();
+      row.querySelector(':scope > .garden-bed-dropzone')?.remove();
     }
+
+    insertAfter = row;
   });
 
-  // Drop chrome for beds no longer rendered
-  [...gardenEl.querySelectorAll(':scope > .garden-bed-header, :scope > .garden-bed-dropzone')].forEach((el) => {
+  [...gardenEl.querySelectorAll(':scope > .garden-bed-row')].forEach((el) => {
     if (!nextDomIds.has(el.dataset.bedId)) {
+      el.remove();
+    }
+  });
+  [...gardenEl.querySelectorAll(':scope > .garden-bed-header, :scope > .garden-bed-dropzone, :scope > .habit-card')].forEach((el) => {
+    if (!el.closest('.garden-plugin-widget')) {
       el.remove();
     }
   });
@@ -393,15 +425,29 @@ export function renderGarden() {
       syncActiveGardenWithBeds(c.gardenEl, active, t);
       bindGardenDragDrop(c.gardenEl, {
         onReorder: async (id, bedId, beforeId) => {
-          await habits.moveToBed(id, bedId, beforeId);
-          renderGarden();
+          try {
+            await habits.moveToBed(id, bedId, beforeId);
+            renderGarden();
+          } catch (err) {
+            if (err?.code === 'BED_FULL' || err?.message === 'Bed is full') {
+              const msg = t.bedFull || 'This bed already has 3 habits';
+              if (typeof window.showNotification === 'function') {
+                window.showNotification('', msg);
+              }
+              return;
+            }
+            throw err;
+          }
         }
       });
     }
   }
   if (c.trophyEl) {
-    const showNext = c.settings.showNextTreeProgress !== false;
-    if (trophies.length === 0) {
+    const trophiesOn = c.settings.showTrophies === true;
+    const showNext = trophiesOn && c.settings.showNextTreeProgress !== false;
+    if (!trophiesOn) {
+      c.trophyEl.innerHTML = '';
+    } else if (trophies.length === 0) {
       if (showNext) {
         renderNextTreeProgress(c.trophyEl, t);
       } else {
@@ -412,8 +458,11 @@ export function renderGarden() {
     }
     const trophySection = document.getElementById('trophy-section');
     if (trophySection) {
-      const hasNextTree = trophies.length === 0 && showNext && Boolean(c.trophyEl.querySelector('.habit-card--next-tree'));
-      trophySection.classList.toggle('hidden', !(c.settings.showTrophies || hasNextTree));
+      const hasContent = trophiesOn && (
+        trophies.length > 0
+        || Boolean(c.trophyEl.querySelector('.habit-card--next-tree'))
+      );
+      trophySection.classList.toggle('hidden', !hasContent);
     }
   }
   const pausedSection = document.getElementById('paused-section');

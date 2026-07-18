@@ -354,6 +354,10 @@ a:hover { color: var(--accent-blue-hover); }
   color: var(--text-secondary);
 }
 body.focus-mode .paused-section { display: none !important; }
+body.focus-hide-chrome .app-header,
+body.focus-hide-chrome .app-footer {
+    display: none !important;
+}
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .section-header h2 { font-size: 20px; font-weight: 600; }
 .section-desc { font-size: 14px; color: var(--text-tertiary); margin-bottom: 16px; }
@@ -429,6 +433,9 @@ body.focus-mode .paused-section { display: none !important; }
     display: flex;
     align-items: center;
     justify-content: center;
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
     min-height: 0;
     height: auto;
     box-sizing: border-box;
@@ -456,13 +463,13 @@ body.focus-mode .paused-section { display: none !important; }
 .footer-links a { font-size: 13px; color: var(--text-secondary); }
 .footer-links a:hover { color: var(--text-primary); }
 .footer-version {
-    font-size: 12px;
-    color: var(--text-tertiary);
+    font-size: 13px;
+    color: var(--text-secondary);
     font-family: var(--font-mono);
     margin: 0;
     padding: 0;
     letter-spacing: 0.3px;
-    line-height: 1.25;
+    line-height: 1.3;
     display: block;
     text-align: center;
 }
@@ -2987,7 +2994,10 @@ body.calendar-page .calendar-body {
 
 body.calendar-page .app-footer {
     flex-shrink: 0;
-    margin-top: 0;
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
     padding: 6px 16px;
     height: auto;
     min-height: 0;
@@ -3355,4 +3365,48 @@ body.ambient-paused [id^="bg-"] * {
 .plugins-list-wrap .plugin-card:hover {
     border-color: color-mix(in srgb, var(--text-primary) 22%, var(--border-light));
     box-shadow: 0 8px 24px color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.garden-grid > .garden-plugin-widget {
+    align-self: start;
+}
+.garden-bed-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+}
+.garden-bed-row > .garden-bed-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 4px 0;
+}
+.garden-bed-row > .garden-bed-dropzone {
+    grid-column: 1 / -1;
+}
+.garden-bed-row.garden-bed--drop-target,
+.garden-bed-row > .garden-bed-header.garden-bed--drop-target,
+.garden-bed-row > .garden-bed-dropzone.garden-bed--drop-target {
+    background: color-mix(in srgb, var(--accent-blue, #3b82f6) 10%, transparent);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent-blue, #3b82f6) 40%, transparent);
+}
+.garden-bed-row > .habit-card {
+    height: auto;
+    align-self: start;
+    min-height: 184px;
+}
+@media (max-width: 900px) {
+    .garden-bed-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 600px) {
+    .garden-bed-row {
+        grid-template-columns: 1fr;
+    }
 }

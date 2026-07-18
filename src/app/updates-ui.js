@@ -2,6 +2,7 @@ import { BRANDING } from '../core/branding.js';
 import { renderReleaseMarkdown } from '../core/release-markdown.js';
 import { CHECK_UPDATES_ICON, setSvgIcon, UPDATE_STATUS_ICONS } from '../core/ui-icons.js';
 import { installFocusTrap, releaseFocusTrap } from './modals.js';
+import { settings } from './renderer-bootstrap.js';
 
 let getLang = () => 'en';
 let initialized = false;
@@ -278,12 +279,31 @@ export function updateUpdatesSection() {
   setSvgIcon(document.getElementById('check-updates-icon'), CHECK_UPDATES_ICON);
   setSvgIcon(document.getElementById('update-status-icon'), UPDATE_STATUS_ICONS.uptodate);
 
+  const checkUpdatesToggle = document.getElementById('toggle-check-updates');
+  if (checkUpdatesToggle) {
+    checkUpdatesToggle.checked = settings.checkUpdatesEnabled !== false;
+  }
+  const autoUpdateToggle = document.getElementById('toggle-auto-update');
+  if (autoUpdateToggle) {
+    autoUpdateToggle.checked = settings.autoUpdateEnabled === true;
+  }
+
+  const checkBtn = document.getElementById('check-updates-btn');
+  const checksAllowed = settings.checkUpdatesEnabled !== false;
+
   const isElectron = typeof window.electron !== 'undefined';
   if (!isElectron) {
     updateStatusCard('browser', 'Browser mode', 'Updates only available in desktop app');
-    document.getElementById('check-updates-btn')?.setAttribute('disabled', 'disabled');
+    checkBtn?.setAttribute('disabled', 'disabled');
     void fetchReleaseInfo();
     return;
+  }
+
+  if (!checksAllowed) {
+    updateStatusCard('info', 'Updates paused', 'Enable “Check for updates” to look for new versions');
+    checkBtn?.setAttribute('disabled', 'disabled');
+  } else {
+    checkBtn?.removeAttribute('disabled');
   }
 
   if (initialized) {
@@ -323,7 +343,11 @@ export function updateUpdatesSection() {
     });
   }
 
-  document.getElementById('check-updates-btn')?.addEventListener('click', () => {
+  checkBtn?.addEventListener('click', () => {
+    if (settings.checkUpdatesEnabled === false && updateStatus.state !== 'downloaded') {
+      updateStatusCard('info', 'Updates paused', 'Enable “Check for updates” first');
+      return;
+    }
     if (updateStatus.state === 'downloaded') {
       window.electron.restartApp?.();
     } else {
@@ -342,4 +366,7 @@ export function updateUpdatesSection() {
   });
 
   void fetchReleaseInfo();
+  if (checksAllowed && settings.autoUpdateEnabled === true) {
+    window.electron.checkForUpdates?.();
+  }
 }

@@ -333,6 +333,10 @@
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
                         <span class="sidebar-label" data-i18n="shortcuts">Keyboard</span>
                     </div>
+                    <div class="settings-sidebar-item" data-section="focus">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
+                        <span class="sidebar-label" data-i18n="focusSettings">Focus</span>
+                    </div>
                     <div class="settings-sidebar-item" data-section="garden">
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
                         <span class="sidebar-label" data-i18n="gardenSettings">Garden</span>
@@ -351,7 +355,7 @@
                     </div>
                     <div class="settings-sidebar-item" data-section="data">
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
-                        <span class="sidebar-label" data-i18n="dataStorage">Data</span>
+                        <span class="sidebar-label" data-i18n="dataStorage">Storage</span>
                     </div>
                     <div class="settings-sidebar-item" data-section="updates">
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
@@ -426,6 +430,7 @@
                             <p class="settings-section-hero-desc" data-i18n="appearanceSectionDesc">Themes, language, and animated backgrounds apply to both the garden and the calendar.</p>
                         </div>
 
+                        <div class="settings-group-title" data-i18n="appearanceGroupInterface">Interface</div>
                         <div class="settings-group-card">
                             <div class="setting-item">
                                 <div class="setting-info">
@@ -474,6 +479,7 @@
                             </div>
                         </div>
 
+                        <div class="settings-group-title" data-i18n="appearanceGroupAtmosphere">Atmosphere</div>
                         <div class="settings-group-card">
                             <div class="setting-item">
                                 <div class="setting-info">
@@ -510,9 +516,6 @@
                                     <button type="button" class="btn-ghost-small" id="custom-bg-clear" data-i18n="customBackgroundClear">Remove</button>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="settings-group-card">
                             <div class="setting-item">
                                 <div class="setting-info">
                                     <span class="setting-label" data-i18n="accentColor">Accent color</span>
@@ -530,6 +533,19 @@
                                 </div>
                                 <input type="range" id="ambient-intensity" class="intensity-slider" min="0" max="100" value="100" aria-label="Ambient intensity">
                             </div>
+                            <div class="setting-item" id="ambient-sound-row">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="ambientSound">Ambient sound</span>
+                                    <span class="setting-desc" data-i18n="ambientSoundDesc">Optional loop from installed plugins. Stays local and off by default.</span>
+                                </div>
+                                <select id="ambient-sound-select" class="select-input select-small">
+                                    <option value="none" data-i18n="ambientSoundNone">None</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-group-title" data-i18n="appearanceGroupPerformance">Performance</div>
+                        <div class="settings-group-card">
                             <div class="setting-item">
                                 <div class="setting-info">
                                     <span class="setting-label" data-i18n="lowPowerMode">Low-power mode</span>
@@ -539,15 +555,6 @@
                                     <input type="checkbox" id="toggle-low-power" aria-label="Low-power mode">
                                     <span class="toggle-slider"></span>
                                 </label>
-                            </div>
-                            <div class="setting-item" id="ambient-sound-row">
-                                <div class="setting-info">
-                                    <span class="setting-label" data-i18n="ambientSound">Ambient sound</span>
-                                    <span class="setting-desc" data-i18n="ambientSoundDesc">Optional loop from installed plugins. Stays local and off by default.</span>
-                                </div>
-                                <select id="ambient-sound-select" class="select-input select-small">
-                                    <option value="none" data-i18n="ambientSoundNone">None</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -610,6 +617,45 @@
                         <p class="shortcuts-footnote" data-i18n="shortcutsFootnote">Final shortcuts may differ by platform. Cultiva will respect macOS Human Interface Guidelines where applicable.</p>
                     </div>
 
+                    <div class="settings-section-content" id="section-focus">
+                        <div class="settings-section-hero">
+                            <div class="settings-section-hero-title" data-i18n="focusSectionTitle">Focus</div>
+                            <p class="settings-section-hero-desc" data-i18n="focusSectionDesc">Minimize distractions while tracking habits.</p>
+                        </div>
+                        <div class="settings-group-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="focusMode">Focus Mode</span>
+                                    <span class="setting-desc" data-i18n="focusModeDesc">Minimal UI for distraction-free tracking</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-focus">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="focusAutoStart">Auto-start focus</span>
+                                    <span class="setting-desc" data-i18n="focusAutoStartDesc">Enter focus mode when Cultiva opens</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-focus-auto-start">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="focusHideChrome">Hide chrome in focus</span>
+                                    <span class="setting-desc" data-i18n="focusHideChromeDesc">Hide header and footer while in focus mode</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-focus-hide-chrome">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="settings-section-content" id="section-garden">
                         <div class="setting-item">
                             <div class="setting-info">
@@ -623,21 +669,11 @@
                         </div>
                         <div class="setting-item">
                             <div class="setting-info">
-                                <span class="setting-label" data-i18n="showNextTree">Next Legacy progress</span>
-                                <span class="setting-desc" data-i18n="showNextTreeDesc">When Trophy Garden is empty, show progress toward the nearest Legacy tree</span>
+                                    <span class="setting-label" data-i18n="showNextTree">Trophy progress</span>
+                                    <span class="setting-desc" data-i18n="showNextTreeDesc">When Trophy Garden is on and empty, show progress toward the nearest trophy tree</span>
                             </div>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="toggle-next-tree" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label" data-i18n="focusMode">Focus Mode</span>
-                                <span class="setting-desc" data-i18n="focusModeDesc">Minimal UI for distraction-free tracking</span>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="toggle-focus">
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
@@ -657,6 +693,18 @@
                         <div class="settings-section-hero">
                             <div class="settings-section-hero-title" data-i18n="statsDashboard">Statistics</div>
                             <p class="settings-section-hero-desc" data-i18n="statsDashboardDesc">Weekly and monthly completion trends from your habit history.</p>
+                        </div>
+                        <div class="settings-group-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="showGardenHeatmap">Garden activity</span>
+                                    <span class="setting-desc" data-i18n="showGardenHeatmapDesc">All habits · year · darker = more completions that day</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-garden-heatmap" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                         </div>
                         <div id="stats-dashboard-body" class="stats-dashboard-body"></div>
                     </div>
@@ -702,16 +750,6 @@
                                 <option value="12h" data-i18n="timeFormat12h">12h (AM/PM)</option>
                                 <option value="24h" data-i18n="timeFormat24h">24h</option>
                             </select>
-                        </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label" data-i18n="showGardenHeatmap">Garden activity</span>
-                                <span class="setting-desc" data-i18n="showGardenHeatmapDesc">All habits · year · darker = more completions that day</span>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="toggle-garden-heatmap" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
                         </div>
                         <div class="settings-footer-inline">
                             <span class="cultiva-date-label" data-i18n="cultivaSees">Cultiva sees</span>
@@ -765,6 +803,7 @@
                             <p class="settings-section-hero-desc" data-i18n="storageBackendSectionDesc">Cultiva is offline-first. Habits, settings, and backups stay on this device in local storage — no cloud sync.</p>
                         </div>
                         <p class="setting-hint" id="storage-backend-hint" data-i18n="storageBackendLocalActive">All data is stored locally on this device. Export a backup anytime from the options below.</p>
+                        <div class="settings-group-title" data-i18n="storageGroupBackup">Backups</div>
                         <div class="setting-item">
                             <div class="setting-info">
                                 <span class="setting-label" data-i18n="export">Export</span>
@@ -793,6 +832,7 @@
                             </div>
                             <button class="btn-small" id="settings-export-csv" data-i18n="exportCsvBtn">Export CSV</button>
                         </div>
+                        <div class="settings-group-title" data-i18n="storageGroupRestore">Restore</div>
                         <div class="setting-item">
                             <div class="setting-info">
                                 <span class="setting-label" data-i18n="import">Import</span>
@@ -800,12 +840,27 @@
                             </div>
                             <button class="btn-small" id="settings-import" data-i18n="importBtn">Import</button>
                         </div>
+                        <div class="settings-group-title" data-i18n="storageGroupCleanup">Cleanup</div>
                         <div class="setting-item setting-item-danger">
                             <div class="setting-info">
                                 <span class="setting-label" data-i18n="reset">Reset</span>
                                 <span class="setting-desc" data-i18n="resetDesc">Delete all data</span>
                             </div>
                             <button class="btn-small btn-danger" id="settings-reset" data-i18n="resetBtn">Reset</button>
+                        </div>
+                        <div class="settings-divider"></div>
+                        <div class="setting-item setting-item-static">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="cacheSizeLabel">Cache size</span>
+                                <span class="setting-desc" id="cache-size-display" data-i18n="cacheSizeCalculating">Calculating…</span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label" data-i18n="clearCache">Clear cache</span>
+                                <span class="setting-desc" data-i18n="clearCacheDesc">Remove search index and temporary cached data. Habits and settings are kept.</span>
+                            </div>
+                            <button class="btn-small" id="settings-clear-cache" data-i18n="clearCacheBtn">Clear</button>
                         </div>
                     </div>
 
@@ -888,6 +943,15 @@
                             </div>
                         </div>
 
+                        <div class="settings-group-title-apple" data-i18n="notificationsGroupPlugins">Plugin notifications</div>
+                        <div class="settings-group-card notifications-apple-card" id="plugin-notify-list">
+                            <div class="setting-item setting-item-static" id="plugin-notify-empty">
+                                <div class="setting-info">
+                                    <span class="setting-desc" data-i18n="pluginNotifyEmpty">No plugins installed</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <p class="notifications-footnote" data-i18n="notificationsOsFootnote">If alerts do not appear, check Cultiva in System Settings → Notifications (iOS, iPadOS, macOS) or Windows Settings → Notifications.</p>
                     </div>
 
@@ -937,6 +1001,29 @@
                             </div>
 
                             <div class="settings-divider"></div>
+
+                            <div class="settings-group-card">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <span class="setting-label" data-i18n="checkUpdatesEnabled">Check for updates</span>
+                                        <span class="setting-desc" data-i18n="checkUpdatesEnabledDesc">Allow Cultiva to look for new versions</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="toggle-check-updates" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <span class="setting-label" data-i18n="autoUpdateEnabled">Automatic updates</span>
+                                        <span class="setting-desc" data-i18n="autoUpdateEnabledDesc">Download updates in the background when available</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="toggle-auto-update">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
 
                             <div class="update-status-card" id="update-status-card">
                                 <div class="status-icon ui-icon" id="update-status-icon" aria-hidden="true"></div>

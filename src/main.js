@@ -32,7 +32,10 @@ import {
   loadSettings,
   saveSettings,
   applySettings,
-  updateNotificationsDesktopBanner
+  updateNotificationsDesktopBanner,
+  clearAppCache,
+  refreshCacheSizeDisplay,
+  refreshPluginNotifySettingsUi
 } from './app/settings-controller.js';
 import { initHotkeys } from './app/hotkeys.js';
 import { initContextMenu } from './app/context-menu.js';
@@ -159,6 +162,25 @@ gardenHeatmapToggle?.addEventListener('change', (e) => {
   saveSettings();
 });
 focusToggle?.addEventListener('change', (e) => { settings.focusMode = e.target.checked; saveSettings(); });
+document.getElementById('toggle-focus-auto-start')?.addEventListener('change', (e) => {
+  settings.focusAutoStart = e.target.checked;
+  saveSettings();
+});
+document.getElementById('toggle-focus-hide-chrome')?.addEventListener('change', (e) => {
+  settings.focusHideChrome = e.target.checked;
+  saveSettings();
+});
+document.getElementById('toggle-check-updates')?.addEventListener('change', (e) => {
+  settings.checkUpdatesEnabled = e.target.checked;
+  saveSettings();
+});
+document.getElementById('toggle-auto-update')?.addEventListener('change', (e) => {
+  settings.autoUpdateEnabled = e.target.checked;
+  saveSettings();
+});
+document.getElementById('settings-clear-cache')?.addEventListener('click', () => {
+  void clearAppCache();
+});
 document.getElementById('toggle-streak-grace')?.addEventListener('change', (e) => {
   settings.streakGraceEnabled = e.target.checked;
   void habits.recalculateAllStreaks();
@@ -367,7 +389,13 @@ function initSettingsNavigation() {
     if (section === 'plugins') {
       import('./app/plugins-ui.js').then((m) => m.renderPluginsSection());
     }
-    if (section === 'notifications') { updateNotificationsDesktopBanner(); }
+    if (section === 'notifications') {
+      updateNotificationsDesktopBanner();
+      refreshPluginNotifySettingsUi();
+    }
+    if (section === 'data') {
+      void refreshCacheSizeDisplay();
+    }
     if (section === 'statistics') {
       import('./app/stats-dashboard-ui.js').then((m) => m.renderStatsDashboard(settings.lang));
     }
@@ -1031,6 +1059,7 @@ function initEvents() {
 function toggleFocusMode(enabled) {
   settings.focusMode = enabled;
   document.body.classList.toggle('focus-mode', enabled);
+  document.body.classList.toggle('focus-hide-chrome', enabled && settings.focusHideChrome === true);
   if (focusToggle) { focusToggle.checked = enabled; }
   storage.set('cultiva-settings', settings);
   renderGarden();
@@ -1328,8 +1357,17 @@ async function init() {
       getBeds: () => getGardenBeds(),
       fromDomBedId,
       moveHabitToBed: async (id, bedId) => {
-        if (await habits.setBed(id, bedId)) {
-          renderGarden();
+        try {
+          if (await habits.setBed(id, bedId)) {
+            renderGarden();
+          }
+        } catch (err) {
+          if (err?.code === 'BED_FULL' || err?.message === 'Bed is full') {
+            const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+            showNotification('', t.bedFull || 'This bed already has 3 habits');
+            return;
+          }
+          throw err;
         }
       },
       createBed: async (habitId) => {

@@ -108,9 +108,9 @@ function resolveBedIdFromEvent(target) {
   if (card?.dataset?.bedId != null && card.dataset.bedId !== '') {
     return fromDomBedId(card.dataset.bedId);
   }
-  const header = target.closest?.('.garden-bed-header, .garden-bed-dropzone');
-  if (header?.dataset?.bedId != null) {
-    return fromDomBedId(header.dataset.bedId);
+  const row = target.closest?.('.garden-bed-row, .garden-bed-header, .garden-bed-dropzone');
+  if (row?.dataset?.bedId != null) {
+    return fromDomBedId(row.dataset.bedId);
   }
   return null;
 }
@@ -142,7 +142,7 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
 
   gardenEl.addEventListener('dragover', (e) => {
     const card = e.target.closest('.habit-card[data-id]');
-    const zone = e.target.closest('.garden-bed-header, .garden-bed-dropzone');
+    const zone = e.target.closest('.garden-bed-row, .garden-bed-header, .garden-bed-dropzone');
     if (!card && !zone) {
       return;
     }
@@ -155,7 +155,11 @@ export function bindGardenDragDrop(gardenEl, { onReorder }) {
     }
     const domId = toDomBedId(bedId ?? fromDomBedId(card?.dataset?.bedId));
     gardenEl.querySelectorAll(`[data-bed-id="${CSS.escape(domId)}"]`).forEach((el) => {
-      if (el.classList.contains('garden-bed-header') || el.classList.contains('garden-bed-dropzone')) {
+      if (
+        el.classList.contains('garden-bed-header')
+        || el.classList.contains('garden-bed-dropzone')
+        || el.classList.contains('garden-bed-row')
+      ) {
         el.classList.add('garden-bed--drop-target');
       }
     });

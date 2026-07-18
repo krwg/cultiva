@@ -27,7 +27,7 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 
 ## Download
 
-**[→ Latest release (2.1.2 · Rowan)](https://github.com/krwg/cultiva/releases/latest)** · **in progress: 2.1.3**
+**[→ Latest release (2.1.3 · Rowan)](https://github.com/krwg/cultiva/releases/latest)** · **in progress: 2.2.0**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
@@ -60,6 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
+| **2.2.0 beds + settings** | Horizontal beds (max 3), pinned footer, Focus/Storage IA, trophy gate, curated quotes |
 | **2.1.3 store + search** | Cultiva-styled plugin store, glyph search index, Radio player Neo |
 | **2.1.2 garden beds** | Drag-and-drop reorder + custom beds; Weather Neo companion |
 | **2.1.1 critical fix** | Garden reload / storage race, compact footer, heatmap toggle |
@@ -74,7 +75,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **Statistics** | Weekly and monthly completion trends in Settings |
 | **Data export** | JSON, ZIP, iCal (`.ics`) for habits and calendar events |
 | **Auto-backup** | 7 rotating snapshots in the app data folder |
-| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.5.1**) |
+| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.5.4**) |
 | **F1 help** | Contextual shortcuts — English and Russian |
 | **19 themes** | Including **Rowan**, **Linden**, and **Cypress** |
 | **14 ambient backgrounds** | Plus custom photo — shared with calendar |

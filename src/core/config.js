@@ -12,6 +12,8 @@ export const STORAGE_KEYS = {
 };
 
 export const MAX_ACTIVE_HABITS = 12;
+export const MAX_HABITS_PER_BED = 3;
 export const GARDEN_FULL_ERROR = 'Garden is full';
+export const BED_FULL_ERROR = 'Bed is full';
 export const LEGACY_THRESHOLD = 365;
 export const STREAK_GRACE_DAYS_PER_MONTH = 1;

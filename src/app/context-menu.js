@@ -79,11 +79,11 @@ function habitFromTarget(target) {
 }
 
 function bedFromTarget(target) {
-  const bed = target.closest('.garden-bed');
-  if (!bed) {
+  const el = target.closest('.garden-bed, .garden-bed-row, .garden-bed-header, .garden-bed-dropzone');
+  if (!el) {
     return null;
   }
-  return bed.dataset.bedId || null;
+  return el.dataset.bedId || null;
 }
 
 export function initContextMenu(h) {

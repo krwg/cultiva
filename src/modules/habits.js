@@ -1,5 +1,5 @@
 import { storage } from './storage.js';
-import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS, STREAK_GRACE_DAYS_PER_MONTH, GARDEN_FULL_ERROR } from '../core/config.js';
+import { GROWTH_STAGES, LEGACY_THRESHOLD, MAX_ACTIVE_HABITS, MAX_HABITS_PER_BED, STREAK_GRACE_DAYS_PER_MONTH, GARDEN_FULL_ERROR, BED_FULL_ERROR } from '../core/config.js';
 import { getTodayInTZ, getDateInTZ } from '../core/timezone.js';
 import {
   normalizeSchedule,
@@ -553,11 +553,17 @@ export const habits = {
       return false;
     }
     const targetBed = bedId || '';
-    habit.bedId = targetBed;
-
     const inBed = allHabits
       .filter((h) => h.id !== id && h.progress < LEGACY_THRESHOLD && !h.paused && !h.archived && (h.bedId || '') === targetBed)
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+    if (targetBed && inBed.length >= MAX_HABITS_PER_BED) {
+      const err = new Error(BED_FULL_ERROR);
+      err.code = 'BED_FULL';
+      throw err;
+    }
+
+    habit.bedId = targetBed;
 
     const next = [];
     let inserted = false;

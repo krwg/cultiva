@@ -604,7 +604,8 @@ textarea { resize: vertical; min-height: 80px; }
 
 .settings-group { margin-bottom: 24px; }
 .settings-group:last-child { margin-bottom: 0; }
-.settings-group-title { font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 12px; }
+.settings-group-title { font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.3px; margin: 20px 0 12px; }
+.settings-section-hero + .settings-group-title { margin-top: 8px; }
 .setting-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border-light); }
 .setting-item:last-child { border-bottom: none; }
 .setting-info { flex: 1; min-width: 0; padding-right: 8px; }
@@ -729,8 +730,12 @@ textarea { resize: vertical; min-height: 80px; }
 @keyframes fadeSlide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 .auth-error { background: rgba(255,59,48,0.1); padding: 10px; border-radius: 8px; font-size: 13px; color: var(--accent-red); text-align: center; }
 
-body.focus-mode .app-header, body.focus-mode .user-menu, body.focus-mode .section-header h2,
-body.focus-mode .trophy-section, body.focus-mode .category-badge, body.focus-mode .footer { display: none !important; }
+body.focus-mode.focus-hide-chrome .app-header,
+body.focus-mode.focus-hide-chrome .user-menu,
+body.focus-mode.focus-hide-chrome .section-header h2,
+body.focus-mode.focus-hide-chrome .trophy-section,
+body.focus-mode.focus-hide-chrome .category-badge,
+body.focus-mode.focus-hide-chrome .footer { display: none !important; }
 body.focus-mode .app-main { padding: 24px 16px; max-width: 900px; margin: 0 auto; }
 body.focus-mode .garden-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 body.focus-mode .habit-card::before { height: 0; }

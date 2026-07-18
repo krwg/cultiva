@@ -25,7 +25,8 @@ function settingsLabelDocs(t) {
     { id: 'plugins', section: 'plugins', title: t.plugins || 'Plugins', description: t.pluginsSectionDesc || '' },
     { id: 'search', section: 'search', title: t.searchSectionTitle || 'Search', description: t.searchSectionDesc || '' },
     { id: 'calendar', section: 'calendar', title: t.calendar || 'Calendar', description: '' },
-    { id: 'data', section: 'data', title: t.dataStorage || 'Data', description: t.storageBackendSectionDesc || '' }
+    { id: 'data', section: 'data', title: t.dataStorage || 'Storage', description: t.storageBackendSectionDesc || '' },
+    { id: 'focus', section: 'focus', title: t.focusSettings || 'Focus', description: t.focusSectionDesc || '' }
   ];
 }
 

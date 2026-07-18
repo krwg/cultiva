@@ -824,7 +824,11 @@ function renderGardenHeatmap() {
   const enabled = isGardenHeatmapEnabled();
   if (section) {
     section.hidden = !enabled;
-    section.style.display = enabled ? '' : 'none';
+    if (enabled) {
+      section.style.removeProperty('display');
+    } else {
+      section.style.display = 'none';
+    }
   }
   cal.innerHTML = '';
   if (!enabled) {
@@ -881,8 +885,8 @@ async function init() {
   loadHolidays();
   loadEvents();
   initColorSelector();
-  renderGardenHeatmap();
   await appearance.syncAll(true, { storage });
+  renderGardenHeatmap();
   appearance.bindAutoSync({
     storage,
     onAfterSync: () => { void refreshCalendarFromStorage(); }

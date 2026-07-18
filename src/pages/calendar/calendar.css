@@ -21,6 +21,9 @@
     padding: 14px 0 4px;
     border-top: 1px solid var(--border-light, rgba(128,128,128,0.15));
 }
+.garden-heatmap-section[hidden] {
+    display: none !important;
+}
 
 .garden-heatmap-header {
     margin-bottom: 10px;

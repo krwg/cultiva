@@ -18,8 +18,10 @@ import {
 import { playPluginAmbientSound } from '../core/plugin-sounds.js';
 import { notifyAppearanceChanged } from '../core/appearance-sync.js';
 import { BRANDING } from '../core/branding.js';
-import { ensureI18nLocales } from '../core/i18n.js';
+import { ensureI18nLocales, TRANSLATIONS } from '../core/i18n.js';
 import { initHabitFormIcons, initSettingsSidebarIcons, initSettingsEmptyIcon } from '../core/ui-icons.js';
+import { escapeHtml } from '../core/escape-html.js';
+import { getGlyphSearchStatus } from '../core/glyph-search-index.js';
 
 let ctx = null;
 let _lastSavedLang = null;
@@ -70,6 +72,12 @@ export async function loadSettings() {
       if (typeof saved.focusMode === 'boolean') {
         settings.focusMode = saved.focusMode;
       }
+      if (typeof saved.focusAutoStart === 'boolean') {
+        settings.focusAutoStart = saved.focusAutoStart;
+      }
+      if (typeof saved.focusHideChrome === 'boolean') {
+        settings.focusHideChrome = saved.focusHideChrome;
+      }
       if (saved.holidayRegion) {
         settings.holidayRegion = saved.holidayRegion;
       }
@@ -100,6 +108,9 @@ export async function loadSettings() {
           settings.nativeNotifyCalendarLeadMinutes = Math.max(5, Math.min(120, m));
         }
       }
+      if (saved.pluginNotifyMuted && typeof saved.pluginNotifyMuted === 'object' && !Array.isArray(saved.pluginNotifyMuted)) {
+        settings.pluginNotifyMuted = { ...saved.pluginNotifyMuted };
+      }
       if (typeof saved.accentColor === 'string') {
         settings.accentColor = saved.accentColor;
       }
@@ -121,12 +132,22 @@ export async function loadSettings() {
       if (typeof saved.streakGraceEnabled === 'boolean') {
         settings.streakGraceEnabled = saved.streakGraceEnabled;
       }
+      if (typeof saved.checkUpdatesEnabled === 'boolean') {
+        settings.checkUpdatesEnabled = saved.checkUpdatesEnabled;
+      }
+      if (typeof saved.autoUpdateEnabled === 'boolean') {
+        settings.autoUpdateEnabled = saved.autoUpdateEnabled;
+      }
       if (saved.storageBackend) {
         settings.storageBackend = saved.storageBackend;
       }
       if (Array.isArray(saved.gardenBeds)) {
         settings.gardenBeds = saved.gardenBeds;
       }
+    }
+
+    if (settings.focusAutoStart === true) {
+      settings.focusMode = true;
     }
 
     requireCtx().setLangAndT(settings.lang);
@@ -218,10 +239,10 @@ export function applySettings() {
 
   const trophySection = document.getElementById('trophy-section');
   if (trophySection) {
-    trophySection.classList.toggle('hidden', !settings.showTrophies);
+    trophySection.classList.toggle('hidden', settings.showTrophies !== true);
   }
   if (c.trophyToggle) {
-    c.trophyToggle.checked = settings.showTrophies;
+    c.trophyToggle.checked = settings.showTrophies === true;
   }
   const nextTreeToggle = document.getElementById('toggle-next-tree');
   if (nextTreeToggle) {
@@ -232,13 +253,31 @@ export function applySettings() {
     gardenHeatmapToggle.checked = settings.showGardenHeatmap !== false;
   }
   document.body.classList.toggle('focus-mode', settings.focusMode);
+  document.body.classList.toggle('focus-hide-chrome', settings.focusMode && settings.focusHideChrome === true);
   if (c.focusToggle) {
     c.focusToggle.checked = settings.focusMode;
+  }
+  const focusAutoStartToggle = document.getElementById('toggle-focus-auto-start');
+  if (focusAutoStartToggle) {
+    focusAutoStartToggle.checked = settings.focusAutoStart === true;
+  }
+  const focusHideChromeToggle = document.getElementById('toggle-focus-hide-chrome');
+  if (focusHideChromeToggle) {
+    focusHideChromeToggle.checked = settings.focusHideChrome === true;
   }
 
   const streakGraceToggle = document.getElementById('toggle-streak-grace');
   if (streakGraceToggle) {
     streakGraceToggle.checked = settings.streakGraceEnabled !== false;
+  }
+
+  const checkUpdatesToggle = document.getElementById('toggle-check-updates');
+  if (checkUpdatesToggle) {
+    checkUpdatesToggle.checked = settings.checkUpdatesEnabled !== false;
+  }
+  const autoUpdateToggle = document.getElementById('toggle-auto-update');
+  if (autoUpdateToggle) {
+    autoUpdateToggle.checked = settings.autoUpdateEnabled === true;
   }
 
   const holidaySelect = document.getElementById('holiday-select');
@@ -278,6 +317,8 @@ export function applySettings() {
 
   refreshNativeNotificationControlsState();
   updateNotificationsDesktopBanner();
+  refreshPluginNotifySettingsUi();
+  void refreshCacheSizeDisplay();
 
   applyAccentColor(settings.accentColor);
   applyLowPowerMode(settings.lowPowerMode, settings.ambientIntensity);
@@ -393,4 +434,158 @@ export function isPluginVersionCompatible(minAppVersion) {
     return true;
   }
   return pluginManager.checkVersion(BRANDING.VERSION, minAppVersion);
+}
+
+function tStrings() {
+  return TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+}
+
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes) || bytes < 0) {
+    return '—';
+  }
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function estimateLocalStorageBytes() {
+  let total = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (!key) {
+        continue;
+      }
+      const value = localStorage.getItem(key) || '';
+      total += (key.length + value.length) * 2;
+    }
+  } catch {
+    void 0;
+  }
+  return total;
+}
+
+async function estimateIndexedDbBytes() {
+  try {
+    if (navigator.storage?.estimate) {
+      const est = await navigator.storage.estimate();
+      if (est && typeof est.usage === 'number') {
+        return est.usage;
+      }
+    }
+  } catch {
+    void 0;
+  }
+  return 0;
+}
+
+export async function refreshCacheSizeDisplay() {
+  const el = document.getElementById('cache-size-display');
+  if (!el) {
+    return;
+  }
+  const t = tStrings();
+  el.textContent = t.cacheSizeCalculating || 'Calculating…';
+  const lsBytes = estimateLocalStorageBytes();
+  const idbBytes = await estimateIndexedDbBytes();
+  const total = lsBytes + idbBytes;
+  const glyph = getGlyphSearchStatus();
+  const glyphHint = glyph.ready
+    ? (t.cacheSizeIndexed || 'Search index · {n} items').replace('{n}', String(glyph.count || 0))
+    : (t.cacheSizeNoIndex || 'No search index');
+  el.textContent = `${formatBytes(total)} · ${glyphHint}`;
+}
+
+const CACHE_TEMP_KEYS = [
+  'cultiva-releases-cache',
+  'cultiva-releases-cache-time',
+  'cultiva_glyph_search_index_v1',
+  'cultiva_glyph_search_status_v1'
+];
+
+export async function clearAppCache() {
+  for (const key of CACHE_TEMP_KEYS) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      void 0;
+    }
+  }
+  try {
+    const { cacheInvalidate } = await import('../core/runtime-cache.js');
+    cacheInvalidate('plugin-registry');
+  } catch {
+    void 0;
+  }
+  await refreshCacheSizeDisplay();
+  const t = tStrings();
+  if (typeof window.showNotification === 'function') {
+    window.showNotification('✓', t.cacheCleared || 'Cache cleared');
+  }
+}
+
+export function refreshPluginNotifySettingsUi() {
+  const list = document.getElementById('plugin-notify-list');
+  if (!list) {
+    return;
+  }
+  const t = tStrings();
+  const muted = settings.pluginNotifyMuted && typeof settings.pluginNotifyMuted === 'object'
+    ? settings.pluginNotifyMuted
+    : {};
+  const plugins = pluginManager.getInstalledPlugins?.() || [];
+
+  list.replaceChildren();
+
+  if (!plugins.length) {
+    const empty = document.createElement('div');
+    empty.className = 'setting-item setting-item-static';
+    empty.id = 'plugin-notify-empty';
+    empty.innerHTML = `
+      <div class="setting-info">
+        <span class="setting-desc">${escapeHtml(t.pluginNotifyEmpty || 'No plugins installed')}</span>
+      </div>
+    `;
+    list.appendChild(empty);
+    return;
+  }
+
+  for (const plugin of plugins) {
+    const id = String(plugin.id || '');
+    if (!id) {
+      continue;
+    }
+    const name = plugin.name || id;
+    const isMuted = muted[id] === true;
+    const row = document.createElement('div');
+    row.className = 'setting-item';
+    row.innerHTML = `
+      <div class="setting-info">
+        <span class="setting-label">${escapeHtml(name)}</span>
+        <span class="setting-desc">${escapeHtml(t.pluginNotifyToggleDesc || 'Allow notifications from this plugin')}</span>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" data-plugin-notify-id="${escapeHtml(id)}" ${isMuted ? '' : 'checked'}>
+        <span class="toggle-slider"></span>
+      </label>
+    `;
+    const input = row.querySelector('input[data-plugin-notify-id]');
+    input?.addEventListener('change', () => {
+      if (!settings.pluginNotifyMuted || typeof settings.pluginNotifyMuted !== 'object') {
+        settings.pluginNotifyMuted = {};
+      }
+      if (input.checked) {
+        delete settings.pluginNotifyMuted[id];
+      } else {
+        settings.pluginNotifyMuted[id] = true;
+      }
+      void saveSettings();
+    });
+    list.appendChild(row);
+  }
 }
