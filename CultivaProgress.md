@@ -11,7 +11,7 @@
 
 | | |
 |:--|:--|
-| **Latest** | [2.1.1 Rowan](https://github.com/krwg/cultiva/releases/tag/2.1.1) |
+| **Latest** | [2.1.1 Rowan](https://github.com/krwg/cultiva/releases/tag/2.1.1) · **2.1.2** (garden beds + Weather Neo, commit) |
 | **In short** | Offline-first habit garden · no telemetry · habits you can *see* grow |
 | **License** | GPL-3.0 · by [krwg](https://github.com/krwg) |
 
@@ -291,6 +291,8 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 **2.1.0** (Windows-focused) gave the calendar a **year heatmap for all habits together**, a place for **paused and archived** habits instead of a black hole, and a **next Legacy** card when the Trophy Garden is empty — so an empty trophy shelf still shows hope. Installer branding and Windows icons were fixed to say Rowan clearly.
 
 **2.1.1** fixed a painful evening bug: “Reload garden” no longer wiped the list; pending saves stopped racing into empty backups; the footer became a short, centered version line; and the calendar heatmap can be turned off in Settings if you simply do not like the look.
+
+**2.1.2** lets you **drag cards** and group habits into custom **beds** — your layout, not just the category strip. The Weather plugin gained opt-in **Weather Neo**: richer gradients, time-of-day tint, soft in-card rain/snow/glow, and a longer forecast sheet — still fine on Cultiva 1.7+, fancy when you flip the switch.
 
 Through all of that, the Sequoia promise held: one home, a tool you download, data that stays yours.
 
@@ -599,6 +601,8 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 **2.1.0** (с упором на Windows) дала календарю **теплокарту всех привычек за год**, место для **паузы и архива** вместо чёрной дыры и карточку **следующего Legacy**, когда сад трофеев пуст — чтобы пустая полка всё ещё давала надежду. Брендинг установщика и иконки поправили под Rowan.
 
 **2.1.1** исправила больной вечерний баг: «Обновить сад» больше не стирало список; сохранения перестали гонкой затирать хорошие бэкапы; подвал стал короткой центрированной строкой версии; теплокарту в настройках можно выключить, если она просто не нравится глазу.
+
+**2.1.2** даёт **перетаскивание карточек** и свои **грядки** — раскладка сада как хочется, а не только по категориям. У плагина «Погода» появился опциональный режим **Погода Нео**: более живые градиенты, тонировка по времени суток, мягкий дождь/снег/сияние в карточке и более длинное окно прогноза — на Cultiva 1.7+ всё работает, а «крутой» вид включается переключателем.
 
 Сквозь всё это держалось обещание Секвойи: один дом, инструмент, который скачивают, данные, которые остаются вашими.
 

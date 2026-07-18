@@ -124,6 +124,9 @@ export async function loadSettings() {
       if (saved.storageBackend) {
         settings.storageBackend = saved.storageBackend;
       }
+      if (Array.isArray(saved.gardenBeds)) {
+        settings.gardenBeds = saved.gardenBeds;
+      }
     }
 
     requireCtx().setLangAndT(settings.lang);

@@ -360,6 +360,51 @@ body.focus-mode .paused-section { display: none !important; }
     height: 100%;
 }
 
+.garden-bed {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 12px;
+    padding: 2px;
+    border-radius: var(--radius-lg, 14px);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.garden-bed--drop-target {
+    background: color-mix(in srgb, var(--accent-blue, #3b82f6) 8%, transparent);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent-blue, #3b82f6) 35%, transparent);
+}
+.garden-bed-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 4px;
+}
+.garden-bed-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-secondary);
+}
+.garden-bed-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    align-items: stretch;
+    min-height: 48px;
+}
+.garden-bed-cards .habit-card {
+    height: 100%;
+}
+.habit-card[draggable="true"] {
+    cursor: grab;
+}
+.habit-card--dragging {
+    opacity: 0.45;
+    cursor: grabbing;
+}
+
 .habit-count, .trophy-count {
     font-size: 13px; color: var(--text-tertiary); background: var(--bg-tertiary);
     padding: 4px 10px; border-radius: var(--radius-full); font-family: var(--font-mono);
@@ -688,6 +733,7 @@ body.focus-mode .app-header, body.focus-mode .user-menu, body.focus-mode .sectio
 body.focus-mode .trophy-section, body.focus-mode .category-badge, body.focus-mode .footer { display: none !important; }
 body.focus-mode .app-main { padding: 24px 16px; max-width: 900px; margin: 0 auto; }
 body.focus-mode .garden-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+body.focus-mode .garden-bed-cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 body.focus-mode .habit-card::before { height: 0; }
 body.focus-mode .plant-visual { font-size: 36px; }
 

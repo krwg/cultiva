@@ -269,6 +269,11 @@ function migrateHabit(habit) {
   if (!migrated.reminderTime || typeof migrated.reminderTime !== 'string') {
     migrated.reminderTime = '09:00';
   }
+  if (migrated.bedId === undefined || migrated.bedId === null) {
+    migrated.bedId = '';
+  } else {
+    migrated.bedId = String(migrated.bedId);
+  }
 
   if (!Number.isFinite(Number(migrated.updatedAt))) {
     migrated.updatedAt = Date.now();

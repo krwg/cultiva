@@ -178,6 +178,7 @@ export const habits = {
       treeName: null,
       createdAt: new Date().toISOString(),
       sortOrder: Date.now(),
+      bedId: data.bedId || '',
       schedule: normalizeSchedule(data.schedule),
       reminderEnabled: !!data.reminderEnabled,
       reminderTime: data.reminderTime || '09:00'
@@ -516,7 +517,13 @@ export const habits = {
   },
 
   async reorder(id, delta) {
-    const ordered = this.getGardenHabits();
+    const all = this.getGardenHabits();
+    const habit = all.find((h) => h.id === id);
+    if (!habit) {
+      return false;
+    }
+    const bedId = habit.bedId || '';
+    const ordered = all.filter((h) => (h.bedId || '') === bedId);
     const idx = ordered.findIndex((h) => h.id === id);
     const swapIdx = idx + delta;
     if (idx < 0 || swapIdx < 0 || swapIdx >= ordered.length) {
@@ -533,6 +540,47 @@ export const habits = {
     neighbor.sortOrder = tmp;
     await storage.saveHabits(allHabits);
     return true;
+  },
+
+  /**
+   * Move habit into a bed and place it before beforeId (or at end).
+   * Reassigns sortOrder for habits in the target bed.
+   */
+  async moveToBed(id, bedId, beforeId = null) {
+    const allHabits = this.getAll();
+    const habit = allHabits.find((h) => h.id === id);
+    if (!habit || habit.paused || habit.archived || habit.progress >= LEGACY_THRESHOLD) {
+      return false;
+    }
+    const targetBed = bedId || '';
+    habit.bedId = targetBed;
+
+    const inBed = allHabits
+      .filter((h) => h.id !== id && h.progress < LEGACY_THRESHOLD && !h.paused && !h.archived && (h.bedId || '') === targetBed)
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+    const next = [];
+    let inserted = false;
+    for (const h of inBed) {
+      if (beforeId && h.id === beforeId && !inserted) {
+        next.push(habit);
+        inserted = true;
+      }
+      next.push(h);
+    }
+    if (!inserted) {
+      next.push(habit);
+    }
+    const base = Date.now();
+    next.forEach((h, i) => {
+      h.sortOrder = base + i;
+    });
+    await storage.saveHabits(allHabits);
+    return true;
+  },
+
+  async setBed(id, bedId) {
+    return this.moveToBed(id, bedId, null);
   },
 
   getStage(progress) {

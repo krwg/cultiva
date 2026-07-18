@@ -46,7 +46,7 @@ import { toggleHabitWithHooks } from './app/habit-actions.js';
 import { getTodayStr } from './app/date-ui.js';
 import { initAutoBackup } from './app/auto-backup.js';
 import { AVATAR_BACKGROUNDS, AVATAR_EMOJIS, DEFAULT_AVATAR } from './core/avatar-presets.js';
-import { showAlertDialog, showConfirmDialog } from './app/dialogs.js';
+import { showAlertDialog, showConfirmDialog, showPromptDialog } from './app/dialogs.js';
 import { initTooltipManager } from './app/tooltip-manager.js';
 import { configureUpdatesUi, updateUpdatesSection } from './app/updates-ui.js';
 import { initHabitFormIcons, initSettingsEmptyIcon, initSettingsSidebarIcons } from './core/ui-icons.js';
@@ -56,6 +56,13 @@ import {
   ensureDiscordSettingsInitialized,
   scheduleDiscordWarmup
 } from './app/discord-settings.js';
+import {
+  getGardenBeds,
+  createGardenBed,
+  renameGardenBed,
+  deleteGardenBed,
+  fromDomBedId
+} from './app/garden-layout.js';
 
 let currentLang = 'en';
 let currentT = TRANSLATIONS.en;
@@ -1298,13 +1305,75 @@ async function init() {
       },
       canMove: (id, delta) => {
         const ordered = habits.getGardenHabits();
-        const idx = ordered.findIndex((h) => h.id === id);
-        return idx >= 0 && idx + delta >= 0 && idx + delta < ordered.length;
+        const habit = ordered.find((h) => h.id === id);
+        if (!habit) {
+          return false;
+        }
+        const bedId = habit.bedId || '';
+        const inBed = ordered.filter((h) => (h.bedId || '') === bedId);
+        const idx = inBed.findIndex((h) => h.id === id);
+        return idx >= 0 && idx + delta >= 0 && idx + delta < inBed.length;
       },
       moveHabit: async (id, delta) => {
         if (await habits.reorder(id, delta)) {
           renderGarden();
         }
+      },
+      getBeds: () => getGardenBeds(),
+      fromDomBedId,
+      moveHabitToBed: async (id, bedId) => {
+        if (await habits.setBed(id, bedId)) {
+          renderGarden();
+        }
+      },
+      createBed: async (habitId) => {
+        const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+        const name = await showPromptDialog(t.promptBedName || 'Bed name', {
+          title: t.contextNewBed || 'New bed…',
+          confirmText: t.save || 'OK',
+          cancelText: t.cancel || 'Cancel',
+          defaultValue: ''
+        });
+        if (!name) {
+          return;
+        }
+        const bedId = await createGardenBed(name);
+        if (habitId) {
+          await habits.setBed(habitId, bedId);
+        }
+        renderGarden();
+      },
+      renameBed: async (bedId) => {
+        const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+        const bed = getGardenBeds().find((b) => b.id === bedId);
+        if (!bed) {
+          return;
+        }
+        const name = await showPromptDialog(t.promptBedName || 'Bed name', {
+          title: t.contextRenameBed || 'Rename bed…',
+          confirmText: t.save || 'OK',
+          cancelText: t.cancel || 'Cancel',
+          defaultValue: bed.name || ''
+        });
+        if (!name) {
+          return;
+        }
+        await renameGardenBed(bedId, name);
+        renderGarden();
+      },
+      deleteBed: async (bedId) => {
+        const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
+        const ok = await showConfirmDialog(t.confirmDeleteBed || 'Delete this bed? Habits stay in the garden.', {
+          title: t.contextDeleteBed || 'Delete bed',
+          confirmText: t.delete || 'Delete',
+          cancelText: t.cancel || 'Cancel',
+          tone: 'danger'
+        });
+        if (!ok) {
+          return;
+        }
+        await deleteGardenBed(bedId);
+        renderGarden();
       },
       deleteHabit: async (id) => {
         const t = TRANSLATIONS[settings.lang] || TRANSLATIONS.en;

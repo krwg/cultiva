@@ -26,7 +26,8 @@ export const DEFAULT_SETTINGS = {
   firstRunComplete: false,
   autoBackupEnabled: true,
   streakGraceEnabled: true,
-  storageBackend: 'local'
+  storageBackend: 'local',
+  gardenBeds: []
 };
 
 export const settings = { ...DEFAULT_SETTINGS };

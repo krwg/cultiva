@@ -27,7 +27,7 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 
 ## Download
 
-**[→ Latest release (2.1.1 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
+**[→ Latest release (2.1.1 · Rowan)](https://github.com/krwg/cultiva/releases/latest)** · **in progress: 2.1.2**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
@@ -38,7 +38,7 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 | **Linux** | `Cultiva-2.0.2-linux-x86_64.AppImage` | Single file, no root |
 | **Linux** | `Cultiva-2.0.2-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [2.1.1 Rowan](docs/release-notes-v2.1.1-rowan-github.md) · [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
+**Release notes:** [2.1.2 Rowan](docs/release-notes-v2.1.2-rowan-github.md) · [2.1.1 Rowan](docs/release-notes-v2.1.1-rowan-github.md) · [2.1.0 Rowan](docs/release-notes-v2.1.0-rowan-github.md) · [2.0.2 Rowan](docs/release-notes-v2.0.2-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
 
 > **Upgrading:** your garden is preserved. Export a backup under **Settings → Data** before updating, just in case.
 
@@ -60,6 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
+| **2.1.2 garden beds** | Drag-and-drop reorder + custom beds; Weather Neo companion |
 | **2.1.1 critical fix** | Garden reload / storage race, compact footer, heatmap toggle |
 | **2.1.0 Windows patch** | Calendar heatmap, paused habits, next Legacy card, installer/icons |
 | **2.0.2 patch** | Habit ownership after calendar, plugins start again, macOS Dock/tray lifecycle |
@@ -170,6 +171,6 @@ When Discord is running locally, Cultiva can show a simple presence line. Toggle
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.1.1 · Rowan**
+Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.1.2 · Rowan**
 
 </div>

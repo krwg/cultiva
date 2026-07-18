@@ -4,6 +4,20 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.1.2] — Rowan · 2026-07-18
+
+**Codename:** Rowan · Garden beds (drag-and-drop + custom groups) · Weather Neo companion
+
+[Release notes](docs/release-notes-v2.1.2-rowan-github.md)
+
+### Added
+- Drag-and-drop reorder for habit cards in the garden
+- Custom garden **beds** (грядки) — UI grouping independent of categories; create / rename / delete / move via context menu
+- Weather plugin companion **2.4.0**: opt-in **Weather Neo** (geometry gradients, time-of-day tint, in-card CSS animations, low-power aware), compact longer forecast sheet with humidity/wind, hourly and 7-day outlook
+
+### Notes
+- Weather Neo stays compatible with Cultiva **1.7+** (`minAppVersion` unchanged); Neo is a plugin setting
+
 ## [2.1.1] — Rowan · 2026-07-18
 
 **Codename:** Rowan · Critical bugfix — garden reload, footer, heatmap toggle, storage safety

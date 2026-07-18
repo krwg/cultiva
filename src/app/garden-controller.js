@@ -11,6 +11,17 @@ import { pluginManager } from '../core/plugin-manager.js';
 import { glyphSearch } from '../core/glyph-s-search.js';
 import { showConfirmDialog } from './dialogs.js';
 import { escapeHtml } from '../core/escape-html.js';
+import {
+  UNGROUPED_BED_ID,
+  toDomBedId,
+  bedRenderOrder,
+  habitsInBed,
+  bedTitle,
+  bindGardenDragDrop,
+  makeHabitCardDraggable,
+  renderBedShell,
+  getGardenBeds
+} from './garden-layout.js';
 
 let ctx = null;
 
@@ -146,6 +157,7 @@ function habitRenderKey(habit, isTrophy, cardMode = 'active') {
     habit.trackType,
     habit.paused ? 1 : 0,
     habit.archived ? 1 : 0,
+    habit.bedId || '',
     habits.quantityTarget(habit),
     c.settings.lang
   ].join('|');
@@ -158,24 +170,24 @@ function syncHabitCards(container, habitList, isTrophy = false, cardMode = 'acti
   }
 
   const existingIds = new Set(
-    [...container.querySelectorAll('.habit-card')].map((el) => el.dataset.id)
+    [...container.querySelectorAll(':scope > .habit-card')].map((el) => el.dataset.id)
   );
   const nextIds = new Set(habitList.map((h) => h.id));
 
   for (const id of existingIds) {
     if (!nextIds.has(id)) {
-      container.querySelector(`.habit-card[data-id="${id}"]`)?.remove();
+      container.querySelector(`:scope > .habit-card[data-id="${id}"]`)?.remove();
     }
   }
 
   habitList.forEach((habit, index) => {
     const key = habitRenderKey(habit, isTrophy, cardMode);
-    let card = container.querySelector(`.habit-card[data-id="${habit.id}"]`);
+    let card = container.querySelector(`:scope > .habit-card[data-id="${habit.id}"]`);
 
     if (!card) {
       card = createHabitCard(habit, isTrophy, cardMode);
       card.dataset.renderKey = key;
-      const ref = container.children[index] || null;
+      const ref = [...container.children].filter((el) => el.classList.contains('habit-card'))[index] || null;
       container.insertBefore(card, ref);
     } else if (card.dataset.renderKey !== key) {
       const next = createHabitCard(habit, isTrophy, cardMode);
@@ -184,7 +196,8 @@ function syncHabitCards(container, habitList, isTrophy = false, cardMode = 'acti
       card = next;
     }
 
-    const ref = container.children[index];
+    const habitCards = [...container.children].filter((el) => el.classList.contains('habit-card'));
+    const ref = habitCards[index];
     if (ref && ref !== card) {
       container.insertBefore(card, ref);
     } else if (!ref) {
@@ -192,10 +205,89 @@ function syncHabitCards(container, habitList, isTrophy = false, cardMode = 'acti
     }
 
     if (!isTrophy && cardMode === 'active') {
+      makeHabitCardDraggable(card);
       const isFocused = habit.id === c.focusedHabitId;
       card.classList.toggle('habit-card--focus', isFocused);
       card.setAttribute('tabindex', isFocused ? '0' : '-1');
       card.setAttribute('aria-label', habit.treeName || habit.name);
+    }
+  });
+}
+
+function syncActiveGardenWithBeds(gardenEl, active, t) {
+  const bedsMeta = getGardenBeds();
+  const order = bedRenderOrder(active);
+  const showHeaders = bedsMeta.length > 0;
+
+  const existingBeds = [...gardenEl.querySelectorAll(':scope > .garden-bed')];
+  const nextBedIds = new Set(order.map((b) => toDomBedId(b.id)));
+  for (const el of existingBeds) {
+    if (!nextBedIds.has(el.dataset.bedId || toDomBedId(UNGROUPED_BED_ID))) {
+      el.remove();
+    }
+  }
+
+  // Remove orphan habit cards sitting directly under garden (legacy layout)
+  [...gardenEl.querySelectorAll(':scope > .habit-card')].forEach((el) => el.remove());
+  gardenEl.querySelector('.empty-state')?.remove();
+
+  const renderedDomIds = [];
+  order.forEach((bed) => {
+    const bedId = bed.id || UNGROUPED_BED_ID;
+    const domId = toDomBedId(bedId);
+    const list = habitsInBed(active, bedId);
+    if (list.length === 0 && bedId !== UNGROUPED_BED_ID && !bedsMeta.some((b) => b.id === bedId)) {
+      return;
+    }
+    if (list.length === 0 && bedId === UNGROUPED_BED_ID && bedsMeta.length > 0 && active.every((h) => h.bedId)) {
+      return;
+    }
+    let wrap = gardenEl.querySelector(`:scope > .garden-bed[data-bed-id="${CSS.escape(domId)}"]`);
+    let cardsEl = wrap?.querySelector('.garden-bed-cards');
+    if (!wrap || !cardsEl) {
+      const shell = renderBedShell(bed, bedTitle(bed, t), { showHeader: showHeaders });
+      wrap = shell.wrap;
+      cardsEl = shell.cards;
+      const plugins = [...gardenEl.querySelectorAll(':scope > .garden-plugin-widget')];
+      const lastPlugin = plugins[plugins.length - 1];
+      if (lastPlugin?.nextSibling) {
+        gardenEl.insertBefore(wrap, lastPlugin.nextSibling);
+      } else if (lastPlugin) {
+        lastPlugin.after(wrap);
+      } else {
+        gardenEl.appendChild(wrap);
+      }
+    } else {
+      const titleEl = wrap.querySelector('.garden-bed-title');
+      if (showHeaders) {
+        if (!titleEl) {
+          const head = document.createElement('div');
+          head.className = 'garden-bed-header';
+          head.innerHTML = `<h3 class="garden-bed-title">${escapeHtml(bedTitle(bed, t))}</h3>`;
+          wrap.insertBefore(head, cardsEl);
+        } else {
+          titleEl.textContent = bedTitle(bed, t);
+        }
+      } else {
+        wrap.querySelector('.garden-bed-header')?.remove();
+      }
+    }
+    renderedDomIds.push(domId);
+    syncHabitCards(cardsEl, list, false, 'active');
+  });
+
+  // Order bed sections to match bedRenderOrder
+  const pluginCount = gardenEl.querySelectorAll(':scope > .garden-plugin-widget').length;
+  renderedDomIds.forEach((domId, i) => {
+    const wrap = gardenEl.querySelector(`:scope > .garden-bed[data-bed-id="${CSS.escape(domId)}"]`);
+    if (!wrap) {
+      return;
+    }
+    const targetIndex = pluginCount + i;
+    const current = [...gardenEl.children].indexOf(wrap);
+    if (current !== targetIndex) {
+      const ref = gardenEl.children[targetIndex] || null;
+      gardenEl.insertBefore(wrap, ref);
     }
   });
 }
@@ -273,7 +365,13 @@ export function renderGarden() {
       document.getElementById('add-first')?.addEventListener('click', () => openModal(c.addModal));
     } else {
       c.gardenEl.querySelector('.empty-state')?.remove();
-      syncHabitCards(c.gardenEl, active, false, 'active');
+      syncActiveGardenWithBeds(c.gardenEl, active, t);
+      bindGardenDragDrop(c.gardenEl, {
+        onReorder: async (id, bedId, beforeId) => {
+          await habits.moveToBed(id, bedId, beforeId);
+          renderGarden();
+        }
+      });
     }
   }
   if (c.trophyEl) {
