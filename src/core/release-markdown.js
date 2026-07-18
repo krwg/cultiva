@@ -58,6 +58,9 @@ function inlineMarkdown(text) {
   work = work.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) =>
     stash(`<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`));
   work = work.replace(/\*\*([^*]+)\*\*/g, (_, bold) => stash(`<strong>${escapeHtml(bold)}</strong>`));
+  work = work.replace(/__([^_]+)__/g, (_, bold) => stash(`<strong>${escapeHtml(bold)}</strong>`));
+  work = work.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, (_, pre, ital) => `${pre}${stash(`<em>${escapeHtml(ital)}</em>`)}`);
+  work = work.replace(/(^|[^_])_([^_\n]+)_(?!_)/g, (_, pre, ital) => `${pre}${stash(`<em>${escapeHtml(ital)}</em>`)}`);
   work = work.replace(/`([^`]+)`/g, (_, code) => stash(`<code>${escapeHtml(code)}</code>`));
 
   work = escapeHtml(work);
@@ -105,7 +108,9 @@ export function renderReleaseMarkdown(body) {
     if (!listBuf.length) {
       return;
     }
-    blocks.push(`<ul>${listBuf.map((item) => `<li>${inlineMarkdown(item)}</li>`).join('')}</ul>`);
+    const ordered = listBuf[0]?.ordered;
+    const tag = ordered ? 'ol' : 'ul';
+    blocks.push(`<${tag}>${listBuf.map((item) => `<li>${inlineMarkdown(item.text)}</li>`).join('')}</${tag}>`);
     listBuf = [];
   };
 
@@ -171,7 +176,24 @@ export function renderReleaseMarkdown(body) {
     }
 
     if (/^[-*]\s+/.test(line)) {
-      listBuf.push(line.replace(/^[-*]\s+/, ''));
+      if (listBuf.length && listBuf[0].ordered) {
+        flushList();
+      }
+      listBuf.push({ ordered: false, text: line.replace(/^[-*]\s+/, '') });
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(line)) {
+      if (listBuf.length && !listBuf[0].ordered) {
+        flushList();
+      }
+      listBuf.push({ ordered: true, text: line.replace(/^\d+\.\s+/, '') });
+      continue;
+    }
+
+    if (/^>\s?/.test(line)) {
+      flushList();
+      blocks.push(`<blockquote>${inlineMarkdown(line.replace(/^>\s?/, ''))}</blockquote>`);
       continue;
     }
 

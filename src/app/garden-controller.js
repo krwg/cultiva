@@ -8,7 +8,7 @@ import { toggleHabitWithHooks } from './habit-actions.js';
 import { openQuantityLogModal } from './modals.js';
 import { showNotification } from './ui-shell.js';
 import { pluginManager } from '../core/plugin-manager.js';
-import { glyphSearch } from '../core/glyph-s-search.js';
+import { filterHabitsWithIndex } from '../core/glyph-search-index.js';
 import { showConfirmDialog } from './dialogs.js';
 import { escapeHtml } from '../core/escape-html.js';
 import {
@@ -40,7 +40,7 @@ function requireCtx() {
 
 export function filterHabits(list) {
   const c = requireCtx();
-  return glyphSearch(list, c.habitSearchQuery);
+  return filterHabitsWithIndex(list, c.habitSearchQuery);
 }
 
 export function getFocusedHabit() {

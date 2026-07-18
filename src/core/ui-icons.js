@@ -49,6 +49,7 @@ export const SETTINGS_SIDEBAR_ICONS = {
   profile: MATERIAL.person,
   appearance: MATERIAL.palette,
   notifications: MATERIAL.notifications,
+  search: MATERIAL.manageSearch,
   shortcuts: MATERIAL.keyboard,
   garden: MATERIAL.eco,
   statistics: MATERIAL.barChart,

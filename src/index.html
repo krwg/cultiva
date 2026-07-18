@@ -325,6 +325,10 @@
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
                         <span class="sidebar-label" data-i18n="notifications">Notifications</span>
                     </div>
+                    <div class="settings-sidebar-item" data-section="search">
+                        <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
+                        <span class="sidebar-label" data-i18n="searchSettings">Search</span>
+                    </div>
                     <div class="settings-sidebar-item" data-section="shortcuts" data-i18n-tooltip="tooltipShortcuts">
                         <div class="sidebar-icon-wrapper"><span class="sidebar-icon" aria-hidden="true"></span></div>
                         <span class="sidebar-label" data-i18n="shortcuts">Keyboard</span>
@@ -885,6 +889,38 @@
                         </div>
 
                         <p class="notifications-footnote" data-i18n="notificationsOsFootnote">If alerts do not appear, check Cultiva in System Settings → Notifications (iOS, iPadOS, macOS) or Windows Settings → Notifications.</p>
+                    </div>
+
+                    <div class="settings-section-content" id="section-search">
+                        <div class="settings-section-hero">
+                            <div class="settings-section-hero-title" data-i18n="searchSectionTitle">Search</div>
+                            <p class="settings-section-hero-desc" data-i18n="searchSectionDesc">Glyph search indexes habits, plugins, beds, calendar events, and settings labels locally on this device — no cloud.</p>
+                        </div>
+                        <div class="settings-group-card">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="searchIndexToggle">Enhanced glyph search</span>
+                                    <span class="setting-desc" data-i18n="searchIndexToggleDesc">When on, the header search uses a local index for better matches across Cultiva.</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-glyph-search" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item setting-item-static">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="searchIndexStatusLabel">Index status</span>
+                                    <span class="setting-desc" id="glyph-search-status" data-i18n="searchIndexIdle">Not indexed yet</span>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label" data-i18n="searchIndexRebuild">Rebuild index</span>
+                                    <span class="setting-desc" data-i18n="searchIndexRebuildDesc">Re-scan habits, plugins, and other local data.</span>
+                                </div>
+                                <button type="button" class="btn-small btn-secondary" id="glyph-search-rebuild" data-i18n="searchIndexRebuildBtn">Rebuild</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="settings-section-content" id="section-updates">

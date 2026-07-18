@@ -27,7 +27,7 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 
 ## Download
 
-**[→ Latest release (2.1.2 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
+**[→ Latest release (2.1.2 · Rowan)](https://github.com/krwg/cultiva/releases/latest)** · **in progress: 2.1.3**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
@@ -60,6 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
+| **2.1.3 store + search** | Cultiva-styled plugin store, glyph search index, Radio player Neo |
 | **2.1.2 garden beds** | Drag-and-drop reorder + custom beds; Weather Neo companion |
 | **2.1.1 critical fix** | Garden reload / storage race, compact footer, heatmap toggle |
 | **2.1.0 Windows patch** | Calendar heatmap, paused habits, next Legacy card, installer/icons |
@@ -98,7 +99,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.1.2+**) and registry **[3.5.2](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 2.0.0** (recommended **2.1.3+**) and registry **[3.5.3](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|

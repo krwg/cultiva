@@ -127,6 +127,14 @@ export async function invokePluginRpc(method, args, manifest, deps) {
     if (typeof window.showNotification === 'function') {
       window.showNotification(icon, text);
     }
+    try {
+      if (window.electron?.showNativeNotification && text) {
+        const title = String(manifest?.name || pluginId || 'Cultiva');
+        void window.electron.showNativeNotification({ title, body: String(text) });
+      }
+    } catch {
+      void 0;
+    }
     return undefined;
   }
   if (method === 'ui.confirm') {

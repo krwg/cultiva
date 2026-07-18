@@ -12,7 +12,11 @@ function collectSearchText(item) {
     item?.description,
     item?.category,
     item?.treeName,
-    item?.unit
+    item?.unit,
+    item?.notes,
+    item?.bedId,
+    item?.tagline,
+    ...(Array.isArray(item?.tags) ? item.tags : [])
   ].join(' '));
 }
 
@@ -20,23 +24,38 @@ function scoreQuery(text, query) {
   if (!query) {
     return 0;
   }
-  if (text.includes(query)) {
-    return query.length * 10;
+  const tokens = query.split(/\s+/).filter(Boolean);
+  if (!tokens.length) {
+    return 0;
   }
-
-  const words = text.split(/\s+/).filter(Boolean);
   let score = 0;
-  for (const word of words) {
-    if (word.startsWith(query)) {
-      score += query.length * 4;
+  for (const token of tokens) {
+    if (text.includes(token)) {
+      score += token.length * 10;
       continue;
     }
-    if (word.includes(query)) {
-      score += query.length * 2;
+    const words = text.split(/\s+/).filter(Boolean);
+    let tokenHit = false;
+    for (const word of words) {
+      if (word.startsWith(token)) {
+        score += token.length * 4;
+        tokenHit = true;
+        break;
+      }
+      if (word.includes(token)) {
+        score += token.length * 2;
+        tokenHit = true;
+        break;
+      }
+    }
+    if (!tokenHit) {
+      return 0;
     }
   }
   return score;
 }
+
+export { normalizeToken };
 
 export function glyphSearch(items, query) {
   const q = normalizeToken(query);

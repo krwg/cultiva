@@ -15,6 +15,7 @@ import { showConfirmDialog } from './dialogs.js';
 import { installFocusTrap, releaseFocusTrap } from './modals.js';
 import { escapeHtml } from '../core/escape-html.js';
 import { renderReleaseMarkdown } from '../core/release-markdown.js';
+import { normalizeToken } from '../core/glyph-s-search.js';
 
 function tStrings() {
   return TRANSLATIONS[settings.lang] || TRANSLATIONS.en;
@@ -282,24 +283,42 @@ function collectRegistryTags(plugins) {
 }
 
 function matchesBrowseFilters(p, meta) {
-  if (browseTagFilter) {
+  if (browseTagFilter === '__featured__') {
+    if (!isFeaturedPlugin(p)) {
+      return false;
+    }
+  } else if (browseTagFilter) {
     const tags = Array.isArray(p.tags) ? p.tags.map((tag) => String(tag).toLowerCase()) : [];
     if (!tags.includes(browseTagFilter.toLowerCase())) {
       return false;
     }
   }
-  const q = browseSearchQuery.trim().toLowerCase();
+  const q = normalizeToken(browseSearchQuery);
   if (!q) {
     return true;
   }
-  const hay = [
+  const i18n = p.i18n || {};
+  const en = i18n.en || {};
+  const ru = i18n.ru || {};
+  const hay = normalizeToken([
     p.id,
     meta.name,
     meta.description,
     meta.tagline,
-    ...(Array.isArray(p.tags) ? p.tags : [])
-  ].join(' ').toLowerCase();
-  return hay.includes(q);
+    p.name,
+    p.description,
+    en.name,
+    en.description,
+    en.tagline,
+    ru.name,
+    ru.description,
+    ru.tagline,
+    ...(Array.isArray(p.tags) ? p.tags : []),
+    p.author,
+    p.version
+  ].join(' '));
+  const tokens = q.split(/\s+/).filter(Boolean);
+  return tokens.every((token) => hay.includes(token));
 }
 
 function resolvePluginAssetUrl(baseUrl, rel) {
@@ -802,7 +821,11 @@ function renderBrowseStore(container, plugins, t) {
   const tagSelect = document.createElement('select');
   tagSelect.className = 'plugin-store-select';
   const allTags = collectRegistryTags(plugins);
-  const tagOptions = [['', t.pluginFilterAll || 'All'], ...allTags.map((tag) => [tag, tag])];
+  const tagOptions = [
+    ['', t.pluginFilterAll || 'All'],
+    ['__featured__', t.pluginFilterFeatured || t.pluginFeatured || 'Featured'],
+    ...allTags.map((tag) => [tag, tag])
+  ];
   for (const [value, label] of tagOptions) {
     const opt = document.createElement('option');
     opt.value = value;
@@ -866,20 +889,7 @@ function renderBrowseStore(container, plugins, t) {
     return;
   }
 
-  const featured = sortBrowsePlugins(filtered.filter((p) => isFeaturedPlugin(p)));
-  const rest = sortBrowsePlugins(filtered.filter((p) => !isFeaturedPlugin(p)));
-
-  if (featured.length) {
-    const heading = document.createElement('div');
-    heading.className = 'plugin-store-heading';
-    heading.textContent = t.pluginFeatured || 'Featured';
-    container.appendChild(heading);
-    for (const p of featured) {
-      container.appendChild(createBrowsePluginCard(p, t, plugins));
-    }
-  }
-
-  for (const p of rest) {
+  for (const p of sortBrowsePlugins(filtered)) {
     container.appendChild(createBrowsePluginCard(p, t, plugins));
   }
 }

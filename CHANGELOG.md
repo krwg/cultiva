@@ -4,6 +4,24 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.1.3] — Rowan · 2026-07-18
+
+**Codename:** Rowan · Plugin store polish · glyph search · Radio Neo player
+
+### Added
+- Settings → **Search**: local glyph index status, rebuild, enhanced-search toggle
+- Header search indexes habits, plugins, beds, calendar events, and settings labels
+- Plugin store: Cultiva-styled toolbar; **Featured** as a category filter (no separate section)
+- README markdown in Details: tables, lists (ul/ol), italics, blockquotes, hr
+
+### Fixed
+- Footer: readable **12px** centered version line with compact padding (not a tall empty band)
+- Plugin store search/sort: tokenized NFKD matching across EN/RU i18n fields
+- Deleting a garden bed still reindexes \sortOrder\ into ungrouped
+
+### Notes
+- Companion registry **3.5.3**: Radio **[2.4.0]**, Quote **[1.5.0]**, Weather **[2.6.0]**
+
 ## [2.1.2] — Rowan · 2026-07-18
 
 **Codename:** Rowan · Garden beds (drag-and-drop + custom groups) · Weather Neo companion

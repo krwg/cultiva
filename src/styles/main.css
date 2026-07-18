@@ -425,14 +425,14 @@ a:hover { color: var(--accent-blue-hover); }
 .app-footer {
     background: var(--bg-primary);
     border-top: 1px solid var(--border-light);
-    padding: 2px 12px;
+    padding: 6px 16px;
     margin-top: auto;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 18px;
-    max-height: 22px;
+    height: auto;
+    min-height: 0;
     box-sizing: border-box;
     width: 100%;
 }
@@ -440,7 +440,15 @@ a:hover { color: var(--accent-blue-hover); }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 24px; }
 .footer-links a { font-size: 13px; color: var(--text-secondary); }
 .footer-links a:hover { color: var(--text-primary); }
-.footer-version { font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono); margin: 0; letter-spacing: 0.4px; line-height: 1; }
+.footer-version {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    margin: 0;
+    letter-spacing: 0.3px;
+    line-height: 1.25;
+    text-align: center;
+}
 
 .calendar-grid {
     background: var(--bg-primary); border-radius: 20px; padding: 20px;

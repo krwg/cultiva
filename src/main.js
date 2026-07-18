@@ -50,6 +50,8 @@ import { showAlertDialog, showConfirmDialog, showPromptDialog } from './app/dial
 import { initTooltipManager } from './app/tooltip-manager.js';
 import { configureUpdatesUi, updateUpdatesSection } from './app/updates-ui.js';
 import { initHabitFormIcons, initSettingsEmptyIcon, initSettingsSidebarIcons } from './core/ui-icons.js';
+import { bindGlyphSearchSettings, rebuildGlyphSearchIndexNow } from './app/search-settings.js';
+import { isGlyphSearchEnhanced } from './core/glyph-search-index.js';
 import {
   configureDiscordSettings,
   prepareDiscordSettingsSection,
@@ -1134,6 +1136,10 @@ async function init() {
     initAvatarPicker();
     initSettingsNavigation();
     initProfileManagement();
+    bindGlyphSearchSettings();
+    if (isGlyphSearchEnhanced()) {
+      void rebuildGlyphSearchIndexNow();
+    }
 
     initAutoBackup();
     scheduleDeferredOnboarding();
