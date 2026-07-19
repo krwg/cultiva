@@ -12,8 +12,10 @@ Fixes plugin install failures (`Integrity check failed for manifest.json`) cause
 
 ## Fixes
 
-- Always refetch `registry.json` on `plugin:install` (sha256 cannot lag behind GitHub raw)
+- Always refetch registry on `plugin:install` (no stale in-memory sha256 map)
+- Prefer **jsDelivr** for registry + plugin files on install (avoids `raw.githubusercontent.com` CDN lag that caused `Integrity check failed for manifest.json`)
 - LF-normalize `.json` / `.js` / `.css` (and related text) before sha256 compare
+- Store catalog also prefers jsDelivr, with raw GitHub fallback
 
 ## Companion
 

@@ -33,7 +33,8 @@ import {
   injectPluginFontCss
 } from './plugin-contributions.js';
 
-const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
+const REGISTRY_URL = 'https://cdn.jsdelivr.net/gh/krwg/cultiva-plugins@main/registry.json';
+const REGISTRY_URL_FALLBACK = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
 
 let cachedRegistryPlugins = null;
 
@@ -1410,7 +1411,19 @@ export const pluginManager = {
   async getAvailablePlugins() {
     try {
       return await cacheFetch('plugin-registry', async () => {
-        const registryText = await fetchPluginHttpText(REGISTRY_URL);
+        let registryText = null;
+        let lastError = null;
+        for (const url of [REGISTRY_URL, REGISTRY_URL_FALLBACK]) {
+          try {
+            registryText = await fetchPluginHttpText(url);
+            break;
+          } catch (e) {
+            lastError = e;
+          }
+        }
+        if (!registryText) {
+          throw lastError || new Error('Failed to fetch plugin registry');
+        }
         const registry = JSON.parse(stripUtf8Bom(registryText).trim());
         const list = (Array.isArray(registry.plugins) ? registry.plugins : []).filter(
           (p) => p && typeof p.id === 'string' && p.id.trim()

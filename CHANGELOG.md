@@ -11,8 +11,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 [GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.4) · [Release notes](docs/release-notes-v2.3.4-rowan-github.md)
 
 ### Fixed
-- Plugin install integrity: always refetch official `registry.json` on install (no stale 5‑minute sha256 cache vs GitHub raw)
+- Plugin install integrity: always refetch official registry on install; prefer **jsDelivr** mirror so sha256 cannot lag behind a stale `raw.githubusercontent.com` CDN edge
 - Integrity hash for text plugin files normalized to LF before compare (matches registry / GitHub raw)
+- Plugin store catalog fetch prefers jsDelivr with raw GitHub fallback
 
 ### Notes
 - Companion registry **3.6.2** — aligned first-time store descriptions (EN/RU, two sentences each); Radio **2.6.2**

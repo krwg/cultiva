@@ -17,7 +17,11 @@ const {
 } = require('./lib/plugin-registry-integrity.cjs');
 
 const PLUGIN_FILES_DIR = path.join(app.getPath('userData'), 'cultiva-plugins');
-const REGISTRY_URL = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
+const REGISTRY_URL_RAW = 'https://raw.githubusercontent.com/krwg/cultiva-plugins/main/registry.json';
+const REGISTRY_URL_JSDELIVR = 'https://cdn.jsdelivr.net/gh/krwg/cultiva-plugins@main/registry.json';
+/** Prefer jsDelivr on install — raw.githubusercontent.com can lag after a push and break sha256. */
+const REGISTRY_URLS_INSTALL = [REGISTRY_URL_JSDELIVR, REGISTRY_URL_RAW];
+const REGISTRY_URL = REGISTRY_URL_RAW;
 
 let cachedRegistryJson = null;
 let cachedRegistryAt = 0;
@@ -28,22 +32,55 @@ function stripUtf8Bom(s) {
   return t.charCodeAt(0) === 0xfeff ? t.slice(1) : t;
 }
 
+/** Map GitHub raw plugin file URL → jsDelivr mirror (same repo path). */
+function toJsDelivrPluginUrl(urlString) {
+  const u = String(urlString || '');
+  const m = u.match(
+    /^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/i
+  );
+  if (!m) {
+    return null;
+  }
+  return `https://cdn.jsdelivr.net/gh/${m[1]}/${m[2]}@${m[3]}/${m[4]}`;
+}
+
+function withMirrorUrls(files, preferJsDelivr) {
+  if (!preferJsDelivr) {
+    return files;
+  }
+  return files.map((file) => {
+    const mirrored = toJsDelivrPluginUrl(file.url);
+    return mirrored ? { ...file, url: mirrored } : file;
+  });
+}
+
 async function loadOfficialRegistry(options = {}) {
   const force = options.force === true;
+  const urls = Array.isArray(options.urls) && options.urls.length
+    ? options.urls
+    : [REGISTRY_URL];
   const now = Date.now();
   if (!force && cachedRegistryJson && (now - cachedRegistryAt) < REGISTRY_CACHE_MS) {
     return cachedRegistryJson;
   }
-  const text = await httpsGetText(REGISTRY_URL);
-  const registry = JSON.parse(stripUtf8Bom(text).trim());
-  cachedRegistryJson = registry;
-  cachedRegistryAt = now;
-  return registry;
+  let lastError = null;
+  for (const url of urls) {
+    try {
+      const text = await httpsGetText(url);
+      const registry = JSON.parse(stripUtf8Bom(text).trim());
+      cachedRegistryJson = registry;
+      cachedRegistryAt = now;
+      return registry;
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError || new Error('Failed to load plugin registry');
 }
 
 async function resolveInstallFilesFromRegistry(pluginId) {
-  // Always refetch on install so sha256 cannot lag behind GitHub raw after a registry push.
-  const registry = await loadOfficialRegistry({ force: true });
+  // Fresh registry + jsDelivr-first avoids raw CDN lag after registry pushes.
+  const registry = await loadOfficialRegistry({ force: true, urls: REGISTRY_URLS_INSTALL });
   const pluginList = Array.isArray(registry.plugins) ? registry.plugins : [];
   const pluginInfo = pluginList.find((p) => p && p.id === pluginId);
   if (!pluginInfo) {
@@ -57,9 +94,30 @@ async function resolveInstallFilesFromRegistry(pluginId) {
   const base = String(pluginInfo.baseUrl).replace(/\/$/, '');
   assertAllowedDownloadUrl(`${base}/manifest.json`);
 
-  const manifestText = await httpsGetText(`${base}/manifest.json`);
-  const manifest = JSON.parse(stripUtf8Bom(manifestText).trim());
-  const files = buildPluginInstallFileList(manifest, base, sh);
+  const manifestCandidates = [
+    toJsDelivrPluginUrl(`${base}/manifest.json`),
+    `${base}/manifest.json`
+  ].filter(Boolean);
+
+  let manifest = null;
+  let lastManifestError = null;
+  for (const manifestUrl of manifestCandidates) {
+    try {
+      const manifestText = await httpsGetText(manifestUrl);
+      manifest = JSON.parse(stripUtf8Bom(manifestText).trim());
+      break;
+    } catch (e) {
+      lastManifestError = e;
+    }
+  }
+  if (!manifest) {
+    throw lastManifestError || new Error('Failed to load plugin manifest');
+  }
+
+  const files = withMirrorUrls(
+    buildPluginInstallFileList(manifest, base, sh),
+    true
+  );
   assertRegistrySha256ForFiles(files);
   return files;
 }

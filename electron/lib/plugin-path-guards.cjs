@@ -3,7 +3,8 @@ const path = require('path');
 const PLUGIN_DOWNLOAD_HOSTS = new Set([
   'raw.githubusercontent.com',
   'github.com',
-  'objects.githubusercontent.com'
+  'objects.githubusercontent.com',
+  'cdn.jsdelivr.net'
 ]);
 
 const SAFE_PLUGIN_ID = /^[a-zA-Z0-9_-]{1,128}$/;
