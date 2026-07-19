@@ -16,7 +16,6 @@
 - Store install integrity fixed (LF SHA-256 vs Windows CRLF)
 
 ## Notes
-- Author: **krwg** \<shevotsukov@icloud.com\> — sole author, no co-authors
 - Companion registry **3.5.9**
 
 | | |
