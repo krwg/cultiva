@@ -60,12 +60,12 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
-| **2.3.4 install integrity** | Fresh registry on plugin install; LF sha256; store copy aligned (registry 3.6.3) |
+| **2.3.4 glyph-s & integrity** | Vendored **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** (body in fast-path); fresh registry on plugin install; LF sha256; store copy (registry 3.6.3) |
 | **2.3.3 PE2 tray & Radio** | Multi-plugin tray merge; Radio **2.6** — 33 stations, ICY now-playing, live Neo |
 | **2.3.2 hide & tray °** | Dev Mode actually hides; Weather °C in tray tooltip + menu |
 | **2.3.1 Discord & Dev polish** | Presence prefs, Dev Mode hide/anim bg, PE2 tray °, habit disable |
 | **2.3.0 developer tools** | Footer unlock, cultivaDev API, Weather Neo solar skies, green lint |
-| **2.2.0 beds + settings** | Horizontal beds, fixed footer, Focus/Storage IA, glyph-s 2.7, Discord activity presence |
+| **2.2.0 beds + settings** | Horizontal beds, fixed footer, Focus/Storage IA, [glyph-s](https://github.com/FlokeStudio/glyph-s) 2.7, Discord activity presence |
 | **2.1.3 store + search** | Cultiva-styled plugin store, glyph search index, Radio player Neo |
 | **2.1.2 garden beds** | Drag-and-drop reorder + custom beds; Weather Neo companion |
 | **2.1.1 critical fix** | Garden reload / storage race, compact footer, heatmap toggle |
@@ -80,7 +80,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **Statistics** | Weekly and monthly completion trends in Settings |
 | **Data export** | JSON, ZIP, iCal (`.ics`) for habits and calendar events |
 | **Auto-backup** | 7 rotating snapshots in the app data folder |
-| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.6.2**) |
+| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.6.3**) |
 | **F1 help** | Contextual shortcuts — English and Russian |
 | **19 themes** | Including **Rowan**, **Linden**, and **Cypress** |
 | **14 ambient backgrounds** | Plus custom photo — shared with calendar |
@@ -96,6 +96,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **Visual growth** | Five plant stages tied to consistency |
 | **Calendar** | Month / week / day views, regional holidays, shared themes |
 | **Plugins** | Sandboxed header and garden widgets ([catalog](https://krwg.github.io/cultiva-plugins/)) |
+| **Search** | Local **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** index (habits, plugins, beds, events, settings) |
 | **Discord Rich Presence** | Optional status while you tend your garden |
 | **Auto-updates** | `electron-updater` against GitHub Releases |
 | **i18n** | **~348** EN/RU string pairs |

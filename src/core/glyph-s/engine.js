@@ -1,13 +1,16 @@
+/**
+ * Glyph Search core: ranking, snippets, index + engine factory.
+ * @module engine
+ */
+
 import { parseSearchQuery, tokenizeQuery } from './tokenize.js';
 import { expandTokenVariants, expandQueryVariants } from './layout.js';
+import { getProfileConfig } from './profiles.js';
 
+/** @type {Record<string, number>} */
 const CAT_PRIORITY = { page: 40, note: 36, app: 32, release: 30, action: 24, news: 20 };
+/** @type {import('./types.js').SearchSettings} */
 const SEARCH_SETTINGS = { fuzzyLayout: true, fuzzyTransliteration: true };
-const PROFILE_SETTINGS = {
-  legacy: { fuzzyCutoff: 0.4, scoreScale: 1, maxCandidates: 8000 },
-  balanced: { fuzzyCutoff: 0.48, scoreScale: 1.08, maxCandidates: 4000 },
-  'max-quality': { fuzzyCutoff: 0.35, scoreScale: 1.16, maxCandidates: 9000 },
-};
 const TOKEN_VARIANT_CACHE = new Map();
 const SNIPPET_CACHE = new Map();
 
@@ -38,11 +41,6 @@ function tokenHitsText(tok, text, settings) {
   return null;
 }
 
-function getProfileConfig(profile) {
-  const key = String(profile || 'legacy').toLowerCase();
-  return PROFILE_SETTINGS[key] || PROFILE_SETTINGS.legacy;
-}
-
 function getTokenVariantsCached(tok, settings) {
   const profile = String((settings && settings.profile) || 'legacy');
   const cacheKey = `${profile}|${String(tok || '').toLowerCase()}|${settings?.fuzzyLayout !== false}|${settings?.fuzzyTransliteration !== false}`;
@@ -53,6 +51,11 @@ function getTokenVariantsCached(tok, settings) {
   return variants;
 }
 
+/**
+ * @param {import('./types.js').SearchItem} it
+ * @param {import('./types.js').ParsedSearchQuery|null|undefined} filters
+ * @returns {boolean}
+ */
 export function matchesSearchFilters(it, filters) {
   if (!filters) return true;
   if (filters.type === 'release' && it.cat !== 'release') return false;
@@ -81,6 +84,14 @@ export function matchesSearchFilters(it, filters) {
   return true;
 }
 
+/**
+ * Score one item against query tokens / filters.
+ * @param {import('./types.js').SearchItem} it
+ * @param {string[]} tokens
+ * @param {import('./types.js').ParsedSearchQuery|null|undefined} filters
+ * @param {import('./types.js').SearchSettings} [settings]
+ * @returns {number}
+ */
 export function scoreSearchItem(it, tokens, filters, settings = SEARCH_SETTINGS) {
   if (filters && !matchesSearchFilters(it, filters)) return 0;
   const title = it.title().toLowerCase();
@@ -178,6 +189,14 @@ function findSnippetInBlob(blob, tok, settings) {
   return null;
 }
 
+/**
+ * Build a short HTML-friendly snippet for the first matching token.
+ * @param {import('./types.js').SearchItem} it
+ * @param {string[]} tokens
+ * @param {(s: string) => string} [esc]
+ * @param {import('./types.js').SearchSettings} [settings]
+ * @returns {string}
+ */
 export function snippetForItem(it, tokens, esc = (s) => s, settings = SEARCH_SETTINGS) {
   if (!tokens.length) return '';
   const body = typeof it.body === 'function' ? it.body() : it.body || '';
@@ -204,29 +223,40 @@ export function snippetForItem(it, tokens, esc = (s) => s, settings = SEARCH_SET
   return '';
 }
 
+function itemBodyText(it) {
+  if (!it) return '';
+  if (typeof it.body === 'function') return String(it.body() || '');
+  return String(it.body || '');
+}
+
+/**
+ * Cheap haystack for fast-path gating. MUST include body — otherwise
+ * paragraph-only hits never reach scoreSearchItem (full-text search broken).
+ */
 function textBagForItem(it) {
   const title = String(it.title?.() || '').toLowerCase();
   const sub = String(it.sub || '').toLowerCase();
   const keys = (it.keys || []).join(' ').toLowerCase();
-  return `${title} ${sub} ${keys}`;
+  const body = itemBodyText(it).toLowerCase();
+  return `${title} ${sub} ${keys} ${body}`;
 }
 
-function shouldCandidatePassFastPath(it, tokens, filters) {
+function bagPassesFastPath(bag, tokens, filters) {
   if (!tokens.length) return true;
-  const bag = textBagForItem(it);
+  const hay = String(bag || '');
   for (const excluded of filters?.excluded || []) {
-    if (excluded && bag.includes(excluded)) return false;
+    if (excluded && hay.includes(excluded)) return false;
   }
   for (const required of filters?.required || []) {
     if (!required) continue;
-    if (bag.includes(required)) continue;
-    if (required.length >= 4 && bag.includes(required.slice(0, 4))) continue;
+    if (hay.includes(required)) continue;
+    if (required.length >= 4 && hay.includes(required.slice(0, 4))) continue;
     return false;
   }
   for (const group of filters?.orGroups || []) {
     let ok = false;
     for (const g of group) {
-      if (bag.includes(g)) {
+      if (hay.includes(g)) {
         ok = true;
         break;
       }
@@ -234,6 +264,10 @@ function shouldCandidatePassFastPath(it, tokens, filters) {
     if (!ok) return false;
   }
   return true;
+}
+
+function shouldCandidatePassFastPath(it, tokens, filters) {
+  return bagPassesFastPath(textBagForItem(it), tokens, filters);
 }
 
 function collectTopK(scored, limit) {
@@ -248,6 +282,13 @@ function collectTopK(scored, limit) {
   return top.sort((a, b) => b.score - a.score);
 }
 
+/**
+ * Rank corpus items for a query string.
+ * @param {import('./types.js').SearchItem[]} items
+ * @param {string} q
+ * @param {import('./types.js').RankSearchOptions} [opts]
+ * @returns {import('./types.js').RankedHit[]}
+ */
 export function rankSearchItems(items, q, opts = {}) {
   const settings = { ...SEARCH_SETTINGS, ...(opts.settings || {}) };
   settings.profile = settings.profile || opts.profile || 'legacy';
@@ -257,12 +298,17 @@ export function rankSearchItems(items, q, opts = {}) {
   const tokens = filters.tokens.length ? filters.tokens : tokenizeQuery(q);
   const limit = opts.limit ?? 12;
 
+  // Prefer precomputed bags from buildIndex / createSearchEngine when provided.
+  const indexRows = Array.isArray(opts.index?.items) ? opts.index.items : null;
+  const sourceLen = indexRows ? indexRows.length : items.length;
   const candidates = [];
-  const cap = Math.min(profileCfg.maxCandidates, items.length);
+  const cap = Math.min(profileCfg.maxCandidates, sourceLen);
   for (let i = 0; i < cap; i++) {
-    const it = items[i];
+    const row = indexRows ? indexRows[i] : null;
+    const it = row ? row.it : items[i];
     if (!matchesSearchFilters(it, filters)) continue;
-    if (!shouldCandidatePassFastPath(it, tokens, filters)) continue;
+    const bag = row && typeof row.bag === 'string' ? row.bag : textBagForItem(it);
+    if (!bagPassesFastPath(bag, tokens, filters)) continue;
     candidates.push(it);
   }
 
@@ -276,7 +322,7 @@ export function rankSearchItems(items, q, opts = {}) {
   if (typeof opts.onDiagnostics === 'function') {
     opts.onDiagnostics({
       profile: settings.profile,
-      inputCount: items.length,
+      inputCount: sourceLen,
       candidateCount: candidates.length,
       scoredCount: scored.length,
       outputCount: out.length,
@@ -286,6 +332,12 @@ export function rankSearchItems(items, q, opts = {}) {
   return out;
 }
 
+/**
+ * Pre-compute text bags for repeated searches.
+ * @param {import('./types.js').SearchItem[]} [items]
+ * @param {import('./types.js').BuildIndexOptions} [opts]
+ * @returns {import('./types.js').SearchIndex}
+ */
 export function buildIndex(items = [], opts = {}) {
   const profile = opts.profile || 'legacy';
   const index = items.map((it, idx) => ({
@@ -297,6 +349,11 @@ export function buildIndex(items = [], opts = {}) {
   return { items: index, profile, createdAt: Date.now() };
 }
 
+/**
+ * Create a reusable search engine bound to an index / items.
+ * @param {import('./types.js').CreateSearchEngineOptions} [options]
+ * @returns {import('./types.js').SearchEngine}
+ */
 export function createSearchEngine(options = {}) {
   const profile = options.profile || 'balanced';
   const settings = { ...SEARCH_SETTINGS, ...(options.settings || {}), profile };
@@ -313,6 +370,7 @@ export function createSearchEngine(options = {}) {
           profile: runtime.profile || profile,
           settings: { ...settings, ...(runtime.settings || {}) },
           onDiagnostics: runtime.onDiagnostics || options.onDiagnostics,
+          index,
         }
       );
     },
@@ -320,3 +378,4 @@ export function createSearchEngine(options = {}) {
 }
 
 export { parseSearchQuery, tokenizeQuery };
+export { getProfileConfig, PROFILE_SETTINGS, PROFILE_IDS } from './profiles.js';

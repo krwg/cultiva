@@ -4,7 +4,7 @@
 
 Cultiva is an offline-first desktop habit tracker. Each habit grows from a **seed** to a **legacy tree** on your machine — no cloud, no account, no telemetry.
 
-**Current release:** [2.3.3 · Rowan](https://github.com/krwg/cultiva/releases/tag/2.3.3)
+**Current release:** [2.3.4 · Rowan](https://github.com/krwg/cultiva/releases/tag/2.3.4)
 
 Prefer the long story? **[Cultiva Progress](https://github.com/krwg/cultiva/blob/main/CultivaProgress.md)** — Maple → Rowan, English & Russian.
 
@@ -26,7 +26,7 @@ Prefer the long story? **[Cultiva Progress](https://github.com/krwg/cultiva/blob
 - **Rowan** theme and **Rowan Cluster** ambient background
 - Plugin **contributions API** — themes, backgrounds, sounds, Settings nav
 - Habit **schedules**, **beds**, and per-habit **reminders**
-- **glyph-s 2.7** local search; Cultiva-styled plugin store
+- **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** local search; Cultiva-styled plugin store
 - **Discord** activity-based Rich Presence (optional)
 - Calendar heatmap; system tray quick-complete
 - First-run onboarding, streak **grace day**, statistics dashboard
@@ -36,7 +36,7 @@ Prefer the long story? **[Cultiva Progress](https://github.com/krwg/cultiva/blob
 - Native builds for **Windows, macOS, Linux**
 - **~348+** EN/RU UI strings; **F1** contextual help
 
-→ [Features](Features) · [Getting Started](Getting-Started) · [2.3.3 release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.3.3-rowan-github.md) · [Progress story](https://github.com/krwg/cultiva/blob/main/CultivaProgress.md)
+→ [Features](Features) · [Getting Started](Getting-Started) · [2.3.4 release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.3.4-rowan-github.md) · [Progress story](https://github.com/krwg/cultiva/blob/main/CultivaProgress.md)
 
 ---
 

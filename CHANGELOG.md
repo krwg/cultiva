@@ -6,9 +6,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [2.3.4] — Rowan · 2026-07-19
 
-**Codename:** Rowan · Plugin install integrity · store copy
+**Codename:** Rowan · glyph-s 2.7.2 · Plugin install integrity
 
 [GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.4) · [Release notes](docs/release-notes-v2.3.4-rowan-github.md)
+
+### Changed
+- Vendored **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** — full-text fast-path includes note/body text; search profiles in `profiles.js`
+- Settings Search copy shows engine **2.7.2**; link to Glyph family in release notes
 
 ### Fixed
 - Plugin install integrity: always refetch official registry on install; prefer **jsDelivr** mirror so sha256 cannot lag behind a stale `raw.githubusercontent.com` CDN edge
@@ -16,8 +20,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Plugin store catalog fetch prefers jsDelivr with raw GitHub fallback
 
 ### Notes
-- Companion registry **3.6.2** — aligned first-time store descriptions (EN/RU, two sentences each); Radio **2.6.2**
-- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
+- Companion registry **3.6.3** — aligned store descriptions; Radio **2.6.x**
+- Glyph engine: [FlokeStudio/glyph-s](https://github.com/FlokeStudio/glyph-s) · [glyph-sO](https://github.com/FlokeStudio/glyph-sO) · [Floke](https://flokestudio.github.io/Floke/)
 
 ## [2.3.3] — Rowan · 2026-07-19
 
@@ -32,7 +36,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ### Notes
 - Companion Radio **2.6.1** (Neo atmosphere restored with live analyser) · registry **3.6.1**
 - Cultiva **1.7** still accepted by Radio `minAppVersion`, but **1.7 support is ending soon** — use **2.0+**
-- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
 
 ## [2.3.2] — Rowan · 2026-07-18
 
@@ -45,7 +48,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Weather tray temperature (tooltip + menu); companion Weather **2.7.2** / registry **3.5.7**
 
 ### Notes
-- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
 
 ## [2.3.1] — Rowan · 2026-07-18
 
@@ -65,7 +67,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Weather Neo forecast text contrast on dark sky phases
 
 ### Notes
-- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
 - Developer Mode starts hidden each session; unlock with 7 taps on the footer version
 
 ## [2.3.0] — Rowan · 2026-07-18
@@ -84,7 +85,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - ESLint green again: ignore vendored `src/core/glyph-s/**`; `eqeqeq` null-ignore; remaining app equality fixes
 
 ### Notes
-- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
 
 ## [2.2.0] — Rowan · 2026-07-18
 
@@ -110,7 +110,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Notes
 - Companion: Quote **1.6.0** (500 EN + 500 RU) · registry **3.5.4**
-- Author: **krwg** \<shevotsukov@icloud.com\>
 
 ## [2.1.3] — Rowan · 2026-07-18
 

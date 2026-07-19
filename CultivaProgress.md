@@ -306,6 +306,8 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 
 **2.3.3** lets plugins share the tray without stomping each other, and ships Radio **2.5** — playlist paste that actually works, stream history, ten more SomaFM rooms, and the station name in the tray. Radio **2.5.1** fixes store install when Windows CRLF hashes disagreed with GitHub LF bytes.
 
+**2.3.4** vendors **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** so body text reaches the search fast-path (paragraph-only hits work again), and hardens plugin installs against stale CDN hashes (jsDelivr first, LF sha256). The Glyph family link lives in the release notes and Settings → Search.
+
 Through all of that, the Sequoia promise held: one home, a tool you download, data that stays yours.
 
 ---
@@ -627,6 +629,8 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 **2.3.2** закрывает два бага: пункт Developer снова прячется после Hide/Off, а Weather **2.7.2** показывает °C в tooltip и меню трея.
 
 **2.3.3** делит трей между плагинами без войны, а Radio **2.5** наконец переваривает вставленные `.m3u`/`.pls`, помнит историю потоков, добавляет десять станций и пишет текущую волну в трей. **2.5.1** чинит установку из магазина (хеши LF vs CRLF).
+
+**2.3.4** подтягивает **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** — тело текста снова проходит fast-path поиска — и чинит установку плагинов со stale CDN (сначала jsDelivr, sha256 по LF). Ссылка на семейство Glyph — в релиз-нотах и в Settings → Search.
 
 Сквозь всё это держалось обещание Секвойи: один дом, инструмент, который скачивают, данные, которые остаются вашими.
 
