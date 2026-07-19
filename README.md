@@ -60,7 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
-| **2.3.4 install integrity** | Fresh registry on plugin install; LF sha256; store copy aligned (registry 3.6.2) |
+| **2.3.4 install integrity** | Fresh registry on plugin install; LF sha256; store copy aligned (registry 3.6.3) |
 | **2.3.3 PE2 tray & Radio** | Multi-plugin tray merge; Radio **2.6** — 33 stations, ICY now-playing, live Neo |
 | **2.3.2 hide & tray °** | Dev Mode actually hides; Weather °C in tray tooltip + menu |
 | **2.3.1 Discord & Dev polish** | Presence prefs, Dev Mode hide/anim bg, PE2 tray °, habit disable |
