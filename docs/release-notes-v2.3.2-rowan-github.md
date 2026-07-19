@@ -14,7 +14,6 @@
 - PE2 tray wiring hardened; Weather **2.7.2** writes temperature to the tray **tooltip** and a **menu row** (`City · °C`)
 
 ## Notes
-- Author: **krwg** \<shevotsukov@icloud.com\> — sole author, no co-authors
 - Companion registry **3.5.7** · Weather **2.7.2**
 
 | | |
