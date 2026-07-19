@@ -21,7 +21,3 @@ Fixes plugin install failures (`Integrity check failed for manifest.json`) cause
 
 - Registry **3.6.2** — every plugin description is two clear sentences (EN + RU)
 - Radio **2.6.2** — manifest description matched to catalog voice
-
-## Author
-
-**krwg** \<shevotsukov@icloud.com\> — sole author, no co-authors.
