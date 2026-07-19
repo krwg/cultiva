@@ -28,9 +28,10 @@ function stripUtf8Bom(s) {
   return t.charCodeAt(0) === 0xfeff ? t.slice(1) : t;
 }
 
-async function loadOfficialRegistry() {
+async function loadOfficialRegistry(options = {}) {
+  const force = options.force === true;
   const now = Date.now();
-  if (cachedRegistryJson && (now - cachedRegistryAt) < REGISTRY_CACHE_MS) {
+  if (!force && cachedRegistryJson && (now - cachedRegistryAt) < REGISTRY_CACHE_MS) {
     return cachedRegistryJson;
   }
   const text = await httpsGetText(REGISTRY_URL);
@@ -41,7 +42,8 @@ async function loadOfficialRegistry() {
 }
 
 async function resolveInstallFilesFromRegistry(pluginId) {
-  const registry = await loadOfficialRegistry();
+  // Always refetch on install so sha256 cannot lag behind GitHub raw after a registry push.
+  const registry = await loadOfficialRegistry({ force: true });
   const pluginList = Array.isArray(registry.plugins) ? registry.plugins : [];
   const pluginInfo = pluginList.find((p) => p && p.id === pluginId);
   if (!pluginInfo) {
@@ -69,7 +71,13 @@ if (!fs.existsSync(PLUGIN_FILES_DIR)) {
 }
 
 function sha256HexOfFile(filePath) {
-  return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
+  let buf = fs.readFileSync(filePath);
+  // Registry hashes are LF (GitHub raw). Normalize text so CRLF mirrors cannot fail install.
+  if (/\.(json|js|cjs|mjs|css|md|html|svg)$/i.test(filePath)) {
+    const text = stripUtf8Bom(buf.toString('utf8')).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    buf = Buffer.from(text, 'utf8');
+  }
+  return crypto.createHash('sha256').update(buf).digest('hex');
 }
 
 function httpsGetText(urlString, maxBytes = 8 * 1024 * 1024) {

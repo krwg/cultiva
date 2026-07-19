@@ -27,18 +27,18 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 
 ## Download
 
-**[→ Latest release (2.3.3 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
+**[→ Latest release (2.3.4 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
-| **Windows** | `Cultiva-Setup-2.3.3.exe` | NSIS installer — shortcuts, uninstall entry |
-| **Windows** | `Cultiva-Portable-2.3.3.exe` | No install required |
-| **macOS Intel** | `Cultiva-2.3.3-mac-x64.dmg` | Also `.zip` |
-| **macOS Apple Silicon** | `Cultiva-2.3.3-mac-arm64.dmg` | Also `.zip` |
-| **Linux** | `Cultiva-2.3.3-linux-x86_64.AppImage` | Single file, no root |
-| **Linux** | `Cultiva-2.3.3-linux-amd64.deb` | Debian / Ubuntu |
+| **Windows** | `Cultiva-Setup-2.3.4.exe` | NSIS installer — shortcuts, uninstall entry |
+| **Windows** | `Cultiva-Portable-2.3.4.exe` | No install required |
+| **macOS Intel** | `Cultiva-2.3.4-mac-x64.dmg` | Also `.zip` |
+| **macOS Apple Silicon** | `Cultiva-2.3.4-mac-arm64.dmg` | Also `.zip` |
+| **Linux** | `Cultiva-2.3.4-linux-x86_64.AppImage` | Single file, no root |
+| **Linux** | `Cultiva-2.3.4-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [2.3.3 Rowan](docs/release-notes-v2.3.3-rowan-github.md) · [2.3.2 Rowan](docs/release-notes-v2.3.2-rowan-github.md) · [2.3.1 Rowan](docs/release-notes-v2.3.1-rowan-github.md) · [2.3.0 Rowan](docs/release-notes-v2.3.0-rowan-github.md) · [2.2.0 Rowan](docs/release-notes-v2.2.0-rowan-github.md) · [2.1.3 Rowan](docs/release-notes-v2.1.3-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
+**Release notes:** [2.3.4 Rowan](docs/release-notes-v2.3.4-rowan-github.md) · [2.3.3 Rowan](docs/release-notes-v2.3.3-rowan-github.md) · [2.3.2 Rowan](docs/release-notes-v2.3.2-rowan-github.md) · [2.3.1 Rowan](docs/release-notes-v2.3.1-rowan-github.md) · [2.3.0 Rowan](docs/release-notes-v2.3.0-rowan-github.md) · [2.2.0 Rowan](docs/release-notes-v2.2.0-rowan-github.md) · [2.1.3 Rowan](docs/release-notes-v2.1.3-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
 
 > **Upgrading:** your garden is preserved. Export a backup under **Settings → Storage** before updating, just in case.
 
@@ -60,6 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
+| **2.3.4 install integrity** | Fresh registry on plugin install; LF sha256; store copy aligned (registry 3.6.2) |
 | **2.3.3 PE2 tray & Radio** | Multi-plugin tray merge; Radio **2.6** — 33 stations, ICY now-playing, live Neo |
 | **2.3.2 hide & tray °** | Dev Mode actually hides; Weather °C in tray tooltip + menu |
 | **2.3.1 Discord & Dev polish** | Presence prefs, Dev Mode hide/anim bg, PE2 tray °, habit disable |
@@ -79,7 +80,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **Statistics** | Weekly and monthly completion trends in Settings |
 | **Data export** | JSON, ZIP, iCal (`.ics`) for habits and calendar events |
 | **Auto-backup** | 7 rotating snapshots in the app data folder |
-| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.6.1**) |
+| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.6.2**) |
 | **F1 help** | Contextual shortcuts — English and Russian |
 | **19 themes** | Including **Rowan**, **Linden**, and **Cypress** |
 | **14 ambient backgrounds** | Plus custom photo — shared with calendar |
@@ -104,13 +105,13 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.3+** for PE2 tray). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.1](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.4+** for install integrity). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.2](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
 | Weather | 2.7.2 | Header + garden (Neo solar skies) |
 | Time | 2.2.2 | Header |
-| Radio | 2.6.1 | Header (33 stations, ICY, live Neo) |
+| Radio | 2.6.2 | Header (33 stations, ICY, live Neo) |
 | Pomodoro | 1.2.1 | Header |
 | Quote of the Day | 1.6.0 | Garden (500 EN + 500 RU) |
 | Habit Reflection | 1.1.0 | Hooks |

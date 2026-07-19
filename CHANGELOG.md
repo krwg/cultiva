@@ -4,6 +4,20 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.3.4] — Rowan · 2026-07-19
+
+**Codename:** Rowan · Plugin install integrity · store copy
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.4) · [Release notes](docs/release-notes-v2.3.4-rowan-github.md)
+
+### Fixed
+- Plugin install integrity: always refetch official `registry.json` on install (no stale 5‑minute sha256 cache vs GitHub raw)
+- Integrity hash for text plugin files normalized to LF before compare (matches registry / GitHub raw)
+
+### Notes
+- Companion registry **3.6.2** — aligned first-time store descriptions (EN/RU, two sentences each); Radio **2.6.2**
+- Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
+
 ## [2.3.3] — Rowan · 2026-07-19
 
 **Codename:** Rowan · PE2 tray merge · Radio 2.5 companion
