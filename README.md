@@ -105,13 +105,13 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.4+** for install integrity). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.2](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.4+** for install integrity). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.3](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
 | Weather | 2.7.2 | Header + garden (Neo solar skies) |
 | Time | 2.2.2 | Header |
-| Radio | 2.6.2 | Header (33 stations, ICY, live Neo) |
+| Radio | 2.6.3 | Header (33 stations, ICY, live Neo) |
 | Pomodoro | 1.2.1 | Header |
 | Quote of the Day | 1.6.0 | Garden (500 EN + 500 RU) |
 | Habit Reflection | 1.1.0 | Hooks |
