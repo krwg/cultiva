@@ -15,7 +15,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Sheet `data-url` action payloads for plugin UI chips
 
 ### Notes
-- Companion Radio **2.6.0** (33 stations, ICY now-playing, live analyser Neo, sleep countdown, crossfade) · registry **3.6.0**
+- Companion Radio **2.6.1** (Neo atmosphere restored with live analyser) · registry **3.6.1**
 - Cultiva **1.7** still accepted by Radio `minAppVersion`, but **1.7 support is ending soon** — use **2.0+**
 - Author: **krwg** \<shevotsukov@icloud.com\> — no co-authors
 

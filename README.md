@@ -79,7 +79,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **Statistics** | Weekly and monthly completion trends in Settings |
 | **Data export** | JSON, ZIP, iCal (`.ics`) for habits and calendar events |
 | **Auto-backup** | 7 rotating snapshots in the app data folder |
-| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.6.0**) |
+| **Plugins** | sha256-verified installs from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) (registry **3.6.1**) |
 | **F1 help** | Contextual shortcuts — English and Russian |
 | **19 themes** | Including **Rowan**, **Linden**, and **Cypress** |
 | **14 ambient backgrounds** | Plus custom photo — shared with calendar |
@@ -104,13 +104,13 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.3+** for PE2 tray). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.0](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.3+** for PE2 tray). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.1](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
 | Weather | 2.7.2 | Header + garden (Neo solar skies) |
 | Time | 2.2.2 | Header |
-| Radio | 2.6.0 | Header (33 stations, ICY, live Neo) |
+| Radio | 2.6.1 | Header (33 stations, ICY, live Neo) |
 | Pomodoro | 1.2.1 | Header |
 | Quote of the Day | 1.6.0 | Garden (500 EN + 500 RU) |
 | Habit Reflection | 1.1.0 | Hooks |
