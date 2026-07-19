@@ -24,7 +24,6 @@
 - Weather **2.7.1**: temperature in the tray tooltip; Neo night/blue-hour forecast contrast
 
 ## Notes
-- Author: **krwg** \<shevotsukov@icloud.com\> — sole author, no co-authors
 - Companion registry **3.5.6**
 
 | | |
