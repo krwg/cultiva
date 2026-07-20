@@ -227,6 +227,29 @@
     .footer-links a:hover { color: var(--text); }
     .footer-note { font-size: 12px; color: var(--text-tertiary); }
 
+    .glyph-strip {
+      max-width: var(--max); margin: 0 auto; padding: 0 22px 48px;
+    }
+    .glyph-strip-card {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 22px 24px; border-radius: 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(52, 199, 89, 0.12), rgba(52, 199, 89, 0.03));
+    }
+    .glyph-strip-kicker {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-tertiary); margin-bottom: 6px;
+    }
+    .glyph-strip-title { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; margin: 0 0 8px; }
+    .glyph-strip-desc { margin: 0; max-width: 640px; color: var(--text-secondary); font-size: 17px; }
+    .glyph-strip-links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .glyph-strip-links a {
+      display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--green);
+      font-size: 13px; font-weight: 600; text-decoration: none;
+    }
+    .glyph-strip-links a:hover { border-color: var(--green); text-decoration: none; }
+
     .icon { display: inline-flex; line-height: 0; }
     .icon svg { display: block; fill: currentColor; }
     .i-16 svg { width: 16px; height: 16px; }
@@ -274,7 +297,7 @@
   </nav>
 
   <header class="hero">
-    <p class="eyebrow">Open source · 2.3.4 · Rowan</p>
+    <p class="eyebrow">Open source · 2.3.5 · Rowan</p>
     <h1 class="headline">Grow habits.<br>Grow yourself.</h1>
     <p class="subhead subhead--hero">An offline-first habit garden for desktop. Each habit grows from seed to legacy tree — with plugins, calendar, and zero cloud lock-in.</p>
     <div class="hero-actions">
@@ -318,6 +341,22 @@
     </div>
   </section>
 
+  <section class="glyph-strip" id="glyph" aria-label="Glyph search family">
+    <div class="glyph-strip-card">
+      <div>
+        <div class="glyph-strip-kicker">Glyph · Floke Studio</div>
+        <h2 class="glyph-strip-title">Powered by glyph-s 2.8.0</h2>
+        <p class="glyph-strip-desc">Header search uses the same offline engine as the Glyph family — habits, plugins, beds, calendar events, and settings stay on your device. Semantic ONNX hooks ship disabled in the engine stub; Cultiva uses local ranking only.</p>
+      </div>
+      <div class="glyph-strip-links">
+        <a href="https://github.com/FlokeStudio/glyph-s">glyph-s</a>
+        <a href="https://github.com/FlokeStudio/glyph-sO">glyph-sO</a>
+        <a href="https://github.com/krwg/glyph-mi">glyph-mi</a>
+        <a href="https://flokestudio.github.io/Floke/">Floke</a>
+      </div>
+    </div>
+  </section>
+
   <section class="section section--alt" id="features">
     <div class="section-inner">
       <h2 class="headline--section">Built for focus.<br>Not for feeds.</h2>
@@ -337,7 +376,7 @@
         </div>
         <div class="feature-item">
           <h3>Local search</h3>
-          <p>Header search is powered by <a href="https://github.com/FlokeStudio/glyph-s">glyph-s 2.7.2</a> — the same offline engine as the Glyph family. Habits, plugins, beds, and settings, on-device.</p>
+          <p>Header search is powered by <a href="https://github.com/FlokeStudio/glyph-s">glyph-s 2.8.0</a> — the same offline engine as the Glyph family. Habits, plugins, beds, and settings, on-device.</p>
         </div>
         <div class="feature-item">
           <h3>Plugins</h3>

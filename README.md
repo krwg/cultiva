@@ -27,18 +27,18 @@ Prefer the long story over individual release notes? Read **[Cultiva Progress](C
 
 ## Download
 
-**[→ Latest release (2.3.4 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
+**[→ Latest release (2.3.5 · Rowan)](https://github.com/krwg/cultiva/releases/latest)**
 
 | Platform | Artifact | Notes |
 |----------|----------|--------|
-| **Windows** | `Cultiva-Setup-2.3.4.exe` | NSIS installer — shortcuts, uninstall entry |
-| **Windows** | `Cultiva-Portable-2.3.4.exe` | No install required |
-| **macOS Intel** | `Cultiva-2.3.4-mac-x64.dmg` | Also `.zip` |
-| **macOS Apple Silicon** | `Cultiva-2.3.4-mac-arm64.dmg` | Also `.zip` |
-| **Linux** | `Cultiva-2.3.4-linux-x86_64.AppImage` | Single file, no root |
-| **Linux** | `Cultiva-2.3.4-linux-amd64.deb` | Debian / Ubuntu |
+| **Windows** | `Cultiva-Setup-2.3.5.exe` | NSIS installer — shortcuts, uninstall entry |
+| **Windows** | `Cultiva-Portable-2.3.5.exe` | No install required |
+| **macOS Intel** | `Cultiva-2.3.5-mac-x64.dmg` | Also `.zip` |
+| **macOS Apple Silicon** | `Cultiva-2.3.5-mac-arm64.dmg` | Also `.zip` |
+| **Linux** | `Cultiva-2.3.5-linux-x86_64.AppImage` | Single file, no root |
+| **Linux** | `Cultiva-2.3.5-linux-amd64.deb` | Debian / Ubuntu |
 
-**Release notes:** [2.3.4 Rowan](docs/release-notes-v2.3.4-rowan-github.md) · [2.3.3 Rowan](docs/release-notes-v2.3.3-rowan-github.md) · [2.3.2 Rowan](docs/release-notes-v2.3.2-rowan-github.md) · [2.3.1 Rowan](docs/release-notes-v2.3.1-rowan-github.md) · [2.3.0 Rowan](docs/release-notes-v2.3.0-rowan-github.md) · [2.2.0 Rowan](docs/release-notes-v2.2.0-rowan-github.md) · [2.1.3 Rowan](docs/release-notes-v2.1.3-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
+**Release notes:** [2.3.5 Rowan](docs/release-notes-v2.3.5-rowan-github.md) · [2.3.4 Rowan](docs/release-notes-v2.3.4-rowan-github.md) · [2.3.3 Rowan](docs/release-notes-v2.3.3-rowan-github.md) · [2.3.2 Rowan](docs/release-notes-v2.3.2-rowan-github.md) · [2.3.1 Rowan](docs/release-notes-v2.3.1-rowan-github.md) · [2.3.0 Rowan](docs/release-notes-v2.3.0-rowan-github.md) · [2.2.0 Rowan](docs/release-notes-v2.2.0-rowan-github.md) · [2.1.3 Rowan](docs/release-notes-v2.1.3-rowan-github.md) · [2.0.0 Rowan](docs/release-notes-v2.0.0-rowan-github.md) · [1.7.0 Linden](docs/release-notes-v1.7.0-linden-github.md) · **[Full progress story](CultivaProgress.md)**
 
 > **Upgrading:** your garden is preserved. Export a backup under **Settings → Storage** before updating, just in case.
 
@@ -60,6 +60,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 | | |
 |---|---|
+| **2.3.5 glyph-s 2.8** | Vendored **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)**; Glyph/Floke banner in Settings + landing |
 | **2.3.4 glyph-s & integrity** | Vendored **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** (body in fast-path); fresh registry on plugin install; LF sha256; store copy (registry 3.6.3) |
 | **2.3.3 PE2 tray & Radio** | Multi-plugin tray merge; Radio **2.6** — 33 stations, ICY now-playing, live Neo |
 | **2.3.2 hide & tray °** | Dev Mode actually hides; Weather °C in tray tooltip + menu |
@@ -96,7 +97,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 | **Visual growth** | Five plant stages tied to consistency |
 | **Calendar** | Month / week / day views, regional holidays, shared themes |
 | **Plugins** | Sandboxed header and garden widgets ([catalog](https://krwg.github.io/cultiva-plugins/)) |
-| **Search** | Local **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** index (habits, plugins, beds, events, settings) |
+| **Search** | Local **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** index (habits, plugins, beds, events, settings) · Glyph family banner in Settings |
 | **Discord Rich Presence** | Optional status while you tend your garden |
 | **Auto-updates** | `electron-updater` against GitHub Releases |
 | **i18n** | **~348** EN/RU string pairs |

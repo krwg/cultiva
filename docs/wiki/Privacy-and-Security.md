@@ -34,7 +34,7 @@ Install only from [cultiva-plugins](https://github.com/krwg/cultiva-plugins) unl
 
 **Do not** file public GitHub issues for security bugs.
 
-Email: **shevotsukov@icloud.com** (see [SECURITY.md](https://github.com/krwg/cultiva/blob/main/SECURITY.md))
+Email: use **GitHub Security Advisories** on [krwg/cultiva](https://github.com/krwg/cultiva) (see [SECURITY.md](https://github.com/krwg/cultiva/blob/main/SECURITY.md))
 
 Include reproduction steps, impact, and affected version.
 

@@ -4,7 +4,7 @@
 
 Cultiva is an offline-first desktop habit tracker. Each habit grows from a **seed** to a **legacy tree** on your machine — no cloud, no account, no telemetry.
 
-**Current release:** [2.3.4 · Rowan](https://github.com/krwg/cultiva/releases/tag/2.3.4)
+**Current release:** [2.3.5 · Rowan](https://github.com/krwg/cultiva/releases/tag/2.3.5)
 
 Prefer the long story? **[Cultiva Progress](https://github.com/krwg/cultiva/blob/main/CultivaProgress.md)** — Maple → Rowan, English & Russian.
 
@@ -26,7 +26,7 @@ Prefer the long story? **[Cultiva Progress](https://github.com/krwg/cultiva/blob
 - **Rowan** theme and **Rowan Cluster** ambient background
 - Plugin **contributions API** — themes, backgrounds, sounds, Settings nav
 - Habit **schedules**, **beds**, and per-habit **reminders**
-- **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** local search; Cultiva-styled plugin store
+- **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** local search; Cultiva-styled plugin store; Glyph family banner in Settings
 - **Discord** activity-based Rich Presence (optional)
 - Calendar heatmap; system tray quick-complete
 - First-run onboarding, streak **grace day**, statistics dashboard

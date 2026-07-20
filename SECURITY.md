@@ -4,6 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
+| 2.3.x   | Yes       |
 | 2.0.x   | Yes       |
 | 1.7.x   | Best effort |
 | 1.1.x   | Best effort |
@@ -13,7 +14,8 @@
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Send a private report to: **shevotsukov@icloud.com**
+1. Use **GitHub Security → Advisories → Report a vulnerability** on [krwg/cultiva](https://github.com/krwg/cultiva), **or**
+2. Contact the maintainer via a private channel on their GitHub profile.
 
 Include:
 

@@ -4,6 +4,21 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.3.5] — Rowan · 2026-07-20
+
+**Codename:** Rowan · glyph-s 2.8.0 companion sync
+
+[GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.5) · [Release notes](docs/release-notes-v2.3.5-rowan-github.md)
+
+### Changed
+- Vendored **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** — expanded query tests upstream, benchmark tooling, embeddings stub (disabled; local ranking only in Cultiva)
+- Settings → Search and landing: **Glyph · Floke Studio** family banner with links to glyph-s, glyph-sO, glyph-mi, and Floke
+- Settings Search copy shows engine **2.8.0**
+
+### Notes
+- Obsidian UX from Glyph 2.8 (persistent index, highlight, sidebar MI, frontmatter batch) lives in [glyph-sO](https://github.com/FlokeStudio/glyph-sO) / [glyph-miO](https://github.com/FlokeStudio/glyph-miO)
+- Companion registry unchanged — plugin installs still prefer jsDelivr + LF sha256
+
 ## [2.3.4] — Rowan · 2026-07-19
 
 **Codename:** Rowan · glyph-s 2.7.2 · Plugin install integrity

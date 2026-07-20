@@ -2,7 +2,7 @@
 
 Overview of **Cultiva 2.3.4 · Rowan**. Full notes: [release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.3.4-rowan-github.md).
 
-**Engines:** CoreV6 · GrowthKit3 · IDB3 · PLE1 (Plugin Engine 1) · [glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)
+**Engines:** CoreV6 · GrowthKit3 · IDB3 · PLE1 (Plugin Engine 1) · [glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)
 
 ---
 
@@ -11,7 +11,7 @@ Overview of **Cultiva 2.3.4 · Rowan**. Full notes: [release notes](https://gith
 - Visual habit cards with **five growth stages**
 - **Horizontal beds** under plugin widgets (max **3** habits per bed; rename/delete; drag-and-drop)
 - **Focus mode** for fewer distractions
-- Habit **search** (`Ctrl/Cmd+F`) powered by **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** (can be hidden from the header in Settings → Search)
+- Habit **search** (`Ctrl/Cmd+F`) powered by **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** (can be hidden from the header in Settings → Search)
 - **Context menu** on habit cards and beds
 - **Keyboard shortcuts** — press **F1** for contextual help
 - Plugin widgets sized to match habit cards, in a dedicated plugins row

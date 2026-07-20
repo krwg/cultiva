@@ -8,4 +8,4 @@ contact_links:
     about: Official plugin bugs and submissions — cultiva-plugins repo
   - name: Security (private)
     url: https://github.com/krwg/cultiva/blob/main/SECURITY.md
-    about: Do not post vulnerabilities publicly — email shevotsukov@icloud.com
+    about: Do not post vulnerabilities publicly — use GitHub Security Advisories on krwg/cultiva

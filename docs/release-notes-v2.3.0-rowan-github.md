@@ -12,7 +12,7 @@
 | **89** | Vitest tests green |
 | **7** | Taps on the footer version to unlock Developer Mode |
 | **6** | Solar sky phases in Weather Neo (dawn → night) |
-| **0** | Co-authors — sole author **krwg** \<shevotsukov@icloud.com\> |
+| **0** | Co-authors — sole author **krwg** |
 
 ---
 

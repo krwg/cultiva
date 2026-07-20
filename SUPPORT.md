@@ -62,8 +62,8 @@ Open a **[GitHub Issue](https://github.com/krwg/cultiva/issues/new/choose)** whe
 
 ## Contact
 
-- **Security:** shevotsukov@icloud.com — see [SECURITY.md](SECURITY.md)
-- **Code of Conduct reports:** shevotsukov@icloud.com — see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- **Security:** GitHub Security Advisories on [krwg/cultiva](https://github.com/krwg/cultiva) — see [SECURITY.md](SECURITY.md)
+- **Code of Conduct reports:** private contact via maintainer GitHub profile — see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 There is no paid support channel. Responses are best-effort from maintainers and community.
 

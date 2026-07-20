@@ -1,27 +1,11 @@
-/**
- * Query tokenization and extended search grammar.
- * @module tokenize
- */
-
-/**
- * Split a query into lowercase tokens on whitespace / punctuation.
- * @param {string} q
- * @returns {string[]}
- */
 export function tokenizeQuery(q) {
   return String(q || '')
     .trim()
     .toLowerCase()
-    .split(/[\s#./_\-]+/)
+    .split(/[\s#./_-]+/)
     .filter(Boolean);
 }
 
-/**
- * Parse extended query grammar into tokens + structured filters.
- * Supports phrases, exclusions, OR groups, and type/page/app/path/tag filters.
- * @param {string} raw
- * @returns {import('./types.js').ParsedSearchQuery}
- */
 export function parseSearchQuery(raw) {
   const text = String(raw || '').trim();
   const filters = {

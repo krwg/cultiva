@@ -1,15 +1,8 @@
-/**
- * Glyph Search core: ranking, snippets, index + engine factory.
- * @module engine
- */
-
 import { parseSearchQuery, tokenizeQuery } from './tokenize.js';
 import { expandTokenVariants, expandQueryVariants } from './layout.js';
 import { getProfileConfig } from './profiles.js';
 
-/** @type {Record<string, number>} */
 const CAT_PRIORITY = { page: 40, note: 36, app: 32, release: 30, action: 24, news: 20 };
-/** @type {import('./types.js').SearchSettings} */
 const SEARCH_SETTINGS = { fuzzyLayout: true, fuzzyTransliteration: true };
 const TOKEN_VARIANT_CACHE = new Map();
 const SNIPPET_CACHE = new Map();
@@ -51,11 +44,6 @@ function getTokenVariantsCached(tok, settings) {
   return variants;
 }
 
-/**
- * @param {import('./types.js').SearchItem} it
- * @param {import('./types.js').ParsedSearchQuery|null|undefined} filters
- * @returns {boolean}
- */
 export function matchesSearchFilters(it, filters) {
   if (!filters) return true;
   if (filters.type === 'release' && it.cat !== 'release') return false;
@@ -84,14 +72,6 @@ export function matchesSearchFilters(it, filters) {
   return true;
 }
 
-/**
- * Score one item against query tokens / filters.
- * @param {import('./types.js').SearchItem} it
- * @param {string[]} tokens
- * @param {import('./types.js').ParsedSearchQuery|null|undefined} filters
- * @param {import('./types.js').SearchSettings} [settings]
- * @returns {number}
- */
 export function scoreSearchItem(it, tokens, filters, settings = SEARCH_SETTINGS) {
   if (filters && !matchesSearchFilters(it, filters)) return 0;
   const title = it.title().toLowerCase();
@@ -189,14 +169,6 @@ function findSnippetInBlob(blob, tok, settings) {
   return null;
 }
 
-/**
- * Build a short HTML-friendly snippet for the first matching token.
- * @param {import('./types.js').SearchItem} it
- * @param {string[]} tokens
- * @param {(s: string) => string} [esc]
- * @param {import('./types.js').SearchSettings} [settings]
- * @returns {string}
- */
 export function snippetForItem(it, tokens, esc = (s) => s, settings = SEARCH_SETTINGS) {
   if (!tokens.length) return '';
   const body = typeof it.body === 'function' ? it.body() : it.body || '';
@@ -229,10 +201,6 @@ function itemBodyText(it) {
   return String(it.body || '');
 }
 
-/**
- * Cheap haystack for fast-path gating. MUST include body — otherwise
- * paragraph-only hits never reach scoreSearchItem (full-text search broken).
- */
 function textBagForItem(it) {
   const title = String(it.title?.() || '').toLowerCase();
   const sub = String(it.sub || '').toLowerCase();
@@ -282,13 +250,6 @@ function collectTopK(scored, limit) {
   return top.sort((a, b) => b.score - a.score);
 }
 
-/**
- * Rank corpus items for a query string.
- * @param {import('./types.js').SearchItem[]} items
- * @param {string} q
- * @param {import('./types.js').RankSearchOptions} [opts]
- * @returns {import('./types.js').RankedHit[]}
- */
 export function rankSearchItems(items, q, opts = {}) {
   const settings = { ...SEARCH_SETTINGS, ...(opts.settings || {}) };
   settings.profile = settings.profile || opts.profile || 'legacy';
@@ -298,7 +259,6 @@ export function rankSearchItems(items, q, opts = {}) {
   const tokens = filters.tokens.length ? filters.tokens : tokenizeQuery(q);
   const limit = opts.limit ?? 12;
 
-  // Prefer precomputed bags from buildIndex / createSearchEngine when provided.
   const indexRows = Array.isArray(opts.index?.items) ? opts.index.items : null;
   const sourceLen = indexRows ? indexRows.length : items.length;
   const candidates = [];
@@ -332,12 +292,6 @@ export function rankSearchItems(items, q, opts = {}) {
   return out;
 }
 
-/**
- * Pre-compute text bags for repeated searches.
- * @param {import('./types.js').SearchItem[]} [items]
- * @param {import('./types.js').BuildIndexOptions} [opts]
- * @returns {import('./types.js').SearchIndex}
- */
 export function buildIndex(items = [], opts = {}) {
   const profile = opts.profile || 'legacy';
   const index = items.map((it, idx) => ({
@@ -349,11 +303,6 @@ export function buildIndex(items = [], opts = {}) {
   return { items: index, profile, createdAt: Date.now() };
 }
 
-/**
- * Create a reusable search engine bound to an index / items.
- * @param {import('./types.js').CreateSearchEngineOptions} [options]
- * @returns {import('./types.js').SearchEngine}
- */
 export function createSearchEngine(options = {}) {
   const profile = options.profile || 'balanced';
   const settings = { ...SEARCH_SETTINGS, ...(options.settings || {}), profile };

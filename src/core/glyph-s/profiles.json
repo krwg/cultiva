@@ -1,0 +1,17 @@
+{
+  "legacy": {
+    "fuzzyCutoff": 0.4,
+    "scoreScale": 1,
+    "maxCandidates": 8000
+  },
+  "balanced": {
+    "fuzzyCutoff": 0.48,
+    "scoreScale": 1.08,
+    "maxCandidates": 4000
+  },
+  "max-quality": {
+    "fuzzyCutoff": 0.35,
+    "scoreScale": 1.16,
+    "maxCandidates": 9000
+  }
+}

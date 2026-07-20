@@ -1,14 +1,11 @@
 {
   "name": "cultiva",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "description": "Grow your habits. Grow yourself.",
   "homepage": "https://github.com/krwg/cultiva",
   "main": "electron/main.cjs",
   "type": "module",
-  "author": {
-    "name": "krwg",
-    "email": "shevotsukov@icloud.com"
-  },
+  "author": "krwg",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -160,7 +157,7 @@
       ],
       "icon": "build/icons",
       "category": "Utility",
-      "maintainer": "krwg <shevotsukov@icloud.com>",
+      "maintainer": "krwg",
       "artifactName": "${productName}-${version}-linux-${arch}.${ext}",
       "synopsis": "Grow your habits. Grow yourself.",
       "description": "Offline-first habit garden with plugins, calendar, and local backups."

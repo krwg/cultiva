@@ -3697,6 +3697,70 @@ html.dev-force-reduced-motion *::after {
     background: var(--accent-blue, #0071e3);
     transition: width 0.25s var(--ease-apple);
 }
+
+.glyph-family-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border-light);
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.08), rgba(52, 199, 89, 0.02));
+}
+
+.glyph-family-banner-kicker {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+}
+
+.glyph-family-banner-title {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.glyph-family-banner-desc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-secondary);
+    max-width: 42rem;
+}
+
+.glyph-family-banner-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.glyph-family-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-primary);
+    color: var(--accent-green, var(--accent-blue));
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.glyph-family-link:hover {
+    text-decoration: none;
+    border-color: var(--accent-green, var(--accent-blue));
+}
+
 #glyph-search-rebuild.is-busy {
     opacity: 0.7;
     pointer-events: none;

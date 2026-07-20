@@ -23,7 +23,7 @@ Examples of unacceptable behavior:
 
 ## Enforcement
 
-Report unacceptable behavior to **shevotsukov@icloud.com**. All complaints will be reviewed and investigated promptly and fairly.
+Report unacceptable behavior via **GitHub Security → Advisories** on [krwg/cultiva](https://github.com/krwg/cultiva) or through a private channel on the maintainer's GitHub profile. All complaints will be reviewed and investigated promptly and fairly.
 
 Maintainers who do not follow or enforce the Code of Conduct may face temporary or permanent repercussions as determined by project leadership.
 

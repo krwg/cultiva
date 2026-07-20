@@ -157,7 +157,7 @@ fix(2.2.0): glyph-s 2.7, Discord activity presence, UI polish
 feat(2.2.0): horizontal beds, settings IA, pinned footer
 ```
 
-Author of every commit: **krwg** \<shevotsukov@icloud.com\> — no co-authors.
+Author of every commit: **krwg** — no co-authors.
 </details>
 
 ---

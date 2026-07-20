@@ -1,6 +1,6 @@
 # glyph-s (vendored)
 
-Vendored copy of [FlokeStudio/glyph-s](https://github.com/FlokeStudio/glyph-s) **2.7.2** (GPL-3.0).
+Vendored copy of [FlokeStudio/glyph-s](https://github.com/FlokeStudio/glyph-s) **2.8.0** (GPL-3.0).
 
 Source files from upstream `lib/`: `tokenize.js`, `layout.js`, `profiles.js`, `engine.js`.
 

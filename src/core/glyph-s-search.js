@@ -1,11 +1,11 @@
 /**
- * Cultiva adapter for glyph-s 2.7.2 (FlokeStudio/glyph-s).
+ * Cultiva adapter for glyph-s 2.8.0 (FlokeStudio/glyph-s).
  * Maps habit/plugin-shaped objects onto the engine item API.
  * @see https://github.com/FlokeStudio/glyph-s
  */
 import { rankSearchItems, createSearchEngine } from './glyph-s/engine.js';
 
-const ENGINE_VERSION = '2.7.2';
+const ENGINE_VERSION = '2.8.0';
 
 function normalizeToken(input) {
   return String(input || '')

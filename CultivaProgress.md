@@ -11,7 +11,7 @@
 
 | | |
 |:--|:--|
-| **Latest** | [**2.3.3 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.3.3) · PE2 tray merge · Radio 2.5 |
+| **Latest** | [**2.3.5 Rowan**](https://github.com/krwg/cultiva/releases/tag/2.3.5) · glyph-s 2.8.0 · Glyph/Floke banner |
 | **In short** | Offline-first habit garden · no telemetry · habits you can *see* grow |
 | **License** | GPL-3.0 · by [krwg](https://github.com/krwg) |
 
@@ -305,6 +305,8 @@ The line on the release was honest: *Graphite. Extensible. Still Offline.*
 **2.3.2** seals two leaks: Developer Mode finally disappears from Settings after Hide/Off (flex was fighting `hidden`), and Weather **2.7.2** puts °C in the tray tooltip and menu.
 
 **2.3.3** lets plugins share the tray without stomping each other, and ships Radio **2.5** — playlist paste that actually works, stream history, ten more SomaFM rooms, and the station name in the tray. Radio **2.5.1** fixes store install when Windows CRLF hashes disagreed with GitHub LF bytes.
+
+**2.3.5** vendors **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** in step with the Floke Glyph 2.8 line, adds a **Glyph · Floke Studio** banner in Settings → Search and on the landing page, and keeps semantic ONNX disabled (engine stub only; local ranking in Cultiva).
 
 **2.3.4** vendors **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** so body text reaches the search fast-path (paragraph-only hits work again), and hardens plugin installs against stale CDN hashes (jsDelivr first, LF sha256). The Glyph family link lives in the release notes and Settings → Search.
 
@@ -629,6 +631,8 @@ JSON‑экспорт для осторожных уже был. Кипарис 
 **2.3.2** закрывает два бага: пункт Developer снова прячется после Hide/Off, а Weather **2.7.2** показывает °C в tooltip и меню трея.
 
 **2.3.3** делит трей между плагинами без войны, а Radio **2.5** наконец переваривает вставленные `.m3u`/`.pls`, помнит историю потоков, добавляет десять станций и пишет текущую волну в трей. **2.5.1** чинит установку из магазина (хеши LF vs CRLF).
+
+**2.3.5** подтягивает **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** вместе с линией Glyph 2.8, добавляет баннер **Glyph · Floke Studio** в Settings → Search и на лендинг; ONNX semantic остаётся выключенным (stub в движке, в Cultiva — только локальный ranking).
 
 **2.3.4** подтягивает **[glyph-s 2.7.2](https://github.com/FlokeStudio/glyph-s)** — тело текста снова проходит fast-path поиска — и чинит установку плагинов со stale CDN (сначала jsDelivr, sha256 по LF). Ссылка на семейство Glyph — в релиз-нотах и в Settings → Search.
 
