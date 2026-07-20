@@ -5,7 +5,7 @@ export const BRANDING = {
   HABIT_ENGINE: 'GrowthKit3',
   DATABASE: 'IDB3',
   PLUGIN_ENGINE: 'PE2',
-  VERSION: '2.3.4',
+  VERSION: '2.3.5',
   CODENAME: 'Rowan',
 
   KEYS: {

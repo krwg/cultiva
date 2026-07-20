@@ -1,6 +1,6 @@
 # Features
 
-Overview of **Cultiva 2.3.4 · Rowan**. Full notes: [release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.3.4-rowan-github.md).
+Overview of **Cultiva 2.3.5 · Rowan**. Full notes: [release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.3.5-rowan-github.md).
 
 **Engines:** CoreV6 · GrowthKit3 · IDB3 · PLE1 (Plugin Engine 1) · [glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)
 

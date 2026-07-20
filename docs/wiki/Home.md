@@ -36,7 +36,7 @@ Prefer the long story? **[Cultiva Progress](https://github.com/krwg/cultiva/blob
 - Native builds for **Windows, macOS, Linux**
 - **~348+** EN/RU UI strings; **F1** contextual help
 
-→ [Features](Features) · [Getting Started](Getting-Started) · [2.3.4 release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.3.4-rowan-github.md) · [Progress story](https://github.com/krwg/cultiva/blob/main/CultivaProgress.md)
+→ [Features](Features) · [Getting Started](Getting-Started) · [2.3.5 release notes](https://github.com/krwg/cultiva/blob/main/docs/release-notes-v2.3.5-rowan-github.md) · [Progress story](https://github.com/krwg/cultiva/blob/main/CultivaProgress.md)
 
 ---
 

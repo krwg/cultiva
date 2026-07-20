@@ -107,7 +107,7 @@ Each stage is a **visual milestone**. After **365 days**, the habit becomes a **
 
 ## Official plugins
 
-Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.4+** for install integrity). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.3](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
+Install from **Settings → Plugins → Browse**. Requires Cultiva **≥ 1.7.0** for Radio/Weather floors; **2.0+ Rowan recommended** (**2.3.5+** for glyph-s 2.8). Cultiva **1.7 will soon stop being supported** — prefer **2.0+**. Registry **[3.6.3](https://github.com/krwg/cultiva-plugins/blob/main/registry.json)**.
 
 | Plugin | Version | Surface |
 |--------|---------|---------|
