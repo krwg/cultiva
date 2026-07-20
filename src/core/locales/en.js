@@ -387,7 +387,7 @@ export default {
     searchSectionDesc: 'glyph-s 2.8.0 indexes habits, plugins, beds, calendar events, and settings labels locally on this device — no cloud. Engine: FlokeStudio/glyph-s.',
     glyphFamilyBannerKicker: 'Glyph · Floke Studio',
     glyphFamilyBannerTitle: 'Offline search family',
-    glyphFamilyBannerDesc: 'Cultiva ships glyph-s on-device. Explore Obsidian plugins, metadata intelligence, and the Floke landing.',
+    glyphFamilyBannerDesc: 'glyph-s on-device · Obsidian plugins · Floke landing',
     glyphFamilyLinkEngine: 'glyph-s engine',
     glyphFamilyLinkFloke: 'Floke Studio',
     glyphFamilyLinkPlugins: 'glyph-sO · Obsidian',

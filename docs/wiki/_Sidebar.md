@@ -15,6 +15,4 @@
 - [Architecture](Architecture)
 - [Desktop Build](Desktop-Build)
 - [Cultiva Plugins Guide](Cultiva-Plugins-Guide)
-- [Contributing](Contributing)
-- [Roadmap](Roadmap)
 - [Privacy and Security](Privacy-and-Security)

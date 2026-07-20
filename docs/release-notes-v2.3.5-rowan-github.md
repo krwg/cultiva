@@ -27,7 +27,6 @@ Cultiva ships a vendored copy of **[FlokeStudio/glyph-s](https://github.com/Flok
 | glyph-mi (metadata core) | https://github.com/krwg/glyph-mi |
 | glyph-miO (Obsidian MI) | https://github.com/FlokeStudio/glyph-miO |
 | Floke landing | https://flokestudio.github.io/Floke/ |
-| Engine roadmap | https://github.com/FlokeStudio/glyph-s/blob/main/ROADMAP.md |
 
 Obsidian-facing features from Glyph 2.8 (persistent vault index, editor highlight, folder groups, hover preview, sidebar MI, frontmatter tags, vault batch) ship in **glyph-sO** / **glyph-miO**, not inside Cultiva itself.
 

@@ -11,6 +11,7 @@ const mainWindowMod = require('./lib/main-window.cjs');
 const { registerCoreIpc } = require('./lib/ipc-main-handlers.cjs');
 const { registerBackupIpc } = require('./lib/backup.cjs');
 const { registerAutoBackupIpc } = require('./lib/zip-backup.cjs');
+const { registerGlyphKnnIpc } = require('./lib/glyph-knn.cjs');
 const { installAppMenu } = require('./lib/app-menu.cjs');
 const { registerCultivaScheme, installCultivaProtocol, shouldUseCultivaProtocol } = require('./lib/cultiva-protocol.cjs');
 
@@ -61,6 +62,7 @@ app.whenReady().then(() => {
   });
   registerBackupIpc(ipcMain, { getMainWindow, dialog });
   registerAutoBackupIpc(ipcMain);
+  registerGlyphKnnIpc(ipcMain);
   trayMod.initTray({
     getMainWindow,
     resolveAppIconPath: mainWindowMod.resolveAppIconPath,

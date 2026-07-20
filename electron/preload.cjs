@@ -35,6 +35,9 @@ contextBridge.exposeInMainWorld('electron', {
   setTitleBarOverlay: (options) => ipcRenderer.invoke('shell:set-titlebar-overlay', options),
   openExternal: (url) => ipcRenderer.invoke('shell:open-external', url),
   onWindowVisibility: (callback) => ipcRenderer.on('window-visibility', (_event, visible) => callback(visible)),
+  glyphKnnLoad: (rows) => ipcRenderer.invoke('glyph:knn:load', rows),
+  glyphKnnQuery: (vector, k) => ipcRenderer.invoke('glyph:knn:query', vector, k),
+  glyphKnnStatus: () => ipcRenderer.invoke('glyph:knn:status'),
 });
 
 let discordEnabled = true;

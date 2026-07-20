@@ -56,7 +56,7 @@ npm run build
 
 ## Data storage (offline-first)
 
-Cultiva is **offline-first**. Habit data lives in local IndexedDB; users export backups manually. **Cloud sync is not on the roadmap for upcoming releases.**
+Cultiva is **offline-first**. Habit data lives in local IndexedDB; users export backups manually. Cloud sync is not planned for upcoming releases.
 
 The storage adapter layer in `src/modules/storage-backend.js` keeps a stable internal API. Remote sync, if ever added, would be a distant future project with end-to-end encryption and explicit opt-in.
 

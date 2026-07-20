@@ -11,8 +11,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 [GitHub Release](https://github.com/krwg/cultiva/releases/tag/2.3.5) · [Release notes](docs/release-notes-v2.3.5-rowan-github.md)
 
 ### Changed
-- Vendored **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** — expanded query tests upstream, benchmark tooling, embeddings stub (disabled; local ranking only in Cultiva)
-- Settings → Search and landing: **Glyph · Floke Studio** family banner with links to glyph-s, glyph-sO, glyph-mi, and Floke
+- Vendored **[glyph-s 2.8.0](https://github.com/FlokeStudio/glyph-s)** — expanded query tests upstream, benchmark tooling, embeddings hook (disabled in Cultiva UI; local ranking only)
+- Settings → Search and landing: compact **Glyph · Floke Studio** family banner with links to glyph-s, glyph-sO, glyph-mi, and Floke
+- Electron main-process **KNN IPC scaffold** (`glyph:knn:load` / `glyph:knn:query`) for future glyph-mi integration
 - Settings Search copy shows engine **2.8.0**
 
 ### Notes

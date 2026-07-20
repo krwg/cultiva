@@ -38,7 +38,6 @@ Wiki uses **`.md`** files; links use `Page-Name` (spaces → hyphens).
 | [Troubleshooting.md](wiki/Troubleshooting.md) | Data, plugins, builds |
 | [Architecture.md](wiki/Architecture.md) | Developer overview |
 | [Cultiva-Plugins-Guide.md](wiki/Cultiva-Plugins-Guide.md) | Author quick reference |
-| [Roadmap.md](wiki/Roadmap.md) | Shipped in 2.0, what's next |
 | [Contributing.md](wiki/Contributing.md) | How to contribute |
 | [Desktop-Build.md](wiki/Desktop-Build.md) | Build from source |
 | [Privacy-and-Security.md](wiki/Privacy-and-Security.md) | Data & sandbox |
@@ -60,6 +59,6 @@ Source: `docs/wiki/` in [krwg/cultiva-plugins](https://github.com/krwg/cultiva-p
 When you change any of these in the main repo, update the matching wiki page:
 
 - `README.md` → Home, Getting-Started
-- `CHANGELOG.md` / release notes → Features, Roadmap
+- `CHANGELOG.md` / release notes → Features
 - `docs/PLUGIN_AUTHOR_GUIDE.md` → Cultiva-Plugins-Guide
 - `registry.json` (plugins repo) → Plugins wiki + cultiva-plugins Catalog

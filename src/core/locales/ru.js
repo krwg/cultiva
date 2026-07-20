@@ -386,7 +386,7 @@ export default {
     searchSectionDesc: 'glyph-s 2.8.0 индексирует привычки, плагины, грядки, события календаря и пункты настроек локально на устройстве — без облака. Движок: FlokeStudio/glyph-s.',
     glyphFamilyBannerKicker: 'Glyph · Floke Studio',
     glyphFamilyBannerTitle: 'Семейство офлайн-поиска',
-    glyphFamilyBannerDesc: 'В Cultiva встроен glyph-s на устройстве. Плагины Obsidian, metadata intelligence и лендинг Floke — по ссылкам ниже.',
+    glyphFamilyBannerDesc: 'glyph-s на устройстве · плагины Obsidian · лендинг Floke',
     glyphFamilyLinkEngine: 'Движок glyph-s',
     glyphFamilyLinkFloke: 'Floke Studio',
     glyphFamilyLinkPlugins: 'glyph-sO · Obsidian',
