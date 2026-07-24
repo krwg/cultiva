@@ -9,7 +9,7 @@
 
 **A gamified habit tracker where consistency isn’t tracked — it’s grown.**
 
-[![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=for-the-badge&labelColor=0b0b0b&color=f4f4f4&label=2.3.5_Rowan)](https://github.com/krwg/cultiva/releases/latest)
+[![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=for-the-badge&labelColor=0b0b0b&color=f4f4f4&label=Rowan)](https://github.com/krwg/cultiva/releases/latest)
 [![License](https://img.shields.io/badge/License-GPLv3-af52de?style=for-the-badge&labelColor=0b0b0b)](LICENSE)
 [![Platform](https://img.shields.io/badge/Win%20%7C%20macOS%20%7C%20Linux-34c759?style=for-the-badge&labelColor=0b0b0b)](https://github.com/krwg/cultiva/releases/latest)
 [![Electron](https://img.shields.io/badge/Electron-desktop-47848F?style=for-the-badge&logo=electron&logoColor=white&labelColor=0b0b0b)](https://www.electronjs.org/)
