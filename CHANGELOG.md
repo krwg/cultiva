@@ -4,6 +4,12 @@ All notable changes to Cultiva are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Changed
+- README hero: typing tagline, richer badges, footer **2.3.5 · Rowan**, explicit **GPL-3.0** License section; `package.json` top-level `license`.
+- Desktop-notification banner copy includes **Linux** (EN/RU).
+
 ## [2.3.5] — Rowan · 2026-07-20
 
 **Codename:** Rowan · glyph-s 2.8.0 companion sync

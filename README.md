@@ -3,13 +3,25 @@
 
 # Cultiva
 
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=14&duration=4000&pause=2000&color=F4F4F4&center=true&vCenter=true&width=720&height=40&lines=Grow+your+habits.+Grow+yourself.;Offline-first+desktop+garden;Windows+%C2%B7+macOS+%C2%B7+Linux;No+accounts.+No+telemetry.+GPL-3.0." alt="Tagline"/>
+
+<br>
+
 **A gamified habit tracker where consistency isn’t tracked — it’s grown.**
 
-[![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=flat-square&labelColor=0b0b0b&color=f4f4f4&label=%20Rowan)](https://github.com/krwg/cultiva/releases/latest)
-[![License](https://img.shields.io/github/license/krwg/cultiva?style=flat-square&color=af52de)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Win%20%7C%20macOS%20%7C%20Linux-34c759?style=flat-square)](https://github.com/krwg/cultiva/releases/latest)
-[![Stars](https://img.shields.io/github/stars/krwg/cultiva?style=flat-square&color=ffcc00)](https://github.com/krwg/cultiva/stargazers)
-[![Discord](https://img.shields.io/badge/discord-rich%20presence-5865F2?style=flat-square&logo=discord&logoColor=white)](#discord-rich-presence)
+[![Release](https://img.shields.io/github/v/release/krwg/cultiva?style=for-the-badge&labelColor=0b0b0b&color=f4f4f4&label=2.3.5_Rowan)](https://github.com/krwg/cultiva/releases/latest)
+[![License](https://img.shields.io/badge/License-GPLv3-af52de?style=for-the-badge&labelColor=0b0b0b)](LICENSE)
+[![Platform](https://img.shields.io/badge/Win%20%7C%20macOS%20%7C%20Linux-34c759?style=for-the-badge&labelColor=0b0b0b)](https://github.com/krwg/cultiva/releases/latest)
+[![Electron](https://img.shields.io/badge/Electron-desktop-47848F?style=for-the-badge&logo=electron&logoColor=white&labelColor=0b0b0b)](https://www.electronjs.org/)
+[![i18n](https://img.shields.io/badge/i18n-EN%20%7C%20RU-e0e0e0?style=for-the-badge&labelColor=0b0b0b)](src/core/i18n.js)
+[![Offline](https://img.shields.io/badge/offline--first-yes-34c759?style=for-the-badge&labelColor=0b0b0b)](#)
+
+[![Stars](https://img.shields.io/github/stars/krwg/cultiva?style=for-the-badge&labelColor=0b0b0b&color=ffcc00&logo=github)](https://github.com/krwg/cultiva/stargazers)
+[![Downloads](https://img.shields.io/github/downloads/krwg/cultiva/total?style=for-the-badge&labelColor=0b0b0b&color=f4f4f4&logo=github)](https://github.com/krwg/cultiva/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/krwg/cultiva?style=for-the-badge&labelColor=0b0b0b&color=f4f4f4&logo=github)](https://github.com/krwg/cultiva/commits/main)
+[![Issues](https://img.shields.io/github/issues/krwg/cultiva?style=for-the-badge&labelColor=0b0b0b&color=ff3366&logo=github)](https://github.com/krwg/cultiva/issues)
+[![Plugins](https://img.shields.io/badge/plugins-registry-af52de?style=for-the-badge&labelColor=0b0b0b)](https://krwg.github.io/cultiva-plugins/)
+[![Discord](https://img.shields.io/badge/discord-rich%20presence-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=0b0b0b)](#discord-rich-presence)
 
 [Landing](https://krwg.github.io/cultiva/) · [Wiki](https://github.com/krwg/cultiva/wiki) · [Plugins](https://krwg.github.io/cultiva-plugins/) · [**Progress**](CultivaProgress.md)
 
@@ -162,6 +174,14 @@ Unsigned local builds: `CSC_IDENTITY_AUTO_DISCOVERY=false` (set automatically in
 
 ---
 
+## License
+
+Cultiva is licensed under the **[GNU General Public License v3.0](LICENSE)** (`GPL-3.0`). The application is **not** MIT — copyleft applies to distributed modifications.
+
+Official plugins live in a separate repository ([cultiva-plugins](https://github.com/krwg/cultiva-plugins)) and may use MIT; see that repo’s LICENSE files.
+
+---
+
 ## Contributing
 
 Issues, PRs, and commit messages in **English**. In-app strings: `src/core/i18n.js` (en + ru minimum).
@@ -180,6 +200,6 @@ When Discord is running locally, Cultiva can show **activity-based** Rich Presen
 
 <div align="center">
 
-Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.3.3 · Rowan**
+Built with care by [krwg](https://github.com/krwg) · **GPL-3.0** · **2.3.5 · Rowan**
 
 </div>

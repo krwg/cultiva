@@ -422,7 +422,7 @@ export default {
     notificationsSectionTitle: 'Notifications',
     notificationsSectionDesc: 'Cultiva uses the system notification center — the same channel as Mail and Calendar — for quiet, timely reminders.',
     notificationsDesktopBannerTitle: 'Desktop app only',
-    notificationsDesktopBannerDesc: 'Native reminders need the Cultiva app for Windows or macOS. They are not available when you run the garden only in a browser tab.',
+    notificationsDesktopBannerDesc: 'Native reminders need the Cultiva app for Windows, macOS, or Linux. They are not available when you run the garden only in a browser tab.',
     notificationsGroupGeneral: 'General',
     notificationsGroupHabits: 'Habits',
     notificationsGroupCalendar: 'Calendar',
