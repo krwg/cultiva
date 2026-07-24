@@ -3,6 +3,7 @@
   "version": "2.3.5",
   "description": "Grow your habits. Grow yourself.",
   "homepage": "https://github.com/krwg/cultiva",
+  "license": "GPL-3.0",
   "main": "electron/main.cjs",
   "type": "module",
   "author": "krwg",

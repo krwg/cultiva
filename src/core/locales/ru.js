@@ -420,7 +420,7 @@ export default {
     notificationsSectionTitle: 'Уведомления',
     notificationsSectionDesc: 'Cultiva показывает напоминания через центр уведомлений системы — тот же канал, что у Почты и Календаря.',
     notificationsDesktopBannerTitle: 'Только десктоп',
-    notificationsDesktopBannerDesc: 'Системные напоминания работают в приложении Cultiva для Windows или macOS. Во вкладке браузера они недоступны.',
+    notificationsDesktopBannerDesc: 'Системные напоминания работают в приложении Cultiva для Windows, macOS или Linux. Во вкладке браузера они недоступны.',
     notificationsGroupGeneral: 'Основные',
     notificationsGroupHabits: 'Привычки',
     notificationsGroupCalendar: 'Календарь',
